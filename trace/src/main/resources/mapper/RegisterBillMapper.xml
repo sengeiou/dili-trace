@@ -754,89 +754,71 @@
   </update>
 
   <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillStaticsDto">
-    select sum( case when detect_state=1 then 1  when detect_state=3 then 1  else 0 end)as 'passNum',
-    sum( case when detect_state=2 then 1  when detect_state=4 then 1  else 0 end)as 'nopassNum',
-    sum( case when (sample_source=2 and detect_state  in (1,2,3,4) )then 1 else 0 end)as 'checkNum',
-    sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheckNum',
-    sum( case when origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '' then 1 else 0 end) as 'hasOriginCertifiyNum',
-    sum( case when detect_report_url is not null AND detect_report_url &lt;&gt; '' then 1 else 0 end) as 'hasDetectReportNum',
-    sum( case when sample_source=1 then 1 else 0 end)as 'sampleCheckNum',
-    sum( case when sample_source=2 then 1 else 0 end)as 'autoCheckNum',
-    sum( case when check_sheet_id is not null then 1 else 0 end)as 'hasCheckSheetNum',
-    count( distinct check_sheet_id)as 'diffCheckSheetNum'
-    from register_bill
+    SELECT SUM( CASE WHEN r.`detect_result`=1 THEN 1 ELSE 0 END)AS 'passNum',
+    SUM( CASE WHEN r.`detect_result`=0 THEN 1 ELSE 0 END)AS 'nopassNum',
+    SUM( CASE WHEN (r.`detect_source`=2 AND r.`detect_result`  IN (0,1) )THEN 1 ELSE 0 END)AS 'checkNum',
+    SUM( CASE WHEN r.`detect_type`=30 THEN 1 ELSE 0 END)AS 'recheckNum',
+    SUM( CASE WHEN b.`has_origin_certifiy`=1 THEN 1 ELSE 0 END) AS 'hasOriginCertifiyNum',
+    SUM( CASE WHEN b.`has_detect_report`=1 THEN 1 ELSE 0 END) AS 'hasDetectReportNum',
+    SUM( CASE WHEN r.`detect_source`=1 THEN 1 ELSE 0 END)AS 'sampleCheckNum',
+    SUM( CASE WHEN r.`detect_source`=2 THEN 1 ELSE 0 END)AS 'autoCheckNum',
+    SUM( CASE WHEN b.`check_sheet_id` IS NOT NULL THEN 1 ELSE 0 END)AS 'hasCheckSheetNum',
+    COUNT( DISTINCT b.`check_sheet_id`)AS 'diffCheckSheetNum'
+    FROM register_bill b LEFT JOIN detect_request r ON (b.`detect_request_id` = r.`id`)
     where 1=1
     <if test="registerSource != null">
-      and register_source = #{registerSource,jdbcType=TINYINT}
+      and b.`register_source` = #{registerSource,jdbcType=TINYINT}
     </if>
-    <if test="state != null">
-      and state = #{state,jdbcType=BIT}
+    <if test="verifyStatus != null">
+      and b.`verify_status` = #{verifyStatus,jdbcType=BIT}
+    </if>
+    <if test="detectStatus != null">
+      and b.`detect_status` = #{detectStatus,jdbcType=BIT}
     </if>
     <if test="billType !=  null">
-      and bill_type = #{billType}
+      and b.`bill_type` = #{billType}
     </if>
     <if test="createdStart != null  and createdStart!=''">
-      and created>=  #{createdStart}
+      and b.`created`>=  #{createdStart}
     </if>
     <if test="createdEnd != null  and createdEnd!=''">
-      and #{createdEnd}>= created
+      and #{createdEnd}>= b.`created`
     </if>
     <if test="latestDetectTimeTimeStart != null and latestDetectTimeTimeStart!=''">
-      and latest_detect_time>=  #{latestDetectTimeTimeStart}
+      and b.`latest_detect_time`>=  #{latestDetectTimeTimeStart}
     </if>
     <if test="latestDetectTimeTimeEnd != null  and latestDetectTimeTimeEnd!=''">
-      and #{latestDetectTimeTimeEnd}>= latest_detect_time
+      and #{latestDetectTimeTimeEnd}>= b.`latest_detect_time`
     </if>
 
     <if test="attr != null  and attrValue !=''">
       <if test="attr =='name'">
-        and name=#{attrValue}
-      </if>
-      <if test="attr == 'tallyAreaNo'">
-        and  tally_area_no like '%${attrValue}%'
+        and b.`name`=#{attrValue}
       </if>
       <if test="attr == 'productName'">
-        and  product_name like '${attrValue}%'
+        and b.`product_name` like '${attrValue}%'
       </if>
       <if test="attr == 'likeSampleCode'">
-        and  sample_code like '%${attrValue}%'
+        and b.`sample_code` like '%${attrValue}%'
       </if>
     </if>
 
     <if test="tradeTypeId != null and tallyAreaNo!='' ">
-      and trade_type_id=#{tradeTypeId}
-    </if>
-
-    <if test="stateList != null">
-      AND state IN
-      <foreach collection="stateList" open="(" separator=","
-               close=")" item="state">
-        #{state}
-      </foreach>
+      and b.`trade_type_id`=#{tradeTypeId}
     </if>
 
     <if test="hasDetectReport != null">
-      <if test="hasDetectReport == true">
-        AND (detect_report_url is not null AND detect_report_url &lt;&gt; '')
-      </if>
-      <if test="hasDetectReport == false">
-        AND (detect_report_url is  null or detect_report_url='')
-      </if>
+      and b.`has_detect_report` = #{hasDetectReport}
     </if>
     <if test="hasOriginCertifiy != null">
-      <if test="hasOriginCertifiy ==true">
-        AND (origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '')
-      </if>
-      <if test="hasOriginCertifiy ==false">
-        AND (origin_certifiy_url is  null or origin_certifiy_url='')
-      </if>
+      and b.`has_origin_certifiy` = #{hasOriginCertifiy}
     </if>
     <if test="hasCheckSheet != null">
       <if test="hasCheckSheet ==true">
-        AND (check_sheet_id is not null)
+        AND (b.`check_sheet_id` is not null)
       </if>
       <if test="hasCheckSheet ==false">
-        AND (check_sheet_id is  null)
+        AND (b.`check_sheet_id` is  null)
       </if>
     </if>
   </select>

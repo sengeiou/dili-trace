@@ -91,7 +91,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
         List<RegisterBill> list = listByExample(domain);
         Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(list).map(RegisterBill::getDetectRequestId).toList());
         //检测值
-        Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
+        // Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
         StreamEx.of(list).forEach(rb -> {
             rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
         });
