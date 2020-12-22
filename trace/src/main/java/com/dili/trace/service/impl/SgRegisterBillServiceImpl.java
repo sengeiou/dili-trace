@@ -287,7 +287,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 if (pass) {
                     // 理货区
                     if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
-                            && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
+                            && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
                         // 有检测报告，直接已审核
                         // registerBill.setLatestDetectTime(new Date());
 //                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
@@ -437,8 +437,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                         return registerBill;
                     }).filter(Objects::nonNull).filter(registerBill -> {
                         if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-                            if (TFEnum.TRUE.equalsCode(registerBill.getHasOriginCertifiy())
-                                    && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
+                            if (YesOrNoEnum.YES.getCode().equals(registerBill.getHasOriginCertifiy())
+                                    && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
                                 return false;
                             }
                         }
@@ -446,8 +446,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     }).collect(Collectors.partitioningBy((registerBill) -> {
 
                         if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-                            if (TFEnum.TRUE.equalsCode(registerBill.getHasOriginCertifiy())
-                                    && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
+                            if (YesOrNoEnum.YES.getCode().equals(registerBill.getHasOriginCertifiy())
+                                    && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
                                 return true;
                             }
                         }

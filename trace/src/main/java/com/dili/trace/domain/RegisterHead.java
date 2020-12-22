@@ -3,10 +3,8 @@ package com.dili.trace.domain;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.TFEnum;
+import com.dili.trace.enums.RegisterHeadActiveEnum;
+
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -591,7 +589,10 @@ public class RegisterHead extends BaseDomain {
 	public void setActive(Integer active) {
 		this.active = active;
 	}
-
+	@Transient
+	public String getActiveName() {
+		return RegisterHeadActiveEnum.fromCode(this.active).map(RegisterHeadActiveEnum::getName).orElse("");
+	}
 	public Long getMarketId() {
 		return marketId;
 	}

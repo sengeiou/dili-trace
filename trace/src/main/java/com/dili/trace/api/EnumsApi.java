@@ -25,6 +25,23 @@ import one.util.streamex.StreamEx;
 @AppAccess(role = Role.ANY)
 public class EnumsApi {
     /**
+     * 台账状态枚举查询
+     */
+    @RequestMapping(value = "/listRegisterHeadActiveEnum.api", method = RequestMethod.POST)
+    public BaseOutput<List<KeyTextPair>> listRegisterHeadActiveEnum() {
+        try {
+            List<KeyTextPair> list = StreamEx.of(RegisterHeadActiveEnum.values()).map(e -> {
+                KeyTextPair p = new KeyTextPair();
+                p.setKey(e.getCode());
+                p.setText(e.getName());
+                return p;
+            }).toList();
+            return BaseOutput.success().setData(list);
+        } catch (Exception e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+    /**
      * 上游类型枚举查询
      */
     @RequestMapping(value = "/listUpStreamTypeEnum.api", method = RequestMethod.POST)

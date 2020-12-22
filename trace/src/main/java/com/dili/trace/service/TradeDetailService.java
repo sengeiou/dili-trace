@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
@@ -95,7 +96,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		Date now=new Date();
 
 		item.setParentId(null);
-		item.setIsBatched(TFEnum.FALSE.getCode());
+		item.setIsBatched(YesOrNoEnum.NO.getCode());
 		item.setBillId(billItem.getId());
 		item.setTradeType(TradeTypeEnum.NONE.getCode());
 		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
@@ -168,7 +169,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		// buyerTradeDetail.setTradeRequestId(tradeRequestId);
 
 		// buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
-		// buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+		// buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
 		// this.updateSelective(buyerTradeDetail);
 		TradeDetail buyerTradeDetail = this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight, buyer,
 				tradeRequestId, tradeOrderTypeEnum);
@@ -198,7 +199,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (stockWeight.compareTo(BigDecimal.ZERO) <= 0) {
 			sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() - 1);
 			sellerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-			sellerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
+			sellerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
 		}
 		this.batchStockService.updateSelective(sellerBatchStock);
 
@@ -238,20 +239,20 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
 			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
 			buyerTradeDetail.setStockWeight(tradeWeight);
-			buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+			buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
 		}
 		else
 		{
 			buyerTradeDetail.setSoftWeight(tradeWeight);
 			buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
 			buyerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-			buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
+			buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
 		}
 
 		buyerTradeDetail.setTotalWeight(tradeWeight);
 		buyerTradeDetail.setTradeRequestId(tradeRequestId);
 		buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
-		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+		buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
 
 		this.batchStockService.updateSelective(buyerBatchStock);
 		this.updateSelective(buyerTradeDetail);
@@ -277,7 +278,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setParentBatchNo(this.buildParentBatchNo(tradeDetailItem));
 
 		buyerTradeDetail.setProductStockId(null);
-		buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
+		buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
 
 		buyerTradeDetail.setBuyerId(buyer.getId());
@@ -316,7 +317,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (dto.getRows() == null || dto.getRows() <= 0) {
 			dto.setRows(10);
 		}
-		dto.setIsDeleted(TFEnum.FALSE.getCode());
+		dto.setIsDeleted(YesOrNoEnum.NO.getCode());
 		PageHelper.startPage(dto.getPage(), dto.getRows());
 		List<TradeDetailBillOutput> list = this.tradeDetailMapper.selectTradeDetailAndBill(dto);
 		Page<TradeDetailBillOutput> page = (Page) list;

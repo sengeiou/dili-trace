@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 交易服务
+ */
 @Service
 @Transactional
 public class TradeService {
@@ -32,6 +35,13 @@ public class TradeService {
     @Autowired
     TradeDetailService tradeDetailService;
 
+    /**
+     * 创建库存
+     * @param billId
+     * @param tradeDetailId
+     * @param operatorUser
+     * @return
+     */
     public Long createBatchStockAfterVerifiedAndCheckin(Long billId, Long tradeDetailId,
     Optional<OperatorUser> operatorUser) {
         RegisterBill billItem = this.registerBillService.get(billId);
@@ -60,7 +70,7 @@ public class TradeService {
             updatableRecord.setId(tradeDetailItem.getId());
             updatableRecord.setModified(new Date());
             updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
+            updatableRecord.setIsBatched(YesOrNoEnum.YES.getCode());
             updatableRecord.setProductStockId(batchStock.getId());
             updatableRecord.setStockWeight(weight);
             updatableRecord.setTotalWeight(weight);

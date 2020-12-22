@@ -532,7 +532,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
                 TradeDetail buyerTradeDetail = new TradeDetail();
                 buyerTradeDetail.setId(buyertd.getId());
-                buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
+                buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
                 this.tradeDetailService.updateSelective(buyerTradeDetail);
 
                 ProductStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getProductStockId())
@@ -553,7 +553,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 } else {
                     sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
                     sellerTradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-                    sellerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+                    sellerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
                 }
                 this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
@@ -703,7 +703,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 tradeDetail.setStockWeight(td.getSoftWeight());
                 tradeDetail.setSoftWeight(BigDecimal.ZERO);
                 tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-                tradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+                tradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
                 this.tradeDetailService.updateSelective(tradeDetail);
 
                 ProductStock productStockUpdate = new ProductStock();
@@ -733,7 +733,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
                     productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
                     parentTradeDetailForUpdate.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-                    parentTradeDetailForUpdate.setIsBatched(TFEnum.TRUE.getCode());
+                    parentTradeDetailForUpdate.setIsBatched(YesOrNoEnum.YES.getCode());
                 }
                 this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
                 this.batchStockService.updateSelective(productStockUpdate);

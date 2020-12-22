@@ -2,6 +2,7 @@ package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -101,8 +102,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             registerHead.setModifyUser(op.getName());
             registerHead.setModified(new Date());
         });
-        registerHead.setIsDeleted(TFEnum.FALSE.getCode());
-        registerHead.setActive(TFEnum.TRUE.getCode());
+        registerHead.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerHead.setActive(RegisterHeadActiveEnum.NONE.getCode());
         registerHead.setVersion(1);
 
         registerHead.setIdCardNo(StringUtils.trimToEmpty(registerHead.getIdCardNo()).toUpperCase());
@@ -237,7 +238,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (headItem == null) {
             return Optional.empty();
         }
-        if (TFEnum.TRUE.equalsCode(headItem.getIsDeleted())) {
+        if (YesOrNoEnum.YES.getCode().equals(headItem.getIsDeleted())) {
             throw new TraceBizException("进门主台账单已经被删除");
         }
         return Optional.of(headItem);

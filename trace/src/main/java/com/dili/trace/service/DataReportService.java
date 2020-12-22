@@ -5,6 +5,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -126,7 +127,7 @@ public class DataReportService {
                 .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
         reportCountDto.setUpdateTime(updateTime);
 
-        billDto.setIsDeleted(TFEnum.FALSE.getCode());
+        billDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         billDto.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
 
         List<UnqualifiedPdtInfo> unqualifiedPdtInfo = StreamEx

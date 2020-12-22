@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -474,13 +475,13 @@ public class RegisterBill extends BaseDomain {
      * 车辆皮重
      */
     @Column(name = "`truck_tare_weight`")
-    private  BigDecimal truckTareWeight;
+    private BigDecimal truckTareWeight;
 
     /**
      * 单价
      */
     @Column(name = "`unit_price`")
-    private  BigDecimal unitPrice;
+    private BigDecimal unitPrice;
 
     /**
      * 创建人角色。0-经营户 1-管理员
@@ -996,7 +997,7 @@ public class RegisterBill extends BaseDomain {
         this.version = version;
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCreated() {
         return created;
     }
@@ -1004,7 +1005,8 @@ public class RegisterBill extends BaseDomain {
     public void setCreated(Date created) {
         this.created = created;
     }
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getModified() {
         return modified;
     }
@@ -1148,7 +1150,7 @@ public class RegisterBill extends BaseDomain {
      */
     @Transient
     public String getTallyAreaNo() {
-        if(RegisterSourceEnum.TALLY_AREA.equalsToCode(this.registerSource)){
+        if (RegisterSourceEnum.TALLY_AREA.equalsToCode(this.registerSource)) {
             return this.getSourceName();
         }
         return "";
@@ -1195,7 +1197,7 @@ public class RegisterBill extends BaseDomain {
      */
     @Transient
     public String getIsDeletedName() {
-        return TFEnum.fromCode(this.getIsDeleted()).map(TFEnum::getDesc).orElse("");
+        return YesOrNoEnum.YES.getCode().equals(this.getIsDeleted()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
     }
 
     /**
@@ -1363,10 +1365,12 @@ public class RegisterBill extends BaseDomain {
     public String getRegisterSourceName() {
         return RegisterSourceEnum.getRegisterSourceEnum(this.registerSource).map(RegisterSourceEnum::getName).orElse("");
     }
+
     @Transient
     public String getSourceDesc() {
-        return this.getRegisterSourceName()+ (StringUtils.isBlank(this.sourceName)?"":(":"+this.sourceName));
+        return this.getRegisterSourceName() + (StringUtils.isBlank(this.sourceName) ? "" : (":" + this.sourceName));
     }
+
     public void setRegisterSource(Integer registerSource) {
         this.registerSource = registerSource;
     }

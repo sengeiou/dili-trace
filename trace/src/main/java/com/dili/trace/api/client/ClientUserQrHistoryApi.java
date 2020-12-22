@@ -6,6 +6,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -53,7 +54,7 @@ public class ClientUserQrHistoryApi {
             // condition.setUserId(userId);
             condition.setSort("created");
             condition.setOrder("desc");
-            condition.setIsValid(TFEnum.TRUE.getCode());
+            condition.setIsValid(YesOrNoEnum.YES.getCode());
             BasePage<UserQrHistory> data = this.userQrHistoryService.listPageByExample(condition);
             return BaseOutput.success().setData(data);
         } catch (TraceBizException e) {
