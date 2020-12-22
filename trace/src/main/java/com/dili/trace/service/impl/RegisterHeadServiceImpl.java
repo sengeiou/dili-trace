@@ -65,13 +65,14 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     }
 
     @Override
-    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long customerId,
+    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads,
                                              Optional<OperatorUser> operatorUser,Long marketId) {
 
-        CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(customerId,marketId);
+
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
+            CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(dto.getUserId(),marketId);
             RegisterHead registerHead = dto.build(customer);
             registerHead.setMarketId(marketId);
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);

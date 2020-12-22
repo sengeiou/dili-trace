@@ -152,8 +152,8 @@
         "affectsGlobalScope": true
       },
       "../../tsc/trace.d.ts": {
-        "version": "b5e85d932db2d9d87095222eb33ec6de2bb72934fd0d2916401fb45addf7af2a",
-        "signature": "b5e85d932db2d9d87095222eb33ec6de2bb72934fd0d2916401fb45addf7af2a",
+        "version": "17f8246fc6fd2d9b7fb9253c110e7bbd1bf0f975e06e0cfcc4b9b9c1b01548b1",
+        "signature": "17f8246fc6fd2d9b7fb9253c110e7bbd1bf0f975e06e0cfcc4b9b9c1b01548b1",
         "affectsGlobalScope": true
       },
       "../../tsc/userhistoryservice.index.ts": {

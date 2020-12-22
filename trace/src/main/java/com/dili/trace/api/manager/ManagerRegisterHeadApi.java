@@ -1,4 +1,4 @@
-package com.dili.trace.api.client;
+package com.dili.trace.api.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
@@ -8,7 +8,6 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -22,7 +21,10 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.*;
+import com.dili.trace.service.ImageCertService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.RegisterHeadService;
+import com.dili.trace.service.UpStreamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -38,16 +40,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 进门主台账单相关接口
+ * (管理员)进门主台账单相关接口
  *
  * @author Lily
  */
 @RestController
-@RequestMapping(value = "/api/client/clientRegisterHead")
-@Api(value = "/api/client/clientRegisterHead", description = "进门主台账单相关接口")
-@AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
-public class ClientRegisterHeadApi {
-    private static final Logger logger = LoggerFactory.getLogger(ClientRegisterHeadApi.class);
+@RequestMapping(value = "/api/manager/managerRegisterHead")
+@Api(value = "/api/manager/managerRegisterHead", description = "进门主台账单相关接口")
+@AppAccess(role = Role.Manager)
+public class ManagerRegisterHeadApi {
+    private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterHeadApi.class);
 
     @Autowired
     RegisterHeadService registerHeadService;
@@ -79,6 +81,9 @@ public class ClientRegisterHeadApi {
     public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
         logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
         try {
+            if(input==null||input.getUserId()==null){
+                return BaseOutput.failure("参数错误");
+            }
             Long userId = this.sessionContext.getSessionData().getUserId();
             logger.info("获取进门主台账单列表 操作用户:{}", userId);
             input.setSort("created");
@@ -155,16 +160,16 @@ public class ClientRegisterHeadApi {
             String userName = sessionContext.getUserName();
 
             List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
-                    .nonNull().map(dto->{
-                        dto.setUserId(userId);
-                        return dto;
+                    .nonNull().filter(dto->{
+                        return dto.getUserId()!=null;
                     }).toList();
             if (registerHeads.isEmpty()) {
-                return BaseOutput.failure("没有进门主台账单");
+                return BaseOutput.failure("没有进门主台账单/参数错误");
             }
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
-            List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads,
-                     Optional.empty(), sessionContext.getSessionData().getMarketId());
+            List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads, Optional.of(operatorUser), sessionContext.getSessionData().getMarketId());
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

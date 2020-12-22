@@ -35,7 +35,7 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 	 * @param operatorUser
 	 * @return
 	 */
-	public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
+	public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads,
 											 Optional<OperatorUser> operatorUser,Long marketId);
 
 	/**
