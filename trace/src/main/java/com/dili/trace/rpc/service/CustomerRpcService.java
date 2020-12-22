@@ -16,12 +16,14 @@ import com.dili.trace.domain.Customer;
 import com.dili.trace.rpc.dto.CardQueryInput;
 import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.service.GlobalVarService;
+import com.dili.trace.util.NumUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,16 +82,17 @@ public class CustomerRpcService {
 
 
         try {
-            Long userId = Long.parseLong(request.getHeader("userId"));
-            CustomerQueryInput query = new CustomerQueryInput();
-            query.setId(userId);
+            Long userId =  NumUtils.toLong(request.getHeader("userId")).orElse(null);
+            Long marketId =  NumUtils.toLong(request.getHeader("marketId")).orElse(null);
+            if(marketId==null||userId==null){
+                return Optional.empty();
+            }
 
             try {
-                Long marketId = Long.parseLong(request.getHeader("marketId"));
-                if(marketId==null){
-                    return Optional.empty();
-                }
+         
                 if (!marketId.equals(0L)) {
+                    CustomerQueryInput query = new CustomerQueryInput();
+                    query.setId(userId);
                     query.setMarketId(marketId);
                     BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
                     if (out.isSuccess()) {
