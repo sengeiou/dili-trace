@@ -116,7 +116,7 @@ async function prePrint(){
             //await createCheckSheet();
             if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
                 $('.btn-main2').hide();
-                callbackObj.boothPrintPreview(JSON.stringify(resp), 'TestReportDocument',1)
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), 'TestReportDocument',1)
             }else{
                 swal(
                     '错误',
@@ -166,15 +166,14 @@ function printFinish(){
 	parent.closeWin('view_win');
 }
 //客户端提交数据并同步获得提交后的数据
-async function createCheckSheet(){
-
+function createCheckSheet(){
     if($('#createCheckSheetForm').validate().form()==false){
         return null;
     }
     let formData=$('#createCheckSheetForm').serializeJSON({useIntKeysAsArrayIndex:true});
     try {
         let url='${contextPath!}/checkSheet/insert.action';
-        let resp=await jq.postJsonWithProcessing(url,formData);
+        let resp= await(jq.postJsonWithProcessing(url,formData))
         return JSON.stringify(resp);
     }catch (e){
         return JSON.stringify({"code":"5000",result:"远程访问失败"})

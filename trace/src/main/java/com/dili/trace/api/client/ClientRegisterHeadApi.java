@@ -244,15 +244,14 @@ public class ClientRegisterHeadApi {
     @RequestMapping(value = "/doUpdateActiveRegisterHead.api", method = RequestMethod.POST)
     public BaseOutput doUpdateActiveRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
         logger.info("启用/关闭进门主台账单:{}", JSON.toJSONString(dto));
-        if (dto == null || dto.getId() == null) {
+        if (dto == null || dto.getId() == null||dto.getActive()==null) {
             return BaseOutput.failure("参数错误");
         }
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-            logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
-            this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
+            logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), sessionData.getUserId());
+            this.registerHeadService.doUpdateActive(dto, sessionData.getUserId(), sessionData.getOptUser());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
