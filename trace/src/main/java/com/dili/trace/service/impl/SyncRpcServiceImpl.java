@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class SyncRpcServiceImpl implements SyncRpcService {
 
-    @Resource
+    @Autowired
     private UserRpc userRpc;
     @Autowired
     private UserService userService;
