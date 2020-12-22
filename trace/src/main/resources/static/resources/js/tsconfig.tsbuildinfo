@@ -101,6 +101,11 @@
         "signature": "1450c60b25a1b442d2890faa7c49e9b9de6f64c11e20db1d7949a1f261eeb0ae",
         "affectsGlobalScope": true
       },
+      "../../tsc/detectreportstaticsgrid.index.ts": {
+        "version": "85d774224202c1038595d1ed72e93350d46d37b0f129ce471989c9b0d03a411e",
+        "signature": "6e7ae1e1cbb4e4d98b8ffd5a66a32c99223b73ed3ec6ce7bee0ea4b85e0adf72",
+        "affectsGlobalScope": true
+      },
       "../../tsc/newregisterbillgrid.index.ts": {
         "version": "244e99f0fcf2a0f838ebf4a52076d68e1cbf834adc688750cbefdbdc7692e998",
         "signature": "33be5d5408fa4125a406409ae177695fe496325d3c21dafa18118d42fe5caf5b",
@@ -382,6 +387,7 @@
       "../../tsc/commissiondetectrequestgrid.index.ts",
       "../../tsc/customerdetectrequestgrid.index.ts",
       "../../tsc/demo.ts",
+      "../../tsc/detectreportstaticsgrid.index.ts",
       "../../tsc/ecommercebill.index.ts",
       "../../tsc/newregisterbillgrid.index.ts",
       "../../tsc/newuser.index.ts",
