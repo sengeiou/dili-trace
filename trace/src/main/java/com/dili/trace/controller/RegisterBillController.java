@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import com.dili.bpmc.sdk.rpc.EventRpc;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
@@ -67,8 +66,7 @@ public class RegisterBillController {
     ImageCertService imageCertService;
     @Autowired
     BillReportService billReportService;
-    @Autowired(required = false)
-    EventRpc eventRpc;
+
     @Autowired
     UapRpcService uapRpcService;
     @Autowired

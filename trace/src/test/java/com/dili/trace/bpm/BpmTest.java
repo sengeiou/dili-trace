@@ -1,16 +1,7 @@
 package com.dili.trace.bpm;
 
-import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.domain.TaskMapping;
-import com.dili.bpmc.sdk.dto.TaskDto;
-import com.dili.bpmc.sdk.rpc.*;
-import com.dili.ss.constant.ResultCode;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -27,8 +18,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletContext;
-import java.util.HashMap;
-import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -51,26 +40,26 @@ public class BpmTest {
     ErrorAttributes attributes;
     @MockBean
     ServletContext servletContext;
-
-    @Autowired(required = false)
-    BpmcFormRpc bpmcFormRpc;
-    @Autowired(required = false)
-    EventRpc eventRpc;
-
-    @Autowired(required = false)
-    FormRpc formRpc;
-
-    @Autowired(required = false)
-    HistoryRpc historyRpc;
-
-    @Autowired(required = false)
-    RepositoryRpc repositoryRpc;
-
-    @Autowired(required = false)
-    RuntimeRpc runtimeRpc;
-    @Autowired(required = false)
-    TaskRpc taskRpc;
-
+//
+//    @Autowired(required = false)
+//    BpmcFormRpc bpmcFormRpc;
+//    @Autowired(required = false)
+//    EventRpc eventRpc;
+//
+//    @Autowired(required = false)
+//    FormRpc formRpc;
+//
+//    @Autowired(required = false)
+//    HistoryRpc historyRpc;
+//
+//    @Autowired(required = false)
+//    RepositoryRpc repositoryRpc;
+//
+//    @Autowired(required = false)
+//    RuntimeRpc runtimeRpc;
+//    @Autowired(required = false)
+//    TaskRpc taskRpc;
+//
 
     @Test
     public void test() {
@@ -80,14 +69,14 @@ public class BpmTest {
         //code
         //userid
         //parametermap
-        BaseOutput<ProcessInstanceMapping>out=runtimeRpc.startProcessInstanceByKey("dili_trace_test:1:202011221636427750000000","dili_trace_test","16",new HashMap<>());
-
-        System.out.println(out);
-        if (!out.isSuccess()) {
-            throw new BusinessException(ResultCode.APP_ERROR, "流程启动失败，请联系管理员");
-        }
-        System.out.println(out.getData().getProcessDefinitionId());
-        System.out.println(out.getData().getProcessInstanceId());
+//        BaseOutput<ProcessInstanceMapping>out=runtimeRpc.startProcessInstanceByKey("dili_trace_test:1:202011221636427750000000","dili_trace_test","16",new HashMap<>());
+//
+//        System.out.println(out);
+//        if (!out.isSuccess()) {
+//            throw new BusinessException(ResultCode.APP_ERROR, "流程启动失败，请联系管理员");
+//        }
+//        System.out.println(out.getData().getProcessDefinitionId());
+//        System.out.println(out.getData().getProcessInstanceId());
 
     }
 }

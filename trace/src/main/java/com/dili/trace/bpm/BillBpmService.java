@@ -2,7 +2,7 @@ package com.dili.trace.bpm;
 
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.dto.ProcessInstanceDto;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -29,7 +29,7 @@ public class BillBpmService {
      * @param billId
      * @param registerBill
      */
-    public ProcessInstanceDto startProcessAfterCreateBill(Long operatorId, @NotNull Long billId, @NotNull RegisterBill registerBill) {
+    /*public ProcessInstanceDto startProcessAfterCreateBill(Long operatorId, @NotNull Long billId, @NotNull RegisterBill registerBill) {
         String userId = operatorId == null ? "-1" : String.valueOf(operatorId);
         BaseOutput<ProcessInstanceMapping> out = runtimeRpc.startProcessInstanceByKey(CREATE_BILL_PROCESSKEY, String.valueOf(billId), userId, new HashMap<>());
         if (!out.isSuccess()) {
@@ -41,5 +41,5 @@ public class BillBpmService {
         dto.setProcessDefinitionId(instanceMapping.getProcessDefinitionId());
         dto.setProcessInstanceId(instanceMapping.getProcessInstanceId());
         return dto;
-    }
+    }*/
 }
