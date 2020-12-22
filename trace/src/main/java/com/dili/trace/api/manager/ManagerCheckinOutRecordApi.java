@@ -24,7 +24,6 @@ import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

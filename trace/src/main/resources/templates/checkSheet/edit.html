@@ -116,7 +116,7 @@ async function prePrint(){
             //await createCheckSheet();
             if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
                 $('.btn-main2').hide();
-                callbackObj.printDirect(JSON.stringify(resp),"TestReportDocument");
+                callbackObj.boothPrintPreview(JSON.stringify(resp), 'TestReportDocument',1)
             }else{
                 swal(
                     '错误',
