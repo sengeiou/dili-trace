@@ -3,7 +3,6 @@ package com.dili.trace.rpc.dto;
 import java.math.BigDecimal;
 
 public class RegDetailDto {
-    private Long  stockId;
 
     /**
      * 库存ID
