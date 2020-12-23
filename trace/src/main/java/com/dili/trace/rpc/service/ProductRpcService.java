@@ -47,9 +47,7 @@ public class ProductRpcService {
             obj.setOperatorId(o.getId());
             obj.setOperatorName(o.getName());
         });
-
         obj.setPlateNo(bill.getPlate());
-
 
         //库存详情信息
         RegDetailDto detailDto = new RegDetailDto();
@@ -72,6 +70,7 @@ public class ProductRpcService {
         detailDto.setWeight(bill.getWeight());
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
+        obj.setSource(1);
 
         BaseOutput<RegCreateResultDto> out = this.productRpc.create(obj);
         if (out.isSuccess() && out.getData() != null) {
@@ -86,7 +85,7 @@ public class ProductRpcService {
      * @param bill
      * @param opt
      */
-    public StockReductResultDto reduceByStockIds(Long bizId, RegisterBill bill, Optional<OperatorUser> opt) {
+    public List<StockReductResultDto> reduceByStockIds(Long stockId, RegisterBill bill, Optional<OperatorUser> opt) {
         //库存基本信息
         StockReduceRequestDto obj = new StockReduceRequestDto();
         obj.setFirmId(bill.getMarketId());
@@ -94,55 +93,17 @@ public class ProductRpcService {
 
         StockReduceDto stockReduceDto = new StockReduceDto();
         // 库存id
-        stockReduceDto.setBizId(bizId);
+        stockReduceDto.setBizId(bill.getId());
         stockReduceDto.setReduceNum(bill.getWeight());
         // 业务单据号
-        stockReduceDto.setStockId(bill.getId());
+        stockReduceDto.setStockId(stockId);
         obj.setStockReduceItems(Lists.newArrayList(stockReduceDto));
 
-        BaseOutput<StockReductResultDto> out = this.productRpc.reduceByStockIds(obj);
+        BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
         if (out.isSuccess() && out.getData() != null) {
             return out.getData();
         }
         throw new TraceBizException("扣减库存失败");
     }
-
-//    /**
-//     * test
-//     */
-//    public RegCreateResultDto createTest() {
-////        RegisterBill bill = new RegisterBill();
-////        bill.setMarketId(11L);
-////        bill.setPlate("粤B23456");
-////        bill.setBrandName("coco");
-////        bill.setSpecName("箱");
-////        bill.setUserId(12L);
-////        bill.setName("测试新增库存");
-////        bill.setProductId(43L);
-////        bill.setProductName("梨子");
-////        bill.setWeightUnit(WeightUnitEnum.JIN.getCode());
-////        bill.setOriginName("广东深圳");
-////        bill.setUnitPrice(BigDecimal.TEN);
-////        bill.setWeight(BigDecimal.valueOf(120));
-//
-//        RegisterBill bill = billService.get(158L);
-//
-//        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
-//        Optional<OperatorUser > opt = Optional.of(operatorUser);
-//        RegCreateResultDto result = this.create(bill, opt);
-//        return result;
-//    }
-//
-//    /**
-//     * test
-//     */
-//    public void reduceTest() {
-//        RegCreateResultDto addRes = createTest();
-//
-//        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
-//        Optional<OperatorUser > opt = Optional.of(operatorUser);
-//        RegisterBill bill = billService.get(1L);
-//        this.reduceByStockIds(1L, bill, opt);
-//    }
 
 }

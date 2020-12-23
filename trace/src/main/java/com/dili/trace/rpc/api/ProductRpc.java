@@ -9,7 +9,8 @@ import com.dili.trace.rpc.dto.StockReductResultDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * 库存系统 rpc
@@ -31,7 +32,7 @@ public interface ProductRpc {
      * @return
      */
     @PostMapping(value="/api/stock/reduceByStockIds",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseOutput<StockReductResultDto> reduceByStockIds(@RequestBody StockReduceRequestDto obj);
+    public BaseOutput<List<StockReductResultDto>> reduceByStockIds(@VOBody StockReduceRequestDto obj);
 
     /**
      * 创建批次库存
