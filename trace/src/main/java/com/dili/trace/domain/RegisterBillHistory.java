@@ -772,4 +772,9 @@ public class RegisterBillHistory extends BaseDomain {
     public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
+
+    @Transient
+    public String getVerifyStatusName(){
+        return BillVerifyStatusEnum.fromCode(this.verifyStatus).map(BillVerifyStatusEnum::getName).orElse("");
+    }
 }
