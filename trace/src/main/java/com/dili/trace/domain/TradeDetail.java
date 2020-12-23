@@ -226,7 +226,7 @@ public class TradeDetail extends BaseDomain {
      * 第三方库存主键（扣减第三方库存需要使用）
      */
     @ApiModelProperty(value = "第三方库存主键")
-    @Column(name = "`third_party_stockId`")
+    @Column(name = "`third_party_stock_id`")
     private Long thirdPartyStockId;
 
     @Transient
