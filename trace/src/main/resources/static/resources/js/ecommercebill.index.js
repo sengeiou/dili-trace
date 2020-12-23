@@ -271,7 +271,7 @@ class EcommerceBillGrid extends ListPage {
         });
         console.log(result);
         if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
-            callbackObj.printDirect(JSON.stringify(result), "StickerDocument");
+            callbackObj.boothPrintPreview(JSON.stringify(result), "StickerDocument");
         }
         else {
             bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", { type: 'error' });

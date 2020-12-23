@@ -103,7 +103,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             registerHead.setModified(new Date());
         });
         registerHead.setIsDeleted(YesOrNoEnum.NO.getCode());
-        registerHead.setActive(RegisterHeadActiveEnum.NONE.getCode());
+        registerHead.setActive(YesOrNoEnum.YES.getCode());
         registerHead.setVersion(1);
 
         registerHead.setIdCardNo(StringUtils.trimToEmpty(registerHead.getIdCardNo()).toUpperCase());
@@ -254,7 +254,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
         registerHead.setIsDeleted(dto.getIsDeleted());
-
         operatorUser.ifPresent(op -> {
             registerHead.setDeleteUser(op.getName());
             registerHead.setDeleteTime(new Date());

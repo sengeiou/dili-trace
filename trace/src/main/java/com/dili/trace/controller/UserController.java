@@ -405,14 +405,15 @@ public class UserController {
                 StreamEx.of(tallyingAreaList).nonNull().forEach(tr -> {
                     CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(tr.getCustomerId(), MarketUtil.returnMarket());
                     if (null != customer) {
+                        DTO dto = new DTO();
+                        dto.put("userName", customer.getName() == null ? "" : customer.getName());
+                        dto.put("tallyAreaNo", tr.getAssetsName());
                         List<UserPlate> userPlateList = userPlateService.findUserPlateByUserId(customer.getId());
                         StreamEx.of(userPlateList).nonNull().forEach(p -> {
-                            DTO dto = new DTO();
-                            dto.put("userName", customer.getName() == null ? "" : customer.getName());
                             dto.put("plate", p.getPlate());
-                            dto.put("tallyAreaNo", tr.getAssetsName());
-                            data.add(dto);
+
                         });
+                        data.add(dto);
                     }
                 });
             }

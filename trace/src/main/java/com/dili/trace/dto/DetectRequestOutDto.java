@@ -118,7 +118,6 @@ public class DetectRequestOutDto extends DetectRequest {
     private Long originId;
 
 
-
     /**
      * 报备单编号
      */
@@ -296,6 +295,18 @@ public class DetectRequestOutDto extends DetectRequest {
 
     public void setOriginId(Long originId) {
         this.originId = originId;
+    }
+
+    @Transient
+    public String getBillTypeName() {
+        return BillTypeEnum.fromCode(this.billType).map(BillTypeEnum::getName).orElse("");
+
+    }
+
+    @Transient
+
+    public String getWeightUnitName() {
+        return WeightUnitEnum.fromCode(this.weightUnit).map(WeightUnitEnum::getName).orElse("");
     }
 }
 

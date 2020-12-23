@@ -147,7 +147,7 @@
         "affectsGlobalScope": false
       },
       "../../tsc/ecommercebill.index.ts": {
-        "version": "1755aa8dddb9f3ad092ceb34d032f448e30bb08580df25f19fe3bb1aa75b6073",
+        "version": "1067f481e1217b46b073b9b44d6a0f56bdf448f6f33a3a636f172dea76bafbb2",
         "signature": "e8259a608dc0d12837afea15ae883f3edfd056f1275517030c0f00fb17357e36",
         "affectsGlobalScope": true
       },
