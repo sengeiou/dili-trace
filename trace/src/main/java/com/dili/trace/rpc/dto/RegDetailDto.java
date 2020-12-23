@@ -5,6 +5,11 @@ import java.math.BigDecimal;
 public class RegDetailDto {
 
     /**
+     * 库存ID
+     */
+    private Long stockId;
+
+    /**
      * 等级
      */
     private String level;
@@ -167,5 +172,13 @@ public class RegDetailDto {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
     }
 }
