@@ -30,6 +30,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.servlet.ServletContext;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -61,39 +62,24 @@ public class ProductRpcServiceTest {
      */
     @Test
     public RegCreateResultDto createTest() {
-//        RegisterBill bill = new RegisterBill();
-//        bill.setMarketId(11L);
-//        bill.setPlate("粤B23456");
-//        bill.setBrandName("coco");
-//        bill.setSpecName("箱");
-//        bill.setUserId(12L);
-//        bill.setName("测试新增库存");
-//        bill.setProductId(43L);
-//        bill.setProductName("梨子");
-//        bill.setWeightUnit(WeightUnitEnum.JIN.getCode());
-//        bill.setOriginName("广东深圳");
-//        bill.setUnitPrice(BigDecimal.TEN);
-//        bill.setWeight(BigDecimal.valueOf(120));
-
-        RegisterBill bill = billService.get(158L);
-
+        RegisterBill bill = billService.get(127L);
         OperatorUser operatorUser = new OperatorUser(31L, "悟空");
         Optional<OperatorUser > opt = Optional.of(operatorUser);
         RegCreateResultDto result = productRpcService.create(bill, opt);
         return result;
     }
 
+    /**
+     * test
+     */
     @Test
     public void reduceTest() {
-        RegCreateResultDto addRes = createTest();
-
+        Long stockId = 20201223000015L;
         OperatorUser operatorUser = new OperatorUser(31L, "悟空");
         Optional<OperatorUser > opt = Optional.of(operatorUser);
-        RegisterBill bill = billService.get(158L);
+        RegisterBill bill = billService.get(127L);
         bill.setWeight(BigDecimal.ONE);
-        // 如何获取？
-        Long bizId = 1L;
-        StockReductResultDto stockReductResultDto = productRpcService.reduceByStockIds(bizId, bill, opt);
+        productRpcService.reduceByStockIds(stockId, bill, opt);
     }
 
 }
