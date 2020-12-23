@@ -6,6 +6,11 @@ public class RegDetailDto {
     private Long  stockId;
 
     /**
+     * 库存ID
+     */
+    private Long stockId;
+
+    /**
      * 等级
      */
     private String level;
