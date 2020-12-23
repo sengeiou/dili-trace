@@ -282,6 +282,11 @@ public class RegisterHead extends BaseDomain {
 	private Long marketId;
 
 
+	/**
+	 * 单价
+	 */
+	@Column(name = "`unit_price`")
+	private BigDecimal unitPrice;
 
 	/**
 	 * 重量单位名称
@@ -658,5 +663,21 @@ public class RegisterHead extends BaseDomain {
 
 	public void setBillTypeName(String billTypeName) {
 		this.billTypeName = billTypeName;
+	}
+
+	public Integer getTruckType() {
+		return truckType;
+	}
+
+	public void setTruckType(Integer truckType) {
+		this.truckType = truckType;
+	}
+
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
 	}
 }

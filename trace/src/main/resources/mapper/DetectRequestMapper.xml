@@ -106,6 +106,7 @@
           b.origin_name originName,
           b.verify_status verifyStatus,
           b.plate,
+          b.bill_type,
           b.origin_certifiy_url originCertifiyUrl,
           up.name upStreamName,
           d.*

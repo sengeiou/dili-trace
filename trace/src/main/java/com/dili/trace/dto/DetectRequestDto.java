@@ -68,6 +68,7 @@ public class DetectRequestDto extends DetectRequest {
     @Transient
     private String billCode;
 
+
     /**
      * 检测状态
      */
