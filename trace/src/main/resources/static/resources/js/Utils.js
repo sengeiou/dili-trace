@@ -1,4 +1,27 @@
 class jq {
+    static syncPostJson(url, data, settings = {}) {
+        let jsonData = jq.removeEmptyProperty(data);
+        _.extend(settings, { method: 'post', dataType: 'json', async: false, contentType: 'application/json', data: JSON.stringify(jsonData), url: url });
+        var ret = null;
+        var ex = null;
+        $.ajax({
+            url: url,
+            method: 'post',
+            contentType: 'application/json',
+            async: false,
+            data: JSON.stringify(jsonData),
+            success: function (resp) {
+                ret = resp;
+            },
+            error: function (e) {
+                ex = e;
+            }
+        });
+        if (ex != null) {
+            throw ex;
+        }
+        return ret;
+    }
     static async ajax(settings, beforeStartFun = function () { }, alwaysFun = function () { }) {
         beforeStartFun();
         let p = new Promise((resolve, reject) => {

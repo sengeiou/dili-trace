@@ -167,24 +167,15 @@ function createCheckSheet(){
     if($('#createCheckSheetForm').validate().form()==false){
         return null;
     }
-    debugger
     let formData=$('#createCheckSheetForm').serializeJSON({useIntKeysAsArrayIndex:true});
-    var ret={"code":"5000",result:"远程访问失败"}
     let url='${contextPath!}/checkSheet/insert.action';
-    $.ajax({
-        url:url,
-        method:'post',
-        contentType: 'application/json',
-        async:false,
-        data:JSON.stringify(formData),
-        success:function(resp){
-            ret=resp;
-        },
-        error:function(e){
-            console.error(e)
-        }
-    });
-    return JSON.stringify(ret);
+    try{
+        let ret=jq.syncPostJson(url,formData);
+        return JSON.stringify(ret);
+    }catch (e){
+        return JSON.stringify({"code":"5000",result:"远程访问失败"});
+    }
+
 }
 $('.fileimg-view').on('click', function () {
     var url = $(this).parent().siblings(".magnifying").attr('src');
