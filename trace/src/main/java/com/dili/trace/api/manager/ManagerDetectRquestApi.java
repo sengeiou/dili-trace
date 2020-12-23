@@ -26,10 +26,8 @@ import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.DetectRequestService;
-import com.dili.trace.service.SgRegisterBillService;
+import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.User;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -68,6 +66,8 @@ public class ManagerDetectRquestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     private LoginSessionContext sessionContext;
+    @Autowired
+    UserRpcService userRpcService;
 
     /**
      * 查询检测请求列表
@@ -414,5 +414,23 @@ public class ManagerDetectRquestApi {
         }
         return BaseOutput.success("操作成功");
     }
-
+    /**
+     * 查询市场检测人员
+     *
+     * @param likeUserName
+     * @return
+     */
+    @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
+    public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
+        try {
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
+            return BaseOutput.successData(users);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
 }
