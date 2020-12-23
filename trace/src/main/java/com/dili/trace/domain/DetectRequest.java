@@ -94,6 +94,12 @@ public class DetectRequest extends BaseDomain {
     private Date modified;
 
     /**
+     * 检测请求预约时间
+     */
+    @Column(name = "`detect_reservation_time`")
+    private Date detectReservationTime;
+
+    /**
      * 检测时间
      */
     @Column(name = "`detect_time`")
@@ -269,5 +275,13 @@ public class DetectRequest extends BaseDomain {
 
     public void setSampleTime(Date sampleTime) {
         this.sampleTime = sampleTime;
+    }
+
+    public Date getDetectReservationTime() {
+        return detectReservationTime;
+    }
+
+    public void setDetectReservationTime(Date detectReservationTime) {
+        this.detectReservationTime = detectReservationTime;
     }
 }

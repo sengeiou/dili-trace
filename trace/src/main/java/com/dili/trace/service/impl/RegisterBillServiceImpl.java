@@ -128,6 +128,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user,marketId);
+
+            CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
+
+            Customer cq=new Customer();
+            cq.setCustomerId(customer.getCode());
+            this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
+                registerBill.setThirdPartyCode(card.getPrintingCard());
+            });
             return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
     }

@@ -620,7 +620,7 @@ public class RegisterBill extends BaseDomain {
     /**
      *
      */
-    @ApiModelProperty(value = "印刷卡号")
+    @ApiModelProperty(value = "园区卡号")
     @Column(name = "`trade_printing_card`")
     private String tradePrintingCard;
 

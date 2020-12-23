@@ -319,31 +319,32 @@ class EcommerceBillGrid extends ListPage {
             return;
         }
 
-        var result = {};
-        $.ajax({
-            type: "POST",
-            url: '/ecommerceBill/prePrint.action',
-            data: JSON.stringify({id: row[0].id}),
-            processData: true,
-            dataType: "json",
-            async: false,
-            contentType: "application/json; charset=utf-8",
-            success: function (ret) {
-                result = ret;
-            },
-            error: function () {
-                result = {"code": "5000", result: "远程访问失败"}
+        let url=this.toUrl('/ecommerceBill/prePrint.action');
+
+        try{
+            let resp =jq.syncPostJson(url,{id: row[0].id});
+            if (!resp.success) {
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
             }
-        });
-        console.log(result);
-        //@ts-ignore
-        if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
+
             //@ts-ignore
-            callbackObj.boothPrintPreview(JSON.stringify(result), "StickerDocument");
-        } else {
+            if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
+                //@ts-ignore
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), "StickerDocument");
+            } else {
+                //@ts-ignore
+                bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error'});
+            }
+        }catch (e){
+            console.error(e)
+            debugger
             //@ts-ignore
-            bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error'});
+            bs4pop.alert('远程访问失败', {type: 'error'});
+            return
         }
+
     }
 
     private async openPrintSeperatePrintReport() {

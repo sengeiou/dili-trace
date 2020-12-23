@@ -143,6 +143,7 @@
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 
 <script type="text/javascript">
 function changeInputAttrs(needInput){
@@ -211,7 +212,7 @@ $('#seperateTable input[type="checkbox"]').on('change',function(n,o){
                 //debugger
                 if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
                     $('.btn-main2').hide();
-                    callbackObj.boothPrintPreview(JSON.stringify(ret),"EcommerceSeperateReportDocument",1);
+                    callbackObj.boothPrintPreview(JSON.stringify(ret.data),"EcommerceSeperateReportDocument",1);
                 }else{
                     swal(
                         '错误',
@@ -220,6 +221,7 @@ $('#seperateTable input[type="checkbox"]').on('change',function(n,o){
                     );
                 }
             }else{
+                debugger
                 swal(
                     '错误',
                     ret.result,
@@ -227,6 +229,7 @@ $('#seperateTable input[type="checkbox"]').on('change',function(n,o){
                 );
             }
         }catch (e){
+            debugger
             swal(
                 '错误',
                 '远程访问失败',

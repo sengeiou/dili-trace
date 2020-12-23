@@ -70,9 +70,13 @@ public class RegisterHead extends BaseDomain {
 	/**
 	 * 经营户卡号
 	 */
-	@ApiModelProperty(value = "经营户卡号")
+	@ApiModelProperty(value = "园区卡号")
 	@Column(name = "`third_party_code`")
 	private String thirdPartyCode;
+
+
+	@Transient
+	private String tradePrintingCard;
 
 	/**
 	 * 身份地址
@@ -672,5 +676,10 @@ public class RegisterHead extends BaseDomain {
 
 	public void setUnitPrice(BigDecimal unitPrice) {
 		this.unitPrice = unitPrice;
+	}
+
+	@Transient
+	public String getTradePrintingCard() {
+		return this.thirdPartyCode;
 	}
 }

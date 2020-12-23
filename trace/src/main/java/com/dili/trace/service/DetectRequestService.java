@@ -410,6 +410,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      */
     public DetectRequestOutDto getDetectRequestDetail(DetectRequestQueryDto detectRequestDto) {
         DetectRequestOutDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        if(dto==null){
+            throw new TraceBizException("数据不存在");
+        }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
         dto.setImageCertList(imageCertList);
         return dto;
