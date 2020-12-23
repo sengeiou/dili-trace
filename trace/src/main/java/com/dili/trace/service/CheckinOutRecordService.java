@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
+/**
+ * @author Alvin.Li
+ */
 @SuppressWarnings("deprecation")
 @Service
 public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, Long> {
@@ -40,7 +43,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	TradeDetailService tradeDetailService;
 	@Autowired
 	TradeService tradeService;
+	@Autowired
+	ProcessService processService;
 
+	/**
+	 * 出门操作
+	 * @param operateUser
+	 * @param checkOutApiInput
+	 * @return
+	 */
 	@Transactional
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
 		if (checkOutApiInput == null || checkOutApiInput.getTradeDetailIdList() == null
@@ -103,6 +114,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	}
 
+	/**
+	 * 获取操作用户
+	 * @param userId
+	 * @return
+	 */
 	private Optional<User> getUser(Long userId) {
 		User user = this.userService.get(userId);
 		return Optional.ofNullable(user);
@@ -228,6 +244,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
 					operateUser);
+
+			// 本地库存处理完成后。同步库存到UAP
+			processService.afterCheckIn(billItem.getId(), billItem.getMarketId());
+
 			return checkinRecordItem;
 		}
 		return null;

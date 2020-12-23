@@ -3,18 +3,17 @@ package com.dili.trace.rpc.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.api.ProductRpc;
 import com.dili.trace.rpc.dto.*;
 import com.dili.trace.service.BillService;
+import com.dili.trace.service.TradeDetailService;
 import com.google.common.collect.Lists;
-import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +28,8 @@ public class ProductRpcService {
     FirmRpcService firmRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    TradeDetailService tradeDetailService;
 
     /**
      * 创建库存
@@ -74,6 +75,15 @@ public class ProductRpcService {
 
         BaseOutput<RegCreateResultDto> out = this.productRpc.create(obj);
         if (out.isSuccess() && out.getData() != null) {
+            // 同步完成后更新和溯源库存的关联关系
+            List<RegDetailDto> regDetailDtos = out.getData().getRegDetailDtos();
+            Optional<TradeDetail> tradeDetail = tradeDetailService.findBilledTradeDetailByBillId(bill.getId());
+            tradeDetail.ifPresent(t -> {
+                TradeDetail condition = new TradeDetail();
+                condition.setId(tradeDetail.get().getId());
+                condition.setThirdPartyStockId(regDetailDtos.get(0).getStockId());
+                tradeDetailService.updateSelective(condition);
+            });
             return out.getData();
         }
         throw new TraceBizException("创建库存失败");

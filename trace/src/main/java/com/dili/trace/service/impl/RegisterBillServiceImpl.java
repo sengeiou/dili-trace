@@ -86,6 +86,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     CustomerRpcService clientRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    ProcessService processService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -483,6 +485,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
+
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
+                .orElseThrow(() -> new TraceBizException("参数错误"));
+        if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+            processService.afterBillPassed(billItem.getId(), billItem.getMarketId());
+        }
+
         //新增消息
         addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode(),billItem.getMarketId());
         return billItem.getId();
@@ -614,6 +623,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
      *
      * @param userId
      */
+    @Override
     public void updateUserQrStatusByUserId(Long billId, Long userId) {
         if (billId == null || userId == null) {
             return;
