@@ -320,22 +320,31 @@ class EcommerceBillGrid extends ListPage {
         }
 
         let url=this.toUrl('/ecommerceBill/prePrint.action');
-        var result = {"code": "5000", result: "远程访问失败"}
+
         try{
-            result=jq.syncPostJson(url,{id: row[0].id});
+            let resp =jq.syncPostJson(url,{id: row[0].id});
+            if (!resp.success) {
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+
+            //@ts-ignore
+            if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
+                //@ts-ignore
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), "StickerDocument");
+            } else {
+                //@ts-ignore
+                bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error'});
+            }
         }catch (e){
             console.error(e)
             debugger
-        }
-        console.log(result);
-        //@ts-ignore
-        if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
             //@ts-ignore
-            callbackObj.boothPrintPreview(JSON.stringify(result), "StickerDocument");
-        } else {
-            //@ts-ignore
-            bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error'});
+            bs4pop.alert('远程访问失败', {type: 'error'});
+            return
         }
+
     }
 
     private async openPrintSeperatePrintReport() {
