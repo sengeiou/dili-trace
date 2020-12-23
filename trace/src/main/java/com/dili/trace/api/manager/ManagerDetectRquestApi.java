@@ -101,7 +101,14 @@ public class ManagerDetectRquestApi {
         if (null == detectRequestDto.getId()) {
             return BaseOutput.failure("参数错误");
         }
-        return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        try {
+            return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        }catch (TraceBizException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return BaseOutput.failure("查询出错");
+        }
     }
 
     /**
