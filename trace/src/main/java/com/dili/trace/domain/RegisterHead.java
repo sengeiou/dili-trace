@@ -42,6 +42,15 @@ public class RegisterHead extends BaseDomain {
 	private Integer billType;
 
 	/**
+	 * 拼车类型
+	 */
+	@ApiModelProperty(value = "拼车类型")
+	@Column(name = "`truck_type`")
+	private Integer truckType;
+
+
+
+	/**
 	 * 业户ID
 	 */
 	@ApiModelProperty(value = "业户ID")
@@ -271,6 +280,8 @@ public class RegisterHead extends BaseDomain {
 	@ApiModelProperty(value = "市场ID")
 	@Column(name = "market_id")
 	private Long marketId;
+
+
 
 	/**
 	 * 重量单位名称

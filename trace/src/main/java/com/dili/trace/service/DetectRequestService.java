@@ -46,7 +46,7 @@ import java.util.function.Function;
  * 检测请求service
  */
 @Service
-public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
+public class DetectRequestService extends TraceBaseService<DetectRequest, Long> {
 
     @Autowired
     BillService billService;
@@ -381,25 +381,14 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @return
      */
     public BasePage<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
-        if (domain.getPage() == null || domain.getPage() < 0) {
-            domain.setPage(1);
-        }
-        if (domain.getRows() == null || domain.getRows() <= 0) {
-            domain.setRows(10);
-        }
         if (StringUtils.isNotBlank(domain.getSort())) {
-            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
+//            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
         }
-        PageHelper.startPage(domain.getPage(), domain.getRows());
-        List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(domain);
-        Page<DetectRequestDto> page = (Page) list;
-        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
-        result.setDatas(list);
-        result.setPage(page.getPageNum());
-        result.setRows(page.getPageSize());
-        result.setTotalItem(page.getTotal());
-        result.setTotalPage(page.getPages());
-        result.setStartIndex(page.getStartRow());
+        domain.setOrder(null);
+        BasePage<DetectRequestDto> result = super.buildQuery(domain).listPageByFun(q->{
+            List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(q);
+            return list;
+        });
         return result;
     }
 

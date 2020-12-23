@@ -62,7 +62,7 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
 
 
             PageHelper.startPage(this.domain.getPage(), this.domain.getRows());
-            PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
+//            PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
             List<U> list = function.apply(this.domain);
             Page<U> page = (Page) list;
             BasePage<U> result = new BasePage<U>();
