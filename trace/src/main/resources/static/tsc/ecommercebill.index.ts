@@ -319,22 +319,14 @@ class EcommerceBillGrid extends ListPage {
             return;
         }
 
-        var result = {};
-        $.ajax({
-            type: "POST",
-            url: '/ecommerceBill/prePrint.action',
-            data: JSON.stringify({id: row[0].id}),
-            processData: true,
-            dataType: "json",
-            async: false,
-            contentType: "application/json; charset=utf-8",
-            success: function (ret) {
-                result = ret;
-            },
-            error: function () {
-                result = {"code": "5000", result: "远程访问失败"}
-            }
-        });
+        let url=this.toUrl('/ecommerceBill/prePrint.action');
+        var result = {"code": "5000", result: "远程访问失败"}
+        try{
+            result=jq.syncPostJson(url,{id: row[0].id});
+        }catch (e){
+            console.error(e)
+            debugger
+        }
         console.log(result);
         //@ts-ignore
         if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {

@@ -747,6 +747,8 @@ public class NewRegisterBillController {
                 .map(rbInputDto -> {
                     CustomerExtendDto customer=new CustomerExtendDto();
                     RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
+
+
                     rb.setTradePrintingCard(input.getTradePrintingCard());
                     rb.setName(input.getName());
                     rb.setIdCardNo(input.getIdCardNo());
@@ -780,6 +782,14 @@ public class NewRegisterBillController {
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     rb.setRegistType(RegistTypeEnum.NONE.getCode());
                     rb.setCreatorRole(CreatorRoleEnum.MANAGER.getCode());
+
+                    CustomerExtendDto customerExtendDto=this.customerService.findApprovedCustomerByIdOrEx(rb.getUserId(),rb.getMarketId());
+
+                    Customer cq=new Customer();
+                    cq.setCustomerId(customerExtendDto.getCode());
+                    this.customerService.findCustomer(cq,rb.getMarketId()).ifPresent(card->{
+                        rb.setThirdPartyCode(card.getPrintingCard());
+                    });
 
                     return rb;
                 }).toList();
