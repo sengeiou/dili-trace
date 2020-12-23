@@ -69,55 +69,55 @@ public class ClientDetectRequestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     CommissionBillService commissionBillService;
-    /**
-     * 用户创建场外委托单
-     *
-     * @param createListBillParam 小程序创建委托单信息
-     * @return 创建结果
-     */
-    @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
-    public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
-
-        try {
-            SessionData sessionData = this.sessionContext.getSessionData();
-
-            Long userId = sessionData.getUserId();
-            List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
-                bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-                bill.setUserId(userId);
-                return bill;
-            }).toList();
-            if (inputList.isEmpty()) {
-                return BaseOutput.failure("参数错误");
-            }
-           List<RegisterBill>billList= StreamEx.of(inputList).map(input->{
-                logger.info("循环保存登记单:" + JSON.toJSONString(input));
-                RegisterBill registerBill = new RegisterBill();
-
-                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
-                registerBill.setName(this.sessionContext.getSessionData().getUserName());
-
-                if (registerBill.getRegisterSource() == null) {
-                    // 小程序默认理货区
-                    registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-                }
-
-                registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-
-               registerBill.setIsPrintCheckSheet(input.getIsPrintCheckSheet());
-                return registerBill;
-            }).toList();
-
-            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(billList);
-            return BaseOutput.success();
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-
-    }
+//    /**
+//     * 用户创建场外委托单
+//     *
+//     * @param createListBillParam 小程序创建委托单信息
+//     * @return 创建结果
+//     */
+//    @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
+//    public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
+//
+//        try {
+//            SessionData sessionData = this.sessionContext.getSessionData();
+//
+//            Long userId = sessionData.getUserId();
+//            List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
+//                bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+//                bill.setUserId(userId);
+//                return bill;
+//            }).toList();
+//            if (inputList.isEmpty()) {
+//                return BaseOutput.failure("参数错误");
+//            }
+//           List<RegisterBill>billList= StreamEx.of(inputList).map(input->{
+//                logger.info("循环保存登记单:" + JSON.toJSONString(input));
+//                RegisterBill registerBill = new RegisterBill();
+//
+//                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
+//                registerBill.setName(this.sessionContext.getSessionData().getUserName());
+//
+//                if (registerBill.getRegisterSource() == null) {
+//                    // 小程序默认理货区
+//                    registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+//                }
+//
+//                registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+//
+//               registerBill.setIsPrintCheckSheet(input.getIsPrintCheckSheet());
+//                return registerBill;
+//            }).toList();
+//
+//            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(billList);
+//            return BaseOutput.success();
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//
+//    }
 
     /**
      * 创建检测单
@@ -144,38 +144,38 @@ public class ClientDetectRequestApi {
 
     }
 
-    /**
-     * 创建场外委托检测单
-     *
-     * @param input
-     * @return
-     */
-    @RequestMapping("/createOffSiteDetectRequest.api")
-    public BaseOutput<Long> createOffSiteDetectRequest(@RequestBody DetectRequestDto input) {
-        if (input == null) {
-            return BaseOutput.failure("参数错误");
-        }
-        try {
-            Long userId = loginSessionContext.getSessionData().getUserId();
-            String userName = loginSessionContext.getSessionData().getUserName();
-            Long marketId = loginSessionContext.getSessionData().getMarketId();
-
-            if (null == userId) {
-                return BaseOutput.failure("未登录或登录过期");
-            }
-            input.setCreatorId(userId);
-            input.setCreatorName(userName);
-            input.setMarketId(marketId);
-            DetectRequest item = this.detectRequestService.createOffSiteDetectRequest(input, Optional.empty());
-            return BaseOutput.successData(item.getId());
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-
-    }
+//    /**
+//     * 创建场外委托检测单
+//     *
+//     * @param input
+//     * @return
+//     */
+//    @RequestMapping("/createOffSiteDetectRequest.api")
+//    public BaseOutput<Long> createOffSiteDetectRequest(@RequestBody DetectRequestDto input) {
+//        if (input == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//        try {
+//            Long userId = loginSessionContext.getSessionData().getUserId();
+//            String userName = loginSessionContext.getSessionData().getUserName();
+//            Long marketId = loginSessionContext.getSessionData().getMarketId();
+//
+//            if (null == userId) {
+//                return BaseOutput.failure("未登录或登录过期");
+//            }
+//            input.setCreatorId(userId);
+//            input.setCreatorName(userName);
+//            input.setMarketId(marketId);
+//            DetectRequest item = this.detectRequestService.createOffSiteDetectRequest(input, Optional.empty());
+//            return BaseOutput.successData(item.getId());
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//
+//    }
 
     /**
      * 创建检测单前报备单详情
