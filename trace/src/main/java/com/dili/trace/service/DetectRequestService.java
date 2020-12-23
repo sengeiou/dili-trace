@@ -103,8 +103,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         registerBill.setId(billId);
         registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         registerBill.setDetectRequestId(detectRequest.getId());
-        registerBill.setProductAliasName(inputDto.getProductAliasName());
-        registerBill.setIsPrintCheckSheet(inputDto.getIsPrintCheckSheet());
+//        registerBill.setProductAliasName(inputDto.getProductAliasName());
+//        registerBill.setIsPrintCheckSheet(inputDto.getIsPrintCheckSheet());
         this.billService.updateSelective(registerBill);
         return detectRequest;
 

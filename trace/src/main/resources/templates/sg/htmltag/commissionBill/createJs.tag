@@ -477,10 +477,6 @@ var currentUser={"depId":"${user.depId!}"
                     // location.href = '/registerBill/index.html';
                     var paramStr = JSON.stringify(ret.data);
                     var registerSource = $("#registerSource").val();
-                     // if(registerSource == 1){
-                     // console.log("打印信息:--:"+paramStr);
-                     // printDirect(paramStr);
-                      // }else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                           cacheInputtedPlate("#plate");
@@ -521,29 +517,7 @@ var currentUser={"depId":"${user.depId!}"
         });
     }
 
-    function printDirect(printDate){
-        var registerSource = $("#registerSource").val();
-        if(typeof callbackObj != 'undefined'){
-            window.printFinish=function(){
-                layer.alert("登记成功", {type: 0}, function () {
-                    // history.go(-1);
-                	parent.closeWin('view_win');
-                });
-            }
 
-            if(registerSource == 1){
-                callbackObj.printDirect(printDate,"TallySamplingDocument");
-            }else{
-                callbackObj.printDirect(printDate,"TransactionSamplingDocument");
-            }
-        }else{
-            layer.confirm('请检查打印的设备是否已连接', {
-                type: 0,
-                title: '提示',
-                btn: ['确定']
-            });
-        }
-    }
 
     $( document ).on( "click", ".fileimg-view",function () {
         var url = $(this).parent().siblings(".magnifying").attr('src');

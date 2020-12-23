@@ -111,6 +111,11 @@
         "signature": "33be5d5408fa4125a406409ae177695fe496325d3c21dafa18118d42fe5caf5b",
         "affectsGlobalScope": true
       },
+      "../../tsc/printer.ts": {
+        "version": "aea2263de0c6cd60129ae14aa69434ff72a0e5542119ea3e9e56107fa79d387a",
+        "signature": "39a1029e530d8ed3c7d23da6cd0d0992ea58ec97bdb088835e7939cdc886b3be",
+        "affectsGlobalScope": true
+      },
       "../../tsc/purchaseintentionrecordgrid.index.ts": {
         "version": "f38d88b5c998193e35d8e96c9fe7fb0b355a2856497632d016ba48abd003fa91",
         "signature": "f59746c8f6f2c9cc6b7b8f6c8e7ea84c87cc1ff9b7d656fc50d01c705e7aed41",
@@ -127,8 +132,8 @@
         "affectsGlobalScope": true
       },
       "../../tsc/utils.ts": {
-        "version": "20e6504043872c8a10068d50fad96f9221b586da50fdb976345be2d744e9111c",
-        "signature": "86dc214aa7a689b794bbf351382e7bd83bef8ac2d66bd32d5205f85317a7b847",
+        "version": "aaedeba8027d9cbf9b0d2f6156b808655019f011356235c0b25f69754f428189",
+        "signature": "a9f6fca3c9b4c8ec6cfacc0a564770153a734a01a72a52a048f0b1193eed886f",
         "affectsGlobalScope": true
       },
       "../../tsc/webconfig.ts": {
@@ -392,6 +397,7 @@
       "../../tsc/newregisterbillgrid.index.ts",
       "../../tsc/newuser.index.ts",
       "../../tsc/postmsg.ts",
+      "../../tsc/printer.ts",
       "../../tsc/purchaseintentionrecordgrid.index.ts",
       "../../tsc/trace.d.ts",
       "../../tsc/truckenterrecordgrid.index.ts",
