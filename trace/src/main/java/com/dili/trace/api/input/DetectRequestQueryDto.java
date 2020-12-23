@@ -1,11 +1,14 @@
 package com.dili.trace.api.input;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
+import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,39 +17,105 @@ import java.util.List;
  */
 public class DetectRequestQueryDto extends DetectRequest {
 
-    /**
-     * 开始时间
-     */
-    private Date createdStart;
-
-    /**
-     * 查询登记结束时间
-     */
-    private Date createdEnd;
 
     /**
      * 商品名称/商户名称LIKE
      */
+    @Transient
     private String likeProductNameOrUserName;
+    @Transient
+    private Date created;
+    /**
+     * 报备单是否删除过滤
+     */
+    @Transient
+    private Integer isDeleted;
 
     /**
      * 市场过滤
      */
+    @Transient
     private Long marketId;
 
     /**
-     * 报备单是否删除过滤
+     * 查询检测请求开始时间
      */
-    private Integer isDeleted;
+    @Column(name = "`created`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private Date createdStart;
+
+    /**
+     * 查询检测请求结束时间
+     */
+    @Column(name = "`created`")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
+    private Date createdEnd;
+
+    /**
+     * 创建人
+     */
+    @Column(name = "creator_name")
+    @Like
+    private String likeCreatorName;
+
+    /**
+     * 指定检测员
+     */
+    @Column(name = "designated_name")
+    @Like
+    private String likeDesignatedName;
+
+
+    /**
+     * 检测员
+     */
+    @Column(name = "detector_name")
+    @Like
+    private String likeDetectorName;
+
+    @Transient
+    private Long userId;
+
+    @Transient
+    /**
+     * 采样来源过滤条件 {@link com.dili.trace.glossary.SampleSourceEnum}
+     */
+    private Integer sampleSource;
+
 
     /**
      * 业户名称/商品名称（查询条件 OR Like）
      */
     @Transient
     private String keyword;
-
     @Transient
-    private Long userId;
+    private Integer detectStatus;
+    @Transient
+    private List<Integer>sampleSourceList;
+    @Transient
+    private List<Integer> detectStatusList;
+    @Transient
+    private List<Integer> detectTypeList;
+    @Transient
+    private List<Integer> detectResultList;
+
+//=============================
+
+
+
+    /**
+     * 报备单编号查询条件
+     */
+    @Transient
+    private String likeBillCode;
+
+
+
+
+
+
+
+
 
     public Long getUserId() {
         return userId;
@@ -64,18 +133,9 @@ public class DetectRequestQueryDto extends DetectRequest {
         this.keyword = keyword;
     }
 
-    /**
-     * 采样来源过滤条件 {@link com.dili.trace.glossary.SampleSourceEnum}
-     */
-    private Integer sampleSource;
 
-    private List<Integer>sampleSourceList;
-    @Transient
-    private List<Integer>detectStatusList;
-    @Transient
-    private List<Integer>detectTypeList;
-    @Transient
-    private List<Integer>detectResultList;
+
+
 
     public List<Integer> getDetectStatusList() {
         return detectStatusList;
@@ -155,5 +215,55 @@ public class DetectRequestQueryDto extends DetectRequest {
 
     public void setCreatedEnd(Date createdEnd) {
         this.createdEnd = createdEnd;
+    }
+
+    @Override
+    public Date getCreated() {
+        return created;
+    }
+
+    @Override
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public String getLikeCreatorName() {
+        return likeCreatorName;
+    }
+
+    public void setLikeCreatorName(String likeCreatorName) {
+        this.likeCreatorName = likeCreatorName;
+    }
+
+    public String getLikeDesignatedName() {
+        return likeDesignatedName;
+    }
+
+    public void setLikeDesignatedName(String likeDesignatedName) {
+        this.likeDesignatedName = likeDesignatedName;
+    }
+
+    public String getLikeDetectorName() {
+        return likeDetectorName;
+    }
+
+    public void setLikeDetectorName(String likeDetectorName) {
+        this.likeDetectorName = likeDetectorName;
+    }
+
+    public Integer getDetectStatus() {
+        return detectStatus;
+    }
+
+    public void setDetectStatus(Integer detectStatus) {
+        this.detectStatus = detectStatus;
+    }
+
+    public String getLikeBillCode() {
+        return likeBillCode;
+    }
+
+    public void setLikeBillCode(String likeBillCode) {
+        this.likeBillCode = likeBillCode;
     }
 }

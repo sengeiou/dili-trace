@@ -19,7 +19,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.DetectResultEnum;
@@ -76,7 +76,7 @@ public class ManagerDetectRquestApi {
      * @return
      */
     @RequestMapping("/listPagedDetectRequest.api")
-    public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput<BasePage<DetectRequestOutDto>> listPagedDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
 
         List<Integer>detectStatusList=StreamEx.ofNullable(detectRequestDto.getDetectStatusList())
                 .flatCollection(Function.identity()).nonNull().toList();
@@ -86,7 +86,7 @@ public class ManagerDetectRquestApi {
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
 
-        BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
+        BasePage<DetectRequestOutDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);
     }
 
@@ -97,7 +97,7 @@ public class ManagerDetectRquestApi {
      * @return
      */
     @RequestMapping("/getDetectRequest.api")
-    public BaseOutput getDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput getDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
         if (null == detectRequestDto.getId()) {
             return BaseOutput.failure("参数错误");
         }

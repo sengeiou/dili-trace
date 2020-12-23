@@ -53,9 +53,9 @@
         and detector_name=#{detectorName}
   </select>
 
-    <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestDto">
+    <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestOutDto">
         SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no,b.bill_type
-        tallyAreaNo,b.weight,b.weight_unit weightUnit,d.*
+        ,b.weight,b.weight_unit weightUnit,d.*
         FROM detect_request d
         JOIN register_bill b ON d.id=b.detect_request_id
         WHERE 1=1
@@ -90,7 +90,7 @@
 
     </select>
 
-    <select id="getDetectRequestDetail" resultType="com.dili.trace.dto.DetectRequestDto">
+    <select id="getDetectRequestDetail" resultType="com.dili.trace.dto.DetectRequestOutDto">
        SELECT
           b.code billCode,
           b.created billCreated,

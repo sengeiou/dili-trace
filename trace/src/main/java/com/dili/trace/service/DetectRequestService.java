@@ -294,7 +294,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @return
      * @throws Exception
      */
-    public EasyuiPageOutput listEasyuiPageByExample(DetectRequestDto dto) throws Exception {
+    public EasyuiPageOutput listEasyuiPageByExample(DetectRequestQueryDto dto) throws Exception {
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
 
         // 查询报备单信息
@@ -380,13 +380,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param domain
      * @return
      */
-    public BasePage<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
+    public BasePage<DetectRequestOutDto> listPageByUserCategory(DetectRequestQueryDto domain) {
         if (StringUtils.isNotBlank(domain.getSort())) {
 //            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
         }
         domain.setOrder(null);
-        BasePage<DetectRequestDto> result = super.buildQuery(domain).listPageByFun(q->{
-            List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(q);
+        BasePage<DetectRequestOutDto> result = super.buildQuery(domain).listPageByFun(q->{
+            List<DetectRequestOutDto> list = this.detectRequestMapper.selectListPageByUserCategory(q);
             return list;
         });
         return result;
@@ -408,8 +408,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param detectRequestDto
      * @return
      */
-    public DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto) {
-        DetectRequestDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+    public DetectRequestOutDto getDetectRequestDetail(DetectRequestQueryDto detectRequestDto) {
+        DetectRequestOutDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
         dto.setImageCertList(imageCertList);
         return dto;
@@ -485,13 +485,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         return result;
     }
 
-    /**
+   /* *//**
      * 创建场外委托单
      *
      * @param input
      * @param empty
      * @return
-     */
+     *//*
     @Transactional(rollbackFor = Exception.class)
     public DetectRequest createOffSiteDetectRequest(DetectRequestDto input, Optional<OperatorUser> empty) {
 
@@ -530,7 +530,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
         }
         return resultDetectRequest;
-    }
+    }*/
 
     /**
      * 初始化报备单参数-创建场外委托单
@@ -540,28 +540,28 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param upName
      * @return
      */
-    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
-        CustomerExtendDto user=this.customerRpcService.findCustomerByIdOrEx(input.getCreatorId(),input.getMarketId());
-//        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setName(user.getName());
-//        registerBill.setIdCardNo(user);
-        registerBill.setUserId(input.getCreatorId());
-        registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
-        registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
-        registerBill.setUpStreamId(upStreamId);
-        registerBill.setUpStreamName(upName);
-        registerBill.setProductId(input.getProductId());
-        registerBill.setProductName(input.getProductName());
-        registerBill.setProductAliasName(input.getProductAliasName());
-        registerBill.setOriginId(input.getOriginId());
-        registerBill.setOriginName(input.getOriginName());
-        registerBill.setWeight(input.getWeight());
-        registerBill.setWeightUnit(input.getWeightUnit());
-        registerBill.setMarketId(input.getMarketId());
-        registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
-        return registerBill;
-    }
+//    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
+//        CustomerExtendDto user=this.customerRpcService.findCustomerByIdOrEx(input.getCreatorId(),input.getMarketId());
+////        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
+//        RegisterBill registerBill = new RegisterBill();
+//        registerBill.setName(user.getName());
+////        registerBill.setIdCardNo(user);
+//        registerBill.setUserId(input.getCreatorId());
+//        registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
+//        registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
+//        registerBill.setUpStreamId(upStreamId);
+//        registerBill.setUpStreamName(upName);
+//        registerBill.setProductId(input.getProductId());
+//        registerBill.setProductName(input.getProductName());
+//        registerBill.setProductAliasName(input.getProductAliasName());
+//        registerBill.setOriginId(input.getOriginId());
+//        registerBill.setOriginName(input.getOriginName());
+//        registerBill.setWeight(input.getWeight());
+//        registerBill.setWeightUnit(input.getWeightUnit());
+//        registerBill.setMarketId(input.getMarketId());
+//        registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
+//        return registerBill;
+//    }
 
     /**
      * 创建委托请求单并修改报备单状态
@@ -570,7 +570,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param billId
      * @param operatorUser
      */
-    private DetectRequest createDetectRequest(DetectRequestDto input, Long billId, Optional<OperatorUser> operatorUser) {
+    private DetectRequest createDetectRequest(DetectRequestInputDto input, Long billId, Optional<OperatorUser> operatorUser) {
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());

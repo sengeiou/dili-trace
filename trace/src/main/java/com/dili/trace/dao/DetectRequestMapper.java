@@ -6,7 +6,7 @@ import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.domain.DetectRequest;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.enums.DetectStatusEnum;
 import org.apache.ibatis.annotations.Param;
@@ -25,7 +25,7 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
      * @param domain
      * @return
      */
-    List<DetectRequestDto> selectListPageByUserCategory(DetectRequestDto domain);
+    List<DetectRequestOutDto> selectListPageByUserCategory(DetectRequestQueryDto domain);
 
     /**
      * 查询检测请求详情页面api
@@ -33,7 +33,7 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
      * @param detectRequestDto
      * @return
      */
-    DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto);
+    DetectRequestOutDto getDetectRequestDetail(DetectRequestQueryDto detectRequestDto);
 
     /**
      * 采样检测-统计查询

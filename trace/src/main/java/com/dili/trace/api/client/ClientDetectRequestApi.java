@@ -1,6 +1,5 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -11,7 +10,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
-import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
@@ -21,13 +19,10 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.User;
@@ -40,7 +35,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -205,11 +203,11 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping(value = "/getDetectRequestDetail.api", method = RequestMethod.GET)
-    public BaseOutput<DetectRequestDto> getDetectRequestDetail(Long id) {
+    public BaseOutput<DetectRequestOutDto> getDetectRequestDetail(Long id) {
         try {
-            DetectRequestDto detectRequest = new DetectRequestDto();
+            DetectRequestQueryDto detectRequest = new DetectRequestQueryDto();
             detectRequest.setId(id);
-            DetectRequestDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
+            DetectRequestOutDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
             //设置最新检测记录
             if (null != detail && StringUtils.isNotBlank(detail.getBillCode())) {
                 detail.setDetectRecordList(detectRecordService.findTop2AndLatest(detail.getBillCode()));
@@ -249,7 +247,7 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/listPagedDetectRequest.api")
-    public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput<BasePage<DetectRequestOutDto>> listPagedDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
 
         List<Integer> detectStatusList = StreamEx.ofNullable(detectRequestDto.getDetectStatusList())
                 .flatCollection(Function.identity()).nonNull().toList();
@@ -261,7 +259,7 @@ public class ClientDetectRequestApi {
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
 
-        BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
+        BasePage<DetectRequestOutDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);
     }
 
@@ -272,7 +270,7 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/getDetectRequest.api")
-    public BaseOutput getDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput getDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
         if (null == detectRequestDto.getId()) {
             return BaseOutput.failure("参数错误");
         }
