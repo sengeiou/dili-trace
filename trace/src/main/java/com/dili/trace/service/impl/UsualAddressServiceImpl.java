@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.UsualAddressMapper;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
@@ -30,7 +30,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		example.setAddressId(input.getAddressId());
 		example.setType(input.getType());
 		if( this.listByExample(example).stream().count()>0) {
-			throw new AppException("城市已经存在");
+			throw new TraceBizException("城市已经存在");
 		}
 		
 		CityDto city=this.findCityOrException(input.getAddressId());
@@ -51,7 +51,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 	public int updateUsualAddress(UsualAddress input) {
 		UsualAddress item=this.get(input.getId());
 		if(item==null) {
-			throw new AppException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		
 		UsualAddress example=new UsualAddress();
@@ -61,7 +61,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		if(list.size()>0) {
 			long count=list.stream().filter(add->{return !add.getId().equals(input.getId());}).count();
 			if(count>0) {
-				throw new AppException("城市已经存在");	
+				throw new TraceBizException("城市已经存在");
 			}
 		}
 		
@@ -90,7 +90,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 	}
 
 	private CityDto findCityOrException(Long addressId) {
-		return this.cityService.findCityById(addressId).orElseThrow(()->new AppException("城市查询失败"));
+		return this.cityService.findCityById(addressId).orElseThrow(()->new TraceBizException("城市查询失败"));
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.dili.trace.rpc.dto;
 import java.math.BigDecimal;
 
 public class RegDetailDto {
+    private Long  stockId;
 
     /**
      * 等级
@@ -167,5 +168,13 @@ public class RegDetailDto {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
     }
 }

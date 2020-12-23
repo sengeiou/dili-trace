@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 
 /**
- * Created by wangguofeng
+ * (经营户)品牌接口
  */
 @RestController
 @RequestMapping(value = "/api/client/clientBrand")

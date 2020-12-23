@@ -3,10 +3,10 @@ package com.dili.trace.service;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestInputDto;
@@ -22,6 +22,7 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
@@ -57,9 +58,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     RegisterBillService registerBillService;
     @Autowired
-    UserRpcService userRpcService;
-    @Autowired
     ImageCertService imageCertService;
+    @Autowired
+    CustomerRpcService customerRpcService;
 
     /**
      * 创建检测请求
@@ -532,11 +533,11 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                     Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
             //创建检测请求
             resultDetectRequest = createDetectRequest(input, billId, empty);
-        } catch (AppException e) {
-            throw new AppException(e.getMessage());
+        } catch (TraceBizException e) {
+            throw new TraceBizException(e.getMessage());
 
         } catch (Exception e) {
-            throw new AppException(e.getMessage());
+            throw new TraceBizException(e.getMessage());
 
         }
         return resultDetectRequest;
@@ -551,10 +552,11 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @return
      */
     private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
-        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
+        CustomerExtendDto user=this.customerRpcService.findCustomerByIdOrEx(input.getCreatorId(),input.getMarketId());
+//        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
         RegisterBill registerBill = new RegisterBill();
-        registerBill.setName(user.getUserName());
-        registerBill.setIdCardNo(user.getCardNumber());
+        registerBill.setName(user.getName());
+//        registerBill.setIdCardNo(user);
         registerBill.setUserId(input.getCreatorId());
         registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
         registerBill.setTruckType(TruckTypeEnum.FULL.getCode());

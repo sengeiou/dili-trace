@@ -44,7 +44,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * 委托单查询接口
+ * (经营户)场外委托单接口
  */
 @RestController
 @RequestMapping(value = "/api/client/clientCommissionBillApi")

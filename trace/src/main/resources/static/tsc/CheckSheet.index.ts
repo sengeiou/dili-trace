@@ -53,13 +53,13 @@ class CheckSheetIndex extends ListPage {
             return;
         }
         let selected_id=row[0].id;
-        var ret=this.findPrintableCheckSheet(selected_id);
+        var resp=this.findPrintableCheckSheet(selected_id);
         //@ts-ignore
-        if(ret.code=="200"){
+        if(resp.code=="200"){
             //@ts-ignore
             if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
                 //@ts-ignore
-                callbackObj.printDirect(JSON.stringify(ret),"TestReportDocument");
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), 'TestReportDocument',0)
             }else{
                 //@ts-ignore
                 bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error',title:'错误'});

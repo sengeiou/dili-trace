@@ -9,7 +9,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -169,7 +168,7 @@ public class ClientDetectRequestApi {
             input.setMarketId(marketId);
             DetectRequest item = this.detectRequestService.createOffSiteDetectRequest(input, Optional.empty());
             return BaseOutput.successData(item.getId());
-        } catch (AppException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -367,11 +366,11 @@ public class ClientDetectRequestApi {
         queBill.setDetectRequestId(id);
         List<RegisterBill> billList = billService.listByExample(queBill);
         if (CollectionUtils.isEmpty(billList)) {
-            throw new AppException("操作失败，报备单据不存在");
+            throw new TraceBizException("操作失败，报备单据不存在");
         }
         RegisterBill bill = billList.get(0);
         if (!DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(bill.getDetectStatus())) {
-            throw new AppException("操作失败，单据非待接单状态");
+            throw new TraceBizException("操作失败，单据非待接单状态");
         }
         return bill;
     }
