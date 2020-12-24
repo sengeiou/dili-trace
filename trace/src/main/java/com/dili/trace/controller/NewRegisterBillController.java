@@ -79,6 +79,8 @@ public class NewRegisterBillController {
     QualityTraceTradeBillService qualityTraceTradeBillService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    ProcessService processService;
     /**
      * 跳转到RegisterBill页面
      *
@@ -375,6 +377,10 @@ public class NewRegisterBillController {
     BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "pass", required = true) Boolean pass) {
         try {
             registerBillService.auditRegisterBill(id, pass);
+            if (pass) {
+                Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
+                processService.afterBillPassed(id, marketId);
+            }
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
