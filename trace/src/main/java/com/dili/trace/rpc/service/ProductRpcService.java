@@ -6,6 +6,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.StockRegisterSourceEnum;
 import com.dili.trace.rpc.api.ProductRpc;
 import com.dili.trace.rpc.dto.*;
 import com.dili.trace.service.BillService;
@@ -71,7 +72,7 @@ public class ProductRpcService {
         detailDto.setWeight(bill.getWeight());
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
-        obj.setSource(1);
+        obj.setSource(StockRegisterSourceEnum.REG.getCode());
 
         BaseOutput<RegCreateResultDto> out = this.productRpc.create(obj);
         if (out.isSuccess() && out.getData() != null) {
