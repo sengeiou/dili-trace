@@ -294,6 +294,8 @@ public class ClientDetectRequestApi {
             upBill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
             upBill.setId(bill.getId());
             billService.updateSelective(upBill);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
         }
@@ -323,6 +325,8 @@ public class ClientDetectRequestApi {
                 detectRequestDto.setDetectorName(sessionContext.getUserName());
             }
             detectRequestService.receiveDetectRequest(bill.getId(), detectRequestDto);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
         }
@@ -544,6 +548,8 @@ public class ClientDetectRequestApi {
             registerBillService.autoCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
+        } catch (Exception e){
+            return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");
     }
@@ -564,6 +570,8 @@ public class ClientDetectRequestApi {
             registerBillService.samplingCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
+        } catch (Exception e){
+            return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");
     }
@@ -584,6 +592,8 @@ public class ClientDetectRequestApi {
             registerBillService.spotCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
+        } catch (Exception e){
+            return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");
     }
