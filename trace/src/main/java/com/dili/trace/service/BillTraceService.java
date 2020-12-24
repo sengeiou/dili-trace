@@ -2,8 +2,11 @@ package com.dili.trace.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.TallyingArea;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.ProductStock;
@@ -11,9 +14,11 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.FirmRpcService;
+import com.dili.uap.sdk.domain.Firm;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +31,12 @@ import one.util.streamex.StreamEx;
  */
 @Service
 public class BillTraceService {
+//    @Autowired
+//    private UserService userService;
     @Autowired
-    private UserService userService;
+    CustomerRpcService customerRpcService;
+    @Autowired
+    FirmRpcService firmRpcService;
     @Autowired
     RegisterBillService registerBillService;
     @Autowired
@@ -62,13 +71,21 @@ public class BillTraceService {
         traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
         if (tradeRequestItem.getBuyerId().equals(userId)) {
 
-            User seller = this.userService.get(tradeRequestItem.getSellerId());
+            CustomerExtendDto seller = this.customerRpcService.findCustomerByIdOrEx(tradeRequestItem.getSellerId(),tradeRequestItem.getSellerMarketId());
+            String sellerMarketName=this.firmRpcService.getFirmById(tradeRequestItem.getSellerMarketId()).map(Firm::getName).orElseThrow(()->{
+                return new TraceBizException("市场不存在");
+            });
+            String sellerTallyAreaNos=StreamEx.ofNullable(seller).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+                    .flatCollection(Function.identity()).nonNull()
+                    .map(TallyingArea::getAssetsName).distinct().joining(",");
+
+
             TraceDataDto upTrace = new TraceDataDto();
             upTrace.setCreated(tradeRequestItem.getCreated());
             upTrace.setBuyerName(tradeRequestItem.getBuyerName());
             upTrace.setSellerName(tradeRequestItem.getSellerName());
-            upTrace.setMarketName(seller.getMarketName());
-            upTrace.setTallyAreaNo(seller.getTallyAreaNos());
+            upTrace.setMarketName(sellerMarketName);
+            upTrace.setTallyAreaNo(sellerTallyAreaNos);
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setBuyerId(userId);
@@ -81,13 +98,19 @@ public class BillTraceService {
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        User buyer = this.userService.get(tr.getBuyerId());
+                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
+                        String buyerMarketName=this.firmRpcService.getFirmById(tr.getBuyerMarketId()).map(Firm::getName).orElseThrow(()->{
+                            return new TraceBizException("市场不存在");
+                        });
+                        String buyerTallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+                                .flatCollection(Function.identity()).nonNull()
+                                .map(TallyingArea::getAssetsName).distinct().joining(",");
                         TraceDataDto downTrace = new TraceDataDto();
                         downTrace.setCreated(tr.getCreated());
                         downTrace.setBuyerName(tr.getBuyerName());
                         downTrace.setSellerName(tr.getSellerName());
-                        downTrace.setMarketName(buyer.getMarketName());
-                        downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
+                        downTrace.setMarketName(buyerMarketName);
+                        downTrace.setTallyAreaNo(buyerTallyAreaNos);
                         return downTrace;
                     }).toList();
             traceDetailOutputDto.setUpTraceList(Lists.newArrayList(upTrace));
@@ -103,13 +126,21 @@ public class BillTraceService {
                     .of(this.tradeDetailService.findTradeDetailByIdList(upTradeDetailIdList))
                     .map(TradeDetail::getTradeRequestId).nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        User buyer = this.userService.get(tr.getBuyerId());
+
+                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
+                        String buyerMarketName=this.firmRpcService.getFirmById(tradeRequestItem.getSellerMarketId()).map(Firm::getName).orElseThrow(()->{
+                            return new TraceBizException("市场不存在");
+                        });
+                        String tallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+                                .flatCollection(Function.identity()).nonNull()
+                                .map(TallyingArea::getAssetsName).distinct().joining(",");
+
                         TraceDataDto upTraceDto = new TraceDataDto();
                         upTraceDto.setCreated(tr.getCreated());
                         upTraceDto.setBuyerName(tr.getBuyerName());
                         upTraceDto.setSellerName(tr.getSellerName());
-                        upTraceDto.setMarketName(buyer.getMarketName());
-                        upTraceDto.setTallyAreaNo(buyer.getTallyAreaNos());
+                        upTraceDto.setMarketName(buyerMarketName);
+                        upTraceDto.setTallyAreaNo(tallyAreaNos);
                         return upTraceDto;
                     }).nonNull().toList();
 
@@ -127,18 +158,32 @@ public class BillTraceService {
             List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .distinct().map(requestId -> {
-
+                        if (requestId == null) {
+                            return null;
+                        }
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        User buyer = this.userService.get(tr.getBuyerId());
-                        if (requestId == null || tr == null || buyer == null) {
+                        if (tr == null) {
+                            return null;
+                        }
+
+                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
+                        String buyerMarketName=this.firmRpcService.getFirmById(tr.getBuyerMarketId()).map(Firm::getName).orElseThrow(()->{
+                            return new TraceBizException("市场不存在");
+                        });
+                        String buyerTallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+                                .flatCollection(Function.identity()).nonNull()
+                                .map(TallyingArea::getAssetsName).distinct().joining(",");
+
+
+                        if ( buyer == null) {
                             return null;
                         }
                         TraceDataDto downTrace = new TraceDataDto();
                         downTrace.setCreated(tr.getCreated());
                         downTrace.setBuyerName(tr.getBuyerName());
                         downTrace.setSellerName(tr.getSellerName());
-                        downTrace.setMarketName(buyer.getMarketName());
-                        downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
+                        downTrace.setMarketName(buyerMarketName);
+                        downTrace.setTallyAreaNo(buyerTallyAreaNos);
                         return downTrace;
                     }).nonNull().toList();
             traceDetailOutputDto.setUpTraceList(upTraceList);
