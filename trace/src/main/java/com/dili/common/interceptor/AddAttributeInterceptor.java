@@ -23,6 +23,7 @@ public class AddAttributeInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         request.setAttribute("imageViewPathPrefix", this.globalVarService.getDfsImageViewPathPrefix());
+        request.setAttribute("baseWebPath", this.globalVarService.getBaseWebPath());
         request.setAttribute("v", System.currentTimeMillis());
         return true;
     }
