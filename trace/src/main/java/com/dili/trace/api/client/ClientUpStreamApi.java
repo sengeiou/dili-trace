@@ -31,8 +31,6 @@ import java.util.Arrays;
 @RequestMapping(value = "/api/upstreamApi")
 public class ClientUpStreamApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserApi.class);
-//    @Autowired
-//    private UserService userService;
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired

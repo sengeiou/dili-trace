@@ -8,6 +8,7 @@ import com.dili.trace.domain.User;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -138,6 +139,15 @@ public class CreateRegisterHeadInputDto {
     private Long userId;
 
 	/**
+	 * 单价
+	 */
+	private BigDecimal unitPrice;
+	/**
+	 * 备注
+	 */
+
+
+	/**
 	 * 图片证明列表
 	 */
 	private List<ImageCert> imageCertList;
@@ -168,7 +178,16 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setPlate(this.getPlate());
 		registerHead.setRemark(this.getRemark());
 		registerHead.setActive(this.getActive());
+		registerHead.setUnitPrice(this.getUnitPrice());
 		return registerHead;
+	}
+
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
 	}
 
 	public Long getId() {
