@@ -16,6 +16,7 @@ import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.rpc.dto.CustDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.uap.sdk.domain.Firm;
@@ -31,7 +32,7 @@ import one.util.streamex.StreamEx;
  */
 @Service
 public class BillTraceService {
-//    @Autowired
+    //    @Autowired
 //    private UserService userService;
     @Autowired
     CustomerRpcService customerRpcService;
@@ -56,6 +57,7 @@ public class BillTraceService {
 
     /**
      * SB
+     *
      * @param tradeRequestid
      * @param userId
      * @return
@@ -71,11 +73,9 @@ public class BillTraceService {
         traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
         if (tradeRequestItem.getBuyerId().equals(userId)) {
 
-            CustomerExtendDto seller = this.customerRpcService.findCustomerByIdOrEx(tradeRequestItem.getSellerId(),tradeRequestItem.getSellerMarketId());
-            String sellerMarketName=this.firmRpcService.getFirmById(tradeRequestItem.getSellerMarketId()).map(Firm::getName).orElseThrow(()->{
-                return new TraceBizException("市场不存在");
-            });
-            String sellerTallyAreaNos=StreamEx.ofNullable(seller).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+            CustomerExtendDto seller = this.customerRpcService.findCustomerByIdOrEx(tradeRequestItem.getSellerId(), tradeRequestItem.getSellerMarketId());
+            String sellerMarketName = this.firmRpcService.getFirmByIdOrEx(tradeRequestItem.getSellerMarketId()).getName();
+            String sellerTallyAreaNos = StreamEx.ofNullable(seller).map(CustomerExtendDto::getTallyingAreaList).nonNull()
                     .flatCollection(Function.identity()).nonNull()
                     .map(TallyingArea::getAssetsName).distinct().joining(",");
 
@@ -98,19 +98,13 @@ public class BillTraceService {
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
-                        String buyerMarketName=this.firmRpcService.getFirmById(tr.getBuyerMarketId()).map(Firm::getName).orElseThrow(()->{
-                            return new TraceBizException("市场不存在");
-                        });
-                        String buyerTallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
-                                .flatCollection(Function.identity()).nonNull()
-                                .map(TallyingArea::getAssetsName).distinct().joining(",");
+                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
                         TraceDataDto downTrace = new TraceDataDto();
                         downTrace.setCreated(tr.getCreated());
                         downTrace.setBuyerName(tr.getBuyerName());
                         downTrace.setSellerName(tr.getSellerName());
-                        downTrace.setMarketName(buyerMarketName);
-                        downTrace.setTallyAreaNo(buyerTallyAreaNos);
+                        downTrace.setMarketName(cust.getMarketName());
+                        downTrace.setTallyAreaNo(cust.getTallyAreaNos());
                         return downTrace;
                     }).toList();
             traceDetailOutputDto.setUpTraceList(Lists.newArrayList(upTrace));
@@ -126,21 +120,14 @@ public class BillTraceService {
                     .of(this.tradeDetailService.findTradeDetailByIdList(upTradeDetailIdList))
                     .map(TradeDetail::getTradeRequestId).nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-
-                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
-                        String buyerMarketName=this.firmRpcService.getFirmById(tradeRequestItem.getSellerMarketId()).map(Firm::getName).orElseThrow(()->{
-                            return new TraceBizException("市场不存在");
-                        });
-                        String tallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
-                                .flatCollection(Function.identity()).nonNull()
-                                .map(TallyingArea::getAssetsName).distinct().joining(",");
+                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
 
                         TraceDataDto upTraceDto = new TraceDataDto();
                         upTraceDto.setCreated(tr.getCreated());
                         upTraceDto.setBuyerName(tr.getBuyerName());
                         upTraceDto.setSellerName(tr.getSellerName());
-                        upTraceDto.setMarketName(buyerMarketName);
-                        upTraceDto.setTallyAreaNo(tallyAreaNos);
+                        upTraceDto.setMarketName(cust.getMarketName());
+                        upTraceDto.setTallyAreaNo(cust.getTallyAreaNos());
                         return upTraceDto;
                     }).nonNull().toList();
 
@@ -165,26 +152,18 @@ public class BillTraceService {
                         if (tr == null) {
                             return null;
                         }
-
-                        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(tr.getBuyerId(),tr.getBuyerMarketId());
-                        String buyerMarketName=this.firmRpcService.getFirmById(tr.getBuyerMarketId()).map(Firm::getName).orElseThrow(()->{
-                            return new TraceBizException("市场不存在");
-                        });
-                        String buyerTallyAreaNos=StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
-                                .flatCollection(Function.identity()).nonNull()
-                                .map(TallyingArea::getAssetsName).distinct().joining(",");
-
-
-                        if ( buyer == null) {
+                        try {
+                            CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
+                            TraceDataDto downTrace = new TraceDataDto();
+                            downTrace.setCreated(tr.getCreated());
+                            downTrace.setBuyerName(tr.getBuyerName());
+                            downTrace.setSellerName(tr.getSellerName());
+                            downTrace.setMarketName(cust.getMarketName());
+                            downTrace.setTallyAreaNo(cust.getTallyAreaNos());
+                            return downTrace;
+                        }catch (TraceBizException e){
                             return null;
                         }
-                        TraceDataDto downTrace = new TraceDataDto();
-                        downTrace.setCreated(tr.getCreated());
-                        downTrace.setBuyerName(tr.getBuyerName());
-                        downTrace.setSellerName(tr.getSellerName());
-                        downTrace.setMarketName(buyerMarketName);
-                        downTrace.setTallyAreaNo(buyerTallyAreaNos);
-                        return downTrace;
                     }).nonNull().toList();
             traceDetailOutputDto.setUpTraceList(upTraceList);
             traceDetailOutputDto.setDownTraceList(downTraceList);
@@ -208,6 +187,7 @@ public class BillTraceService {
 
     /**
      * SB
+     *
      * @param tradeRequestId
      * @param userId
      * @return
@@ -218,7 +198,7 @@ public class BillTraceService {
         if (tradeRequestItem == null) {
             throw new TraceBizException("没有查找到详情");
         }
-        List<TradeDetail> list =Lists.newArrayList();
+        List<TradeDetail> list = Lists.newArrayList();
         if (tradeRequestItem.getBuyerId().equals(userId)) {
 
             TradeDetail tradeDetailQuery = new TradeDetail();
@@ -239,12 +219,13 @@ public class BillTraceService {
             tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
 
             List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
-            list.addAll(buyerTradeDetailList); ;
-           
+            list.addAll(buyerTradeDetailList);
+            ;
+
         } else {
             throw new TraceBizException("没有查询到数据");
         }
-        
+
         TradeDetail tradeDetail = new TradeDetail();
         tradeDetail.setTradeRequestId(tradeRequestItem.getTradeRequestId());
         List<Long> billIdList = StreamEx.of(list).filter(td -> {
@@ -262,6 +243,30 @@ public class BillTraceService {
             td.setPlate(billIdPlateMap.getOrDefault(td.getBillId(), ""));
         });
         return list;
+
+    }
+
+    /**
+     * 查询客户相关信息
+     * @param userId
+     * @param marketId
+     * @return
+     */
+    private CustDto findCustByIdAndMarketId(Long userId, Long marketId) {
+
+        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(userId, marketId);
+        String buyerMarketName = this.firmRpcService.getFirmByIdOrEx(marketId).getName();
+        String buyerTallyAreaNos = StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
+                .flatCollection(Function.identity()).nonNull()
+                .map(TallyingArea::getAssetsName).distinct().joining(",");
+        CustDto cust=new CustDto();
+        cust.setUserId(userId);
+        cust.setUserName(buyer.getName());
+        cust.setMarketId(marketId);
+        cust.setMarketName(buyerMarketName);
+        cust.setTallyAreaNos(buyerTallyAreaNos);
+        return cust;
+
 
     }
 }

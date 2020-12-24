@@ -23,7 +23,7 @@ public class DepartmentRpcService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentRpcService.class);
 
 
-    private static final String DetectDepartmentCode = "detector_group";
+    private static final String DetectDepartmentKeyWord = "检测";
 //      private static final String DetectDepartmentCode = "hzsc-79"; // 杭水测试
 
     @Autowired(required = false)
@@ -39,7 +39,7 @@ public class DepartmentRpcService {
             return Optional.empty();
         }
         DepartmentDto query = DTOUtils.newDTO(DepartmentDto.class);
-        query.setCode(DetectDepartmentCode);
+        query.setName(DetectDepartmentKeyWord);
         query.setFirmId(firmId);
         try {
             BaseOutput<List<Department>> out = this.departmentRpc.listByExample(query);

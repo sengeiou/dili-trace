@@ -1,5 +1,6 @@
 package com.dili.trace.rpc.service;
 
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Firm;
@@ -45,6 +46,17 @@ public class FirmRpcService {
         }
         return Lists.newArrayList();
 
+    }
+    /**
+     * 查询当前市场
+     *
+     * @param firmId
+     * @return
+     */
+    public Firm getFirmByIdOrEx(Long firmId) {
+        return this.getFirmById(firmId).orElseThrow(()->{
+            return new TraceBizException("查询市场失败");
+        });
     }
 
     /**

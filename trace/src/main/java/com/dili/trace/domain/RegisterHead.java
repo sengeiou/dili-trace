@@ -75,9 +75,6 @@ public class RegisterHead extends BaseDomain {
 	private String thirdPartyCode;
 
 
-	@Transient
-	private String tradePrintingCard;
-
 	/**
 	 * 身份地址
 	 */

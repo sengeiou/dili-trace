@@ -171,6 +171,7 @@ public class ManagerDetectRquestApi {
      */
     @RequestMapping("/countByDetectStatus.api")
     public BaseOutput<List<CountDetectStatusDto>> countByDetectStatus(@RequestBody DetectRequestQueryDto queryInput) {
+        queryInput.setIsDeleted(YesOrNoEnum.NO.getCode());
         Map<Integer,Integer>statusCntMap= StreamEx.of(this.detectRequestService.countByDetectStatus(queryInput))
                 .toMap(CountDetectStatusDto::getDetectStatus, CountDetectStatusDto::getCnt);
 
