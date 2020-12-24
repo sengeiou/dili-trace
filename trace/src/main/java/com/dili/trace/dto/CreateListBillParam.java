@@ -74,8 +74,6 @@ public class CreateListBillParam {
 
     private List<ImageCert>globalImageCertList;
 
-
-
     public List<ImageCert> getGlobalImageCertList() {
         return globalImageCertList;
     }
@@ -83,9 +81,6 @@ public class CreateListBillParam {
     public void setGlobalImageCertList(List<ImageCert> globalImageCertList) {
         this.globalImageCertList = globalImageCertList;
     }
-
-
-
 
     public Long getUserId() {
         return userId;

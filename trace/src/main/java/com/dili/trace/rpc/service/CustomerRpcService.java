@@ -12,7 +12,9 @@ import com.dili.customer.sdk.rpc.CustomerMarketRpc;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.Customer;
+import com.dili.trace.domain.User;
 import com.dili.trace.rpc.dto.CardQueryInput;
 import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.service.GlobalVarService;
@@ -192,6 +194,22 @@ public class CustomerRpcService {
     }
 
     /**
+     * 转换为溯源用户返回
+     *
+     * @param customerId
+     * @return
+     */
+    public Optional<User> findUserFromCustomerById(Long customerId, Long marketId) {
+        return this.findCustomerById(customerId, marketId).map(c -> {
+            User user = DTOUtils.newInstance(User.class);
+            user.setId(c.getId());
+            user.setName(c.getName());
+            user.setMarketId(marketId);
+            return Optional.of(user);
+        }).orElse(Optional.empty());
+    }
+
+    /**
      * 查询客户
      *
      * @param customerId
@@ -275,8 +293,6 @@ public class CustomerRpcService {
         });
 
     }
-
-
 
     /**
      * 查询卡信息

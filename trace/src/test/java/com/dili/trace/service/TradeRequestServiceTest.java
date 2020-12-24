@@ -93,7 +93,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         input.setProductStockId(batchStock.getId());
         input.setTradeWeight(BigDecimal.valueOf(77));
 
-        TradeRequest request = this.tradeRequestService.createTradeRequest(null, null, buyer.getId(), input);
+        TradeRequest request = this.tradeRequestService.createTradeRequest(null, null, buyer.getId(), input, 11L);
         assertNotNull(request);
         return request;
 
@@ -223,7 +223,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         // tdinput.setTradeDetailId(5016L);
         // tdinput.setTradeWeight(BigDecimal.valueOf(85));
         // input.setTradeDetailInputList(Lists.newArrayList(tdinput));
-        this.tradeRequestService.createSellRequest(30L, 29L, Lists.newArrayList(input));
+        this.tradeRequestService.createSellRequest(30L, 29L, Lists.newArrayList(input), 11L);
 
         // Long requestId =
         // this.tradeRequestService.createSellRequest(request,Lists.newArrayList());
