@@ -20,6 +20,7 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListRegisterHeadParam;
 import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -98,6 +99,7 @@ public class ManagerRegisterHeadApi {
                     e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
                     e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
                     e.setUpStreamName(this.upStreamService.get(e.getUpStreamId()).getName());
+                    e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), ImageCertBillTypeEnum.MAIN_CHECKIN_ORDER_TYPE));
                 });
             }
 
