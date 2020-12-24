@@ -8,7 +8,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
@@ -20,17 +19,15 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.DetectRequestService;
-import com.dili.trace.service.SgRegisterBillService;
+import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.User;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -69,6 +66,8 @@ public class ManagerDetectRquestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     private LoginSessionContext sessionContext;
+    @Autowired
+    UserRpcService userRpcService;
 
     /**
      * 查询检测请求列表
@@ -77,7 +76,7 @@ public class ManagerDetectRquestApi {
      * @return
      */
     @RequestMapping("/listPagedDetectRequest.api")
-    public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput<BasePage<DetectRequestOutDto>> listPagedDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
 
         List<Integer>detectStatusList=StreamEx.ofNullable(detectRequestDto.getDetectStatusList())
                 .flatCollection(Function.identity()).nonNull().toList();
@@ -87,7 +86,7 @@ public class ManagerDetectRquestApi {
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
 
-        BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
+        BasePage<DetectRequestOutDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);
     }
 
@@ -98,11 +97,18 @@ public class ManagerDetectRquestApi {
      * @return
      */
     @RequestMapping("/getDetectRequest.api")
-    public BaseOutput getDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput getDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
         if (null == detectRequestDto.getId()) {
             return BaseOutput.failure("参数错误");
         }
-        return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        try {
+            return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        }catch (TraceBizException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return BaseOutput.failure("查询出错");
+        }
     }
 
     /**
@@ -189,11 +195,11 @@ public class ManagerDetectRquestApi {
         queBill.setDetectRequestId(id);
         List<RegisterBill> billList = billService.listByExample(queBill);
         if (CollectionUtils.isEmpty(billList)) {
-            throw new AppException("操作失败，报备单据不存在");
+            throw new TraceBizException("操作失败，报备单据不存在");
         }
         RegisterBill bill = billList.get(0);
         if (!DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(bill.getDetectStatus())) {
-            throw new AppException("操作失败，单据非待接单状态");
+            throw new TraceBizException("操作失败，单据非待接单状态");
         }
         return bill;
     }
@@ -408,5 +414,23 @@ public class ManagerDetectRquestApi {
         }
         return BaseOutput.success("操作成功");
     }
-
+    /**
+     * 查询市场检测人员
+     *
+     * @param likeUserName
+     * @return
+     */
+    @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
+    public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
+        try {
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
+            return BaseOutput.successData(users);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
 }

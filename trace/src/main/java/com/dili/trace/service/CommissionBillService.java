@@ -258,9 +258,19 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         bill.setBillType(this.supportedBillType().getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
-        bill.setMarketId(MarketUtil.returnMarket());
+        bill.setMarketId(bill.getMarketId());
 //		bill.setPlate("");
         this.billService.insertSelective(bill);
+        DetectRequest detectRequest=this.detectRequestService.createDefault(bill.getBillId(),Optional.empty());
+
+        RegisterBill updatable=new RegisterBill();
+        updatable.setDetectRequestId(detectRequest.getId());
+        updatable.setId(bill.getBillId());
+        updatable.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        this.billService.updateSelective(updatable);
+
+
+
         return bill;
     }
 

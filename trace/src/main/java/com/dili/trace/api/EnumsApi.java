@@ -24,6 +24,7 @@ import one.util.streamex.StreamEx;
 @RequestMapping(value = "/api/enums")
 @AppAccess(role = Role.ANY)
 public class EnumsApi {
+
     /**
      * 上游类型枚举查询
      */

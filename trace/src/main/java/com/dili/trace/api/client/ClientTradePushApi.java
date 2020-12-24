@@ -30,7 +30,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradePush")
 @RestController
-@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
+@AppAccess(role = Role.Client)
 @RequestMapping(value = "/api/client/clientTradePush")
 public class ClientTradePushApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradePushApi.class);

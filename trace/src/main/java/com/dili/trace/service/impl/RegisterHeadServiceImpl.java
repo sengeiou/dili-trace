@@ -2,6 +2,7 @@ package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -77,6 +78,13 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
             CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(dto.getUserId(),marketId);
             RegisterHead registerHead = dto.build(customer);
+
+            Customer cq=new Customer();
+            cq.setCustomerId(customer.getCode());
+            this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
+                registerHead.setThirdPartyCode(card.getPrintingCard());
+            });
+
             registerHead.setMarketId(marketId);
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
         }).toList();
@@ -101,8 +109,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             registerHead.setModifyUser(op.getName());
             registerHead.setModified(new Date());
         });
-        registerHead.setIsDeleted(TFEnum.FALSE.getCode());
-        registerHead.setActive(TFEnum.TRUE.getCode());
+        registerHead.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerHead.setActive(YesOrNoEnum.YES.getCode());
         registerHead.setVersion(1);
 
         registerHead.setIdCardNo(StringUtils.trimToEmpty(registerHead.getIdCardNo()).toUpperCase());
@@ -237,7 +245,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (headItem == null) {
             return Optional.empty();
         }
-        if (TFEnum.TRUE.equalsCode(headItem.getIsDeleted())) {
+        if (YesOrNoEnum.YES.getCode().equals(headItem.getIsDeleted())) {
             throw new TraceBizException("进门主台账单已经被删除");
         }
         return Optional.of(headItem);
@@ -252,8 +260,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBizException("数据不存在"));
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
-        registerHead.setIsDeleted(dto.getIsDeleted());
-
+        registerHead.setIsDeleted(YesOrNoEnum.YES.getCode());
         operatorUser.ifPresent(op -> {
             registerHead.setDeleteUser(op.getName());
             registerHead.setDeleteTime(new Date());

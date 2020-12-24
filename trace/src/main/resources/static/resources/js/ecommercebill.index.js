@@ -253,28 +253,25 @@ class EcommerceBillGrid extends ListPage {
             bs4pop.alert("请选择数据过多", { type: 'warning' });
             return;
         }
-        var result = {};
-        $.ajax({
-            type: "POST",
-            url: '/ecommerceBill/prePrint.action',
-            data: JSON.stringify({ id: row[0].id }),
-            processData: true,
-            dataType: "json",
-            async: false,
-            contentType: "application/json; charset=utf-8",
-            success: function (ret) {
-                result = ret;
-            },
-            error: function () {
-                result = { "code": "5000", result: "远程访问失败" };
+        let url = this.toUrl('/ecommerceBill/prePrint.action');
+        try {
+            let resp = jq.syncPostJson(url, { id: row[0].id });
+            if (!resp.success) {
+                bs4pop.alert(resp.message, { type: 'error' });
+                return;
             }
-        });
-        console.log(result);
-        if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
-            callbackObj.printDirect(JSON.stringify(result), "StickerDocument");
+            if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), "StickerDocument");
+            }
+            else {
+                bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", { type: 'error' });
+            }
         }
-        else {
-            bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", { type: 'error' });
+        catch (e) {
+            console.error(e);
+            debugger;
+            bs4pop.alert('远程访问失败', { type: 'error' });
+            return;
         }
     }
     async openPrintSeperatePrintReport() {

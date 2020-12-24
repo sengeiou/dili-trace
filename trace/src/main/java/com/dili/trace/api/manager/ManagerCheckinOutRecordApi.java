@@ -9,6 +9,7 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -24,7 +25,6 @@ import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public class ManagerCheckinOutRecordApi {
 
 			RegisterBillDto query = new RegisterBillDto();
 			query.setIdList(billIdList);
-			query.setIsDeleted(TFEnum.FALSE.getCode());
+			query.setIsDeleted(YesOrNoEnum.NO.getCode());
 			StreamEx.of(this.registerBillService.listByExample(query)).forEach(billItem -> {
 				if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
 						&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {

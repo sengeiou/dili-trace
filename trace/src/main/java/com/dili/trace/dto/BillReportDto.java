@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
@@ -36,10 +37,10 @@ public class BillReportDto extends BaseDomain{
     private String remark;
 
     public String getIsDeletedName() {
-        if( TFEnum.TRUE.equalsCode(this.getIsDeleted())){
+        if(YesOrNoEnum.YES.getCode().equals(this.getIsDeleted())){
             return "是";
         };
-        if( TFEnum.FALSE.equalsCode(this.getIsDeleted())){
+        if( YesOrNoEnum.NO.getCode().equals(this.getIsDeleted())){
             return "否";
         };
         return "";

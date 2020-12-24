@@ -37,6 +37,11 @@ public class RegisterBillHistory extends BaseDomain {
      */
     @Column(name = "`bill_id`")
     private Long billId;
+    /**
+     * 市场id
+     */
+    @Column(name = "`market_id`")
+    private Long marketId;
 
     /**
      * 编号
@@ -314,6 +319,39 @@ public class RegisterBillHistory extends BaseDomain {
     @ApiModelProperty(value = "原因")
     @Column(name = "`reason`")
     private String reason;
+
+
+
+
+    /**
+     * 操作人
+     */
+    @ApiModelProperty(value = "审核操作人姓名")
+    @Column(name = "`verify_operator_name`")
+    private String verifyOperatorName;
+
+    /**
+     * 操作人ID
+     */
+    @ApiModelProperty(value = "审核操作人ID")
+    @Column(name = "`verify_operator_id`")
+    private Long verifyOperatorId;
+
+    public String getVerifyOperatorName() {
+        return verifyOperatorName;
+    }
+
+    public void setVerifyOperatorName(String verifyOperatorName) {
+        this.verifyOperatorName = verifyOperatorName;
+    }
+
+    public Long getVerifyOperatorId() {
+        return verifyOperatorId;
+    }
+
+    public void setVerifyOperatorId(Long verifyOperatorId) {
+        this.verifyOperatorId = verifyOperatorId;
+    }
 
     public Integer getVerifyStatus() {
         return verifyStatus;
@@ -727,4 +765,16 @@ public class RegisterBillHistory extends BaseDomain {
         this.operationTime = operationTime;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    @Transient
+    public String getVerifyStatusName(){
+        return BillVerifyStatusEnum.fromCode(this.verifyStatus).map(BillVerifyStatusEnum::getName).orElse("");
+    }
 }

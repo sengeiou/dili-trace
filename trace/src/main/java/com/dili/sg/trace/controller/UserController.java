@@ -205,44 +205,6 @@ public class UserController {
 	}
 
 	/**
-	 * 通过理货区号查询车牌
-	 * @param tallyAreaNo
-	 * @return
-	 */
-	@RequestMapping(value = "/findPlatesByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput findPlatesByTallyAreaNo(String tallyAreaNo) {
-//		try {
-//			List<UserPlate>list=this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
-//			return BaseOutput.success().setData(list);
-//
-//		} catch (Exception e) {
-//			LOGGER.error("查询失败", e);
-			return BaseOutput.failure();
-//		}
-
-	}
-
-	/**
-	 * 通过理货区号查询数据
-	 * @param query
-	 * @return
-	 */
-	@RequestMapping(value = "/queryByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput queryByTallyAreaNo(String query) {
-		try {
-			List<DTO>data=this.userService.queryByTallyAreaNo(query);
-			return BaseOutput.success().setData(data);
-
-		} catch (Exception e) {
-			LOGGER.error("查询失败", e);
-			return BaseOutput.failure();
-		}
-
-	}
-
-	/**
 	 * 跳转到User页面
 	 * @param modelMap
 	 * @param id

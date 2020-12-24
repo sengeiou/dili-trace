@@ -38,9 +38,9 @@ import java.util.List;
 /**登记单相关接口
  * Created by laikui on 2019/7/26.
  */
-@RestController
-@RequestMapping(value = "/api/bill")
-@Api(value = "/api/bill")
+//@RestController
+//@RequestMapping(value = "/api/bill")
+//@Api(value = "/api/bill")
 //@InterceptConfiguration
 public class SgRegisterBillApi {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillApi.class);

@@ -1,6 +1,5 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -9,10 +8,9 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
-import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -21,13 +19,10 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.User;
@@ -40,7 +35,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -69,55 +67,55 @@ public class ClientDetectRequestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     CommissionBillService commissionBillService;
-    /**
-     * 用户创建场外委托单
-     *
-     * @param createListBillParam 小程序创建委托单信息
-     * @return 创建结果
-     */
-    @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
-    public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
-
-        try {
-            SessionData sessionData = this.sessionContext.getSessionData();
-
-            Long userId = sessionData.getUserId();
-            List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
-                bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-                bill.setUserId(userId);
-                return bill;
-            }).toList();
-            if (inputList.isEmpty()) {
-                return BaseOutput.failure("参数错误");
-            }
-           List<RegisterBill>billList= StreamEx.of(inputList).map(input->{
-                logger.info("循环保存登记单:" + JSON.toJSONString(input));
-                RegisterBill registerBill = new RegisterBill();
-
-                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
-                registerBill.setName(this.sessionContext.getSessionData().getUserName());
-
-                if (registerBill.getRegisterSource() == null) {
-                    // 小程序默认理货区
-                    registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-                }
-
-                registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-
-               registerBill.setIsPrintCheckSheet(input.getIsPrintCheckSheet());
-                return registerBill;
-            }).toList();
-
-            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(billList);
-            return BaseOutput.success();
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-
-    }
+//    /**
+//     * 用户创建场外委托单
+//     *
+//     * @param createListBillParam 小程序创建委托单信息
+//     * @return 创建结果
+//     */
+//    @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
+//    public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
+//
+//        try {
+//            SessionData sessionData = this.sessionContext.getSessionData();
+//
+//            Long userId = sessionData.getUserId();
+//            List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
+//                bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+//                bill.setUserId(userId);
+//                return bill;
+//            }).toList();
+//            if (inputList.isEmpty()) {
+//                return BaseOutput.failure("参数错误");
+//            }
+//           List<RegisterBill>billList= StreamEx.of(inputList).map(input->{
+//                logger.info("循环保存登记单:" + JSON.toJSONString(input));
+//                RegisterBill registerBill = new RegisterBill();
+//
+//                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
+//                registerBill.setName(this.sessionContext.getSessionData().getUserName());
+//
+//                if (registerBill.getRegisterSource() == null) {
+//                    // 小程序默认理货区
+//                    registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+//                }
+//
+//                registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+//
+//               registerBill.setIsPrintCheckSheet(input.getIsPrintCheckSheet());
+//                return registerBill;
+//            }).toList();
+//
+//            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(billList);
+//            return BaseOutput.success();
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//
+//    }
 
     /**
      * 创建检测单
@@ -126,12 +124,14 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/createDetectRequest.api")
-    public BaseOutput<Long> createDetectRequest(@RequestBody DetectRequest input) {
+    public BaseOutput<Long> createDetectRequest(@RequestBody DetectRequestInputDto input) {
         if (input == null || input.getBillId() == null) {
             return BaseOutput.failure("参数错误");
         }
         try {
-            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input.getBillId(), Optional.empty());
+            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input, Optional.empty());
+
+
             return BaseOutput.successData(item.getId());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -142,38 +142,38 @@ public class ClientDetectRequestApi {
 
     }
 
-    /**
-     * 创建场外委托检测单
-     *
-     * @param input
-     * @return
-     */
-    @RequestMapping("/createOffSiteDetectRequest.api")
-    public BaseOutput<Long> createOffSiteDetectRequest(@RequestBody DetectRequestDto input) {
-        if (input == null) {
-            return BaseOutput.failure("参数错误");
-        }
-        try {
-            Long userId = loginSessionContext.getSessionData().getUserId();
-            String userName = loginSessionContext.getSessionData().getUserName();
-            Long marketId = loginSessionContext.getSessionData().getMarketId();
-
-            if (null == userId) {
-                return BaseOutput.failure("未登录或登录过期");
-            }
-            input.setCreatorId(userId);
-            input.setCreatorName(userName);
-            input.setMarketId(marketId);
-            DetectRequest item = this.detectRequestService.createOffSiteDetectRequest(input, Optional.empty());
-            return BaseOutput.successData(item.getId());
-        } catch (AppException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-
-    }
+//    /**
+//     * 创建场外委托检测单
+//     *
+//     * @param input
+//     * @return
+//     */
+//    @RequestMapping("/createOffSiteDetectRequest.api")
+//    public BaseOutput<Long> createOffSiteDetectRequest(@RequestBody DetectRequestDto input) {
+//        if (input == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//        try {
+//            Long userId = loginSessionContext.getSessionData().getUserId();
+//            String userName = loginSessionContext.getSessionData().getUserName();
+//            Long marketId = loginSessionContext.getSessionData().getMarketId();
+//
+//            if (null == userId) {
+//                return BaseOutput.failure("未登录或登录过期");
+//            }
+//            input.setCreatorId(userId);
+//            input.setCreatorName(userName);
+//            input.setMarketId(marketId);
+//            DetectRequest item = this.detectRequestService.createOffSiteDetectRequest(input, Optional.empty());
+//            return BaseOutput.successData(item.getId());
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//
+//    }
 
     /**
      * 创建检测单前报备单详情
@@ -203,11 +203,11 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping(value = "/getDetectRequestDetail.api", method = RequestMethod.GET)
-    public BaseOutput<DetectRequestDto> getDetectRequestDetail(Long id) {
+    public BaseOutput<DetectRequestOutDto> getDetectRequestDetail(Long id) {
         try {
-            DetectRequestDto detectRequest = new DetectRequestDto();
+            DetectRequestQueryDto detectRequest = new DetectRequestQueryDto();
             detectRequest.setId(id);
-            DetectRequestDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
+            DetectRequestOutDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
             //设置最新检测记录
             if (null != detail && StringUtils.isNotBlank(detail.getBillCode())) {
                 detail.setDetectRecordList(detectRecordService.findTop2AndLatest(detail.getBillCode()));
@@ -247,7 +247,7 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/listPagedDetectRequest.api")
-    public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput<BasePage<DetectRequestOutDto>> listPagedDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
 
         List<Integer> detectStatusList = StreamEx.ofNullable(detectRequestDto.getDetectStatusList())
                 .flatCollection(Function.identity()).nonNull().toList();
@@ -259,7 +259,7 @@ public class ClientDetectRequestApi {
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
 
-        BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
+        BasePage<DetectRequestOutDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);
     }
 
@@ -270,11 +270,19 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/getDetectRequest.api")
-    public BaseOutput getDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput getDetectRequest(@RequestBody DetectRequestQueryDto detectRequestDto) {
         if (null == detectRequestDto.getId()) {
             return BaseOutput.failure("参数错误");
         }
-        return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        try {
+            return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
+        }catch (TraceBizException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return BaseOutput.failure("查询出错");
+        }
+
     }
 
     /**
@@ -368,11 +376,11 @@ public class ClientDetectRequestApi {
         queBill.setDetectRequestId(id);
         List<RegisterBill> billList = billService.listByExample(queBill);
         if (CollectionUtils.isEmpty(billList)) {
-            throw new AppException("操作失败，报备单据不存在");
+            throw new TraceBizException("操作失败，报备单据不存在");
         }
         RegisterBill bill = billList.get(0);
         if (!DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(bill.getDetectStatus())) {
-            throw new AppException("操作失败，单据非待接单状态");
+            throw new TraceBizException("操作失败，单据非待接单状态");
         }
         return bill;
     }

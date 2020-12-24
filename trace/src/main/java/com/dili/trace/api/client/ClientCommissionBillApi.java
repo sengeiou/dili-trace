@@ -44,7 +44,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * 委托单查询接口
+ * (经营户)场外委托单接口
  */
 @RestController
 @RequestMapping(value = "/api/client/clientCommissionBillApi")
@@ -81,15 +81,9 @@ public class ClientCommissionBillApi {
             if (inputList.isEmpty()) {
                 return BaseOutput.failure("参数错误");
             }
-            List<RegisterBill> inputBillList = StreamEx.of(inputList).map(inut -> {
-                logger.info("循环保存登记单:" + JSON.toJSONString(inut));
-                RegisterBill registerBill = new RegisterBill();
-//                registerBill.setOperatorName(user.getName());
-//                registerBill.setOperatorId(user.getId());
-                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
-                registerBill.setName(this.sessionContext.getSessionData().getUserName());
-//                registerBill.setAddr(user.getAddr());
-//                registerBill.setIdCardNo(user.getCardNo());
+            List<RegisterBill> inputBillList = StreamEx.of(inputList).map(input -> {
+                logger.info("循环保存登记单:" + JSON.toJSONString(input));
+                RegisterBill registerBill = input.build(sessionData.getUserId(),sessionData.getUserName(),sessionData.getMarketId());
                 if (registerBill.getRegisterSource() == null) {
                     // 小程序默认理货区
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());

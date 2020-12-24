@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.RegisterBill;
@@ -161,7 +162,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (tradeRequestId != null) {
 			UserQrHistory domain = new UserQrHistory();
 			// domain.setBillId(deletedBillId);
-			domain.setIsValid(TFEnum.FALSE.getCode());
+			domain.setIsValid(YesOrNoEnum.NO.getCode());
 
 			UserQrHistory condition = new UserQrHistory();
 			condition.setTradeRequestId(tradeRequestId);
@@ -174,7 +175,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			query.setRows(1);
 			query.setSort("id");
 			query.setOrder("desc");
-			query.setIsValid(TFEnum.TRUE.getCode());
+			query.setIsValid(YesOrNoEnum.YES.getCode());
 			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
 					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
 			this.updateUserQrStatus(userId, userQrStatus);
@@ -204,7 +205,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (deletedBillId != null) {
 			UserQrHistory domain = new UserQrHistory();
 			// domain.setBillId(deletedBillId);
-			domain.setIsValid(TFEnum.FALSE.getCode());
+			domain.setIsValid(YesOrNoEnum.NO.getCode());
 
 			UserQrHistory condition = new UserQrHistory();
 			condition.setBillId(deletedBillId);
@@ -217,7 +218,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			query.setRows(1);
 			query.setSort("id");
 			query.setOrder("desc");
-			query.setIsValid(TFEnum.TRUE.getCode());
+			query.setIsValid(YesOrNoEnum.YES.getCode());
 			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
 					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
 			this.updateUserQrStatus(userId, userQrStatus);
@@ -244,7 +245,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setQrStatus(qrStatus);
 		userQrHistory.setCreated(new Date());
 		userQrHistory.setModified(new Date());
-		userQrHistory.setIsValid(TFEnum.TRUE.getCode());
+		userQrHistory.setIsValid(YesOrNoEnum.YES.getCode());
 		return userQrHistory;
 
 	}
@@ -256,7 +257,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		query.setOrder("desc");
 		query.setPage(1);
 		query.setRows(1);
-		query.setIsValid(TFEnum.TRUE.getCode());
+		query.setIsValid(YesOrNoEnum.YES.getCode());
 		return StreamEx.of(this.listPageByExample(query).getDatas()).findFirst();
 	}
 

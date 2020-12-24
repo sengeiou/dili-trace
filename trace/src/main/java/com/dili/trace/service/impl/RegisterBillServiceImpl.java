@@ -86,6 +86,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     CustomerRpcService clientRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    ProcessService processService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -95,7 +97,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public Optional<RegisterBill> selectByIdForUpdate(Long id) {
         return this.getActualDao().selectByIdForUpdate(id).map(billItem -> {
-            if (TFEnum.TRUE.equalsCode(billItem.getIsDeleted())) {
+            if (YesOrNoEnum.YES.getCode().equals(billItem.getIsDeleted())) {
                 throw new TraceBizException("报备单已经被删除");
             }
             return billItem;
@@ -112,7 +114,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (billItem == null) {
             return Optional.empty();
         }
-        if (TFEnum.TRUE.equalsCode(billItem.getIsDeleted())) {
+        if (YesOrNoEnum.YES.getCode().equals(billItem.getIsDeleted())) {
             throw new TraceBizException("报备单已经被删除");
         }
         return Optional.of(billItem);
@@ -126,6 +128,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user,marketId);
+
+            CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
+
+            Customer cq=new Customer();
+            cq.setCustomerId(customer.getCode());
+            this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
+                registerBill.setThirdPartyCode(card.getPrintingCard());
+            });
             return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -144,7 +154,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
-        registerBill.setIsDeleted(TFEnum.FALSE.getCode());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
         operatorUser.ifPresent(op -> {
             registerBill.setOperatorName(op.getName());
             registerBill.setOperatorId(op.getId());
@@ -234,9 +244,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
             throw new TraceBizException("装车类型错误");
         }
-        if (registerBill.getUpStreamId() == null) {
-            throw new TraceBizException("上游企业不能为空");
-        }
+//        if (registerBill.getUpStreamId() == null) {
+//            throw new TraceBizException("上游企业不能为空");
+//        }
         if (TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())) {
             if (StringUtils.isBlank(registerBill.getPlate())) {
                 throw new TraceBizException("车牌不能为空");
@@ -391,7 +401,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         RegisterBill bill = new RegisterBill();
         bill.setId(billItem.getBillId());
-        bill.setIsDeleted(TFEnum.TRUE.getCode());
+        bill.setIsDeleted(YesOrNoEnum.YES.getCode());
 
         operatorUser.ifPresent(op -> {
             bill.setOperatorName(op.getName());
@@ -483,6 +493,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
+
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
+                .orElseThrow(() -> new TraceBizException("参数错误"));
+        if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+            processService.afterBillPassed(billItem.getId(), billItem.getMarketId());
+        }
+
         //新增消息
         addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode(),billItem.getMarketId());
         return billItem.getId();
@@ -614,6 +631,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
      *
      * @param userId
      */
+    @Override
     public void updateUserQrStatusByUserId(Long billId, Long userId) {
         if (billId == null || userId == null) {
             return;
@@ -665,7 +683,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
 //        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
@@ -676,7 +694,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
         return this.countByVerifyStatus(query);
     }
 
@@ -686,7 +704,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
 //        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
@@ -697,7 +715,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
         return this.countByVerifyStatus(query);
     }
 
@@ -711,7 +729,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         query.setSort("created");
         query.setOrder("desc");
         query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
         query.setTruckType(TruckTypeEnum.FULL.getCode());
         List<RegisterBill> list = this.listByExample(query);
 
@@ -871,7 +889,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
-        registerBill.setIsDeleted(TFEnum.FALSE.getCode());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
         operatorUser.ifPresent(op -> {
             registerBill.setOperatorName(op.getName());
             registerBill.setOperatorId(op.getId());
@@ -1145,7 +1163,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
         List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
 
         return countList;

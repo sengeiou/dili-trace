@@ -42,7 +42,7 @@ class CommissionBillGrid extends ListPage {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '50%',
+            width: '80%',
             height: '70%',
             btns: [],
             onShowEnd: function () {

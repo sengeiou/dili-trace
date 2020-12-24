@@ -1,12 +1,6 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.TFEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -44,6 +38,15 @@ public class RegisterHead extends BaseDomain {
 	private Integer billType;
 
 	/**
+	 * 拼车类型
+	 */
+	@ApiModelProperty(value = "拼车类型")
+	@Column(name = "`truck_type`")
+	private Integer truckType;
+
+
+
+	/**
 	 * 业户ID
 	 */
 	@ApiModelProperty(value = "业户ID")
@@ -67,9 +70,13 @@ public class RegisterHead extends BaseDomain {
 	/**
 	 * 经营户卡号
 	 */
-	@ApiModelProperty(value = "经营户卡号")
+	@ApiModelProperty(value = "园区卡号")
 	@Column(name = "`third_party_code`")
 	private String thirdPartyCode;
+
+
+	@Transient
+	private String tradePrintingCard;
 
 	/**
 	 * 身份地址
@@ -273,6 +280,13 @@ public class RegisterHead extends BaseDomain {
 	@ApiModelProperty(value = "市场ID")
 	@Column(name = "market_id")
 	private Long marketId;
+
+
+	/**
+	 * 单价
+	 */
+	@Column(name = "`unit_price`")
+	private BigDecimal unitPrice;
 
 	/**
 	 * 重量单位名称
@@ -646,5 +660,26 @@ public class RegisterHead extends BaseDomain {
 
 	public void setBillTypeName(String billTypeName) {
 		this.billTypeName = billTypeName;
+	}
+
+	public Integer getTruckType() {
+		return truckType;
+	}
+
+	public void setTruckType(Integer truckType) {
+		this.truckType = truckType;
+	}
+
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+	@Transient
+	public String getTradePrintingCard() {
+		return this.thirdPartyCode;
 	}
 }

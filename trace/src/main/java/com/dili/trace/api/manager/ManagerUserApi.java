@@ -15,7 +15,6 @@ import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -39,8 +38,6 @@ public class ManagerUserApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerUserApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
-    @Autowired
-    UserService userService;
     @Autowired
     CustomerRpcService customerRpcService;
 

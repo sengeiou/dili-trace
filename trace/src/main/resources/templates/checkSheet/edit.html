@@ -1,7 +1,7 @@
 <#bodyOrigin>
 <div class="main-container" style="margin: 0;padding: 0;">
-    <div class="form-box border">
-        <form id="createCheckSheetForm" class="form-inline" role="form">
+    <div class="form-box border"  style="margin: 0;padding: 0;">
+        <form id="createCheckSheetForm" class="form-inline" role="form"  style="margin: 0;padding: 0;">
             <div class="form-item-group">
             <%if(itemList.~size==0){%>
 	            <div class="form-group" >
@@ -111,12 +111,9 @@ async function prePrint(){
 	    let url='${contextPath!}/checkSheet/prePrint.action';
         let resp=await jq.postJsonWithProcessing(url,formData);
         if(resp.code=="200"){
-            //console.info(resp);
-            //debugger
-            //await createCheckSheet();
             if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
                 $('.btn-main2').hide();
-                callbackObj.printDirect(JSON.stringify(resp),"TestReportDocument");
+                callbackObj.boothPrintPreview(JSON.stringify(resp.data), 'TestReportDocument',1)
             }else{
                 swal(
                     '错误',
@@ -166,19 +163,19 @@ function printFinish(){
 	parent.closeWin('view_win');
 }
 //客户端提交数据并同步获得提交后的数据
-async function createCheckSheet(){
-
+function createCheckSheet(){
     if($('#createCheckSheetForm').validate().form()==false){
         return null;
     }
     let formData=$('#createCheckSheetForm').serializeJSON({useIntKeysAsArrayIndex:true});
-    try {
-        let url='${contextPath!}/checkSheet/insert.action';
-        let resp=await jq.postJsonWithProcessing(url,formData);
-        return JSON.stringify(resp);
+    let url='${contextPath!}/checkSheet/insert.action';
+    try{
+        let ret=jq.syncPostJson(url,formData);
+        return JSON.stringify(ret);
     }catch (e){
-        return JSON.stringify({"code":"5000",result:"远程访问失败"})
+        return JSON.stringify({"code":"5000",result:"远程访问失败"});
     }
+
 }
 $('.fileimg-view').on('click', function () {
     var url = $(this).parent().siblings(".magnifying").attr('src');

@@ -133,15 +133,33 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-            <button id="booking-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 预约申请</button>
-            <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
-            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
-            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-car"></i> 主动送检</button>
-            <button id="manual-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 人工检测</button>
-            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-repeat"></i> 复检</button>
-            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-undo"></i> 撤销</button>
-            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
-            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <#resource code="customerDetectRequest#booking">
+                <button id="booking-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 预约申请</button>
+            </#resource>
+            <#resource code="customerDetectRequest#assign">
+                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+            </#resource>
+            <#resource code="customerDetectRequest#sampling">
+                <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
+            </#resource>
+            <#resource code="customerDetectRequest#auto">
+                <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-car"></i> 主动送检</button>
+            </#resource>
+            <#resource code="customerDetectRequest#manual">
+                <button id="manual-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 人工检测</button>
+            </#resource>
+            <#resource code="customerDetectRequest#review">
+                <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-repeat"></i> 复检</button>
+            </#resource>
+            <#resource code="customerDetectRequest#undo">
+                <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-undo"></i> 撤销</button>
+            </#resource>
+            <#resource code="customerDetectRequest#detail">
+                <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
+            </#resource>
+            <#resource code="customerDetectRequest#export">
+                <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            </#resource>
         </div>
         <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"

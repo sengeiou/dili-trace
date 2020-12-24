@@ -222,6 +222,13 @@ public class TradeDetail extends BaseDomain {
     @Like
     private String likeProductName;
 
+    /**
+     * 第三方库存主键（扣减第三方库存需要使用）
+     */
+    @ApiModelProperty(value = "第三方库存主键")
+    @Column(name = "`third_party_stock_id`")
+    private Long thirdPartyStockId;
+
     @Transient
     public String getWeightUnitName() {
         return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
@@ -517,5 +524,13 @@ public class TradeDetail extends BaseDomain {
 
     public void setLikeProductName(String likeProductName) {
         this.likeProductName = likeProductName;
+    }
+
+    public Long getThirdPartyStockId() {
+        return thirdPartyStockId;
+    }
+
+    public void setThirdPartyStockId(Long thirdPartyStockId) {
+        this.thirdPartyStockId = thirdPartyStockId;
     }
 }

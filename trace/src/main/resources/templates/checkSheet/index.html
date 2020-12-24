@@ -48,9 +48,15 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-            <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
-            <button id="reprint-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 补打</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('checkSheetGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <#resource code="checkSheet#view">
+                <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
+            </#resource>
+            <#resource code="checkSheet#reprint">
+                <button id="reprint-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 补打</button>
+            </#resource>
+            <#resource code="checkSheet#export">
+                <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('checkSheetGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            </#resource>
         </div>
         <table id="checkSheetGrid" data-toggle="table" data-title="检测列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.entity.Example;
 
+/**
+ * 库存service
+ */
 @Service
 public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
     @Autowired
@@ -26,13 +31,23 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
     @Autowired
     TradeDetailService tradeDetailService;
     @Autowired
-    UserService userService;
+    CustomerRpcService customerRpcService;
 
+    /**
+     * 查询 锁定数据行
+     * @param id
+     * @return
+     */
     @Transactional
     public Optional<ProductStock> selectByIdForUpdate(Long id) {
         return ((ProductStockMapper) this.getDao()).selectByIdForUpdate(id);
     }
 
+    /**
+     * 根据id查找 数据
+     * @param idList
+     * @return
+     */
     public List<ProductStock> findByIdList(List<Long> idList) {
         if (idList == null || idList.isEmpty()) {
             return Lists.newArrayList();
@@ -42,6 +57,12 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         return this.getDao().selectByExample(e);
     }
 
+    /**
+     * 查询或创建
+     * @param buyerId
+     * @param billItem
+     * @return
+     */
     @Transactional
     public ProductStock findOrCreateBatchStock(Long buyerId, RegisterBill billItem) {
 
@@ -54,11 +75,11 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         query.setBrandId(billItem.getBrandId());
         ProductStock batchStockItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
             // 创建初始BatchStock
-            User userItem = this.userService.get(buyerId);
+            CustomerExtendDto cust=this.customerRpcService.findCustomerByIdOrEx(buyerId,billItem.getMarketId());
             return this.registerBillService.selectByIdForUpdate(billItem.getId()).map(bill -> {
                 ProductStock batchStock = new ProductStock();
-                batchStock.setUserId(userItem.getId());
-                batchStock.setUserName(userItem.getName());
+                batchStock.setUserId(cust.getId());
+                batchStock.setUserName(cust.getName());
                 batchStock.setPreserveType(bill.getPreserveType());
                 batchStock.setProductId(bill.getProductId());
                 batchStock.setProductName(bill.getProductName());

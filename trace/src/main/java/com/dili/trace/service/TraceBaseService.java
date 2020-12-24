@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IBaseDomain;
 import com.github.pagehelper.Page;
@@ -58,14 +59,14 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
          * @param function
          * @return
          */
-        public BasePage<U> listPageByFun(Function<U, List<U>> function) {
+        public <S extends BaseDomain> BasePage<S> listPageByFun(Function<U, List<S>> function) {
 
 
             PageHelper.startPage(this.domain.getPage(), this.domain.getRows());
-            PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
-            List<U> list = function.apply(this.domain);
-            Page<U> page = (Page) list;
-            BasePage<U> result = new BasePage<U>();
+//            PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
+            List<S> list = function.apply(this.domain);
+            Page<S> page = (Page) list;
+            BasePage<S> result = new BasePage<S>();
             result.setDatas(list);
             result.setPage(page.getPageNum());
             result.setRows(page.getPageSize());

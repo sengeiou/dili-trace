@@ -1,13 +1,14 @@
 package com.dili.trace.rpc.api;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.retrofitful.annotation.POST;
-import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
 import com.dili.trace.rpc.dto.RegCreateDto;
 import com.dili.trace.rpc.dto.RegCreateResultDto;
 import com.dili.trace.rpc.dto.StockReduceRequestDto;
 import com.dili.trace.rpc.dto.StockReductResultDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -16,7 +17,11 @@ import java.util.List;
  *
  * @author wangguofeng
  */
-@Restful("${product-service.contextPath}")
+@FeignClient(
+        name = "product-service",
+        contextId = "productRpc",
+        url = "${productService.url:}"
+)
 public interface ProductRpc {
 
 
@@ -26,14 +31,14 @@ public interface ProductRpc {
      * @param obj
      * @return
      */
-    @POST("/api/stock/reduceByStockIds")
-    public BaseOutput<StockReductResultDto> reduceByStockIds(@VOBody StockReduceRequestDto obj);
+    @PostMapping(value="/api/stock/reduceByStockIds",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseOutput<List<StockReductResultDto>> reduceByStockIds(@VOBody StockReduceRequestDto obj);
 
     /**
      * 创建批次库存
      * @param obj
      * @return
      */
-    @POST("/api/register/create")
+    @PostMapping(value="/api/register/create",consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseOutput<RegCreateResultDto> create(@VOBody RegCreateDto obj);
 }

@@ -77,7 +77,7 @@
         "affectsGlobalScope": true
       },
       "../../tsc/checksheet.index.ts": {
-        "version": "47f1422c3cc6ce90b16ded677c461634103bbae631c00989e6e02919f809d5ed",
+        "version": "4288a7c072d7efbe560c1af7aeec3c3f16f3728f9509330ab06b5f882336e1fc",
         "signature": "40fbfc810ac6b54edd585801d81f3473a5a9baf29de32ff9ad8f7fda51fb1924",
         "affectsGlobalScope": true
       },
@@ -87,7 +87,7 @@
         "affectsGlobalScope": true
       },
       "../../tsc/commissionbillgrid.index.ts": {
-        "version": "2474c98171cfb7eda42e163d5fa0fcec23629519dd9bc283f43de78f3d3bccb8",
+        "version": "77c181f28838580d6f0f2d70584639ac6ea21005571788f65809d41e204be3bb",
         "signature": "1747781569c0cb359708c8edb68d9390a6dd9ca2feea97b8e9e81f26b988f6ba",
         "affectsGlobalScope": true
       },
@@ -111,6 +111,11 @@
         "signature": "33be5d5408fa4125a406409ae177695fe496325d3c21dafa18118d42fe5caf5b",
         "affectsGlobalScope": true
       },
+      "../../tsc/printer.ts": {
+        "version": "aea2263de0c6cd60129ae14aa69434ff72a0e5542119ea3e9e56107fa79d387a",
+        "signature": "39a1029e530d8ed3c7d23da6cd0d0992ea58ec97bdb088835e7939cdc886b3be",
+        "affectsGlobalScope": true
+      },
       "../../tsc/purchaseintentionrecordgrid.index.ts": {
         "version": "f38d88b5c998193e35d8e96c9fe7fb0b355a2856497632d016ba48abd003fa91",
         "signature": "f59746c8f6f2c9cc6b7b8f6c8e7ea84c87cc1ff9b7d656fc50d01c705e7aed41",
@@ -127,8 +132,8 @@
         "affectsGlobalScope": true
       },
       "../../tsc/utils.ts": {
-        "version": "20e6504043872c8a10068d50fad96f9221b586da50fdb976345be2d744e9111c",
-        "signature": "86dc214aa7a689b794bbf351382e7bd83bef8ac2d66bd32d5205f85317a7b847",
+        "version": "aaedeba8027d9cbf9b0d2f6156b808655019f011356235c0b25f69754f428189",
+        "signature": "a9f6fca3c9b4c8ec6cfacc0a564770153a734a01a72a52a048f0b1193eed886f",
         "affectsGlobalScope": true
       },
       "../../tsc/webconfig.ts": {
@@ -142,7 +147,7 @@
         "affectsGlobalScope": false
       },
       "../../tsc/ecommercebill.index.ts": {
-        "version": "1755aa8dddb9f3ad092ceb34d032f448e30bb08580df25f19fe3bb1aa75b6073",
+        "version": "aa579cb962e9db737d7b24f334f75790a94ffaf81239a64687909a2f99dd47bd",
         "signature": "e8259a608dc0d12837afea15ae883f3edfd056f1275517030c0f00fb17357e36",
         "affectsGlobalScope": true
       },
@@ -392,6 +397,7 @@
       "../../tsc/newregisterbillgrid.index.ts",
       "../../tsc/newuser.index.ts",
       "../../tsc/postmsg.ts",
+      "../../tsc/printer.ts",
       "../../tsc/purchaseintentionrecordgrid.index.ts",
       "../../tsc/trace.d.ts",
       "../../tsc/truckenterrecordgrid.index.ts",

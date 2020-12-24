@@ -5,7 +5,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
@@ -485,7 +484,7 @@ public class RegisterBillController {
             List<ImageCert> imageCerts = input.getImageCerts();
             Long id = this.registerBillService.doEdit(input, imageCerts, Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
             return BaseOutput.success().setData(id);
-        } catch (AppException e) {
+        } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

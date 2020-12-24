@@ -3,12 +3,13 @@ package com.dili.trace.service;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.POJOUtils;
+import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -21,6 +22,7 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
@@ -44,7 +46,7 @@ import java.util.function.Function;
  * 检测请求service
  */
 @Service
-public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
+public class DetectRequestService extends TraceBaseService<DetectRequest, Long> {
 
     @Autowired
     BillService billService;
@@ -56,18 +58,19 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     RegisterBillService registerBillService;
     @Autowired
-    UserRpcService userRpcService;
-    @Autowired
     ImageCertService imageCertService;
+    @Autowired
+    CustomerRpcService customerRpcService;
 
     /**
      * 创建检测请求
      *
-     * @param billId       报备单ID
+     * @param inputDto       报备单ID
      * @param operatorUser 操作用户
      * @return
      */
-    public DetectRequest createDetectRequestForBill(Long billId, Optional<OperatorUser> operatorUser) {
+    public DetectRequest createDetectRequestForBill(DetectRequestInputDto inputDto, Optional<OperatorUser> operatorUser) {
+        Long billId=inputDto.getBillId();
         RegisterBill billItem = this.billService.get(billId);
         if (billItem == null) {
             throw new TraceBizException("登记单不存在");
@@ -100,6 +103,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         registerBill.setId(billId);
         registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         registerBill.setDetectRequestId(detectRequest.getId());
+//        registerBill.setProductAliasName(inputDto.getProductAliasName());
+//        registerBill.setIsPrintCheckSheet(inputDto.getIsPrintCheckSheet());
         this.billService.updateSelective(registerBill);
         return detectRequest;
 
@@ -289,7 +294,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @return
      * @throws Exception
      */
-    public EasyuiPageOutput listEasyuiPageByExample(DetectRequestDto dto) throws Exception {
+    public EasyuiPageOutput listEasyuiPageByExample(DetectRequestQueryDto dto) throws Exception {
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
 
         // 查询报备单信息
@@ -375,26 +380,15 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param domain
      * @return
      */
-    public BasePage<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
-        if (domain.getPage() == null || domain.getPage() < 0) {
-            domain.setPage(1);
-        }
-        if (domain.getRows() == null || domain.getRows() <= 0) {
-            domain.setRows(10);
-        }
+    public BasePage<DetectRequestOutDto> listPageByUserCategory(DetectRequestQueryDto domain) {
         if (StringUtils.isNotBlank(domain.getSort())) {
-            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
+//            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
         }
-        PageHelper.startPage(domain.getPage(), domain.getRows());
-        List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(domain);
-        Page<DetectRequestDto> page = (Page) list;
-        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
-        result.setDatas(list);
-        result.setPage(page.getPageNum());
-        result.setRows(page.getPageSize());
-        result.setTotalItem(page.getTotal());
-        result.setTotalPage(page.getPages());
-        result.setStartIndex(page.getStartRow());
+        domain.setOrder(null);
+        BasePage<DetectRequestOutDto> result = super.buildQuery(domain).listPageByFun(q->{
+            List<DetectRequestOutDto> list = this.detectRequestMapper.selectListPageByUserCategory(q);
+            return list;
+        });
         return result;
     }
 
@@ -414,8 +408,11 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param detectRequestDto
      * @return
      */
-    public DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto) {
-        DetectRequestDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+    public DetectRequestOutDto getDetectRequestDetail(DetectRequestQueryDto detectRequestDto) {
+        DetectRequestOutDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        if(dto==null){
+            throw new TraceBizException("数据不存在");
+        }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
         dto.setImageCertList(imageCertList);
         return dto;
@@ -491,13 +488,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         return result;
     }
 
-    /**
+   /* *//**
      * 创建场外委托单
      *
      * @param input
      * @param empty
      * @return
-     */
+     *//*
     @Transactional(rollbackFor = Exception.class)
     public DetectRequest createOffSiteDetectRequest(DetectRequestDto input, Optional<OperatorUser> empty) {
 
@@ -528,15 +525,15 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                     Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
             //创建检测请求
             resultDetectRequest = createDetectRequest(input, billId, empty);
-        } catch (AppException e) {
-            throw new AppException(e.getMessage());
+        } catch (TraceBizException e) {
+            throw new TraceBizException(e.getMessage());
 
         } catch (Exception e) {
-            throw new AppException(e.getMessage());
+            throw new TraceBizException(e.getMessage());
 
         }
         return resultDetectRequest;
-    }
+    }*/
 
     /**
      * 初始化报备单参数-创建场外委托单
@@ -546,27 +543,28 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param upName
      * @return
      */
-    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
-        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setName(user.getUserName());
-        registerBill.setIdCardNo(user.getCardNumber());
-        registerBill.setUserId(input.getCreatorId());
-        registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
-        registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
-        registerBill.setUpStreamId(upStreamId);
-        registerBill.setUpStreamName(upName);
-        registerBill.setProductId(input.getProductId());
-        registerBill.setProductName(input.getProductName());
-        registerBill.setProductAliasName(input.getProductAliasName());
-        registerBill.setOriginId(input.getOriginId());
-        registerBill.setOriginName(input.getOriginName());
-        registerBill.setWeight(input.getWeight());
-        registerBill.setWeightUnit(input.getWeightUnit());
-        registerBill.setMarketId(input.getMarketId());
-        registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
-        return registerBill;
-    }
+//    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
+//        CustomerExtendDto user=this.customerRpcService.findCustomerByIdOrEx(input.getCreatorId(),input.getMarketId());
+////        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
+//        RegisterBill registerBill = new RegisterBill();
+//        registerBill.setName(user.getName());
+////        registerBill.setIdCardNo(user);
+//        registerBill.setUserId(input.getCreatorId());
+//        registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
+//        registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
+//        registerBill.setUpStreamId(upStreamId);
+//        registerBill.setUpStreamName(upName);
+//        registerBill.setProductId(input.getProductId());
+//        registerBill.setProductName(input.getProductName());
+//        registerBill.setProductAliasName(input.getProductAliasName());
+//        registerBill.setOriginId(input.getOriginId());
+//        registerBill.setOriginName(input.getOriginName());
+//        registerBill.setWeight(input.getWeight());
+//        registerBill.setWeightUnit(input.getWeightUnit());
+//        registerBill.setMarketId(input.getMarketId());
+//        registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
+//        return registerBill;
+//    }
 
     /**
      * 创建委托请求单并修改报备单状态
@@ -575,7 +573,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param billId
      * @param operatorUser
      */
-    private DetectRequest createDetectRequest(DetectRequestDto input, Long billId, Optional<OperatorUser> operatorUser) {
+    private DetectRequest createDetectRequest(DetectRequestInputDto input, Long billId, Optional<OperatorUser> operatorUser) {
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());

@@ -142,6 +142,8 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 
 <script type="text/javascript">
 function changeInputAttrs(needInput){
@@ -202,74 +204,52 @@ $('#seperateTable input[type="checkbox"]').on('change',function(n,o){
 			return;
 		}
 		var formData=buildFormData();
-		
-         $.ajax({
-             type: "POST",
-             url: "${contextPath}/seperatePrintReport/previewPrintableData.action",
-             data :  JSON.stringify(formData),
-             dataType: "json",
-             async : true,
-             contentType: "application/json; charset=utf-8",
-             success: function (ret) {
-            	 console.info(ret)
-                 if(ret.success){
-     	        	//console.info(ret);
-    	        	//debugger
-    	        	if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
-    	        		$('.btn-main2').hide();
-    	        		callbackObj.printDirect(JSON.stringify(ret),"EcommerceSeperateReportDocument");
-    	        	}else{
-    	        		 swal(
-    	                         '错误',
-    	                         '请升级客户端或者在客户端环境运行当前程序',
-    	                         'error'
-    	                 );
-    	        	}
-                 }else{
-                     swal(
-                             '错误',
-                             ret.result,
-                             'error'
-                     );
-                 }
-             },
-             error: function(){
-                 swal(
-                         '错误',
-                         '远程访问失败',
-                         'error'
-                 );
-             }
-         });
-    	
+        try{
+            let url= '${contextPath!}/seperatePrintReport/previewPrintableData.action'
+            let ret=jq.syncPostJson(url,formData);
+            if(ret.success){
+                //console.info(ret);
+                //debugger
+                if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
+                    $('.btn-main2').hide();
+                    callbackObj.boothPrintPreview(JSON.stringify(ret.data),"EcommerceSeperateReportDocument",1);
+                }else{
+                    swal(
+                        '错误',
+                        '请升级客户端或者在客户端环境运行当前程序',
+                        'error'
+                    );
+                }
+            }else{
+                debugger
+                swal(
+                    '错误',
+                    ret.result,
+                    'error'
+                );
+            }
+        }catch (e){
+            debugger
+            swal(
+                '错误',
+                '远程访问失败',
+                'error'
+            );
+        }
     }
   //客户端提交数据并同步获得提交后的数据
     function submitPrintableData(){
-    		if($('#createRecordForm').validate().form()==false){
-    			return;
-    		}
-    		var formData=buildFormData();
-    		
-    		var result={};
-    		$.ajax({
-    		    type: "POST",
-    		    url: '${contextPath!}/seperatePrintReport/submitPrintableData.action',
-    		    data: JSON.stringify(formData),
-    		    processData:true,
-    		    dataType: "json",
-    		    async : false,
-    		    contentType: "application/json; charset=utf-8",
-    		    success: function (ret) {
-    		    	result=ret;
-    		    },
-    		    error: function(){
-    		    	result={"code":"5000",result:"远程访问失败"}
-
-    		    }
-    		});
-    		//debugger
-    		//console.info(result);
-    		return JSON.stringify(result)
+        if($('#createRecordForm').validate().form()==false){
+            return;
+        }
+        var formData=buildFormData();
+        try{
+            let url= '${contextPath!}/seperatePrintReport/submitPrintableData.action'
+            let ret=jq.syncPostJson(url,formData);
+            return JSON.stringify(ret);
+        }catch (e){
+            return JSON.stringify({"code":"5000",result:"远程访问失败"});
+        }
     }
 
   //客户端错误回调方法

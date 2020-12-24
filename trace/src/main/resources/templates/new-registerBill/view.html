@@ -159,7 +159,7 @@
                         <div class="form-group">
                             <div class="imageUpload rectangle">
                                 <img id="registerBillQRCode"  alt="" class="show-image">
-                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
+                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="${baseWebPath}/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
                             </div>
                         </div>
                     </div>
@@ -255,7 +255,7 @@
                                 <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
                                 <% }else{ %>
                                 <a href="javascript:void(0)" ><img id="tradeBillQR${qttbLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
-                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="${baseWebPath}/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
                                 <% } } %>
                         </tr>
                         <% } %>

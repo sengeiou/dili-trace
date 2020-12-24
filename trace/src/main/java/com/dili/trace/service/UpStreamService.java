@@ -4,23 +4,18 @@ import java.util.*;
 
 import java.util.stream.Collectors;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.dao.UpStreamMapper;
-import com.dili.trace.domain.Market;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
 
-import com.dili.uap.sdk.domain.Firm;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +41,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	RUserUpStreamService rUserUpStreamService;
-
-	@Autowired
-	UserService userService;
 
 	@Autowired
 	MarketService marketService;
@@ -143,8 +135,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	public Optional<Long> addUserForDownStream(UpStreamDto upStreamDto) {
 
 		if (UserFlagEnum.DOWN.equalsToCode(upStreamDto.getUpORdown())) {
-			Long sourceuserId = doAddUser(upStreamDto);
-			return Optional.ofNullable(sourceuserId);
+//			Long sourceuserId = doAddUser(upStreamDto);
+//			return Optional.ofNullable(sourceuserId);
 		}
 
 		return Optional.empty();
@@ -155,32 +147,32 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 * @param upStreamDto
 	 * @return
 	 */
-	private Long doAddUser(UpStreamDto upStreamDto) {
-		List<User> users = userService.getUserByExistsAccount(upStreamDto.getTelphone());
-		boolean existsFlag = !CollUtil.isEmpty(users);
-		if (!existsFlag) {
-			JSONObject object = new JSONObject();
-			object.put("phone", upStreamDto.getTelphone());
-			object.put("name", upStreamDto.getName());
-			if (Objects.nonNull(upStreamDto.getMarketId())) {
-				object.put("marketId", upStreamDto.getMarketId());
-
-				marketService.getMarketById(upStreamDto.getMarketId()).ifPresent(e ->{
-					object.put("marketName", e.getName());
-				});
-			}
-			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()) {// 企业
-				object.put("legal_person", upStreamDto.getLegalPerson());
-				object.put("license", upStreamDto.getLicense());
-			}
-
-			User user = JSONObject.parseObject(object.toJSONString(), User.class);
-//			userService.register(user, false);
-			return user.getId();
-		}
-		return users.get(0).getId();
-
-	}
+//	private Long doAddUser(UpStreamDto upStreamDto) {
+//		List<User> users = userService.getUserByExistsAccount(upStreamDto.getTelphone());
+//		boolean existsFlag = !CollUtil.isEmpty(users);
+//		if (!existsFlag) {
+//			JSONObject object = new JSONObject();
+//			object.put("phone", upStreamDto.getTelphone());
+//			object.put("name", upStreamDto.getName());
+//			if (Objects.nonNull(upStreamDto.getMarketId())) {
+//				object.put("marketId", upStreamDto.getMarketId());
+//
+//				marketService.getMarketById(upStreamDto.getMarketId()).ifPresent(e ->{
+//					object.put("marketName", e.getName());
+//				});
+//			}
+//			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()) {// 企业
+//				object.put("legal_person", upStreamDto.getLegalPerson());
+//				object.put("license", upStreamDto.getLicense());
+//			}
+//
+//			User user = JSONObject.parseObject(object.toJSONString(), User.class);
+////			userService.register(user, false);
+//			return user.getId();
+//		}
+//		return users.get(0).getId();
+//
+//	}
 
 	/**
 	 * 添加上游的所有业户信息（绑定）

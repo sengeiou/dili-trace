@@ -1,8 +1,5 @@
 package com.dili.trace.api.manager;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -10,7 +7,6 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.VerifyBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
@@ -19,9 +15,9 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 审核管理接口
@@ -46,8 +42,7 @@ public class ManagerVerifyApi {
     private RegisterBillService registerBillService;
     @Autowired
     private LoginSessionContext sessionContext;
-    @Autowired
-    UserService userService;
+
 
     /**
      * 获得报备审核列表
