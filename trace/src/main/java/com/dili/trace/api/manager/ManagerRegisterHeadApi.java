@@ -13,9 +13,11 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.*;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterHead;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListRegisterHeadParam;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
@@ -37,7 +39,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * (管理员)进门主台账单相关接口
@@ -96,6 +97,7 @@ public class ManagerRegisterHeadApi {
                 registerHeadBasePage.getDatas().forEach(e -> {
                     e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
                     e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
+                    e.setUpStreamName(this.upStreamService.get(e.getUpStreamId()).getName());
                 });
             }
 

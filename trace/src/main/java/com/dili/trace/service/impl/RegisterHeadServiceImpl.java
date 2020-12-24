@@ -306,8 +306,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
         }
 
-
-
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
         if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
             registerHeadBasePage.getDatas().forEach(e ->{
