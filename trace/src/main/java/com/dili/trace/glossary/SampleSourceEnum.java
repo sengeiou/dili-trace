@@ -13,11 +13,14 @@ import java.util.Optional;
  * @createTime 2018/11/8 18:43
  */
 public enum SampleSourceEnum {
-
+    /**
+     * 初始
+     */
+    NONE(-1, "初始"),
     /**
      * 待处理
      */
-    NONE(0, "待处理"),
+    WAIT_HANDLE(0, "待处理"),
     /**
      * 采样检测
      */

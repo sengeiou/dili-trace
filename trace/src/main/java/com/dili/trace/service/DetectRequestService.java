@@ -371,6 +371,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setDesignatedName(designatedName);
         updateParam.setDetectTime(detectTime);
         updateParam.setModified(new Date());
+        updateParam.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
         this.updateSelective(updateParam);
     }
 
@@ -425,6 +426,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      */
     @Transactional(rollbackFor = Exception.class)
     public void receiveDetectRequest(Long billId, DetectRequest detectRequestDto) {
+        detectRequestDto.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
         this.updateSelective(detectRequestDto);
         RegisterBill upBill = new RegisterBill();
         upBill.setId(billId);
