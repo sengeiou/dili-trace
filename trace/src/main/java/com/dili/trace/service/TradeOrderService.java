@@ -6,7 +6,7 @@ import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.domain.User;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
-
+import com.dili.trace.rpc.service.CustomerRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,28 +17,33 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
     @Autowired
     UserService userService;
+    @Autowired
+    CustomerRpcService customerRpcService;
 
-    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType) {
-        User seller = this.userService.get(sellerId);
-        User buyer = this.userService.get(buyerId);
-        if(seller==null){
-            throw new TraceBizException("卖家不存在");
-        }
-        if(buyer==null){
-            throw new TraceBizException("买家不存在");
-        }
+    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType, Long marketId) {
+
+        User seller = customerRpcService.findUserFromCustomerById(sellerId, marketId).orElseThrow(() -> {
+            return new TraceBizException("卖家不存在");
+        });
+
+        User buyer = customerRpcService.findUserFromCustomerById(buyerId, marketId).orElseThrow(() -> {
+            return new TraceBizException("买家不存在");
+        });
+
         return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
 
     }
-    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
-        User seller = this.userService.get(sellerId);
-        User buyer = this.userService.get(buyerId);
-        if(seller==null){
-            throw new TraceBizException("卖家不存在");
-        }
-        if(buyer==null){
-            throw new TraceBizException("买家不存在");
-        }
+    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum,
+                                       Long marketId) {
+
+        User seller = customerRpcService.findUserFromCustomerById(sellerId, marketId).orElseThrow(() -> {
+            return new TraceBizException("卖家不存在");
+        });
+
+        User buyer = customerRpcService.findUserFromCustomerById(buyerId, marketId).orElseThrow(() -> {
+            return new TraceBizException("买家不存在");
+        });
+
         return this.createTradeOrder(seller, buyer,orderType,tradeOrderStatusEnum);
 
     }
@@ -63,6 +68,5 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());
         this.updateSelective(tradeOrderItem);
     }
-
 
 }

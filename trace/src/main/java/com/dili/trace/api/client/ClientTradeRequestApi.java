@@ -156,7 +156,8 @@ public class ClientTradeRequestApi {
 			SessionData sessionData = this.sessionContext.getSessionData();
 
 			Long buyerId = sessionData.getUserId();
-			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto);
+			Long marketId = sessionData.getMarketId();
+			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto, marketId);
 			return BaseOutput.success();
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -184,9 +185,10 @@ public class ClientTradeRequestApi {
 			SessionData sessionData = this.sessionContext.getSessionData();
 
 			Long sellerId = sessionData.getUserId();
+			Long marketId = sessionData.getMarketId();
 			logger.info("seller id in session:{}",sellerId);
 			List<TradeRequest> list = this.tradeRequestService.createSellRequest(sellerId, inputDto.getBuyerId(),
-					inputDto.getBatchStockList());
+					inputDto.getBatchStockList(), marketId);
 			return BaseOutput.success();
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());

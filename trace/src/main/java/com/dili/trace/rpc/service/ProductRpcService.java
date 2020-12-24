@@ -14,6 +14,7 @@ import com.dili.trace.service.TradeDetailService;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class ProductRpcService {
      * @param bill
      * @param opt
      */
+    @Transactional(rollbackFor = Exception.class)
     public RegCreateResultDto create(RegisterBill bill, Optional<OperatorUser> opt) {
         //库存基本信息
         RegCreateDto obj = new RegCreateDto();
