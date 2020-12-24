@@ -327,9 +327,5 @@ public class QRCodeUtil
     }
 
 
-//    public static void main(String[] args) throws Exception
-//    {
-//        String text = "http://liuwuhen.iteye.com/";
-//        encode(text, userService.getUserQrCode(445L).getBase64QRImg(),false,"ReportNo: NHTSY18080007");
-//    }
+
 }

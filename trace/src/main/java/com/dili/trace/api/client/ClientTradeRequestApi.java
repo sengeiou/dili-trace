@@ -32,7 +32,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 用户交易请求接口
+ * (经营户，买家)用户交易请求接口
  */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")

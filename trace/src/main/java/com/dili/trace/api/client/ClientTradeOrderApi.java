@@ -27,12 +27,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 交易订单接口
+ * (经营户)交易订单接口
  */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeOrderApi")
 @RestController
-@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
+@AppAccess(role = Role.Client)
 @RequestMapping(value = "/api/client/clientTradeOrderApi")
 public class ClientTradeOrderApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradeOrderApi.class);

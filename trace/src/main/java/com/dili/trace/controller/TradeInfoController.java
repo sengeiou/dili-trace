@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import com.dili.common.entity.LoginSessionContext;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
@@ -33,7 +32,7 @@ public class TradeInfoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeInfoController.class);
 
     @Autowired
-    private CustomerRpcService customerService;
+    private CustomerRpcService customerRpcService;
     @Resource
     private UserService userService;
     @Resource
@@ -52,7 +51,7 @@ public class TradeInfoController {
     public BaseOutput<Customer> findCustomerById(@PathVariable String customerCode) {
         Customer cust = new Customer();
         cust.setCustomerId(customerCode);
-        return customerService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
+        return customerRpcService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
             return BaseOutput.success().setData(c);
         }).orElse(BaseOutput.failure());
     }
@@ -68,7 +67,7 @@ public class TradeInfoController {
     public BaseOutput<Customer> findCustomerByCardNo(@PathVariable String printingCard) {
         Customer cust = new Customer();
         cust.setPrintingCard(printingCard);
-        return customerService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
+        return customerRpcService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
             return BaseOutput.success().setData(c);
         }).orElse(BaseOutput.failure());
     }
