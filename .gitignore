@@ -23,3 +23,4 @@ trace/nb-configuration.xml
 **/*.js.map
 **/application.pid
 **/package-lock.json
+**/tsconfig.tsbuildinfo

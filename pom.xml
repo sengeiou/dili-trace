@@ -40,12 +40,14 @@
 		<targetResourcesProject>${basedir}/src/main/resources</targetResourcesProject>
 		<targetXMLPackage>mapper</targetXMLPackage>
 		<!-- 依赖版本 -->
+<!--
 		<springloaded.version>1.2.8.RELEASE</springloaded.version>
+-->
 
 		<logger.version>0.0.1-SNAPSHOT</logger.version>
 	</properties>
 
-	<!--地利 -->
+	<!--&lt;!&ndash;地利 &ndash;&gt;
 	<distributionManagement>
 		<repository>
 			<id>central</id>
@@ -61,7 +63,7 @@
                 http://mvn2.diligrp.com/artifactory/libs-snapshot-local
             </url>
 		</snapshotRepository>
-	</distributionManagement>
+	</distributionManagement>-->
 
 	<build>
 		<!-- 资源文件过滤 -->

@@ -39,7 +39,7 @@ public class DepartmentRpcService {
             return Optional.empty();
         }
         DepartmentDto query = DTOUtils.newDTO(DepartmentDto.class);
-        query.setName(DetectDepartmentKeyWord);
+        query.setNameLike(DetectDepartmentKeyWord);
         query.setFirmId(firmId);
         try {
             BaseOutput<List<Department>> out = this.departmentRpc.listByExample(query);
