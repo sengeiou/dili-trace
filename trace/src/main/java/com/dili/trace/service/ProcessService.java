@@ -34,6 +34,8 @@ public class ProcessService {
     private MarketService marketService;
     @Resource
     CheckinOutRecordService checkinOutRecordService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 创建报备之后
@@ -53,7 +55,7 @@ public class ProcessService {
      */
     public void afterBillPassed(Long billId, Long marketId) {
         RegisterBill registerBill = billService.get(billId);
-        Optional<OperatorUser> optUser = sessionContext.getSessionData().getOptUser();
+        Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
         Map<String, String> marketCodeMap = marketService.getMarketCodeMap();
         String marketCode = marketService.getMarketById(marketId).map(Firm::getCode).orElseThrow(() -> {
@@ -76,7 +78,7 @@ public class ProcessService {
      */
     public void afterCheckIn(Long billId, Long marketId) {
         RegisterBill registerBill = billService.get(billId);
-        Optional<OperatorUser> optUser = sessionContext.getSessionData().getOptUser();
+        Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
         // 进门之后向 UAP 同步库存
         productRpcService.create(registerBill, optUser);
