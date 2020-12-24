@@ -1,5 +1,7 @@
 package com.dili.trace.api;
 
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
@@ -36,6 +38,7 @@ import java.util.Map;
 @Api(value = "/api/message", description = "有关于消息相关的接口")
 @RestController
 @RequestMapping(value = "/api/message")
+@AppAccess(role = Role.ANY)
 public class EventMessageApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventMessageApi.class);
 

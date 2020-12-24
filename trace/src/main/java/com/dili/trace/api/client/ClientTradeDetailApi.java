@@ -14,7 +14,6 @@ import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +35,6 @@ import io.swagger.annotations.Api;
 @RequestMapping(value = "/api/client/clientTradeDetail")
 public class ClientTradeDetailApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
-	@Autowired
-	private UserService userService;
 	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired

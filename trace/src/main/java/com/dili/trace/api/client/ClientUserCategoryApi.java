@@ -36,6 +36,7 @@ public class ClientUserCategoryApi {
     RUserCategoryService rUserCategoryService;
     @Autowired
     private LoginSessionContext sessionContext;
+
     /**
      * 查询常用品类
      *
@@ -47,13 +48,19 @@ public class ClientUserCategoryApi {
 //        if (rUserCategory.getUserId() == null) {
 //            return BaseOutput.failure("参数错误");
 //        }
-        rUserCategory.setSort("create_time");
-        rUserCategory.setOrder("desc");
-        rUserCategory.setUserId(this.sessionContext.getSessionData().getUserId());
-        List<RUserCategory> data = this.rUserCategoryService.listByExample(rUserCategory);
-        return BaseOutput.successData(data);
-
+        try {
+            rUserCategory.setSort("create_time");
+            rUserCategory.setOrder("desc");
+            rUserCategory.setUserId(this.sessionContext.getSessionData().getUserId());
+            List<RUserCategory> data = this.rUserCategoryService.listByExample(rUserCategory);
+            return BaseOutput.successData(data);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
     }
+
     /**
      * 添加个人经营品类
      */
@@ -70,6 +77,7 @@ public class ClientUserCategoryApi {
             return BaseOutput.failure("服务端出错");
         }
     }
+
     /**
      * 删除个人经营品类
      */

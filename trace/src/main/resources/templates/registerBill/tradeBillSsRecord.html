@@ -19,7 +19,7 @@
                 <td>${record.salesPlate!}</td>
                 <td>
                     <a href="javascript:void(0)" class="show-img"><img id="separateSalesRecordQR${recordLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
-                    <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/tradeSsrQRCcode.html?id=${record.id!}"/>
+                    <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="${baseWebPath}/registerBill/tradeSsrQRCcode.html?id=${record.id!}"/>
                 </td>
             </tr>
             <% } %>
