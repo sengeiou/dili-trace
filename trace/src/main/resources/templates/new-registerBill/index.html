@@ -177,65 +177,65 @@
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <#resource code="newRegisterBill#add">
-            <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
-        </#resource>
-        <#resource code="newRegisterBill#edit">
-            <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
-    </#resource>
-    <#resource code="newRegisterBill#audit">
-            <button id="audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 进场审核</button>
-</#resource>
-<#resource code="newRegisterBill#batch-audit">
-            <button id="batch-audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量审核</button>
-</#resource>
-<#resource code="newRegisterBill#audit-withoutDetect">
-            <button id="audit-withoutDetect-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 审核不检测</button>
-</#resource>
-<#resource code="newRegisterBill#review">
-            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 复检</button>
-</#resource>
-<#resource code="newRegisterBill#auto">
-            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
-</#resource>
-<#resource code="newRegisterBill#batch-auto">
-            <button id="batch-auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量主动送检</button>
-</#resource>
-<#resource code="newRegisterBill#sampling">
-            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
-</#resource>
-<#resource code="newRegisterBill#batch-sampling">
-            <button id="batch-sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量采样检测</button>
-</#resource>
-<#resource code="newRegisterBill#undo">
-            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>撤销</button>
-</#resource>
-<#resource code="newRegisterBill#batch-undo">
-            <button id="batch-undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量撤销</button>
-</#resource>
-<#resource code="newRegisterBill#createsheet">
-            <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>创建打印报告</button>
-</#resource>
-<#resource code="newRegisterBill#upload-handleresult">
-            <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传处理结果</button>
-</#resource>
-<#resource code="newRegisterBill#upload-origincertifiy">
-            <button id="upload-origincertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传产地证明</button>
-</#resource>
-<#resource code="newRegisterBill#upload-detectreport">
-            <button id="upload-detectreport-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传检测报告</button>
-</#resource>
-<#resource code="newRegisterBill#remove-reportAndcertifiy">
-            <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
-</#resource>
-<#resource code="newRegisterBill#copy">
-            <button id="copy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>补录</button>
-</#resource>
-<#resource code="newRegisterBill#detail">
-            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
-</#resource>
-<#resource code="newRegisterBill#export">
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
-</#resource>
+                <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            </#resource>
+            <#resource code="newRegisterBill#edit">
+                <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
+            </#resource>
+            <#resource code="newRegisterBill#audit">
+                <button id="audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 进场审核</button>
+            </#resource>
+            <#resource code="newRegisterBill#batch-audit">
+                <button id="batch-audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量审核</button>
+            </#resource>
+            <#resource code="newRegisterBill#audit-withoutDetect">
+                <button id="audit-withoutDetect-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 审核不检测</button>
+            </#resource>
+            <#resource code="newRegisterBill#review">
+                <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 复检</button>
+            </#resource>
+            <#resource code="newRegisterBill#auto">
+                <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
+            </#resource>
+            <#resource code="newRegisterBill#batch-auto">
+                <button id="batch-auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量主动送检</button>
+            </#resource>
+            <#resource code="newRegisterBill#sampling">
+                <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
+            </#resource>
+            <#resource code="newRegisterBill#batch-sampling">
+                <button id="batch-sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量采样检测</button>
+            </#resource>
+            <#resource code="newRegisterBill#undo">
+                <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>撤销</button>
+            </#resource>
+            <#resource code="newRegisterBill#batch-undo">
+                <button id="batch-undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量撤销</button>
+            </#resource>
+            <#resource code="newRegisterBill#createsheet">
+                <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>创建打印报告</button>
+            </#resource>
+            <#resource code="newRegisterBill#upload-handleresult">
+                <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传处理结果</button>
+            </#resource>
+            <#resource code="newRegisterBill#upload-origincertifiy">
+                <button id="upload-origincertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传产地证明</button>
+            </#resource>
+            <#resource code="newRegisterBill#upload-detectreport">
+                <button id="upload-detectreport-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传检测报告</button>
+            </#resource>
+            <#resource code="newRegisterBill#remove-reportAndcertifiy">
+                <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
+            </#resource>
+            <#resource code="newRegisterBill#copy">
+                <button id="copy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>补录</button>
+            </#resource>
+            <#resource code="newRegisterBill#detail">
+                <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
+            </#resource>
+            <#resource code="newRegisterBill#export">
+                <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            </#resource>
         </div>
         <table id="registerBillGrid" data-toggle="table" data-title="进场报备列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
