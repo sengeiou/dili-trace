@@ -68,10 +68,15 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机进门报备数据列表", notes = "查询司机进门报备数据列表")
     @RequestMapping(value = "/listPagedEnterRecord.api", method = RequestMethod.POST)
     public BaseOutput listPagedEnterRecord(@RequestBody TruckEnterRecordQueryDto queryDto) {
-        queryDto.setDriverId(this.sessionContext.getAccountId());
-        BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
-        return BaseOutput.successData(page);
-
+        try {
+            queryDto.setDriverId(this.sessionContext.getAccountId());
+            BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
+            return BaseOutput.successData(page);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
     }
 
     /**
@@ -83,11 +88,17 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机消息数据列表", notes = "查询司机消息数据列表")
     @RequestMapping(value = "/listPagedEventMessage.api", method = RequestMethod.POST)
     public BaseOutput listPagedEventMessage(@RequestBody EventMessage queryDto) {
+        try {
+            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+            BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
+            return BaseOutput.successData(page);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
 
-        queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-        queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
-        BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
-        return BaseOutput.successData(page);
 
     }
 
@@ -103,17 +114,17 @@ public class ClientDriverUserApi {
         if (queryDto.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
-        queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-        queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        try {
+            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
-        return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
-                .findFirst().map(data -> {
-
-                    return BaseOutput.successData(data);
-                }).orElseGet(() -> {
-                    return BaseOutput.failure("数据不存在");
-                });
-
+            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
+                    .findFirst().map(data -> BaseOutput.successData(data)).orElseGet(() -> BaseOutput.failure("数据不存在"));
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
     }
 
     /**
@@ -128,20 +139,25 @@ public class ClientDriverUserApi {
         if (queryDto.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
-        queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-        queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        try {
+            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
-        return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
-                .findFirst().map(data -> {
-                    EventMessage msg = new EventMessage();
-                    msg.setId(data.getId());
-                    msg.setReadFlag(MessageStateEnum.READ.getCode());
-                    this.eventMessageService.updateSelective(msg);
-                    return BaseOutput.successData(this.eventMessageService.get(data.getId()));
-                }).orElseGet(() -> {
-                    return BaseOutput.failure("数据不存在");
-                });
-
+            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
+                    .findFirst().map(data -> {
+                        EventMessage msg = new EventMessage();
+                        msg.setId(data.getId());
+                        msg.setReadFlag(MessageStateEnum.READ.getCode());
+                        this.eventMessageService.updateSelective(msg);
+                        return BaseOutput.successData(this.eventMessageService.get(data.getId()));
+                    }).orElseGet(() -> {
+                        return BaseOutput.failure("数据不存在");
+                    });
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
     }
 
     /**
@@ -153,11 +169,14 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机未读取消息数量", notes = "查询司机未读取消息数量")
     @RequestMapping(value = "/countReadableEventMessage.api", method = RequestMethod.POST)
     public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
-
-        Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
-
-        return BaseOutput.successData(cnt);
-
+        try {
+            Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
+            return BaseOutput.successData(cnt);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
     }
 
     /**
@@ -203,12 +222,18 @@ public class ClientDriverUserApi {
     @RequestMapping(value = "/getDriverList.api", method = RequestMethod.POST)
     @Deprecated
     public BaseOutput getDriverList() {
+        try {
+            User user = DTOUtils.newDTO(User.class);
+            user.setName("测试");
+            user.setId(1L);
 
-        User user = DTOUtils.newDTO(User.class);
-        user.setName("测试");
-        user.setId(1L);
+            return BaseOutput.success().setData(Collections.singletonList(user));
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            return BaseOutput.failure().setData(e.getMessage());
+        }
 
-        return BaseOutput.success().setData(Collections.singletonList(user));
     }
 
     /**
