@@ -102,7 +102,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void createAndCancelTradeRequest() {
         TradeRequest request = this.createBuyTradeRequest(this.createBatchStock());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(), TradeOrderTypeEnum.SELL);
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(), TradeOrderTypeEnum.SELL, 8L);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         TradeDetailInputDto input = new TradeDetailInputDto();
         input.setTradeDetailId(tradeDetail.getId());
         input.setTradeWeight(request.getTradeWeight());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input), TradeOrderTypeEnum.SELL);
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input), TradeOrderTypeEnum.SELL, 8L);
     }
 
     @Test
