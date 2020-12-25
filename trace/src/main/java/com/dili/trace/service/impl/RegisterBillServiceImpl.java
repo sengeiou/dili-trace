@@ -826,7 +826,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.buildLikeKeyword(query).ifPresent(sql -> {
             sqlList.add(sql);
         });
-        sqlList.add("( regist_type=" + RegistTypeEnum.NONE.getCode() + " and (is_checkin=" + YesOrNoEnum.NO.getCode()
+        // 正常进场或者分批进场 && 未进门或者进门审核通过
+        sqlList.add("( (regist_type=" + RegistTypeEnum.NONE.getCode()
+                + " or regist_type="+ RegistTypeEnum.PARTIAL.getCode() +")  and (is_checkin=" + YesOrNoEnum.NO.getCode()
                 + " OR (is_checkin=" + YesOrNoEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
                 + VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) ) )");
