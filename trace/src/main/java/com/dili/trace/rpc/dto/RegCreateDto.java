@@ -40,6 +40,11 @@ public class RegCreateDto {
      */
     private String operatorName;
 
+    /**
+     * 溯源系统批次主键
+     */
+    private Long tradeDetailId;
+
     public List<RegDetailDto> getRegDetailDtos() {
         return regDetailDtos;
     }
@@ -102,5 +107,13 @@ public class RegCreateDto {
 
     public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
+    }
+
+    public Long getTradeDetailId() {
+        return tradeDetailId;
+    }
+
+    public void setTradeDetailId(Long tradeDetailId) {
+        this.tradeDetailId = tradeDetailId;
     }
 }

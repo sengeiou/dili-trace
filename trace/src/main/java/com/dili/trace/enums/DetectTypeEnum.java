@@ -22,8 +22,6 @@ public enum DetectTypeEnum {
      */
     SPOT_CHECK(40, "抽检"),
 
-
-
     /**
      * 其他
      */

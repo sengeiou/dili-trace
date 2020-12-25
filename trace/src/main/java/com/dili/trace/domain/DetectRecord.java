@@ -157,7 +157,7 @@ public interface DetectRecord extends IBaseDomain {
     void setNormalResult(String normalResult);
 
     /**
-     * 检测批号
+     * 检测机构
      *
      * @return
      */
@@ -169,7 +169,7 @@ public interface DetectRecord extends IBaseDomain {
     void setDetectCompany(String detectCompany);
 
     /**
-     * 检测批号
+     * 检测请求主键
      *
      * @return
      */

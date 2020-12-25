@@ -22,6 +22,7 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.CreatorRoleEnum;
 import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
@@ -94,7 +95,7 @@ public class ClientRegisterBillApi {
             }
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
             List<Long> idList = this.registerBillService.createBillList(registerBills,
-                    sessionData.getUserId(), Optional.empty(), sessionData.getMarketId());
+                    sessionData.getUserId(), Optional.empty(), sessionData.getMarketId(), CreatorRoleEnum.CUSTOMER);
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

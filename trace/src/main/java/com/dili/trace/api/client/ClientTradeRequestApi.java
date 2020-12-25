@@ -63,7 +63,6 @@ public class ClientTradeRequestApi {
 	@Autowired
 	ProductStockService productStockService;
 
-
 	/**
 	 * 查询交易请求列表
 	 * @param condition

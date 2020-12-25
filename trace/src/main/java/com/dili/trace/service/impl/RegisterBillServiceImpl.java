@@ -122,12 +122,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                     Optional<OperatorUser> operatorUser, Long marketId) {
+                                     Optional<OperatorUser> operatorUser, Long marketId, CreatorRoleEnum creatorRoleEnum) {
         CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
 
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user,marketId);
+            registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
             CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
 

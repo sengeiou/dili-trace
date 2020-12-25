@@ -72,6 +72,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     UserQrHistoryService userQrHistoryService;
     @Autowired
     CustomerRpcService customerRpcService;
+    @Autowired
+    ProcessService processService;
 
     /**
      * 返回真实mapper
@@ -141,7 +143,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName,request.getSellerMarketId());
                     // 卖家下单
                     userQrHistoryService.createUserQrHistoryForOrder(request.getId(), buyerId);
-                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY, marketId);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
         StreamEx.of(list).forEach(td -> {
@@ -167,6 +169,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
         List<Long> batchStockId = StreamEx.of(batchStockInputList).nonNull().map(ProductStockInput::getProductStockId)
                 .toList();
+        // 库存所对应的用户就是卖家
         List<Long> sellerUserIdList = StreamEx.of(this.batchStockService.findByIdList(batchStockId))
                 .map(ProductStock::getUserId).nonNull().distinct().toList();
         if (sellerUserIdList.size() != 1) {
@@ -174,7 +177,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
         List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserIdList.get(0), null, buyerId, batchStockInputList, marketId))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL);
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL, marketId);
                 }).toList();
 
         //下单消息
@@ -211,7 +214,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         User buyer = this.customerRpcService.findUserFromCustomerById(buyerId, marketId).orElseThrow(() -> {
             return new TraceBizException("买家信息不存在");
         });
-
         ProductStock batchStock = this.batchStockService.get(input.getProductStockId());
         if (batchStock == null) {
             throw new TraceBizException("购买商品不存在");
@@ -219,10 +221,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerId != null && !sellerId.equals(batchStock.getUserId())) {
             throw new TraceBizException("没有权限销售当前商品");
         }
-        User seller = this.userService.get(batchStock.getUserId());
-        if (seller == null) {
-            throw new TraceBizException("卖家信息不存在");
-        }
+        User seller = this.customerRpcService.findUserFromCustomerById(batchStock.getUserId(), marketId).orElseThrow(() -> {
+            return new TraceBizException("卖家信息不存在");
+        });
 
         TradeRequest request = new TradeRequest();
         request.setProductStockId(input.getProductStockId());
@@ -260,7 +261,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      */
     @Transactional
     TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList,
-                              TradeOrderTypeEnum tradeOrderTypeEnum) {
+                              TradeOrderTypeEnum tradeOrderTypeEnum, Long marketId) {
 
         List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
                 .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
@@ -273,6 +274,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     }
                     return MutablePair.of(tradeDetail, tr.getTradeWeight());
                 }).toList();
+
         ProductStock batchStockItem = this.batchStockService.selectByIdForUpdate(requestItem.getProductStockId())
                 .orElseThrow(() -> {
                     return new TraceBizException("操作库存失败");
@@ -298,10 +300,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBizException("购买重量不能超过总库存重量");
         }
 
+        List<TradeDetail> resultList = new ArrayList<>();
         //基于总库存进行交易
         if (tradeDetailIdWeightList.isEmpty()) {
             AtomicReference<BigDecimal> sumTradeWeightAt = new AtomicReference<BigDecimal>(BigDecimal.ZERO);
-            List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
+            resultList = StreamEx.of(tradeDetailList).map(td -> {
                 BigDecimal stockWeight = td.getStockWeight();
                 sumTradeWeightAt.set(sumTradeWeightAt.get().add(stockWeight));
                 logger.info("stockWeight={}", stockWeight);
@@ -325,7 +328,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             }).nonNull().toList();
         } else {
             //基于批次交易
-            List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
+            resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
                 TradeDetail tradeDetaiItem = p.getKey();
                 BigDecimal tradeWeight = p.getValue();
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), tradeDetaiItem,
@@ -334,6 +337,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
             }).toList();
         }
+
+        // 向UAP同步库存
+        if (TradeOrderTypeEnum.SELL.equals(tradeOrderTypeEnum)) {
+            // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
+            processService.afterTrade(resultList, marketId);
+        }
+
         // BatchStock batchStock = new BatchStock();
         // batchStock.setId(batchStockItem.getId());
         // batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
@@ -355,9 +365,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                                                                               Long buyerId, List<ProductStockInput> batchStockInputList, Long marketId) {
         Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
                 .mapToEntry(input -> {
-                    // 创建 TradeRequest，并将其作为 key
+                    // 创建 TradeOrder，并将其作为 key
                     TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserId, buyerId,
                             TradeOrderTypeEnum.SELL, marketId);
+                    // 创建 TradeRequest，并将其作为 key
                     TradeRequest request = this.createTradeRequest(tradeOrderItem, sellerId, buyerId, input, marketId);
                     return request;
                 }, input -> {

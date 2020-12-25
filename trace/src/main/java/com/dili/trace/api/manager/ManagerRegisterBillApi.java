@@ -7,29 +7,27 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.input.RegisterBillQueryInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.CreatorRoleEnum;
 import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.*;
-
-import com.dili.trace.util.BasePageUtil;
+import com.dili.trace.service.ImageCertService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.RegisterHeadService;
+import com.dili.trace.service.UpStreamService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.Api;
 
 import java.util.List;
 import java.util.Optional;
@@ -116,7 +112,8 @@ public class ManagerRegisterBillApi {
             }
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
             List<Long> idList = this.registerBillService.createBillList(registerBills, createListBillParam.getUserId()
-                    , Optional.of(new OperatorUser(sessionData.getUserId(), sessionData.getUserName())), sessionData.getMarketId());
+                    , Optional.of(new OperatorUser(sessionData.getUserId(), sessionData.getUserName())), sessionData.getMarketId(),
+                    CreatorRoleEnum.MANAGER);
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

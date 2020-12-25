@@ -1,21 +1,20 @@
 package com.dili.trace.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.dili.customer.sdk.domain.Customer;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.CreatorRoleEnum;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -100,7 +99,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @return
      */
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                     Optional<OperatorUser> operatorUser,Long marketId);
+                                     Optional<OperatorUser> operatorUser, Long marketId, CreatorRoleEnum creatorRoleEnum);
 
     /**
      * 分页查询
