@@ -269,4 +269,13 @@
           AND e.supplier_type IS NOT NULL
   </select>
 
+  <select id="getUserListByUserIds" resultType="com.dili.trace.domain.User">
+    select u.id,u.name,
+    u.tally_area_nos, u.market_name, u.market_id from user u
+    where u.id
+    <foreach collection="idList" open=" IN (" close=")" item="oid" separator=",">
+      #{oid}
+    </foreach>
+  </select>
+
 </mapper>

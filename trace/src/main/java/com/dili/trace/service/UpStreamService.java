@@ -61,7 +61,17 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		}
 
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+				"id in(select upstream_id from /**\n" +
+						"     * 业户keyword查询\n" +
+						"     *\n" +
+						"     * @param keyword\n" +
+						"     * @return\n" +
+						"     */\n" +
+						"    @RequestMapping(value = \"/listByKeyword.action\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
+						"    public @ResponseBody\n" +
+						"    BaseOutput listByCondition(@RequestParam(name = \"query\") String keyword) {\n" +
+						"        return BaseOutput.success().setData(userService.findUserByNameOrPhoneOrTallyNo(keyword));\n" +
+						"    } where user_id=" + userId + ")");
 		BasePage<UpStream> page = this.listPageByExample(query);
 		return page;
 	}

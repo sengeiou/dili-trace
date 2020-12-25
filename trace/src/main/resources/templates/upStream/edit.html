@@ -10,6 +10,35 @@
             font-weight:800;
             background:#fff;
         }
+        .btn-main2 {
+            display: inline-block;
+            width: 70px;
+            color: #fff;
+            background-color: #3370ff;
+            border: none;
+            padding: 7px 18px;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+            line-height: 1.5;
+            border-radius: 3px;
+        }
+        .btn-greyweak {
+            display: inline-block;
+            width: 70px;
+            color: #fff;
+            background-color: #f9f9f9;
+            border: 1px solid #d5d5d5;
+            color: #666;
+            padding: 6px 17px;
+        }
+        .mt30 {
+            margin-top: 30px !important;
+        }
+        .text-center {
+            text-align: center;
+        }
     </style>
     <form id="_form" class="easyui-form" method="post">
         <input type="hidden" name="id" id="id" value="${upstream.id!}">
@@ -118,7 +147,11 @@
             </div>
         </fieldset>
     </form>
-
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="saveOrUpdate()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.window['UpStreamIndexObj'].removeAllAndLoadData()">取消</button>
+    </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
@@ -129,5 +162,167 @@
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
-<#upStream_editJs />
 </#body>
+<script type="text/javascript">
+
+    let selectedTags = {};
+    function userFormatter(value,row) {
+        if(row){
+            var opts = $(this).tagbox('options');
+            selectedTags[value] = row[opts.textField];
+            return row[opts.textField];
+        }else{
+            return selectedTags[value];
+        }
+    }
+
+    /**
+     * 客户自动联想加载
+     * ***/
+    function userLoader(param,success,error) {
+        var q = param.q || '';
+        if (q.length < 1){return false}
+        console.log(q);
+        $.ajax({
+            type: "POST",
+            url: '/user/listByCondition.action',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({
+                likeName: q
+            }),
+            success: function(result){
+                if(result.success){
+                    $.map(result.data, function(item,index){
+                        return $.extend(item, {
+                            text: item.realName+" "+(undefined==item.cardNumber?"(无身份证号)":item.cardNumber)
+                        });
+                    });
+                    success(result.data);
+                }
+
+            },
+            error: function(){
+                error.apply(this, arguments);
+            }
+        });
+    }
+
+    function saveOrUpdate() {
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var formData = $("#_form").serializeObject();
+        $.ajax({
+            type: "POST",
+            url: "/upStream/save.action",
+            data: JSON.stringify(formData),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success:function (result) {
+                if(result.success){
+                    parent.window['UpStreamIndexObj'].editSuccess();
+                }else{
+                    swal('错误',result.message, 'error');
+                }
+            },
+            error: function(){
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    }
+
+
+
+    $(function () {
+        initFileUpload();
+        $('#upstreamType').combobox({
+            onChange : function (newValue,oldValue) {
+                if(newValue == 10){
+                    $('#corporateInfo').hide();
+                    $('#legalPerson').textbox('disableValidation');
+                    $('#license').textbox('disableValidation');
+                    $('#legalPerson').textbox('readonly',true);
+                    $('#license').textbox('readonly',true);
+
+                }else{
+                    $('#corporateInfo').show();
+                    $('#legalPerson').textbox('enableValidation');
+                    $('#license').textbox('enableValidation');
+                    $('#legalPerson').textbox('readonly',false);
+                    $('#license').textbox('readonly',false);
+                }
+            }
+        });
+        let id = $('#id').val();
+        let userId = $('#userId').val();
+
+        if(id||userId){
+            $.ajax({
+                url:'/upStream/listUserByUpstreamId.action',
+                data : {upstreamId : $('#id').val(),userId:$('#userId').val()},
+                success:function (result) {
+                    if(result.success){
+                        $.each(result.data, function(index,item){
+                            selectedTags[item.id] =item.realName+" "+(undefined==item.cardNumber?"(无身份证号)":item.cardNumber);
+
+                        });
+                        $('#userIds').tagbox('setValues',Object.keys(selectedTags));
+                    }else{
+                        swal('错误',result.message,'error');
+                    }
+                }
+            });
+        }
+
+    })
+
+    $('.fileimg-view').on('click', function () {
+        let url = $(this).parent().siblings(".magnifying").attr('src');
+        let pFix = '${imageViewPathPrefix}';
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' +pFix+ url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+
+    function initFileUpload(){
+        let pFix = '${imageViewPathPrefix}';
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:4,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings(".magnifying").attr('src', pFix+"/"+url).show();
+                    $(this).siblings("input:hidden").val( pFix+"/"+url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
+    }
+
+</script>
