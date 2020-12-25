@@ -20,7 +20,7 @@ public enum StockRegisterSourceEnum {
     /**
      * 调拨
      */
-    TRANSFER(3, "调拨"),;
+    TRANSFER(3, "调拨");
 
     private String name;
     private Integer code;

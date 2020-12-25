@@ -222,11 +222,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
+		// 查询或新增买家总库存
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
 		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
 			return new TraceBizException("操作库存失败");
 		});
 
+		// 创建买家批次库存
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		buyerTradeDetail.setId(buyerTradeDetailId);

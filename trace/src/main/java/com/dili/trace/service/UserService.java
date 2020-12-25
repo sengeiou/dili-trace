@@ -91,7 +91,6 @@ public interface UserService extends BaseService<User, Long> {
 //    BaseOutput updateEnable(Long id, Boolean enable);
 
     /**
-     *
      * @param dto
      * @return
      * @throws Exception
@@ -106,14 +105,12 @@ public interface UserService extends BaseService<User, Long> {
 //    BaseOutput deleteUser(Long id);
 
     /**
-     *
      * @param user
      * @return
      */
     BaseOutput<List<UserOutput>> countGroupByValidateState(User user);
 
     /**
-     *
      * @param user
      * @return
      */
@@ -128,14 +125,12 @@ public interface UserService extends BaseService<User, Long> {
 //    BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 
     /**
-     *
      * @param keyword
      * @return
      */
     public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
 
     /**
-     *
      * @param userId
      * @return
      * @throws Exception
@@ -143,7 +138,6 @@ public interface UserService extends BaseService<User, Long> {
     public UserQrOutput getUserQrCode(Long userId) throws Exception;
 
     /**
-     *
      * @param qrStatusList
      * @return
      */
@@ -157,14 +151,12 @@ public interface UserService extends BaseService<User, Long> {
 //    public void renewPassword(User user, String smscode);
 
     /**
-     *
      * @param user
      * @return
      */
     public Integer countUser(User user);
 
     /**
-     *
      * @param openid
      * @return
      */
@@ -172,6 +164,7 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 微信一键注册
+     *
      * @return
      * @throws JsonProcessingException
      */
@@ -239,6 +232,7 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 查询用户
+     *
      * @param tallyAreaNo
      * @param marketId
      * @return
@@ -247,6 +241,7 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 通过理货区号查询用户及车牌信息
+     *
      * @param likeTallyAreaNo
      * @return
      */
@@ -254,7 +249,17 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 获取无照片的经营户
+     *
+     * @param user
      * @return
      */
     List<User> getUserByCredentialUrl(User user);
+
+    /**
+     * 根据用户ids获取用户list
+     *
+     * @param userIdList
+     * @return
+     */
+    List<User> getUserListByUserIds(List<Long> userIdList);
 }

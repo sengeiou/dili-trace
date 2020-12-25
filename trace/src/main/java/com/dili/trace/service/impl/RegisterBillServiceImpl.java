@@ -122,12 +122,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                     Optional<OperatorUser> operatorUser, Long marketId) {
+                                     Optional<OperatorUser> operatorUser, Long marketId, CreatorRoleEnum creatorRoleEnum) {
         CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
 
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user,marketId);
+            registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
             CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
 
@@ -826,7 +827,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.buildLikeKeyword(query).ifPresent(sql -> {
             sqlList.add(sql);
         });
-        sqlList.add("( regist_type=" + RegistTypeEnum.NONE.getCode() + " and (is_checkin=" + YesOrNoEnum.NO.getCode()
+        // 正常进场或者分批进场 && 未进门或者进门审核通过
+        sqlList.add("( (regist_type=" + RegistTypeEnum.NONE.getCode()
+                + " or regist_type="+ RegistTypeEnum.PARTIAL.getCode() +")  and (is_checkin=" + YesOrNoEnum.NO.getCode()
                 + " OR (is_checkin=" + YesOrNoEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
                 + VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) ) )");

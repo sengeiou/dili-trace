@@ -4,6 +4,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.MarketEnum;
@@ -36,6 +37,8 @@ public class ProcessService {
     CheckinOutRecordService checkinOutRecordService;
     @Autowired
     UapRpcService uapRpcService;
+    @Autowired
+    TradeDetailService tradeDetailService;
 
     /**
      * 创建报备之后
@@ -82,5 +85,17 @@ public class ProcessService {
 
         // 进门之后向 UAP 同步库存
         productRpcService.create(registerBill, optUser);
+    }
+
+    /**
+     * 交易之后
+     *
+     * @param detailList
+     * @param marketId
+     */
+    public void afterTrade(List<TradeDetail> detailList, Long marketId) {
+        Optional<OperatorUser> optUser = this.sessionContext.getSessionData().getOptUser();
+        // 交易之后向 UAP 同步库存
+        // productRpcService.handleTradeStocks(detailList, optUser, marketId);
     }
 }

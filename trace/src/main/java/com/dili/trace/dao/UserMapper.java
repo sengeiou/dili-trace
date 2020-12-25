@@ -76,7 +76,15 @@ public interface UserMapper extends MyMapper<User> {
 
     /**
      * 获取无照片的经营户
+     * @param user
      * @return
      */
     List<User> getUserByCredentialUrl(User user);
+
+    /**
+     * 根据用户ids获取用户列表
+     * @param idList
+     * @return
+     */
+    List<User> getUserListByUserIds(@Param("idList") List<Long> idList);
 }

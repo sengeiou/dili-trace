@@ -1,106 +1,127 @@
- <#body head_title="上游与用户关系">
-     <style>
-         .textbox-text[readonly] {
-             background: #ebebe4;
-         }
+<#bs4Body head_title="上游与用户关系">
+ <style>
+     .textbox-text[readonly] {
+         background: #ebebe4;
+     }
 
-         fieldset {
-             color:#aaa;
-             border:#aaa dashed 1px;
-             text-align:left;
-             padding:5px;
-         }
-         legend {
-             font-weight:800;
-             background:#fff;
-         }
-     </style>
-    <div class="easyui-layout" fit="true">
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" align="center">
-            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
-            </div>
-            <!-- =========================================================表单========================================================= -->
-            <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="queryForm" class="easyui-form" method="post" fit="true">
-                    <div class="search-wrap">
-                        <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
-                                   labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!" />
-                            <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
-                                   value="${createdEnd}!" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeName" id="likeName" style="width:100%" labelAlign="right" data-options="label:'上游名称:'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeUserName" id="likeUserName" style="width:100%" labelAlign="right" data-options="label:'业户名称:'" />
-                        </div>
-                        <div class="search-wrap-btn">
-                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryUpStreamGrid()">查询</a>&nbsp;&nbsp;
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <!-- 表格 -->
-        <div region="center" style="width:100%;" height="auto">
-            <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="打印报告列表" id="grid" fitColumns="true" noheader="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
-                   align="center" fit="true" idField="id" data-options="onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
-                <thead>
-                    <tr>
-                     <th width="10%" data-options="field:'id',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           ID
-                        </th>
-                        <th width="10%" data-options="field:'name',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           企业/个人名称
-                        </th>
-                        <th width="10%" data-options="field:'upstreamType', _provider:'upStreamTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            类型
-                        </th>
-                        <th width="10%" data-options="field:'legalPerson', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            法人
-                        </th>
-                        <th width="10%" data-options="field:'license', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            统一信用代码
-                        </th>
-                        <th width="10%" data-options="field:'telphone',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            联系方式
-                        </th>
-                        <th width="15%" data-options="field:'idCard',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            身份证号
-                        </th>
-                        <th width="10%" data-options="field:'userNames',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            业户名称
-                        </th>
-                        <th width="15%" data-options="field:'created', _provider:'datetimeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            创建时间
-                        </th>
-                   </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
- <script src="http://base.nong12.com/static/log/log.build.js"></script>
- <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
- <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
- <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
- <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
- <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
- <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
- <#upStream_indexJs />
-</#body>
+     fieldset {
+         color:#aaa;
+         border:#aaa dashed 1px;
+         text-align:left;
+         padding:5px;
+     }
+     legend {
+         font-weight:800;
+         background:#fff;
+     }
+ </style>
+ <div class="container-fluid">
+     <form id="queryForm" role="form" >
+         <div class="row row-cols-6">
+             <div class="form-group col-auto">
+                 <label for="createdStart">注册时间</label>
+                 <div class="form-inline">
+                     <div class="input-group">
+                         <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart!}"/>
+                         <div class="input-group-append">
+                             <label for="createdStart" class="input-group-text fa fa-calendar"></label>
+                         </div>
+                     </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                     <div class="input-group">
+                         <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend" value="${createdEnd!}"/>
+                         <div class="input-group-append">
+                             <label for="createdEnd" class="input-group-text fa fa-calendar"></label>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="form-group col">
+                 <label for="likeName">上游名称</label>
+                 <input type="text" class="form-control" name="likeName" id="likeName"/>
+             </div>
+
+             <div class="form-group col">
+                 <label for="likeUserName">业户名称</label>
+                 <input type="text" class="form-control" name="likeUserName" id="likeUserName"/>
+             </div>
+
+             <div class="col-auto align-self-center mt-3">
+                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                 <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+             </div>
+         </div>
+     </form>
+     <hr>
+     <div>
+         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+                <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+                <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 修改</button>
+         </div>
+ <table id="upstreamGrid" data-toggle="table" data-title="上游企业管理列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+        data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="false"
+        data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+        data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
+     <thead>
+     <tr>
+         <th data-checkbox="true"></th>
+         <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+             登记时间
+         </th>
+         <th data-field="billTypeName" data-sort-name="bill_type" data-sortable="true" data-align="center">
+             登记类型
+         </th>
+
+         <th  data-field="id"  data-sortable="true" data-align="center" >
+             ID
+         </th>
+         <th  data-field="name"  data-sortable="true" data-align="center" >
+             企业/个人名称
+         </th>
+         <th  data-field="upstreamType" data-sort-name="upstream_type"  data-sortable="true" data-align="center" >
+             类型
+         </th>
+         <th  data-field="legalPerson" data-sort-name="legal_person"  data-sortable="true" data-align="center" >
+             法人
+         </th>
+         <th data-field="license" data-sortable="true" data-align="center">
+             统一信用代码
+         </th>
+         <th data-field="telphone"  data-sortable="true" data-align="center">
+             联系方式
+         </th>
+         <th data-field="idCard" data-sort-name="id_card"  data-sortable="true" data-align="center" >
+             身份证号
+         </th>
+         <th data-field="userNames"   data-sortable="false" data-align="center" >
+             业户名称
+         </th>
+         <th data-field="created"   data-sortable="true" data-align="center">
+             创建时间
+         </th>
+     </tr>
+     </thead>
+ </table>
+ </div>
+ </div>
+</#bs4Body>
+ <#webGlobalConfig/>
+ <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+ <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+ <script src="${contextPath!}/resources/js/Utils.js"></script>
+ <script src="${contextPath!}/resources/js/WebConfig.js"></script>
+ <script src="${contextPath!}/resources/js/CategoryController.js"></script>
+ <script src="${contextPath!}/resources/js/CityController.js"></script>
+ <script src="${contextPath!}/resources/js/UpStream.index.js"></script>
+ <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
+ <script type="text/javascript">
+     lay('.laydatetime').each(function(){
+         laydate.render({
+             elem: this
+             ,type: 'datetime'
+             ,trigger: 'click'
+         });
+     });
+     $(function () {
+         new UpStreamIndex($('#upstreamGrid'),$('#queryForm'));
+     });
+ </script>

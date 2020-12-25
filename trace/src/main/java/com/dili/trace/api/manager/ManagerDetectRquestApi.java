@@ -8,10 +8,10 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
-import com.dili.trace.api.input.RegisterBillQueryInputDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
@@ -20,17 +20,14 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestOutDto;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.User;
-import com.google.common.collect.Lists;
+import com.dili.uap.sdk.domain.UserTicket;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -302,6 +298,7 @@ public class ManagerDetectRquestApi {
         try {
             DetectRequest detectRequest = this.detectRequestService.get(id);
             RegisterBill registerBill = this.billService.getAvaiableBill(detectRequest.getBillId()).orElse(null);
+
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -347,6 +344,18 @@ public class ManagerDetectRquestApi {
             detectRecord.setCreated(new Date());
             detectRecord.setModified(new Date());
             int i = this.detectRecordService.saveDetectRecord(detectRecord);
+
+            // 检测记录插入后，进行后台自动人工检测完成
+            UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
+            userTicket.setId(this.sessionContext.getAccountId());
+            userTicket.setUserName(this.sessionContext.getUserName());
+
+            RegisterBill query = new RegisterBill();
+            query.setCode(detectRecord.getRegisterBillCode());
+            List<RegisterBill> list = billService.list(query);
+
+            this.detectRequestService.manualCheck(list.get(0).getId(), detectRecord.getDetectState() == 1, userTicket);
+
             return BaseOutput.success().setData(i);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

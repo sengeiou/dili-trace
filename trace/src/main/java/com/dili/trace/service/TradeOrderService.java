@@ -20,6 +20,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     @Autowired
     CustomerRpcService customerRpcService;
 
+    /**
+     * 创建 tradeOrder
+     * @param sellerId 卖家
+     * @param buyerId 买家
+     * @param orderType 交易类型（购买、销售）
+     * @param marketId 市场
+     * @return
+     */
     public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType, Long marketId) {
 
         User seller = customerRpcService.findUserFromCustomerById(sellerId, marketId).orElseThrow(() -> {

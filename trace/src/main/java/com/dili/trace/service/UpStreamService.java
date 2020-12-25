@@ -61,7 +61,17 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		}
 
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+				"id in(select upstream_id from /**\n" +
+						"     * 业户keyword查询\n" +
+						"     *\n" +
+						"     * @param keyword\n" +
+						"     * @return\n" +
+						"     */\n" +
+						"    @RequestMapping(value = \"/listByKeyword.action\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
+						"    public @ResponseBody\n" +
+						"    BaseOutput listByCondition(@RequestParam(name = \"query\") String keyword) {\n" +
+						"        return BaseOutput.success().setData(userService.findUserByNameOrPhoneOrTallyNo(keyword));\n" +
+						"    } where user_id=" + userId + ")");
 		BasePage<UpStream> page = this.listPageByExample(query);
 		return page;
 	}
@@ -107,7 +117,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			query.setTelphone(upStreamDto.getTelphone());
 			query.setUpORdown(upStreamDto.getUpORdown());
 			query.setMarketId(upStreamDto.getMarketId());
+			query.setName(upStreamDto.getName());
 
+			// 用户-电话-上下游-市场维度-姓名为唯一键
 			List<UpStream> upStreamList = listByExample(query);
 			if (CollUtil.isEmpty(upStreamList)) {
 				insertSelective(upStreamDto);
@@ -125,9 +137,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return BaseOutput.success();
 	}
 
-	// 增加下游企业时创建用户
 	/**
-	 *
+	 * 增加下游企业时创建用户
 	 * @Date 2020/11/26 18:04
 	 * @Param
 	 * @return
@@ -198,8 +209,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 				}
 //				rUserUpstream.setCreated(new Date());
 //				rUserUpstream.setModified(new Date());
-
-
 			});
 			if (rUserUpstreams.size() > 0){
 				rUserUpStreamService.batchInsert(rUserUpstreams);
@@ -229,7 +238,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		addUpstreamUsers(upStreamDto, operatorUser);
 
 		return BaseOutput.success();
-
 	}
 
 	/**
@@ -261,7 +269,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		Example example = new Example(UpStream.class);
 		example.and().andIn("id", upStreamIdList);
 		return this.getActualDao().selectByExample(example);
-
 	}
 
 	/**

@@ -324,7 +324,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 发送消息给管理员提示审核
-     *
      */
 //    private void sendMessageByManage(String userName, Long userId, Long marketId) {
 //        // 审核通过增加消息
@@ -349,7 +348,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //        messageInputDto.setSmsContentParam(smsMap);
 //        messageService.addMessage(messageInputDto);
 //    }
-
     private List<String> parsePlate(String plates) {
         List<String> plateList = new ArrayList<>();
         if (StringUtils.isBlank(plates)) {
@@ -545,8 +543,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //                // u.put("plates", plates);
 //                u.setPlates(plates);
 //            } else {
-                //  u.put("plates", "");
-                u.setPlates("");
+            //  u.put("plates", "");
+            u.setPlates("");
 //            }
             return u;
         }).collect(toList());
@@ -1104,5 +1102,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public List<User> getUserByCredentialUrl(User user) {
         return getActualDao().getUserByCredentialUrl(user);
+    }
+
+    @Override
+    public List<User> getUserListByUserIds(List<Long> userIdList) {
+        return getActualDao().getUserListByUserIds(userIdList);
     }
 }

@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
@@ -12,6 +13,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.output.UserQrOutput;
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
@@ -21,11 +23,13 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.jobs.UpdateUserQrStatusJob;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.TallyingAreaRpcService;
+import com.dili.trace.service.MarketService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -41,6 +45,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -72,7 +77,10 @@ public class UserController {
     TallyingAreaRpc tallyingAreaRpc;
     @Autowired
     CustomerRpcService customerRpcService;
-
+    @Resource
+    UserRpc userRpc;
+    @Resource
+    MarketService marketService;
     /**
      * 跳转到User页面
      *
@@ -155,6 +163,7 @@ public class UserController {
     public @ResponseBody
     BaseOutput update(User user) {
         try {
+
             userService.updateUser(user);
             return BaseOutput.success("修改成功");
         } catch (TraceBizException e) {
@@ -190,8 +199,10 @@ public class UserController {
      */
     @RequestMapping(value = "/listByCondition.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput listByCondition(UserListDto userListDto) {
-        return BaseOutput.success().setData(userService.listByExample(userListDto));
+    BaseOutput listByCondition(@RequestBody UserListDto userListDto) {
+        UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
+        userQuery.setUserName(userListDto.getLikeName());
+        return BaseOutput.success().setData(userRpc.listByExample(userQuery).getData());
     }
 
     /**

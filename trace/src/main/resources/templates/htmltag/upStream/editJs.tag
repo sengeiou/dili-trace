@@ -74,23 +74,23 @@
             onChange : function (newValue,oldValue) {
                 if(newValue == 10){
                     $('#corporateInfo').hide();
-           	       $('#legalPerson').textbox('disableValidation');
-                     $('#license').textbox('disableValidation');
-          	       $('#legalPerson').textbox('readonly',true);
+                    $('#legalPerson').textbox('disableValidation');
+                    $('#license').textbox('disableValidation');
+                    $('#legalPerson').textbox('readonly',true);
                     $('#license').textbox('readonly',true);
-             
+
                 }else{
                     $('#corporateInfo').show();
-           	       $('#legalPerson').textbox('enableValidation');
-                     $('#license').textbox('enableValidation');
-          	       $('#legalPerson').textbox('readonly',false);
+                    $('#legalPerson').textbox('enableValidation');
+                    $('#license').textbox('enableValidation');
+                    $('#legalPerson').textbox('readonly',false);
                     $('#license').textbox('readonly',false);
                 }
             }
         });
         let id = $('#id').val();
         let userId = $('#userId').val();
-        
+
         if(id||userId){
             $.ajax({
                 url:'/upStream/listUserByUpstreamId.action',
