@@ -1,15 +1,17 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
 import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.service.BillService;
-import com.dili.trace.service.SgRegisterBillService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectTaskService;
+import com.dili.trace.service.SgRegisterBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import java.util.List;
 @RequestMapping(value = "/api/detect")
 @Api(value = "/api/detect", description = "检测任务相关接口")
 //@InterceptConfiguration(loginRequired = false)
+@AppAccess(role = Role.NONE,url = "",subRoles = {})
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
     @Autowired
@@ -49,7 +52,7 @@ public class DetectRecordApi {
      */
     @ApiOperation("上传检测记录")
     @RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord, HttpServletRequest req) {
+    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord, HttpServletRequest req) {
 
         LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
         if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
