@@ -732,24 +732,31 @@
   </select>
 
   <update id="taskByExeMachineNo">
- update register_bill set `detect_status` =40,modified =NOW()
- where id in(
-    select register_bill.id from detect_request left join register_bill
-    on detect_request.id=register_bill.detect_request_id
-    where register_bill.market_id=#{marketId}
-    and (
-     (designated_name=#{exeMachineNo} and register_bill.detect_status=40)
-     or register_bill.detect_status=30
-    ) limit #{taskCount}
+ update register_bill set `detect_status` =40, exe_machine_no=#{exeMachineNo}, modified =NOW()
+ where id in (select t.id from
+    (
+      select register_bill.id from detect_request left join register_bill
+      on detect_request.id=register_bill.detect_request_id
+      where register_bill.market_id=#{marketId}
+      and (
+       (detect_request.designated_name=#{exeMachineNo} and register_bill.detect_status=40)
+       or register_bill.detect_status=30
+      ) limit #{taskCount}
+   ) t
  )
+  </update>
+
+  <update id="taskByExeMachineNoForRequest">
  update detect_request set designated_name=#{exeMachineNo}
- where id in(
+ where id in (select t.id from
+  (
     select register_bill.id from detect_request left join register_bill
     on detect_request.id=register_bill.detect_request_id
     where register_bill.market_id=#{marketId}
     and  designated_name=#{exeMachineNo}
     and register_bill.detect_status=40
     limit #{taskCount}
+ ) t
  )
   </update>
 

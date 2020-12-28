@@ -90,6 +90,10 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
             , @Param("taskCount") int taskCount
             ,@Param("marketId") Long marketId);
 
+    int taskByExeMachineNoForRequest(@Param("exeMachineNo") String exeMachineNo
+            , @Param("taskCount") int taskCount
+            ,@Param("marketId") Long marketId);
+
     RegisterBillStaticsDto groupByState(RegisterBillDto dto);
 
     int doRemoveReportAndCertifiy(RegisterBill registerBill);
