@@ -43,6 +43,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     private List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount,Long marketId) {
         LOGGER.info(">>>获得检测数据-参数:findByExeMachineNo(exeMachineNo={},taskCount={})", exeMachineNo, taskCount);
         this.registerBillMapper.taskByExeMachineNo(exeMachineNo, taskCount,marketId);
+        this.registerBillMapper.taskByExeMachineNoForRequest(exeMachineNo, taskCount,marketId);
         RegisterBill domain = new RegisterBill();
         domain.setExeMachineNo(exeMachineNo);
         domain.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
