@@ -238,7 +238,7 @@
             $("#userId").val(customer.id).valid();
             $("#phone").val(customer.contactsPhone).valid();
             $("#tallyAreaNo").val(query).valid();
-            var vehicleInfoList=customer?.vehicleInfoList;
+            var vehicleInfoList=customer.vehicleInfoList;
             if(_.isUndefined(vehicleInfoList)){
                 return;
             }
