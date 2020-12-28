@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GlobalVarService {
 
-    @Value("${diliDfs.image.view.path.prefix:http://gaeway.diligrp.com:8285/dili-dfs/file/view}")
+    @Value("${diliDfs.image.view.path.prefix:http://gateway.diligrp.com:8285/dili-dfs/file/view}")
     private String dfsImageViewPathPrefix;
 
     @Value("${current.baseWebPath}")
