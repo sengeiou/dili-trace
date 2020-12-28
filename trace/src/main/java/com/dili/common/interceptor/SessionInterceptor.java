@@ -74,6 +74,9 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
                 currentSessionData=this.loginAsClient(request);
             } else if (access.role() == Role.Manager) {
                 currentSessionData = this.loginAsManager(request);
+            } else if (access.role() == Role.NONE) {
+                logger.info("无需权限即可访问。比如检测机器");
+                return true;
             } else {
                 return this.writeError(response, "权限配置错误");
             }
