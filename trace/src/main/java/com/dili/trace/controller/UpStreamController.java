@@ -23,6 +23,7 @@ import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +35,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,25 +98,14 @@ public class UpStreamController {
      */
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody  UpStreamDto upStreamDto) throws Exception {
+    String listPage(@RequestBody UpStreamDto upStreamDto) throws Exception {
         // 业户名称查询
         if (StringUtils.isNotBlank(upStreamDto.getLikeUserName())) {
-            UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
-            userListDto.setLikeName(upStreamDto.getLikeUserName());
-            UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
-            userQuery.setUserName(upStreamDto.getLikeUserName());
-            BaseOutput<List<User>> baseOutput = userRpc.listByExample(userQuery);
-            List<Long> userIds = new ArrayList<>(16);
-            if (null != baseOutput && null != baseOutput.getData()) {
-                userIds = baseOutput.getData().stream().map(o -> o.getId()).collect(Collectors.toList());
-            }
-            if (CollectionUtils.isEmpty(userIds)) {
+            //通过userName查询上游企业id
+            Set<Long> upstreamIds = buildUpstreamIdsByLikeName(upStreamDto.getLikeUserName());
+            if (upstreamIds.isEmpty()) {
                 return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
             }
-            RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
-            rUserUpstream.setUserIds(userIds);
-            Set<Long> upstreamIds = rUserUpStreamService.listByExample(rUserUpstream).stream()
-                    .map(o -> o.getUpstreamId()).collect(Collectors.toSet());
             upStreamDto.setIds(new ArrayList<>(upstreamIds));
             if (CollectionUtils.isEmpty(upStreamDto.getIds())) {
                 return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
@@ -127,16 +119,13 @@ public class UpStreamController {
         List<UpStream> upStreams = streamBasePage.getDatas();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
         if (!upStreams.isEmpty()) {
-            List<Map<String, Object>> upstreamUsers = upStreamService
-                    .queryUsersByUpstreamIds(upStreams.stream().map(o -> o.getId()).collect(Collectors.toList()));
-
-            Map<Object, Object> idNameListMap = upstreamUsers.stream()
-                    .collect(Collectors.toMap(m -> m.get("upstreamIds"), m -> m.get("userNames")));
+            //构建上游企业用户map
+            Map<Long, String> upUserMap = buildUpUserMap(upStreams);
             upStreams.forEach(o -> {
                 UpStreamDto usd = new UpStreamDto();
                 BeanUtils.copyProperties(o, usd);
-                Object nameList = idNameListMap.get(o.getId());
-                usd.setUserNames(nameList == null ? "" : String.valueOf(nameList));
+                Object nameList = upUserMap.get(o.getId());
+                usd.setUserNames(nameList == null ? "" : StringUtils.strip(nameList.toString(), "[]"));
                 upStreamDtos.add(usd);
             });
         } else {
@@ -144,6 +133,70 @@ public class UpStreamController {
         }
         List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
         return new EasyuiPageOutput(totalItem, results).toString();
+
+    }
+
+    /**
+     * 构建上游企业用户map
+     *
+     * @param upStreams
+     * @return
+     */
+    private Map<Long, String> buildUpUserMap(List<UpStream> upStreams) {
+        //查询上游企业关联用户列表
+        RUserUpstreamDto rUserUpstreamDto = new RUserUpstreamDto();
+        rUserUpstreamDto.setUpstreamIds(upStreams.stream().map(o -> o.getId()).collect(Collectors.toList()));
+        List<RUserUpstream> upstreamsRefs = rUserUpStreamService.listByExample(rUserUpstreamDto);
+        Map<Long, String> upUserMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(upstreamsRefs)) {
+            //查询用户集合
+            List<User> userList = userRpc.listUserByIds(upstreamsRefs.stream().map(o -> String.valueOf(o.getUserId())).collect(Collectors.toList())).getData();
+            if (CollectionUtils.isNotEmpty(userList)) {
+                //用户id，name组成用户map
+                Map<Long, String> userMap = userList.stream().collect(Collectors.toMap(User::getId, User::getUserName, (a, b) -> a));
+                //根据上游企业id 分组 用户id，组成按上游企业id分组的用户集合
+                Map<Long, List<RUserUpstream>> upStreamUserMap = upstreamsRefs.stream().collect(Collectors.groupingBy(RUserUpstream::getUpstreamId));
+                //遍历上游企业集合，将用户map名称与上游企业用户集合关联
+                upStreamUserMap.entrySet().stream().forEach(up -> {
+                    Set<String> userNames = new HashSet<>();
+                    up.getValue().stream().filter(upt -> null != upt.getUserId()).map(upt -> upt.getUserId()).forEach(userId -> {
+                        if (null != userMap.get(userId)) {
+                            userNames.add(userMap.get(userId));
+                        }
+                    });
+                    if (!userNames.isEmpty()) {
+                        upUserMap.put(up.getKey(), userNames.toString());
+                    }
+                });
+            }
+
+        }
+        return upUserMap;
+    }
+
+    /**
+     * 构建上游企业id map
+     *
+     * @param likeUserName
+     * @return
+     */
+    private Set<Long> buildUpstreamIdsByLikeName(String likeUserName) {
+        UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
+        userListDto.setLikeName(likeUserName);
+        UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
+        userQuery.setUserName(likeUserName);
+        BaseOutput<List<User>> baseOutput = userRpc.listByExample(userQuery);
+        List<Long> userIds = new ArrayList<>(16);
+        if (null != baseOutput && null != baseOutput.getData()) {
+            userIds = baseOutput.getData().stream().map(o -> o.getId()).collect(Collectors.toList());
+        }
+        if (CollectionUtils.isEmpty(userIds)) {
+            return null;
+        }
+        RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
+        rUserUpstream.setUserIds(userIds);
+        return rUserUpStreamService.listByExample(rUserUpstream).stream()
+                .map(o -> o.getUpstreamId()).collect(Collectors.toSet());
 
     }
 
