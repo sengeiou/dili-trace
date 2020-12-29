@@ -367,7 +367,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             }
         }
 
-        private int autoCheckDetectRequest (Long id){
+        private int autoCheckDetectRequest (Long id) {
             DetectRequest detectRequest = this.detectRequestService.get(id);
             detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
             // 维护采样时间
