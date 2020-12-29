@@ -13,18 +13,21 @@ import com.dili.ss.domain.PageOutput;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.CustomerExtendOutPutDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -138,10 +141,22 @@ public class ManagerUserApi {
      */
     @ApiOperation(value = "查询经营户信息")
     @RequestMapping(value = "/listSeller.api", method = RequestMethod.POST)
-    public PageOutput<List<CustomerExtendDto>> listSeller(@RequestBody CustomerQueryInput input) {
+    public PageOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input,this.sessionContext.getSessionData().getMarketId());
-            return pageOutput;
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
+            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
+            List<CustomerExtendDto> customerList = pageOutput.getData();
+            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
+            customerList.forEach(c -> {
+                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
+                BeanUtils.copyProperties(c, customerOutput);
+                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
+                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                customerOutputList.add(customerOutput);
+            });
+            BeanUtils.copyProperties(pageOutput, page);
+            page.setData(customerOutputList);
+            return page;
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
         } catch (Exception e) {

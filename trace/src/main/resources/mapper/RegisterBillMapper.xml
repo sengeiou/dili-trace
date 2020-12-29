@@ -1395,6 +1395,9 @@
     r.`detector_name`,
     b.`check_sheet_id`,
     b.`checkin_status`,
+    b.trade_account,
+    b.trade_type_id,
+    b.trade_type_name,
     checkinout_record.`created` checkinCreated,
     detect_record.`normal_result` normalResult,
     detect_record.`pd_result` pdResult,
@@ -1480,12 +1483,19 @@
     <if test="billType != null">
       AND b.bill_type =#{billType}
     </if>
+    <if test="name != null">
+      AND b.name like '%${name}%'
+    </if>
+    <if test="likeSampleCode != null">
+      AND b.sample_code like '%${likeSampleCode}%'
+    </if>
     <if test="billTypes != null">
       AND b.bill_type
       <foreach collection="billTypes" open=" IN (" close=")" item="billType" separator=",">
         #{billType}
       </foreach>
     </if>
-    order by  b.created desc
+    group by b.id
+    order by b.created desc
   </select>
 </mapper>
