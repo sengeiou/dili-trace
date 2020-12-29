@@ -27,11 +27,11 @@ public class RegisterBillStaticsDto {
     /**
      * 有打印报告(check_sheet_id的登记单的数量)
      */
-	private Integer hasCheckSheetNum;
+	private Integer hasCheckSheetNum=0;
     /**
      * 不同的打印报告的数量(登记单的check_sheet_id不相同的数量)
      */
-	private Integer  diffCheckSheetNum;
+	private Integer  diffCheckSheetNum=0;
 	
 	
 	

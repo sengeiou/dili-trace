@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
@@ -71,13 +72,14 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     DetectTaskService detectTaskService;
     @Autowired
     BillService billService;
-    @Autowired
+    @Resource
     RegisterBillMapper billMapper;
     @Autowired
     ImageCertService imageCertService;
     @Autowired
     DetectRequestService detectRequestService;
-
+    @Resource
+    RegisterBillService registerBillService;
 
     @Transactional
     @Override
@@ -1076,7 +1078,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                         dto.setCode(dto.getAttrValue());
                         break;
                     case "plate":
-                        dto.setPlate(dto.getAttrValue());
+                        dto.setLikePlate(dto.getAttrValue());
                         break;
                     case "tallyAreaNo":
                         // registerBill.setTallyAreaNo(registerBill.getAttrValue());
@@ -1106,8 +1108,22 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
 //        dto.setCreatedStart(StringUtils.trimToNull(dto.getCreatedStart()));
 //        dto.setCreatedEnd(StringUtils.trimToNull(dto.getCreatedEnd()));
+            if (dto.getPage() == null || dto.getPage() < 0) {
+                dto.setPage(1);
+            }
+            if (dto.getRows() == null || dto.getRows() <= 0) {
+                dto.setRows(10);
+            }
+            PageHelper.startPage(dto.getPage(), dto.getRows());
+            PageHelper.orderBy(dto.getSort() + " " + dto.getOrder());
+            List<RegisterBillDto> list = this.billMapper.queryListByExample(dto);
+            Page<RegisterBillDto> page = (Page) list;
 
-            return this.billService.listEasyuiPageByExample(dto, true).toString();
+            EasyuiPageOutput out = new EasyuiPageOutput();
+            List results = ValueProviderUtils.buildDataByProvider(dto, list);
+            out.setRows(results);
+            out.setTotal(page.getTotal());
+            return out.toString();
         }
 
         private StringBuilder buildDynamicCondition (RegisterBillDto registerBill){

@@ -12,9 +12,7 @@ import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.glossary.*;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
@@ -81,6 +79,7 @@ public class NewRegisterBillController {
     DetectRequestService detectRequestService;
     @Autowired
     ProcessService processService;
+
     /**
      * 跳转到RegisterBill页面
      *
@@ -165,7 +164,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/copy.html", method = RequestMethod.GET)
     public String copy(Long id, ModelMap modelMap) {
-        RegisterBillOutputDto registerBill = RegisterBillOutputDto.build(billService.get(id),Lists.newLinkedList());
+        RegisterBillOutputDto registerBill = RegisterBillOutputDto.build(billService.get(id), Lists.newLinkedList());
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
 //        registerBill.setSourceName(firstTallyAreaNo);
@@ -196,13 +195,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(Long id, ModelMap modelMap) {
-        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
-            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
+            return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
         }).orElse(null);
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setSourceName(firstTallyAreaNo);
@@ -234,13 +233,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadDetectReport.html", method = RequestMethod.GET)
     public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
-            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
+            return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
         }).orElse(null);
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -271,13 +270,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
     public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
-            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
+            return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
         }).orElse(null);
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -315,13 +314,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadHandleResult.html", method = RequestMethod.GET)
     public String uploadHandleResult(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
-            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
+            return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
         }).orElse(null);
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
 
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
@@ -654,6 +653,7 @@ public class NewRegisterBillController {
 
     /**
      * 构造 ImageCert
+     *
      * @param billId
      * @param s
      * @param certType
@@ -751,8 +751,8 @@ public class NewRegisterBillController {
         List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
                 .nonNull()
                 .map(rbInputDto -> {
-                    CustomerExtendDto customer=new CustomerExtendDto();
-                    RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
+                    CustomerExtendDto customer = new CustomerExtendDto();
+                    RegisterBill rb = rbInputDto.build(customer, this.uapRpcService.getCurrentFirm().orElse(null).getId());
 
 
                     rb.setTradePrintingCard(input.getTradePrintingCard());
@@ -765,14 +765,14 @@ public class NewRegisterBillController {
 
                     rb.setImageCerts(input.getGlobalImageCertList());
                     // 保存产地证明
-                    List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
+                    List<ImageCert> imageList = StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
 //                    if (StringUtils.isNotBlank(rbInputDto.getOriginCertifiyUrl())) {
 //                        List<ImageCert> imageCerts = rb.getImageCerts();
 //                        ImageCert imageCert = new ImageCert();
 //                        imageCert.setUid(rbInputDto.getOriginCertifiyUrl());
 //                        imageCert.setCertType(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode());
 //                        imageCerts.add(imageCert);
-                        rb.setImageCerts(imageList);
+                    rb.setImageCerts(imageList);
 //                    }
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
@@ -789,11 +789,11 @@ public class NewRegisterBillController {
                     rb.setRegistType(RegistTypeEnum.NONE.getCode());
                     rb.setCreatorRole(CreatorRoleEnum.MANAGER.getCode());
 
-                    CustomerExtendDto customerExtendDto=this.customerService.findApprovedCustomerByIdOrEx(rb.getUserId(),rb.getMarketId());
+                    CustomerExtendDto customerExtendDto = this.customerService.findApprovedCustomerByIdOrEx(rb.getUserId(), rb.getMarketId());
 
-                    Customer cq=new Customer();
+                    Customer cq = new Customer();
                     cq.setCustomerId(customerExtendDto.getCode());
-                    this.customerService.findCustomer(cq,rb.getMarketId()).ifPresent(card->{
+                    this.customerService.findCustomer(cq, rb.getMarketId()).ifPresent(card -> {
                         rb.setThirdPartyCode(card.getPrintingCard());
                     });
 
@@ -826,6 +826,69 @@ public class NewRegisterBillController {
     }
 
     /**
+     * 显示条数
+     *
+     * @return
+     * @param registerBill
+     */
+    private RegisterBillStaticsDto buildBillStatic(RegisterBillDto registerBill) {
+        List<RegisterBill> billList = billService.listByExample(registerBill);
+        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(billList).map(RegisterBill::getDetectRequestId).toList());
+        //检测值
+        StreamEx.of(billList).forEach(rb -> {
+            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+        });
+        RegisterBillStaticsDto rbd = new RegisterBillStaticsDto();
+        StreamEx.of(billList).nonNull().forEach(b -> {
+            DetectRequest detectRequest = b.getDetectRequest();
+            //有产地证明
+            if (YesOrNoEnum.YES.getCode().equals(b.getHasOriginCertifiy())) {
+                rbd.setHasOriginCertifiyNum(rbd.getHasOriginCertifiyNum()+1);
+            }
+            //有检测报告
+            if (YesOrNoEnum.YES.getCode().equals(b.getHasDetectReport())) {
+                rbd.setHasDetectReportNum(rbd.getHasDetectReportNum()+1);
+            }
+            if (null != detectRequest) {
+                if (null != detectRequest.getDetectResult()) {
+                    //检测合格
+                    if (BillDetectStateEnum.PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectRequest.getDetectResult())) {
+                        rbd.setPassNum(rbd.getPassNum()+1);
+                    }
+                    //检测不合格
+                    if (BillDetectStateEnum.NO_PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_NO_PASS.getCode().equals(detectRequest.getDetectResult())) {
+                        rbd.setNopassNum(rbd.getNopassNum()+1);
+                    }
+                }
+
+                if (null != detectRequest.getDetectType()) {
+                    //检测采样
+                    if (SampleSourceEnum.SAMPLE_CHECK.getCode().equals(detectRequest.getDetectType())) {
+                        rbd.setCheckNum(rbd.getCheckNum()+1);
+                    }
+                    //复检
+                    if (DetectTypeEnum.RECHECK.getCode().equals(detectRequest.getDetectType())) {
+                        rbd.setRecheckNum(rbd.getRecheckNum()+1);
+                    }
+                }
+                //主动送检
+                if (null != detectRequest.getDetectSource() && SampleSourceEnum.AUTO_CHECK.getCode().equals(detectRequest.getDetectSource())) {
+                    rbd.setAutoCheckNum(rbd.getAutoCheckNum()+1);
+                }
+            }
+            //有无打印报告
+            if (null != b.getCheckSheetId()) {
+                rbd.setHasCheckSheetNum(rbd.getHasCheckSheetNum()+1);
+            }
+            //打印
+            if (null != b.getIsPrintCheckSheet()) {
+                rbd.setDiffCheckSheetNum(rbd.getDiffCheckSheetNum()+1);
+            }
+        });
+        return rbd;
+    }
+
+    /**
      * 查询统计数据
      *
      * @param registerBill
@@ -834,12 +897,28 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listStaticsPage(RegisterBillDto registerBill) throws Exception {
+    String listStaticsPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+
         return this.registerBillService.listStaticsPage(registerBill);
     }
 
+    /**
+     * 查询各个统计数据(与列表查询条件一致)
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/listStaticsPageNum.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput listStaticsPageNum(@RequestBody RegisterBillDto registerBill) throws Exception {
+        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+
+        RegisterBillStaticsDto registerBillStaticsDto = buildBillStatic(registerBill);
+        return BaseOutput.success().setData(registerBillStaticsDto);
+    }
     /**
      * 查询统计数据
      *
@@ -878,7 +957,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
             // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo,this.uapRpcService.getCurrentFirm().get().getId());
+            User user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
 
             if (user != null) {
                 userInfoDto.setUserId(String.valueOf(user.getId()));
@@ -894,7 +973,7 @@ public class NewRegisterBillController {
             Customer condition = new Customer();
             condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
             condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-            Customer customer = this.customerService.findCustomer(condition,this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
+            Customer customer = this.customerService.findCustomer(condition, this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
             if (customer != null) {
                 userInfoDto.setUserId(customer.getCustomerId());
                 userInfoDto.setName(customer.getName());
@@ -951,18 +1030,18 @@ public class NewRegisterBillController {
     @RequestMapping("/queryEvents.action")
     @ResponseBody
     public List<String> queryEvents(@RequestBody List<Long> billIdList) {
-        List<RegisterBillMessageEvent>list= Lists.newArrayList(RegisterBillMessageEvent.add,RegisterBillMessageEvent.export);
-        if (billIdList == null || billIdList.size()==0) {
+        List<RegisterBillMessageEvent> list = Lists.newArrayList(RegisterBillMessageEvent.add, RegisterBillMessageEvent.export);
+        if (billIdList == null || billIdList.size() == 0) {
             return StreamEx.of(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
         }
         list.add(RegisterBillMessageEvent.DETAIL);
-        if(billIdList.size()==1){
-           return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
+        if (billIdList.size() == 1) {
+            return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
-        }else{
+        } else {
             return StreamEx.of(this.queryBatchEvents(billIdList)).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
@@ -972,6 +1051,7 @@ public class NewRegisterBillController {
 
     /**
      * SB
+     *
      * @param idList
      * @return
      */
