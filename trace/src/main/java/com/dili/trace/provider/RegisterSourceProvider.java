@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public class RegisterSourceProvider implements ValueProvider {
 
 	private List<ValuePair<?>> buildValuePair(){
-		       return Stream.of(RegisterSourceEnum.values()).filter(item->item!=RegisterSourceEnum.OTHERS)
+		       return Stream.of(RegisterSourceEnum.values())
 		                .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
 		                .collect(Collectors.toList());
 		   
