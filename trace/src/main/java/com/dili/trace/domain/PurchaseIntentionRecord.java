@@ -37,7 +37,7 @@ public class PurchaseIntentionRecord extends BaseDomain {
      * 买家电话
      */
     @ApiModelProperty(value = "买家电话")
-    @Column(name = "`buyer_name`")
+    @Column(name = "`buyer_phone`")
     private String buyerPhone;
 
 
