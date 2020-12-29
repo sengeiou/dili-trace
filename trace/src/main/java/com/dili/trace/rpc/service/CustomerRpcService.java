@@ -254,6 +254,40 @@ public class CustomerRpcService {
     }
 
     /**
+     * 查询买家
+     *
+     * @param queryInput
+     * @param marketId
+     * @return
+     */
+    public PageOutput<List<CustomerExtendDto>> listBuyer(CustomerQueryInput queryInput, Long marketId) {
+
+        CharacterType buyer = new CharacterType();
+        buyer.setCharacterType(CustomerEnum.CharacterType.买家.getCode());
+        queryInput.setCharacterType(buyer);
+        queryInput.setMarketId(marketId);
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
+        return pageOutput;
+    }
+
+    /**
+     * 查询经营户
+     *
+     * @param queryInput
+     * @param marketId
+     * @return
+     */
+    public PageOutput<List<CustomerExtendDto>> listDriver(CustomerQueryInput queryInput, Long marketId) {
+
+        CharacterType driver = new CharacterType();
+        driver.setCharacterType(CustomerEnum.CharacterType.其他类型.getCode());
+        queryInput.setCharacterType(driver);
+        queryInput.setMarketId(marketId);
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
+        return pageOutput;
+    }
+
+    /**
      * 查询客户信息
      *
      * @param cust

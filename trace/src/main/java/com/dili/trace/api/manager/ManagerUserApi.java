@@ -163,7 +163,70 @@ public class ManagerUserApi {
             logger.error(e.getMessage(), e);
             return PageOutput.failure("操作失败：服务端出错");
         }
+    }
 
+    /**
+     * 查询买家信息
+     *
+     * @param input
+     * @return
+     */
+    @ApiOperation(value = "查询买家信息")
+    @RequestMapping(value = "/listBuyer.api", method = RequestMethod.POST)
+    public PageOutput<List<CustomerExtendOutPutDto>> listBuyer(@RequestBody CustomerQueryInput input) {
+        try {
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
+            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
+            List<CustomerExtendDto> customerList = pageOutput.getData();
+            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
+            customerList.forEach(c -> {
+                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
+                BeanUtils.copyProperties(c, customerOutput);
+                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
+                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                customerOutputList.add(customerOutput);
+            });
+            BeanUtils.copyProperties(pageOutput, page);
+            page.setData(customerOutputList);
+            return page;
+        } catch (TraceBizException e) {
+            return PageOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return PageOutput.failure("操作失败：服务端出错");
+        }
+    }
+
+    /**
+     * 查询司机信息
+     *
+     * @param input
+     * @return
+     */
+    @ApiOperation(value = "查询司机信息")
+    @RequestMapping(value = "/listDriver.api", method = RequestMethod.POST)
+    public PageOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
+        try {
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
+            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
+            List<CustomerExtendDto> customerList = pageOutput.getData();
+            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
+            customerList.forEach(c -> {
+                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
+                BeanUtils.copyProperties(c, customerOutput);
+                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
+                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                customerOutputList.add(customerOutput);
+            });
+            BeanUtils.copyProperties(pageOutput, page);
+            page.setData(customerOutputList);
+            return page;
+        } catch (TraceBizException e) {
+            return PageOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return PageOutput.failure("操作失败：服务端出错");
+        }
     }
 
 }
