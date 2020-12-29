@@ -25,6 +25,7 @@ public interface SyncRpcService {
      * @param userId
      * @return
      */
+    @Async
     void syncRpcUserByUserId(Long userId);
 
     /**

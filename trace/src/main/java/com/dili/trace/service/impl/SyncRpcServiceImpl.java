@@ -77,6 +77,8 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     }
 
     @Override
+    @Async
+    @Transactional(rollbackFor = Exception.class)
     public void syncRpcUserByUserId(Long userId) {
         //rpc用户列表
         BaseOutput<User> resultData = getRpcUserById(userId);

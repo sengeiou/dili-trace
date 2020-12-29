@@ -1,10 +1,10 @@
 <#bodyOrigin>
 <div class="main-container">
     <div class="topicTop">
-        <div class="toppic-title">
+        <!--<div class="toppic-title">
             <span class="topic-title-text maincolor">货品信息详情</span>
             <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
-        </div>
+        </div>-->
     </div>
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
@@ -125,7 +125,7 @@
                             <td>
                                 <div class="input-group">
                                     <!--TODO:detectState 如何处理？-->
-                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectStatus==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState!=null&&detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
                                 </div>
                             </td>
                             <td>
