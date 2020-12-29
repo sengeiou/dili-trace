@@ -207,10 +207,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
         // 保存图片
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
-            throw new TraceBizException("请上传凭证");
+        if (!imageCertList.isEmpty()) {
+            imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
         }
-        imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
