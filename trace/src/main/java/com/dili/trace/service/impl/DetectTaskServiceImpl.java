@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -131,6 +132,8 @@ public class DetectTaskServiceImpl implements DetectTaskService {
 //            registerBill.setDetectState(detectRecord.getDetectState());
 //        }
         detectRecord.setRegisterBillCode(registerBill.getCode());
+        detectRecord.setCreated(new Date());
+        detectRecord.setModified(new Date());
         detectRecordService.saveDetectRecord(detectRecord);
         registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 //		registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
