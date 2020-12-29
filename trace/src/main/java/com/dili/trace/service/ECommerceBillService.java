@@ -306,6 +306,16 @@ public class ECommerceBillService {
             throw new TraceBizException("参数错误");
         }
         Long billId = this.createBill(registerBill, operatorUser);
+
+        // 创建检测请求
+        DetectRequest item = this.detectRequestService.createDefault(billId, Optional.ofNullable(operatorUser));
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setId(item.getId());
+        detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+        this.detectRequestService.updateSelective(detectRequest);
+
         BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r -> {
             return !StringUtils.isAllBlank(r.getTallyAreaNo(), r.getSalesUserName(), r.getSalesPlate());
         }).map(r -> {

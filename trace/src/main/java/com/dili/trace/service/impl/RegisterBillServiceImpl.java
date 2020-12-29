@@ -88,6 +88,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     BillService billService;
     @Autowired
     ProcessService processService;
+    @Autowired
+    DetectRequestService detectRequestService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -137,7 +139,33 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
                 registerBill.setThirdPartyCode(card.getPrintingCard());
             });
-            return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+
+            Long billId = this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+
+            // 寿光管理端，新增完报备单的同时新增检测请求
+            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
+                return new TraceBizException("用户未登录");
+            });
+
+            // 创建检测请求
+            DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
+
+            // 如果管理创建登记单，更新检测状态
+            if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
+                DetectRequest updatable = new DetectRequest();
+                updatable.setId(item.getId());
+                // 维护接单时间
+                updatable.setConfirmTime(new Date());
+                this.detectRequestService.updateSelective(updatable);
+
+                RegisterBill bill = this.billService.get(item.getBillId());
+                bill.setOperatorName(oprUser.getName());
+                bill.setOperatorId(oprUser.getId());
+                bill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode()); // 新增完为：待采样
+                this.billService.update(bill);
+            }
+
+            return billId;
         }).toList();
     }
 

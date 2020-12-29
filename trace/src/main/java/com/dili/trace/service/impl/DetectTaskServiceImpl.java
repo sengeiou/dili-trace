@@ -120,17 +120,17 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         }
         DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
 
-//        if (registerBill.getLatestDetectRecordId() != null) {
-//            // 复检
-//            /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
-//            detectRecord.setDetectType(2);
-//            // '默认null,1.合格 2.不合格 3.复检合格 4.复检不合格',
-//            registerBill.setDetectState(detectRecord.getDetectState() + 2);
-//        } else {
-//            // 第一次检测
-//            detectRecord.setDetectType(1);
-//            registerBill.setDetectState(detectRecord.getDetectState());
-//        }
+        if (registerBill.getLatestDetectRecordId() != null) {
+            // 复检
+            /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
+            detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
+            // '默认null,1.合格 2.不合格 3.复检合格 4.复检不合格',
+            // registerBill.setDetectState(detectRecord.getDetectState() + 2);
+        } else {
+            // 第一次检测
+            detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
+            // registerBill.setDetectState(detectRecord.getDetectState());
+        }
         detectRecord.setRegisterBillCode(registerBill.getCode());
         detectRecord.setCreated(new Date());
         detectRecord.setModified(new Date());
