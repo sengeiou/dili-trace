@@ -20,6 +20,7 @@ class DetectReportStaticsGrid extends ListPage {
                 }
             }
         }, false);
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
         (async () => {
             await this.initStaticsNum("/newRegisterBill/listStaticsPageNum.action");
         })();
@@ -29,6 +30,15 @@ class DetectReportStaticsGrid extends ListPage {
         (async () => {
             await super.queryGridData();
         })();
+    }
+    async resetButtons() {
+        var rows = this.rows;
+        if (rows.length == 1) {
+            $("#detail-btn").show();
+        }
+        else {
+            $("#detail-btn").hide();
+        }
     }
     async initStaticsNum(pageUrl) {
         let staticsData = this.queryform.serializeJSON();
