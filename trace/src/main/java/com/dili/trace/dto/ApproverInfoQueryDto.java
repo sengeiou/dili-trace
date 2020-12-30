@@ -1,29 +1,57 @@
 package com.dili.trace.dto;
 
-import javax.persistence.Column;
-
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.ApproverInfo;
 
-import io.swagger.annotations.ApiModelProperty;
+import javax.persistence.Column;
+import java.util.Date;
 
-public interface ApproverInfoQueryDto extends ApproverInfo{
+public class ApproverInfoQueryDto extends ApproverInfo {
+
+    /**
+     * 用户名模糊查询
+     */
     @Column(name = "`user_name`")
     @Like(Like.RIGHT)
-    public String getLikeUserName();
-	public void setLikeUserName(String likeUserName);
-	
-	
-    @ApiModelProperty(value = "查询登记开始时间")
+    private String likeUserName;
+
+    /**
+     * 查询登记开始时间
+     */
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
-    String getCreatedStart();
-    void setCreatedStart(String createdStart);
+    private Date createdStart;
 
-    @ApiModelProperty(value = "查询登记结束时间")
+    /**
+     * 查询登记结束时间
+     */
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
-    String getCreatedEnd();
-    void setCreatedEnd(String createdEnd);
+    private Date createdEnd;
+
+    public String getLikeUserName() {
+        return likeUserName;
+    }
+
+    public void setLikeUserName(String likeUserName) {
+        this.likeUserName = likeUserName;
+    }
+
+    public Date getCreatedStart() {
+        return createdStart;
+    }
+
+    public void setCreatedStart(Date createdStart) {
+        this.createdStart = createdStart;
+    }
+
+    public Date getCreatedEnd() {
+        return createdEnd;
+    }
+
+    public void setCreatedEnd(Date createdEnd) {
+        this.createdEnd = createdEnd;
+    }
+
 }

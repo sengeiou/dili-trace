@@ -108,7 +108,7 @@ public class ApproverInfoService extends BaseServiceImpl<ApproverInfo, Long> {
      * @return
      */
     private Optional<ApproverInfo> findByUserName(String userName) {
-        ApproverInfo approverInfo = DTOUtils.newDTO(ApproverInfo.class);
+        ApproverInfo approverInfo = new ApproverInfo();
         approverInfo.setUserName(userName);
         return this.listByExample(approverInfo).stream().findFirst();
 
