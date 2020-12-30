@@ -15,6 +15,7 @@ import java.util.List;
 public class CustomerExtendOutPutDto extends CustomerExtendDto {
     private Long marketId;
     private String marketName;
+    private String tradePrintingCard;
 
     public Long getMarketId() {
         return marketId;
@@ -33,5 +34,13 @@ public class CustomerExtendOutPutDto extends CustomerExtendDto {
 
     public void setMarketName(String marketName) {
         this.marketName = marketName;
+    }
+
+    public String getTradePrintingCard() {
+        return tradePrintingCard;
+    }
+
+    public void setTradePrintingCard(String tradePrintingCard) {
+        this.tradePrintingCard = tradePrintingCard;
     }
 }
