@@ -334,7 +334,7 @@ public class CustomerRpcService {
      * @param customerCode
      * @throws IOException
      */
-    private Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo,Long marketId) {
+    public Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo,Long marketId) {
         CardQueryInput input = new CardQueryInput();
         input.setFirmId(marketId);
         input.setCustomerCode(StringUtils.trimToNull(customerCode));
