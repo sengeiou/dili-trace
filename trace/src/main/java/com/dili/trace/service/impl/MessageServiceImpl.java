@@ -3,6 +3,7 @@ package com.dili.trace.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.entity.ExecutionConstants;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
@@ -13,6 +14,7 @@ import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.enums.MessageReceiverEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.Firm;
@@ -23,6 +25,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 @Service
 @EnableRetry
@@ -49,6 +52,8 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
     ExecutionConstants executionConstants;
     @Autowired
     FirmRpcService firmRpcService;
+    @Autowired
+    CustomerRpcService clientRpcService;
 
     @Override
     public void addMessage(MessageInputDto messageInputDto,Long marektId) {
@@ -64,12 +69,12 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
         String messageFlag = messageConfig.getMessageFlag();
         String smsFlag = messageConfig.getSmsFlag();
         String wechatFlag = messageConfig.getWechatFlag();
-        User creatorUser = userService.get(messageInputDto.getCreatorId());
+        Optional<CustomerExtendDto> creatorUser = this.clientRpcService.findCustomerById(messageInputDto.getCreatorId(), marektId);
         Long[] receiverIdArray = messageInputDto.getReceiverIdArray();
         if (messageFlag.equals("1")) {
             logger.info("send event message");
             for (Long recevierId : receiverIdArray) {
-                User receiverUser = userService.get(recevierId);
+                Optional<CustomerExtendDto> receiverUser = this.clientRpcService.findCustomerById(recevierId, marektId);
                 EventMessage eventMessage = new EventMessage();
                 String title = MessageFormat.format(messageConfig.getEventMessageTitle(),
                         messageInputDto.getEventMessageTitleParam());
@@ -78,12 +83,14 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
                 String content = MessageFormat.format(messageConfig.getEventMessageContent(),
                         messageInputDto.getEventMessageContentParam());
                 eventMessage.setContent(content);
-                eventMessage.setCreator(creatorUser.getName());
-                eventMessage.setCreatorId(creatorUser.getId());
+                creatorUser.ifPresent(c -> {
+                    eventMessage.setCreator(c.getName());
+                    eventMessage.setCreatorId(c.getId());
+                });
                 //管理员类型的用户查询为空
-                if (null != receiverUser) {
-                    eventMessage.setReceiver(receiverUser.getName());
-                }
+                receiverUser.ifPresent(r -> {
+                    eventMessage.setReceiver(r.getName());
+                });
                 eventMessage.setReceiverId(recevierId);
                 if (null == messageInputDto.getReceiverType()) {
                     eventMessage.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());

@@ -69,7 +69,7 @@ public class SessionData {
 
 
     public Optional<OperatorUser>getOptUser(){
-        if(this.role==null||this.role!=Role.Manager){
+        if(this.role==null||this.role!=Role.Manager||this.role!=Role.Client){
             return Optional.empty();
         }
         return Optional.of(new OperatorUser(this.getUserId(),this.getUserName()));

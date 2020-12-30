@@ -61,8 +61,7 @@ class CommissionDetectRequestGrid extends ListPage {
      * @param designatedId
      * @param designatedName
      */
-    public async doAssign(id:string, designatedId:string, designatedName:string){
-        let detectTime;
+    public async doAssign(id:string, designatedId:string, designatedName:string, detectTime:string){
         //@ts-ignore
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {

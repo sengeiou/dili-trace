@@ -3,36 +3,32 @@
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
-
                 <div class="form-group">
-                    <label class="label-title text-right">创建时间</label>
-                    <input type="text" class="form-control input-sm"  value="${detectRequest.created!,dateFormat='yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                    <label class="label-title text-right">登记时间</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.created!,dateFormat='yyyy-MM-dd HH:mm:ss'}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>创建人</label>
-                    <input type="text" class="form-control input-sm" value="${detectRequest.creatorName}" required readonly/>
+                        <span class="red">&lowast;</span>登记人</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name}" required readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right">报备单ID</label>
-                    <input type="text" class="form-control input-sm"  value="${detectRequest.billId}" required readonly/>
+                    <label class="label-title text-right">登记单编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>指定检测员</label>
-                    <input type="text" class="form-control input-sm"  id="designatedName" name="designatedName" value="${detectRequest.designatedName}" required/>
+                    <label class="label-title text-right">预约时间</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.detectReservationTime!,dateFormat='yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">指定检测员</label>
+                    <input type="text" class="form-control input-sm"  id="designatedName" name="designatedName" value="${detectRequest.designatedName}"/>
                     <input type="text" class="form-control input-sm hidden" id="designatedId" name="designatedId"/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>检测类型</label>
-                    <input type="text" class="form-control input-sm" value="${detectRequest.detectTypeName}" required readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>采样来源</label>
-                    <input type="text" class="form-control input-sm"  value="${detectRequest.detectSourceName}" required readonly/>
+                    <label class="label-title text-right">检测时间</label>
+                    <input type="text" class="form-control laydatetime input-sm"  id="detectTime" name="detectTime" value="${detectRequest.detectTime!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                 </div>
             </div>
         </form>
@@ -47,6 +43,14 @@
 
 <script type="text/javascript">
 
+    lay('.laydatetime').each(function(){
+        laydate.render({
+            elem: this
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+    });
+
     $(function () {
         initAutoComplete('#designatedName','/customerDetectRequest/detector');
     });
@@ -54,7 +58,8 @@
     async function callDoAssign(){
         let designatedId = $("#designatedId").val();
         let designatedName = $("#designatedName").val();
-        await parent.window['DetectRequestGridObj'].doAssign('${detectRequest.id}', designatedId, designatedName);
+        let detectTime = $("#detectTime").val();
+        await parent.window['CommissionDetectRequestGridObj'].doAssign('${detectRequest.id}', designatedId, designatedName, detectTime);
     }
 
     /**

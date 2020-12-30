@@ -1,81 +1,110 @@
 package com.dili.trace.domain;
 
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 
-/**
- * 由MyBatis Generator工具自动生成
- * 
- * This file was generated on 2019-07-26 09:20:35.
- */
 @Table(name = "`approver_info`")
-public interface ApproverInfo extends IBaseDomain {
-
+public class ApproverInfo extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+    @JSONField(serialize = false)
+    private Long id;
 
-    void setId(Long id);
-
-    @Column(name = "`user_name`")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getUserName();
-	public void setUserName(String userName);
-	
-    @Column(name = "`phone`")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getPhone();
-	public void setPhone(String phone);
-	
+    @ApiModelProperty(value = "用户ID")
     @Column(name = "`user_id`")
-    @FieldDef(label="user_id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-	
-	public Long getUserId();
-	public void setUserId(Long userId);
-	
+    private Long userId;
 
-    @Transient
-    @EditMode(editor = FieldEditor.Text, required = false)
-	public String getSignBase64();
-	public void setSignBase64(String signBase64);
+    @ApiModelProperty(value = "用户名称")
+    @Column(name = "`user_name`")
+    private String userName;
+
+    @ApiModelProperty(value = "手机号")
+    @Column(name = "`phone`")
+    private String phone;
 
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
-    @FieldDef(label="created")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getCreated();
-
-    void setCreated(Date created);
+    private Date created;
 
     @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
-    @FieldDef(label="modified")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getModified();
+    private Date modified;
 
-    void setModified(Date modified);
-
-
+    @ApiModelProperty(value = "市场ID")
     @Column(name = "`market_id`")
-    @FieldDef(label="market_id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    public Long getMarketId();
-    public void setMarketId(Long marketId);
-    
- 
+    private Long marketId;
 
+    @Transient
+    private String signBase64;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getSignBase64() {
+        return signBase64;
+    }
+
+    public void setSignBase64(String signBase64) {
+        this.signBase64 = signBase64;
+    }
 }
