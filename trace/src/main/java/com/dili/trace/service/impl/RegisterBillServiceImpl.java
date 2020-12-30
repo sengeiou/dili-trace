@@ -22,6 +22,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
+import com.dili.trace.util.NumUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -312,10 +313,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.error("商品重量不能小于0");
             throw new TraceBizException("商品重量不能小于0");
         }
+
+        if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getWeight()) < 0) {
+            logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+
+//        if (NumUtils.isIntegerValue(registerBill.getWeight())) {
+//            logger.error("商品重量必须为整数");
+//            throw new TraceBizException("商品重量必须为整数");
+//        }
+
+        if (Objects.nonNull(registerBill.getUnitPrice())
+                && NumUtils.MAX_UNIT_PRICE.compareTo(registerBill.getUnitPrice()) < 0) {
+            logger.error("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
+            throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
+        }
+
         if (registerBill.getWeightUnit() == null) {
             logger.error("重量单位不能为空");
             throw new TraceBizException("重量单位不能为空");
         }
+
         if(registerBill.getMarketId()==null){
             throw new TraceBizException("市场不能为空");
         }
