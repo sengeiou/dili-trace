@@ -101,7 +101,10 @@ public class ManagerRegisterHeadApi {
                 registerHeadBasePage.getDatas().forEach(e -> {
                     e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
                     e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
-                    e.setUpStreamName(this.upStreamService.get(e.getUpStreamId()).getName());
+                    UpStream upStream = this.upStreamService.get(e.getUpStreamId());
+                    if (upStream != null) {
+                        e.setUpStreamName(upStream.getName());
+                    }
                     e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), ImageCertBillTypeEnum.MAIN_CHECKIN_ORDER_TYPE));
                     RegisterHeadDto registerHeadDto = new RegisterHeadDto();
                     BeanUtils.copyProperties(e, registerHeadDto);
