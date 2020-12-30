@@ -497,6 +497,20 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`is_print_checksheet`")
     private Integer isPrintCheckSheet;
 
+    /**
+     * 是否进门
+     */
+    @Column(name = "`checkin_status`")
+    private Integer checkinStatus;
+
+    public Integer getCheckinStatus() {
+        return checkinStatus;
+    }
+
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
+    }
+
     public Integer getIsPrintCheckSheet() {
         return isPrintCheckSheet;
     }
