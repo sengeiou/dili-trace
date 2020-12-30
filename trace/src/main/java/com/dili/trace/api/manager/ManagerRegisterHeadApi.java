@@ -201,8 +201,7 @@ public class ManagerRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(sessionData.getUserId(), sessionData.getMarketId());
-
+            CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(dto.getUserId(), sessionData.getMarketId());
 
             RegisterHead registerHead = dto.build(customer);
             logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
