@@ -176,6 +176,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                                    Optional<OperatorUser> operatorUser) {
         this.checkBill(registerBill);
 
+        registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
 //        registerBill.setState(RegisterBillStateEnum.NEW.getCode());

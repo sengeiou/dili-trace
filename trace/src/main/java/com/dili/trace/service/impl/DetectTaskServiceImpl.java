@@ -1,22 +1,23 @@
 package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.exception.TraceBizException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
 import com.dili.trace.dto.TaskGetParam;
-import com.dili.common.exception.TraceBizException;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.service.BillService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.DetectTaskService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,11 +115,15 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             LOGGER.error("上传检测任务结果失败,该单号已完成检测");
             throw new TraceBizException("已完成检测");
         }
-        if (!registerBill.getExeMachineNo().equals(detectRecord.getExeMachineNo())) {
+        if (StringUtils.isNoneBlank(registerBill.getExeMachineNo())
+                && !registerBill.getExeMachineNo().equals(detectRecord.getExeMachineNo())) {
             LOGGER.error("上传检测任务结果失败，该仪器没有获取该登记单");
             throw new TraceBizException("该仪器无权操作该单据");
         }
-        DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
+        DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElseThrow(() -> {
+            LOGGER.error("上传检测任务结果失败，检测请求不存在");
+            return new TraceBizException("检测请求不存在");
+        });
 
         if (registerBill.getLatestDetectRecordId() != null) {
             // 复检
@@ -132,6 +137,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             // registerBill.setDetectState(detectRecord.getDetectState());
         }
         detectRecord.setRegisterBillCode(registerBill.getCode());
+        detectRecord.setDetectRequestId(detectRequest.getId());
         detectRecord.setCreated(new Date());
         detectRecord.setModified(new Date());
         detectRecordService.saveDetectRecord(detectRecord);

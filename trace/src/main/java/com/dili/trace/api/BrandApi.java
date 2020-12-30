@@ -7,6 +7,8 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
@@ -15,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-        import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
         import com.dili.common.annotation.AppAccess;
         import com.dili.common.annotation.Role;
@@ -87,9 +91,15 @@ public class BrandApi {
             if (inputDto.getMarketId() == null) {
                 inputDto.setMarketId(sessionData.getMarketId());
             }
-            List<BrandOutputDto>list= StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
+            BasePage<Brand> brandBasePage = brandService.listPageByExample(inputDto);
 
-            return BaseOutput.success().setData(list);
+            List<BrandOutputDto> brandDtos = new ArrayList<>();
+            List<Brand> brands = brandBasePage.getDatas();
+            if (!CollectionUtils.isEmpty(brands)) {
+                brandDtos = StreamEx.of(brands).map(BrandOutputDto::build).toList();
+            }
+
+            return BaseOutput.success().setData(brandDtos);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
