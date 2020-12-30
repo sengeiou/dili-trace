@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,8 +167,8 @@ public class ManagerRegisterHeadApi {
             String userName = sessionContext.getUserName();
 
             List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
-                    .nonNull().filter(dto->{
-                        return dto.getUserId()!=null;
+                    .nonNull().filter(dto -> {
+                        return dto.getUserId() != null;
                     }).toList();
             if (registerHeads.isEmpty()) {
                 return BaseOutput.failure("没有进门主台账单/参数错误");
@@ -280,7 +281,16 @@ public class ManagerRegisterHeadApi {
     public BaseOutput<RegisterHead> viewRegisterHead(@RequestBody BaseDomain baseDomain) {
         try {
             RegisterHead registerHead = registerHeadService.get(baseDomain.getId());
-
+            //修改重量返回的格式，只取整数部分
+            if (registerHead.getWeight() != null) {
+                registerHead.setWeight(weightTransform(registerHead.getWeight()));
+            }
+            if (registerHead.getPieceWeight() != null) {
+                registerHead.setPieceWeight(weightTransform(registerHead.getPieceWeight()));
+            }
+            if (registerHead.getRemainWeight() != null) {
+                registerHead.setRemainWeight(weightTransform(registerHead.getRemainWeight()));
+            }
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.MASTER_BILL.getCode());
             registerHead.setImageCertList(imageCerts);
 
@@ -349,5 +359,16 @@ public class ManagerRegisterHeadApi {
             logger.error("查询分批详情出错", e);
             return BaseOutput.failure("查询分批详情数据出错");
         }
+    }
+
+    /**
+     * 重量去除小数部分
+     *
+     * @param weight
+     * @return
+     */
+    private BigDecimal weightTransform(BigDecimal weight) {
+        String weightString = weight.toString();
+        return new BigDecimal(weightString.substring(0, weightString.indexOf(".")));
     }
 }
