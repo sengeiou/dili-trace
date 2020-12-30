@@ -7,13 +7,9 @@ import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.DetectRequestWithBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
@@ -30,7 +26,6 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -113,7 +108,10 @@ public class CustomerDetectRequestController {
      */
     @RequestMapping(value = "/confirm.html", method = RequestMethod.GET)
     public String assign(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        modelMap.put("detectRequest", this.detectRequestService.get(id));
+        DetectRequest detectRequest = this.detectRequestService.get(id);
+        RegisterBill registerBill = this.billService.get(detectRequest.getBillId());
+        modelMap.put("detectRequest", detectRequest);
+        modelMap.put("registerBill", registerBill);
         return "customerDetectRequest/confirm";
     }
 

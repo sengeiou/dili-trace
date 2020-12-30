@@ -175,7 +175,7 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listBuyer.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendOutPutDto>> listBuyer(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input, this.sessionContext.getSessionData().getMarketId());
             PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
             List<CustomerExtendDto> customerList = pageOutput.getData();
             List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
@@ -207,7 +207,7 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listDriver.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, this.sessionContext.getSessionData().getMarketId());
             PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
             List<CustomerExtendDto> customerList = pageOutput.getData();
             List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();

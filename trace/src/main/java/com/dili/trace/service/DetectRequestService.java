@@ -369,6 +369,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setId(id);
         updateParam.setDesignatedId(designatedId);
         updateParam.setDesignatedName(designatedName);
+        updateParam.setConfirmTime(new Date());
         updateParam.setDetectTime(detectTime);
         updateParam.setModified(new Date());
         updateParam.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
@@ -686,8 +687,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
         }
 
+        // 更新检测请求预约时间
+        DetectRequest updateParam = new DetectRequest();
+        updateParam.setId(registerBill.getDetectRequestId());
+        updateParam.setDetectReservationTime(new Date());
+        this.updateSelective(updateParam);
+
         // 审核状态：待审核 --> 待接单
         RegisterBill updateBill = new RegisterBill();
+        updateBill.setId(billId);
         updateBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
