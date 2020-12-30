@@ -283,6 +283,11 @@ public class RegisterBillDto extends RegisterBill {
     @Transient
     private String pdResult;
 
+    /**
+     * 是否进门描述
+     */
+    @Column(name = "`checkin_status`")
+    private Integer checkinStatus;
 
     public Date getCheckinCreated() {
         return checkinCreated;
