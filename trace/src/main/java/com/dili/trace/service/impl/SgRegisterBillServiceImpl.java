@@ -301,7 +301,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                         registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
                     }
                     if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
-                        registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+                        // registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
                         registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
                         registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
                     }
@@ -358,6 +358,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
                 registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+                registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
                 // 更新检测请求的检测来源为【AUTO_CHECK 主动送检】
                 this.autoCheckDetectRequest(registerBill.getDetectRequestId());
                 return this.updateRegisterBillAsWaitCheck(registerBill);
@@ -514,6 +515,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
                 registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+                registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
 
                 this.samplingCheckDetectRequest(registerBill.getDetectRequestId());
                 return this.updateRegisterBillAsWaitCheck(registerBill);
