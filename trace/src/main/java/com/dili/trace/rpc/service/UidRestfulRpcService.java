@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * SB
+ * 生成编号服务
  *
  */
 @Service
@@ -22,7 +22,7 @@ public class UidRestfulRpcService {
     UidRestfulRpc uidRestfulRpc;
 
     /**
-     * sb
+     * 生成编号
      * @param type
      * @return
      */

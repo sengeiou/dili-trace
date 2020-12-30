@@ -42,6 +42,12 @@ public class RegisterHeadDto extends RegisterHead {
 	@Transient
 	private Integer verifyRemainWeight;
 
+	/**
+	 * 市场名称
+	 */
+	@Transient
+	private String marketName;
+
 	public String getCreatedStart() {
 		return createdStart;
 	}
@@ -72,5 +78,13 @@ public class RegisterHeadDto extends RegisterHead {
 
 	public void setVerifyRemainWeight(Integer verifyRemainWeight) {
 		this.verifyRemainWeight = verifyRemainWeight;
+	}
+
+	public String getMarketName() {
+		return marketName;
+	}
+
+	public void setMarketName(String marketName) {
+		this.marketName = marketName;
 	}
 }
