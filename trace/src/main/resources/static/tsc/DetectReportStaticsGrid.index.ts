@@ -44,7 +44,7 @@ class DetectReportStaticsGrid extends ListPage {
         })();
     }
 
-    private async resetButtons(){
+    public async resetButtons(){
         var rows=this.rows;
         if(rows.length==1){
             $("#detail-btn").show();

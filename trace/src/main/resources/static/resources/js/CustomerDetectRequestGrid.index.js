@@ -89,8 +89,7 @@ class CustomerDetectRequestGrid extends ListPage {
             btns: []
         });
     }
-    async doAssign(id, designatedId, designatedName) {
-        let detectTime;
+    async doAssign(id, designatedId, designatedName, detectTime) {
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             bs4pop.confirm('是否确认接单？<br/>', { type: 'warning', btns: [

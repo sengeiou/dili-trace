@@ -1,13 +1,9 @@
 package com.dili.trace.controller;
 
-import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.enums.BillDeleteStatusEnum;
@@ -78,7 +74,6 @@ public class CommissionDetectRequestController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
-        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
         detectRequestDto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
@@ -94,7 +89,11 @@ public class CommissionDetectRequestController {
      */
     @RequestMapping(value = "/confirm.html", method = RequestMethod.GET)
     public String assign(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        modelMap.put("detectRequest", this.detectRequestService.get(id));
+        DetectRequest detectRequest = this.detectRequestService.get(id);
+        RegisterBill registerBill = this.billService.get(detectRequest.getBillId());
+        modelMap.put("detectRequest", detectRequest);
+        modelMap.put("registerBill", registerBill);
+
         return "commissionDetectRequest/confirm";
     }
 
