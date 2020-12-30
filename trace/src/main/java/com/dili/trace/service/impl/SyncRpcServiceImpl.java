@@ -17,6 +17,7 @@ import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UserService;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -82,8 +83,12 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     public void syncRpcUserByUserId(Long userId) {
         //rpc用户列表
         BaseOutput<User> resultData = getRpcUserById(userId);
-        if (null != resultData) {
-            User rpcUser = resultData.getData();
+        //未获取到rpc用户
+        if (null == resultData) {
+            return;
+        }
+        User rpcUser = resultData.getData();
+        if (null != rpcUser) {
             com.dili.trace.domain.User user = userService.get(userId);
             //取需要更新的用户信息updateList
             if (null != user) {
@@ -150,12 +155,12 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     /**
      * 按市场id获取用户列表
      *
-     * @param market_id
+     * @param marketId
      * @return
      */
-    private List<com.dili.trace.domain.User> getUserByMarketId(Long market_id) {
+    private List<com.dili.trace.domain.User> getUserByMarketId(Long marketId) {
         com.dili.trace.domain.User queUser = getNewUserPojo();
-        queUser.setMarketId(market_id);
+        queUser.setMarketId(marketId);
         queUser.setYn(YesOrNoEnum.YES.getCode());
         return userService.list(queUser);
     }
