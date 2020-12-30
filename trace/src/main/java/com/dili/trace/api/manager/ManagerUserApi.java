@@ -3,18 +3,12 @@ package com.dili.trace.api.manager;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.PageOutput;
-import com.dili.trace.api.input.UserInput;
-import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
-import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 管理用户接口
@@ -143,19 +138,12 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listSeller.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, this.sessionContext.getSessionData().getMarketId());
-            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
-            List<CustomerExtendDto> customerList = pageOutput.getData();
-            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
-            customerList.forEach(c -> {
-                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
-                BeanUtils.copyProperties(c, customerOutput);
-                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
-                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
-                customerOutputList.add(customerOutput);
-            });
-            BeanUtils.copyProperties(pageOutput, page);
-            page.setData(customerOutputList);
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, marketId);
+
+            // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
+            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
+
             return page;
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
@@ -175,19 +163,12 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listBuyer.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendOutPutDto>> listBuyer(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input, this.sessionContext.getSessionData().getMarketId());
-            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
-            List<CustomerExtendDto> customerList = pageOutput.getData();
-            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
-            customerList.forEach(c -> {
-                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
-                BeanUtils.copyProperties(c, customerOutput);
-                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
-                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
-                customerOutputList.add(customerOutput);
-            });
-            BeanUtils.copyProperties(pageOutput, page);
-            page.setData(customerOutputList);
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input, marketId);
+
+            // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
+            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
+
             return page;
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
@@ -207,19 +188,10 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listDriver.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, this.sessionContext.getSessionData().getMarketId());
-            PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
-            List<CustomerExtendDto> customerList = pageOutput.getData();
-            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
-            customerList.forEach(c -> {
-                CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
-                BeanUtils.copyProperties(c, customerOutput);
-                customerOutput.setMarketId(this.sessionContext.getSessionData().getMarketId());
-                customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
-                customerOutputList.add(customerOutput);
-            });
-            BeanUtils.copyProperties(pageOutput, page);
-            page.setData(customerOutputList);
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, marketId);
+            // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
+            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
             return page;
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
@@ -227,6 +199,32 @@ public class ManagerUserApi {
             logger.error(e.getMessage(), e);
             return PageOutput.failure("操作失败：服务端出错");
         }
+    }
+
+    /**
+     * 构建卖家、买家、司机查询返回对象
+     * @param marketId
+     * @param pageOutput
+     * @return
+     */
+    private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerExtendDto>> pageOutput) {
+        PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
+        List<CustomerExtendDto> customerList = pageOutput.getData();
+        List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
+        customerList.forEach(c -> {
+            CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
+            BeanUtils.copyProperties(c, customerOutput);
+            customerOutput.setMarketId(marketId);
+            customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+            Optional<CardResultDto> cardResultDto = this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId);
+            cardResultDto.ifPresent(cardInfo -> {
+                customerOutput.setTradePrintingCard(cardInfo.getCardNo());
+            });
+            customerOutputList.add(customerOutput);
+        });
+        BeanUtils.copyProperties(pageOutput, page);
+        page.setData(customerOutputList);
+        return page;
     }
 
 }

@@ -6,8 +6,11 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.redis.service.RedisUtil;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.SessionRedisService;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.redis.UserRedis;
@@ -20,9 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
+import java.util.Date;
 import java.util.Optional;
 
 public class SessionInterceptor extends HandlerInterceptorAdapter {
@@ -48,7 +53,20 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserRedis userRedis;
     @Autowired
     UserUrlRedis userUrlRedis;
+    @Autowired
+    SyncRpcService syncRpcService;
+    @Resource
+    RedisUtil redisUtil;
     private ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * 同步时间
+     */
+    private String syncUserTimeKey = "syncUserTime_";
+    /**
+     * 用户过期时间-分钟
+     */
+    private Integer userEffectMin = 10;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -137,7 +155,9 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private Optional<SessionData> loginAsClient(HttpServletRequest req) {
-        return this.customerRpcService.getCurrentCustomer();
+        Optional<SessionData> data = this.customerRpcService.getCurrentCustomer();
+        asyncRpcUser(data);
+        return data;
     }
 
     private Optional<SessionData> loginAsAny(HttpServletRequest req) {
@@ -149,6 +169,92 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return this.loginAsClient(req);
         }else{
             return Optional.empty();
+        }
+    }
+
+    /**
+     * 同步用户信息
+     *
+     * @param customer
+     */
+    public void asyncRpcUser(Optional<SessionData> customer) {
+        if (null == customer) {
+            return;
+        }
+        try {
+            //取用户id
+            SessionData sessionData = customer.get();
+            if(null==sessionData){
+                return;
+            }
+            Long userId = sessionData.getUserId();
+            if(null==userId){
+                return;
+            }
+            String key_user = syncUserTimeKey + userId;
+            //没有对应用户key，则同步该用户信息并写入到redis，key:user_id,val:过期时间
+            if (!redisUtil.exists(key_user)) {
+                syncUserInfoAdd(userId, key_user);
+            } else {
+                syncUserInfoUpdate(userId, key_user);
+            }
+        } catch (Exception e) {
+            logger.error("===>>同步用户失败");
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 新增用戶对应redis同步时间
+     *
+     * @param userId
+     * @param key_user
+     */
+    private void syncUserInfoAdd(Long userId, String key_user) {
+        doSyncUserRpc(userId);
+        Date newMinutes = DateUtils.addMinutes(DateUtils.getCurrentDate(), userEffectMin);
+        redisUtil.set(key_user, newMinutes);
+    }
+
+    /**
+     * 更新用戶对应redis同步时间
+     *
+     * @param userId
+     * @param key_user
+     */
+    private void syncUserInfoUpdate(Long userId, String key_user) {
+        //redis中同步过期时间
+        Date syncUserTime = (Date) redisUtil.get(key_user);
+        //当前时间
+        Date currentDate = DateUtils.getCurrentDate();
+        //redis中没有过期时间,重新设置
+        if(null==syncUserTime){
+            syncUserInfoAdd(userId,key_user);
+        }else{
+            //当前时间在同步过期时间之后，则调用同步方法同步用户
+            if (currentDate.after(syncUserTime)) {
+                doSyncUserRpc(userId);
+                //秒转分
+                int second = 60;
+                Date newSyncDate = DateUtils.addSeconds(syncUserTime, userEffectMin * second);
+                //同步过期时间+10分钟仍然在当前时间之前，则取当前时间+10分钟作新的同步过期时间
+                if (currentDate.after(newSyncDate)) {
+                    newSyncDate = DateUtils.addSeconds(DateUtils.getCurrentDate(), userEffectMin * second);
+                }
+                redisUtil.set(key_user, newSyncDate);
+            }
+        }
+
+    }
+
+    /**
+     * 同步用户
+     */
+    public void doSyncUserRpc(Long userId) {
+        try {
+            syncRpcService.syncRpcUserByUserId(userId);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
     }
 

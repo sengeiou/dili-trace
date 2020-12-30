@@ -71,8 +71,20 @@ public class CreateListBillParam {
      */
     private String corporateName;
 
+    /**
+     * 理货区号
+     */
+    private String tallyAreaNo;
 
     private List<ImageCert>globalImageCertList;
+
+    public String getTallyAreaNo() {
+        return tallyAreaNo;
+    }
+
+    public void setTallyAreaNo(String tallyAreaNo) {
+        this.tallyAreaNo = tallyAreaNo;
+    }
 
     public List<ImageCert> getGlobalImageCertList() {
         return globalImageCertList;

@@ -761,8 +761,8 @@ public class NewRegisterBillController {
                     rb.setPhone(input.getPhone());
                     rb.setPlate(input.getPlate());
                     rb.setUserId(input.getUserId());
-
                     rb.setImageCerts(input.getGlobalImageCertList());
+
                     // 保存产地证明
                     List<ImageCert> imageList = StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
 //                    if (StringUtils.isNotBlank(rbInputDto.getOriginCertifiyUrl())) {
@@ -776,7 +776,8 @@ public class NewRegisterBillController {
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    rb.setSourceName(input.getSourceName());
+                    //rb.setSourceName(input.getSourceName());
+                    rb.setSourceName(input.getTallyAreaNo());
                     rb.setSourceId(input.getSourceId());
                     rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());

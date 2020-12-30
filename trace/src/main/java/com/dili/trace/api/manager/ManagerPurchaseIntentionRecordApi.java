@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 /**
  * (管理员)买家进门报备
  */
@@ -66,6 +68,8 @@ public class ManagerPurchaseIntentionRecordApi {
     public BaseOutput createTruckEnterRecord(@RequestBody PurchaseIntentionRecord input) {
         SessionData sessionData = this.sessionContext.getSessionData();
         input.setMarketId(sessionData.getMarketId());
+        input.setCreated(new Date());
+        input.setModified(new Date());
         this.purchaseIntentionRecordService.insertSelective(input);
         return BaseOutput.successData(input.getId());
     }
