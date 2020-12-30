@@ -77,7 +77,7 @@ public class ApproverInfoController {
             @ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(ApproverInfoQueryDto approverInfo) throws Exception {
+    String listPage(@RequestBody ApproverInfoQueryDto approverInfo) throws Exception {
         EasyuiPageOutput out = this.approverInfoService.listEasyuiPageByExample(approverInfo, true);
         return out.toString();
     }
@@ -136,7 +136,7 @@ public class ApproverInfoController {
             @ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string")})
     @RequestMapping(value = "/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput update(ApproverInfo approverInfo) {
+    BaseOutput update(@RequestBody ApproverInfo approverInfo) {
         try {
             this.approverInfoService.updateApproverInfo(approverInfo);
             return BaseOutput.success("修改成功").setData(approverInfo.getId());

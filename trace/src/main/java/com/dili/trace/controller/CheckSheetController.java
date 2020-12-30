@@ -110,7 +110,7 @@ public class CheckSheetController {
         modelMap.put("userNameList", Collections.emptyList());
         modelMap.put("detectOperatorNameList", Collections.emptyList());
         List<ApproverInfo> approverInfoList = this.approverInfoService
-                .listByExample(DTOUtils.newDTO(ApproverInfo.class));
+                .listByExample(new ApproverInfo());
         modelMap.put("approverInfoList", approverInfoList);
 
         if (idList != null && !idList.isEmpty()) {

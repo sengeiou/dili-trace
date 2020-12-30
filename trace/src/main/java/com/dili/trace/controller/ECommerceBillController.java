@@ -330,7 +330,7 @@ public class ECommerceBillController {
 //		List<Long>seperatePrintReportIdList=StreamEx.of(this.seperatePrintReportService.listByExample(condition)).map(SeperatePrintReport::getId).toList();
 
 		List<ApproverInfo> approverInfoList = this.approverInfoService
-				.listByExample(DTOUtils.newDTO(ApproverInfo.class));
+				.listByExample(new ApproverInfo());
 		modelMap.put("approverInfoList", approverInfoList);
 
 		RegisterBill item = this.billService.get(billId);
@@ -354,7 +354,7 @@ public class ECommerceBillController {
 						} else {
 							obj.setPrintState("已打印");
 							obj.setApproverUserName(approverInfoMap
-									.getOrDefault(obj.getApproverInfoId(), DTOUtils.newDTO(ApproverInfo.class))
+									.getOrDefault(obj.getApproverInfoId(), new ApproverInfo())
 									.getUserName());
 
 						}
