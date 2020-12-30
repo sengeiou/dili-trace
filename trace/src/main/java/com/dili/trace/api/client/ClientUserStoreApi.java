@@ -4,10 +4,11 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.UserStore;
-import com.dili.trace.service.UserService;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UserStoreService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +36,9 @@ public class ClientUserStoreApi {
     @Autowired
     UserStoreService userStoreService;
     @Autowired
-    UserService userService;
-    @Autowired
     private LoginSessionContext sessionContext;
+    @Autowired
+    CustomerRpcService customerRpcService;
 
     /**
      * 查询当前用户的用户店铺名称
@@ -53,8 +54,10 @@ public class ClientUserStoreApi {
             userStore.setOrder("desc");
             List<UserStore> storeList =userStoreService.listByExample(userStore);
             UserStore store=new UserStore();
-            if(storeList.isEmpty()){
-                store.setStoreName(userService.get(userId).getName());
+            if(storeList.isEmpty()) {
+                CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(userId,
+                        this.sessionContext.getSessionData().getMarketId());
+                store.setStoreName(customer.getName());
                 return BaseOutput.success().setData(store);
             }
             store=storeList.get(0);
