@@ -34,7 +34,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	/**
 	 * 下游企业标志 20
 	 */
-
 	public UpStreamMapper getActualDao() {
 		return (UpStreamMapper) getDao();
 	}
@@ -44,6 +43,11 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	MarketService marketService;
+
+	/**
+	 * license 最大长度
+	 */
+	private static final int MAX_LICENSE_LENGTH = 20;
 
 	/**
 	 * 分页查询上游信息
@@ -102,6 +106,11 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			upStreamDto.setSourceUserId(sourceuserId);
 		});
 		try {
+
+			if (StringUtils.isNoneBlank(upStreamDto.getLicense()) && upStreamDto.getLicense().length() > MAX_LICENSE_LENGTH) {
+				throw new TraceBizException("统一信用代码不超过20位！");
+			}
+
 			UpStreamDto query = new UpStreamDto();
 			query.setSourceUserId(upStreamDto.getSourceUserId());
 			query.setTelphone(upStreamDto.getTelphone());
