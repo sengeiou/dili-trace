@@ -179,6 +179,7 @@ public class SessionData {
         data.userId = ut.getId();
         data.userName = ut.getRealName();
         data.marketId=ut.getFirmId();
+        data.marketName = ut.getFirmName();
         return data;
     }
 

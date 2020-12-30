@@ -155,12 +155,12 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     /**
      * 按市场id获取用户列表
      *
-     * @param market_id
+     * @param marketId
      * @return
      */
-    private List<com.dili.trace.domain.User> getUserByMarketId(Long market_id) {
+    private List<com.dili.trace.domain.User> getUserByMarketId(Long marketId) {
         com.dili.trace.domain.User queUser = getNewUserPojo();
-        queUser.setMarketId(market_id);
+        queUser.setMarketId(marketId);
         queUser.setYn(YesOrNoEnum.YES.getCode());
         return userService.list(queUser);
     }
