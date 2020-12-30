@@ -71,6 +71,7 @@ public class RegisterBillOutput {
         out.setVerifyType(bill.getVerifyType());
         out.setReason(bill.getReason());
         out.setIsCheckin(bill.getIsCheckin());
+        out.setTallyAreaNo(bill.getTallyAreaNo());
         return out;
     }
 
