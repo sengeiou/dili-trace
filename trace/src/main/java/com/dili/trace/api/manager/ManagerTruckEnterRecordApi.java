@@ -7,12 +7,13 @@ import com.dili.common.entity.SessionData;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * (管理员)司机进门报备
@@ -29,6 +31,8 @@ import java.util.Date;
 @Api(value = "/api/manager/managerTruckEnterRecordApi", description = "登记单相关接口")
 @AppAccess(role = Role.Manager, url = "dili-trace-app-auth", subRoles = {})
 public class ManagerTruckEnterRecordApi {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagerTruckEnterRecordApi.class);
 
     @Autowired
     LoginSessionContext sessionContext;
@@ -65,6 +69,14 @@ public class ManagerTruckEnterRecordApi {
     @RequestMapping(value = "/createTruckEnterRecord.api")
     public BaseOutput createTruckEnterRecord(@RequestBody TruckEnterRecord input) {
         SessionData sessionData = this.sessionContext.getSessionData();
+        if (StringUtils.isBlank(input.getTruckPlate())) {
+            LOGGER.error("司机报备没有车牌号");
+            return BaseOutput.failure("车牌号必填");
+        }
+        if (StringUtils.isBlank(input.getTruckTypeName()) || Objects.isNull(input.getTruckTypeId())) {
+            LOGGER.error("司机报备没有车型");
+            return BaseOutput.failure("车型必填");
+        }
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
         input.setModified(new Date());
