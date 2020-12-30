@@ -35,6 +35,7 @@ import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,17 +95,26 @@ public class ManagerRegisterHeadApi {
             input.setOrder("desc");
             input.setMarketId(sessionData.getMarketId());
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
-
+            BasePage<RegisterHeadDto> registerHeadDtoBasePage = new BasePage<>();
+            List<RegisterHeadDto> registerHeadDtoList = new ArrayList<>();
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
                 registerHeadBasePage.getDatas().forEach(e -> {
                     e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
                     e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
-                    e.setUpStreamName(this.upStreamService.get(e.getUpStreamId()).getName());
+                    UpStream upStream = this.upStreamService.get(e.getUpStreamId());
+                    if (upStream != null) {
+                        e.setUpStreamName(upStream.getName());
+                    }
                     e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), ImageCertBillTypeEnum.MAIN_CHECKIN_ORDER_TYPE));
+                    RegisterHeadDto registerHeadDto = new RegisterHeadDto();
+                    BeanUtils.copyProperties(e, registerHeadDto);
+                    registerHeadDto.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                    registerHeadDtoList.add(registerHeadDto);
                 });
             }
-
-            return BaseOutput.success().setData(registerHeadBasePage);
+            BeanUtils.copyProperties(registerHeadBasePage, registerHeadDtoBasePage);
+            registerHeadDtoBasePage.setDatas(registerHeadDtoList);
+            return BaseOutput.success().setData(registerHeadDtoBasePage);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -201,8 +211,7 @@ public class ManagerRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(sessionData.getUserId(), sessionData.getMarketId());
-
+            CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(dto.getUserId(), sessionData.getMarketId());
 
             RegisterHead registerHead = dto.build(customer);
             logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
