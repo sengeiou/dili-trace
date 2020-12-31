@@ -228,8 +228,21 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
         this.detectRequestService.updateSelective(detectRequest);
-
+        //patch bill单上的requestId
+        updateBillDetectRequestId(bill.getBillId(),item.getId());
         return BaseOutput.success();
+    }
+
+    /**
+     * 创建检测请求单后与委托单进行关联
+     * @param billId
+     * @param detectRequestId
+     */
+    private void updateBillDetectRequestId(Long billId, Long detectRequestId) {
+        RegisterBill upBill = new RegisterBill();
+        upBill.setId(billId);
+        upBill.setDetectRequestId(detectRequestId);
+        this.billService.updateSelective(upBill);
     }
 
     /**
