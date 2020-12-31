@@ -5,6 +5,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.StockInUnitEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.StockRegisterSourceEnum;
 import com.dili.trace.rpc.api.ProductRpc;
@@ -14,6 +15,8 @@ import com.dili.trace.service.TradeDetailService;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,9 @@ import java.util.Optional;
  */
 @Service
 public class ProductRpcService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductRpcService.class);
+
     @Autowired(required = false)
     ProductRpc productRpc;
     @Autowired
@@ -69,7 +75,9 @@ public class ProductRpcService {
         //库存基本信息
         StockReduceRequestDto obj = new StockReduceRequestDto();
         obj.setFirmId(bill.getMarketId());
-        obj.setFirmName(this.firmRpcService.getFirmById(bill.getMarketId()).get().getName());
+        this.firmRpcService.getFirmById(bill.getMarketId()).ifPresent(firm -> {
+            obj.setFirmName(firm.getName());
+        });
 
         StockReduceDto stockReduceDto = new StockReduceDto();
         // 库存id
@@ -104,11 +112,15 @@ public class ProductRpcService {
             BaseOutput<RegCreateResultDto> out = this.productRpc.create(createDto);
             if (out.isSuccess() && out.getData() != null) {
                 List<RegDetailDto> regDetailDtos = out.getData().getRegDetailDtos();
-                // 同步完成后更新和溯源库存的关联关系
-                TradeDetail condition = new TradeDetail();
-                condition.setId(createDto.getTradeDetailId());
-                condition.setThirdPartyStockId(regDetailDtos.get(0).getStockId());
-                tradeDetailService.updateSelective(condition);
+                if (!CollectionUtils.isEmpty(regDetailDtos)) {
+                    // 同步完成后更新和溯源库存的关联关系
+                    TradeDetail condition = new TradeDetail();
+                    condition.setId(createDto.getTradeDetailId());
+                    condition.setThirdPartyStockId(regDetailDtos.get(0).getStockId());
+                    tradeDetailService.updateSelective(condition);
+                } else {
+                    logger.error("创建库存成功，但是未返回StockId");
+                }
             } else {
                 throw new TraceBizException("创建库存失败");
             }
@@ -138,7 +150,9 @@ public class ProductRpcService {
 
         StockReduceRequestDto obj = new StockReduceRequestDto();
         obj.setFirmId(marketId);
-        obj.setFirmName(this.firmRpcService.getFirmById(marketId).get().getName());
+        this.firmRpcService.getFirmById(marketId).ifPresent(firm -> {
+            obj.setFirmName(firm.getName());
+        });
 
         List<StockReduceDto> reduceDtoList = new ArrayList<>();
         StreamEx.of(detailList).forEach(d -> {
@@ -188,7 +202,9 @@ public class ProductRpcService {
         List<RegCreateDto> createDtoList = new ArrayList<>();
         //库存基本信息
         StreamEx.of(detailList).forEach(d -> {
-            RegisterBill bill = billService.getAvaiableBill(d.getBillId()).get();
+            RegisterBill bill = billService.getAvaiableBill(d.getBillId()).orElseThrow(() -> {
+                return new TraceBizException("处理库存失败，因为报备单" + d.getBillId() + "查询失败");
+            });
             bill.setId(d.getBillId());
             bill.setUserId(d.getBuyerId());
             bill.setName(d.getBuyerName());
@@ -213,7 +229,9 @@ public class ProductRpcService {
     private RegCreateDto buildCreateDtoFromBill(RegisterBill bill, Optional<OperatorUser> optUser, Long marketId) {
         RegCreateDto obj = new RegCreateDto();
         obj.setFirmId(marketId);
-        obj.setFirmName(this.firmRpcService.getFirmById(marketId).get().getName());
+        this.firmRpcService.getFirmById(marketId).ifPresent(firm -> {
+            obj.setFirmName(firm.getName());
+        });
         obj.setInStockNo(String.valueOf(bill.getBillId()));
         optUser.ifPresent(o -> {
             obj.setOperatorId(o.getId());
@@ -232,11 +250,11 @@ public class ProductRpcService {
         detailDto.setCname(bill.getProductName());
 
         if (WeightUnitEnum.JIN.equalsToCode(bill.getWeightUnit())) {
-            detailDto.setInUnit(1);
+            detailDto.setInUnit(StockInUnitEnum.JIN.getCode());
         } else if (WeightUnitEnum.KILO.equalsToCode(bill.getWeightUnit())) {
-            detailDto.setInUnit(2);
+            detailDto.setInUnit(StockInUnitEnum.KILO.getCode());
         } else {
-            detailDto.setInUnit(3);
+            detailDto.setInUnit(StockInUnitEnum.PIECE.getCode());
         }
         detailDto.setPlace(bill.getOriginName());
         detailDto.setPrice(bill.getUnitPrice());
