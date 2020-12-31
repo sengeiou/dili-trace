@@ -422,7 +422,6 @@ public class UserController {
                         List<UserPlate> userPlateList = userPlateService.findUserPlateByUserId(customer.getId());
                         StreamEx.of(userPlateList).nonNull().forEach(p -> {
                             dto.put("plate", p.getPlate());
-
                         });
                         data.add(dto);
                     }
@@ -433,7 +432,7 @@ public class UserController {
 
         } catch (Exception e) {
             LOGGER.error("查询失败", e);
-            return BaseOutput.failure();
+            return BaseOutput.failure().setErrorData(e.getMessage());
         }
 
     }
