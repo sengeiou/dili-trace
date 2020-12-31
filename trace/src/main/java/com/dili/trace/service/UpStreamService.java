@@ -110,6 +110,12 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			if (StringUtils.isNoneBlank(upStreamDto.getLicense()) && upStreamDto.getLicense().length() > MAX_LICENSE_LENGTH) {
 				throw new TraceBizException("统一信用代码不超过20位！");
 			}
+			if (StringUtils.isNoneBlank(upStreamDto.getName()) && upStreamDto.getName().length() > MAX_LICENSE_LENGTH) {
+				throw new TraceBizException("企业(个人)名称不超过20位！");
+			}
+			if (StringUtils.isNoneBlank(upStreamDto.getLegalPerson()) && upStreamDto.getLegalPerson().length() > MAX_LICENSE_LENGTH) {
+				throw new TraceBizException("法人姓名不超过20位！");
+			}
 
 			UpStreamDto query = new UpStreamDto();
 			query.setSourceUserId(upStreamDto.getSourceUserId());
