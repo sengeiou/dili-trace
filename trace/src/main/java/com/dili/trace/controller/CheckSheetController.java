@@ -18,6 +18,7 @@ import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.session.SessionContext;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,15 +115,19 @@ public class CheckSheetController {
         modelMap.put("approverInfoList", approverInfoList);
 
         if (idList != null && !idList.isEmpty()) {
-            List<RegisterBill> itemList = this.billService.findByIdList(idList).stream()
+
+            List<RegisterBill> itemList = StreamEx.of(this.billService.findByIdList(idList)).nonNull()
                     .filter(item -> item.getCheckSheetId() == null)
                     .filter(bill -> {
                         DetectRequest detectRequest = this.detectRequestService.get(bill.getDetectRequestId());
+                        if (null == detectRequest) {
+                            return false;
+                        }
                         return DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult());
 
                     })
                     .collect(Collectors.toList());
-            List<String> detectOperatorNameList = itemList.stream()
+            List<String> detectOperatorNameList = StreamEx.of(itemList).nonNull()
                     .map(RegisterBill::getLatestDetectOperator).filter(StringUtils::isNotBlank).distinct()
                     .collect(Collectors.toList());
 
