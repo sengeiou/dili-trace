@@ -8,18 +8,20 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
-import com.dili.ss.uid.service.BizNumberService;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.dao.RegisterHeadMapper;
-import com.dili.trace.domain.*;
-import com.dili.trace.dto.*;
-import com.dili.trace.enums.*;
+import com.dili.trace.domain.Customer;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterHead;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterHeadDto;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.MeasureTypeEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.BizNumberType;
-import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.rpc.api.UidRestfulRpc;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.*;
+import com.dili.trace.util.NumUtils;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,8 +73,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Override
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads,
                                              Optional<OperatorUser> operatorUser,Long marketId) {
-
-
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
@@ -178,6 +178,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品产地不能为空");
             throw new TraceBizException("商品产地不能为空");
         }
+
+        // 计件类型，件数件重校验
         if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件重不能为空");
             throw new TraceBizException("商品件重不能为空");
@@ -186,13 +188,44 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品件数不能为空");
             throw new TraceBizException("商品件数不能为空");
         }
-        if (registerHead.getPieceNum() == null &&
-                registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) &&
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
                 BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
-
             logger.error("商品件重不能小于0");
             throw new TraceBizException("商品件重不能小于0");
         }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
+                NumUtils.MAX_WEIGHT.compareTo(registerHead.getPieceWeight()) < 0) {
+            logger.error("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+
+        // 商品重量校验
+        if (registerHead.getWeight() == null) {
+            logger.error("商品重量不能为空");
+            throw new TraceBizException("商品重量不能为空");
+        }
+        if (BigDecimal.ZERO.compareTo(registerHead.getWeight()) >= 0) {
+            logger.error("商品重量不能小于0");
+            throw new TraceBizException("商品重量不能小于0");
+        }
+        if (NumUtils.MAX_WEIGHT.compareTo(registerHead.getWeight()) < 0) {
+            logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+
+//        if (NumUtils.isIntegerValue(registerBill.getWeight())) {
+//            logger.error("商品重量必须为整数");
+//            throw new TraceBizException("商品重量必须为整数");
+//        }
+
+
+        // 商品单价校验（如果有）
+        if (Objects.nonNull(registerHead.getUnitPrice())
+                && NumUtils.MAX_UNIT_PRICE.compareTo(registerHead.getUnitPrice()) < 0) {
+            logger.error("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
+            throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
+        }
+
         if (registerHead.getWeightUnit() == null) {
             logger.error("重量单位不能为空");
             throw new TraceBizException("重量单位不能为空");
@@ -288,6 +321,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         return dto.getId();
     }
 
+    @Override
     public BasePage<RegisterHead> listPageApi(RegisterHeadDto input){
 
         StringBuilder sql = new StringBuilder();

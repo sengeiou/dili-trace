@@ -318,8 +318,11 @@
                 <th data-field="detectTime"   data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResultName"  data-sort-name="detect_result" data-sortable="true" data-align="center">
+                <th data-field="detectResult"  data-sort-name="detect_result" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
                     检测结果
+                </th>
+                <th data-field="pdResult"  data-sort-name="pd_result" data-sortable="true" data-align="center">
+                    检测值
                 </th>
                 <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">
                     检测员
@@ -327,8 +330,7 @@
                 <th data-field="checkSheetId" data-sort-name="check_sheet_id" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
                     检测已打印
                 </th>
-
-                <th data-field="checkinStatusName" data-sort-name="checkin_status" data-sortable="true" data-align="center">
+                <th data-field="checkinStatus" data-sort-name="checkin_status" data-sortable="true" data-align="center" data-provider="ynEnumStateProvider">
                     是否进门
                 </th>
                 <th data-field="checkinCreated" data-sort-name="checkinout_record.created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
