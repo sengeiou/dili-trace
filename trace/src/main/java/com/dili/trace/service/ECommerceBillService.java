@@ -316,6 +316,9 @@ public class ECommerceBillService {
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
         this.detectRequestService.updateSelective(detectRequest);
 
+        //patch bill单上的requestId
+        updateBillDetectRequestId(registerBill.getId(),item.getId());
+
         BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r -> {
             return !StringUtils.isAllBlank(r.getTallyAreaNo(), r.getSalesUserName(), r.getSalesPlate());
         }).map(r -> {
@@ -330,6 +333,18 @@ public class ECommerceBillService {
         this.createSeparateSalesRecord(registerBill.getCode(), separateInputList);
         return billId;
 
+    }
+
+    /**
+     * 创建检测请求单后与委托单进行关联
+     * @param billId
+     * @param detectRequestId
+     */
+    private void updateBillDetectRequestId(Long billId, Long detectRequestId) {
+        RegisterBill upBill = new RegisterBill();
+        upBill.setId(billId);
+        upBill.setDetectRequestId(detectRequestId);
+        this.billService.updateSelective(upBill);
     }
 
     /**
