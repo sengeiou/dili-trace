@@ -88,13 +88,16 @@ public class ProductRpcService {
 
     /**
      * 处理交易单库存
-     *
-     * @param detailList
+     * @param buyerDetailList
+     * @param sellerDetailList
      * @param optUser
+     * @param marketId
      */
-    public void handleTradeStocks(List<TradeDetail> detailList, Optional<OperatorUser> optUser, Long marketId) {
+    public void handleTradeStocks(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList,
+                                  Optional<OperatorUser> optUser, Long marketId) {
+
         // 构建创建库存基础信息
-        List<RegCreateDto> createDtos = buildCreateDtoFromTrade(detailList, optUser, marketId);
+        List<RegCreateDto> createDtos = buildCreateDtoFromTrade(buyerDetailList, optUser, marketId);
 
         // 远程调用库存接口
         StreamEx.of(createDtos).forEach(createDto -> {
@@ -112,7 +115,7 @@ public class ProductRpcService {
         });
 
         // 构建扣减库存基础信息
-        StockReduceRequestDto obj = buildReduceDtoFromTrade(detailList, optUser, marketId);
+        StockReduceRequestDto obj = buildReduceDtoFromTrade(sellerDetailList, optUser, marketId);
         BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
         if (out.isSuccess() && out.getData() != null) {
             return;

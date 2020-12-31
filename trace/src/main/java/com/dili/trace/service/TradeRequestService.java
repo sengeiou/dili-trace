@@ -32,6 +32,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.nutz.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -175,6 +176,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerUserIdList.size() != 1) {
             throw new TraceBizException("参数错误");
         }
+
         List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserIdList.get(0), null, buyerId, batchStockInputList, marketId))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL, marketId);
@@ -300,11 +302,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBizException("购买重量不能超过总库存重量");
         }
 
-        List<TradeDetail> resultList = new ArrayList<>();
+        List<TradeDetail> buyerTradeDetailList = new ArrayList<>();
+        List<TradeDetail> sellerTradeDetailList = new ArrayList<>();
         //基于总库存进行交易
         if (tradeDetailIdWeightList.isEmpty()) {
             AtomicReference<BigDecimal> sumTradeWeightAt = new AtomicReference<BigDecimal>(BigDecimal.ZERO);
-            resultList = StreamEx.of(tradeDetailList).map(td -> {
+            buyerTradeDetailList = StreamEx.of(tradeDetailList).map(td -> {
                 BigDecimal stockWeight = td.getStockWeight();
                 sumTradeWeightAt.set(sumTradeWeightAt.get().add(stockWeight));
                 logger.info("stockWeight={}", stockWeight);
@@ -324,24 +327,36 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 logger.info("tradeWeight={}", tradeWeight);
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
                         tradeWeight, seller.getId(), buyer, tradeOrderTypeEnum);
+
+                TradeDetail sellerDetail = new TradeDetail();
+                BeanUtils.copyProperties(td, sellerDetail);
+                sellerDetail.setStockWeight(tradeWeight);
+                sellerTradeDetailList.add(sellerDetail);
+
                 return tradeDetail;
             }).nonNull().toList();
         } else {
             //基于批次交易
-            resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
+            buyerTradeDetailList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
                 TradeDetail tradeDetaiItem = p.getKey();
                 BigDecimal tradeWeight = p.getValue();
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), tradeDetaiItem,
                         tradeWeight, seller.getId(), buyer, tradeOrderTypeEnum);
+
+                TradeDetail sellerDetail = new TradeDetail();
+                BeanUtils.copyProperties(tradeDetaiItem, sellerDetail);
+                sellerDetail.setStockWeight(tradeWeight);
+                sellerTradeDetailList.add(sellerDetail);
+
                 return tradeDetail;
 
             }).toList();
         }
 
         // 向UAP同步库存
-        if (TradeOrderTypeEnum.SELL.equals(tradeOrderTypeEnum)) {
+        if (TradeOrderTypeEnum.BUY.equals(tradeOrderTypeEnum)) {
             // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
-            processService.afterTrade(resultList, marketId);
+            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, marketId);
         }
 
         // BatchStock batchStock = new BatchStock();
