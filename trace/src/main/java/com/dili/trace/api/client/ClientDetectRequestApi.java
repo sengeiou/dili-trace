@@ -8,6 +8,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestInputDto;
@@ -26,6 +27,7 @@ import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
 import io.swagger.annotations.Api;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -530,7 +532,13 @@ public class ClientDetectRequestApi {
             }
             detectRecord.setCreated(new Date());
             detectRecord.setModified(new Date());
-            int i = this.detectRecordService.saveDetectRecord(detectRecord);
+
+            // 检测记录插入后，进行后台自动人工检测完成
+            UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
+            userTicket.setId(this.sessionContext.getAccountId());
+            userTicket.setUserName(this.sessionContext.getUserName());
+
+            int i = this.detectRecordService.saveDetectRecordManually(detectRecord, userTicket);
             return BaseOutput.success().setData(i);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

@@ -378,6 +378,9 @@ public class ManagerRegisterHeadApi {
      */
     private BigDecimal weightTransform(BigDecimal weight) {
         String weightString = weight.toString();
+        if (weightString.indexOf(".") == -1) {
+            return weight;
+        }
         return new BigDecimal(weightString.substring(0, weightString.indexOf(".")));
     }
 }

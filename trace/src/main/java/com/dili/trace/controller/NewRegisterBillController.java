@@ -776,8 +776,11 @@ public class NewRegisterBillController {
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    //rb.setSourceName(input.getSourceName());
-                    rb.setSourceName(input.getTallyAreaNo());
+                    if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
+                        rb.setSourceName(input.getSourceName());
+                    } else {
+                        rb.setSourceName(input.getTallyAreaNo());
+                    }
                     rb.setSourceId(input.getSourceId());
                     rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
@@ -828,8 +831,8 @@ public class NewRegisterBillController {
     /**
      * 显示条数
      *
-     * @return
      * @param registerBill
+     * @return
      */
     private RegisterBillStaticsDto buildBillStatic(RegisterBillDto registerBill) {
         List<RegisterBill> billList = billService.listByExample(registerBill);
@@ -843,46 +846,46 @@ public class NewRegisterBillController {
             DetectRequest detectRequest = b.getDetectRequest();
             //有产地证明
             if (YesOrNoEnum.YES.getCode().equals(b.getHasOriginCertifiy())) {
-                rbd.setHasOriginCertifiyNum(rbd.getHasOriginCertifiyNum()+1);
+                rbd.setHasOriginCertifiyNum(rbd.getHasOriginCertifiyNum() + 1);
             }
             //有检测报告
             if (YesOrNoEnum.YES.getCode().equals(b.getHasDetectReport())) {
-                rbd.setHasDetectReportNum(rbd.getHasDetectReportNum()+1);
+                rbd.setHasDetectReportNum(rbd.getHasDetectReportNum() + 1);
             }
             if (null != detectRequest) {
                 if (null != detectRequest.getDetectResult()) {
                     //检测合格
                     if (BillDetectStateEnum.PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectRequest.getDetectResult())) {
-                        rbd.setPassNum(rbd.getPassNum()+1);
+                        rbd.setPassNum(rbd.getPassNum() + 1);
                     }
                     //检测不合格
                     if (BillDetectStateEnum.NO_PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_NO_PASS.getCode().equals(detectRequest.getDetectResult())) {
-                        rbd.setNopassNum(rbd.getNopassNum()+1);
+                        rbd.setNopassNum(rbd.getNopassNum() + 1);
                     }
                 }
 
                 if (null != detectRequest.getDetectType()) {
                     //检测采样
                     if (SampleSourceEnum.SAMPLE_CHECK.getCode().equals(detectRequest.getDetectType())) {
-                        rbd.setCheckNum(rbd.getCheckNum()+1);
+                        rbd.setCheckNum(rbd.getCheckNum() + 1);
                     }
                     //复检
                     if (DetectTypeEnum.RECHECK.getCode().equals(detectRequest.getDetectType())) {
-                        rbd.setRecheckNum(rbd.getRecheckNum()+1);
+                        rbd.setRecheckNum(rbd.getRecheckNum() + 1);
                     }
                 }
                 //主动送检
                 if (null != detectRequest.getDetectSource() && SampleSourceEnum.AUTO_CHECK.getCode().equals(detectRequest.getDetectSource())) {
-                    rbd.setAutoCheckNum(rbd.getAutoCheckNum()+1);
+                    rbd.setAutoCheckNum(rbd.getAutoCheckNum() + 1);
                 }
             }
             //有无打印报告
             if (null != b.getCheckSheetId()) {
-                rbd.setHasCheckSheetNum(rbd.getHasCheckSheetNum()+1);
+                rbd.setHasCheckSheetNum(rbd.getHasCheckSheetNum() + 1);
             }
             //打印
             if (null != b.getIsPrintCheckSheet()) {
-                rbd.setDiffCheckSheetNum(rbd.getDiffCheckSheetNum()+1);
+                rbd.setDiffCheckSheetNum(rbd.getDiffCheckSheetNum() + 1);
             }
         });
         return rbd;
@@ -897,7 +900,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listStaticsPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
+    String listStaticsPage(@RequestBody RegisterBillDto registerBill) throws Exception {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
 
@@ -919,6 +922,7 @@ public class NewRegisterBillController {
         RegisterBillStaticsDto registerBillStaticsDto = buildBillStatic(registerBill);
         return BaseOutput.success().setData(registerBillStaticsDto);
     }
+
     /**
      * 查询统计数据
      *

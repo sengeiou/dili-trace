@@ -89,13 +89,13 @@ public class ProcessService {
 
     /**
      * 交易之后
-     *
-     * @param detailList
+     * @param buyerDetailList
+     * @param sellerDetailList
      * @param marketId
      */
-    public void afterTrade(List<TradeDetail> detailList, Long marketId) {
+    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId) {
         Optional<OperatorUser> optUser = this.sessionContext.getSessionData().getOptUser();
         // 交易之后向 UAP 同步库存
-        // productRpcService.handleTradeStocks(detailList, optUser, marketId);
+        productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
     }
 }

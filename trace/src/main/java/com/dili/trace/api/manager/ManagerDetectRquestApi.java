@@ -343,20 +343,15 @@ public class ManagerDetectRquestApi {
             }
             detectRecord.setCreated(new Date());
             detectRecord.setModified(new Date());
-            int i = this.detectRecordService.saveDetectRecord(detectRecord);
 
             // 检测记录插入后，进行后台自动人工检测完成
             UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
             userTicket.setId(this.sessionContext.getAccountId());
             userTicket.setUserName(this.sessionContext.getUserName());
 
-            RegisterBill query = new RegisterBill();
-            query.setCode(detectRecord.getRegisterBillCode());
-            List<RegisterBill> list = billService.list(query);
+            int detectRecordId = this.detectRecordService.saveDetectRecordManually(detectRecord, userTicket);
 
-            this.detectRequestService.manualCheck(list.get(0).getId(), detectRecord.getDetectState() == 1, userTicket);
-
-            return BaseOutput.success().setData(i);
+            return BaseOutput.success().setData(detectRecordId);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

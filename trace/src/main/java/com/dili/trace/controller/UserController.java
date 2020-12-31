@@ -5,8 +5,10 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.common.util.MD5Util;
+import com.dili.customer.sdk.domain.Customer;
 import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.customer.sdk.rpc.TallyingAreaRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -75,8 +77,8 @@ public class UserController {
     TallyingAreaRpcService tallyingAreaRpcService;
     @Autowired
     TallyingAreaRpc tallyingAreaRpc;
-    @Autowired
-    CustomerRpcService customerRpcService;
+    @Resource
+    CustomerRpc customerRpc;
     @Resource
     UserRpc userRpc;
     @Resource
@@ -414,16 +416,19 @@ public class UserController {
             List<DTO> data = new ArrayList<>(16);
             if (CollectionUtils.isNotEmpty(tallyingAreaList)) {
                 StreamEx.of(tallyingAreaList).nonNull().forEach(tr -> {
-                    CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(tr.getCustomerId(), MarketUtil.returnMarket());
-                    if (null != customer) {
-                        DTO dto = new DTO();
-                        dto.put("userName", customer.getName() == null ? "" : customer.getName());
-                        dto.put("tallyAreaNo", tr.getAssetsName());
-                        List<UserPlate> userPlateList = userPlateService.findUserPlateByUserId(customer.getId());
-                        StreamEx.of(userPlateList).nonNull().forEach(p -> {
-                            dto.put("plate", p.getPlate());
-                        });
-                        data.add(dto);
+                    BaseOutput<Customer> customerResult = customerRpc.getById(tr.getCustomerId());
+                    if(customerResult.isSuccess()){
+                        Customer customer = customerResult.getData();
+                        if (null != customer) {
+                            DTO dto = new DTO();
+                            dto.put("userName", customer.getName() == null ? "" : customer.getName());
+                            dto.put("tallyAreaNo", tr.getAssetsName());
+                            List<UserPlate> userPlateList = userPlateService.findUserPlateByUserId(customer.getId());
+                            StreamEx.of(userPlateList).nonNull().forEach(p -> {
+                                dto.put("plate", p.getPlate());
+                            });
+                            data.add(dto);
+                        }
                     }
                 });
             }

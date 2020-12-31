@@ -1268,7 +1268,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 msgStream.add(RegisterBillMessageEvent.audit_withoutDetect);
             }
             if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
-                msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.auto, RegisterBillMessageEvent.undo, RegisterBillMessageEvent.sampling));
+                msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo));
             }
             if (item.getDetectRequestId() != null) {
                 DetectRequest detectRequest = this.detectRequestService.get(item.getDetectRequestId());
