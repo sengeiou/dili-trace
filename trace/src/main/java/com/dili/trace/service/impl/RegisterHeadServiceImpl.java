@@ -213,10 +213,10 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
 
-//        if (NumUtils.isIntegerValue(registerBill.getWeight())) {
-//            logger.error("商品重量必须为整数");
-//            throw new TraceBizException("商品重量必须为整数");
-//        }
+        if (!NumUtils.isIntegerValue(registerHead.getWeight())) {
+            logger.error("商品重量必须为整数");
+            throw new TraceBizException("商品重量必须为整数");
+        }
 
 
         // 商品单价校验（如果有）
