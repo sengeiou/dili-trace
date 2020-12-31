@@ -1401,7 +1401,9 @@
     checkinout_record.`created` checkinCreated,
     detect_record.`normal_result` normalResult,
     detect_record.`pd_result` pdResult,
-    b.`is_deleted`
+    b.`is_deleted`,
+    b.`source_name`,
+    b.`source_id`
     FROM register_bill b
     left join detect_request r ON (r.id = b.detect_request_id)
     left join detect_record on detect_record.detect_request_id=r.id

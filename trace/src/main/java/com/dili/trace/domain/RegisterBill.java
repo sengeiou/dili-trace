@@ -1382,7 +1382,7 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     public String getSourceDesc() {
-        return this.getRegisterSourceName() + (StringUtils.isBlank(this.sourceName) ? "" : (":" + this.sourceName));
+         return this.getRegisterSourceName() + (StringUtils.isBlank(this.sourceName) ? "" : ("：" + this.sourceName));
     }
 
     public void setRegisterSource(Integer registerSource) {
