@@ -5,10 +5,8 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
-import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
@@ -21,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,32 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-
-        import com.dili.common.annotation.AppAccess;
-        import com.dili.common.annotation.Role;
-        import com.dili.common.entity.LoginSessionContext;
-        import com.dili.common.entity.SessionData;
-        import com.dili.common.exception.TraceBizException;
-        import com.dili.customer.sdk.enums.CustomerEnum;
-        import com.dili.ss.domain.BaseOutput;
-        import com.dili.trace.api.input.BrandInputDto;
-        import com.dili.trace.api.output.BrandOutputDto;
-        import com.dili.trace.domain.Brand;
-        import com.dili.trace.service.BrandService;
-
-        import org.apache.commons.lang3.StringUtils;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.web.bind.annotation.RequestBody;
-        import org.springframework.web.bind.annotation.RequestMapping;
-        import org.springframework.web.bind.annotation.RequestMethod;
-        import org.springframework.web.bind.annotation.RestController;
-
-        import io.swagger.annotations.Api;
-        import io.swagger.annotations.ApiImplicitParam;
-        import io.swagger.annotations.ApiOperation;
-        import one.util.streamex.StreamEx;
 
 /**
  * 品牌接口
@@ -78,7 +51,7 @@ public class BrandApi {
     @ApiOperation(value = "获取品牌列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-    public BaseOutput<List<BrandOutputDto>> listPage(@RequestBody BrandInputDto inputDto) {
+    public BaseOutput<BasePage<BrandOutputDto>> listPage(@RequestBody BrandInputDto inputDto) {
         try {
             SessionData sessionData=this.sessionContext.getSessionData();
             Long userId = sessionData.getUserId();
@@ -93,13 +66,17 @@ public class BrandApi {
             }
             BasePage<Brand> brandBasePage = brandService.listPageByExample(inputDto);
 
+            BasePage<BrandOutputDto> brandOutBasePage = new BasePage<>();
             List<BrandOutputDto> brandDtos = new ArrayList<>();
             List<Brand> brands = brandBasePage.getDatas();
             if (!CollectionUtils.isEmpty(brands)) {
                 brandDtos = StreamEx.of(brands).map(BrandOutputDto::build).toList();
             }
 
-            return BaseOutput.success().setData(brandDtos);
+            BeanUtils.copyProperties(brandBasePage, brandOutBasePage);
+            brandOutBasePage.setDatas(brandDtos);
+
+            return BaseOutput.success().setData(brandOutBasePage);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
