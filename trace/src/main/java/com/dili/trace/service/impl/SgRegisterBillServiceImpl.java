@@ -137,7 +137,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
                 inputBill.getOriginId());
 
-
+        inputBill.setCheckinStatus(YesOrNoEnum.NO.getCode());
         int result = this.billService.saveOrUpdate(inputBill);
         this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCerts());
         if (result == 0) {
