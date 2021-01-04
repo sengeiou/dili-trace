@@ -31,7 +31,7 @@ public class SessionData {
     /**
      * 角色
      */
-    private List<CustomerEnum.CharacterType> subRoles;
+    private List<CustomerEnum.CharacterType> subRoles=new ArrayList<>();
     /**
      * 用户id
      */
