@@ -1,6 +1,8 @@
 export class PurchaseIntentionRecordGrid extends ListPage {
-    btns: any[];
-    toolbar: any;
+    uid:string;
+    highLightBill: any;
+    btns:any[];
+    toolbar:any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
         super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
@@ -12,8 +14,25 @@ export class PurchaseIntentionRecordGrid extends ListPage {
         this.initAutoComplete($("[name='productName']"), function (query, done) {
             categoryController.lookupCategories(query, done)
         });
+        $('#detail-btn').on('click',async ()=>await this.openDetailPage())
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
+    }
+
+    private async  openDetailPage(){
+        var row=this.rows[0]
+        var url=this.toUrl('/purchaseIntentionRecord/view.html?id='+row.id);
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '报备单详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
 
     public removeAllAndLoadData() {

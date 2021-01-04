@@ -278,17 +278,17 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 //	}
         @Transactional
         @Override
-        public int auditRegisterBill (Long id, Boolean pass){
+        public int auditRegisterBill (Long id, BillVerifyStatusEnum verifyStatusEnum){
             RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-            return auditRegisterBill(pass, registerBill);
+            return auditRegisterBill(verifyStatusEnum, registerBill);
         }
 
-        private int auditRegisterBill (Boolean pass, RegisterBill registerBill){
+        private int auditRegisterBill (BillVerifyStatusEnum verifyStatusEnum, RegisterBill registerBill){
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
                 UserTicket userTicket = getOptUser();
                 registerBill.setOperatorName(userTicket.getRealName());
                 registerBill.setOperatorId(userTicket.getId());
-                if (pass) {
+                if (BillVerifyStatusEnum.PASSED==verifyStatusEnum) {
                     // 理货区
                     if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
                             && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
@@ -305,7 +305,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     }
 
                 } else {
-                    registerBill.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
+                    registerBill.setVerifyStatus(verifyStatusEnum.getCode());
                 }
                 return this.billService.update(registerBill);
             } else {
@@ -433,6 +433,10 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         @Transactional
         @Override
         public BaseOutput doBatchAudit (BatchAuditDto batchAuditDto){
+            BillVerifyStatusEnum billVerifyStatusEnum=BillVerifyStatusEnum.fromCode(batchAuditDto.getVerifyStatus()).orElse(null);
+            if(billVerifyStatusEnum==null){
+                return BaseOutput.failure("审核状态错误");
+            }
             BatchResultDto<String> dto = new BatchResultDto<>();
 
             // id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
@@ -480,7 +484,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             // 其他登记单
             CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill -> {
                 try {
-                    this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
+                    this.auditRegisterBill(billVerifyStatusEnum, registerBill);
                     dto.getSuccessList().add(registerBill.getCode());
                 } catch (Exception e) {
                     dto.getFailureList().add(registerBill.getCode());
