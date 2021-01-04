@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.trace.api.manager;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
@@ -11,6 +11,7 @@ import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.service.BrandService;
+import com.dili.trace.util.BasePageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -30,13 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 品牌接口
+ * (管理员)品牌接口
  */
-//@RestController
-//@RequestMapping(value = "/api/brandApi")
-//@Api(value = "/api/brandApi", description = "品牌相关接口")
-//@AppAccess(role = Role.ANY)
-public class BrandApi {
+@RestController
+@RequestMapping(value = "/api/manager/brandApi")
+@Api(value = "/api/manager/brandApi", description = "品牌相关接口")
+@AppAccess(role = Role.Manager)
+public class ManagerBrandApi {
     private static final Logger logger = LoggerFactory.getLogger(com.dili.trace.api.client.ClientBrandApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
@@ -66,15 +67,9 @@ public class BrandApi {
             }
             BasePage<Brand> brandBasePage = brandService.listPageByExample(inputDto);
 
-            BasePage<BrandOutputDto> brandOutBasePage = new BasePage<>();
-            List<BrandOutputDto> brandDtos = new ArrayList<>();
-            List<Brand> brands = brandBasePage.getDatas();
-            if (!CollectionUtils.isEmpty(brands)) {
-                brandDtos = StreamEx.of(brands).map(BrandOutputDto::build).toList();
-            }
-
-            BeanUtils.copyProperties(brandBasePage, brandOutBasePage);
-            brandOutBasePage.setDatas(brandDtos);
+            BasePage<BrandOutputDto> brandOutBasePage = BasePageUtil.convert(brandBasePage,b->{
+                return BrandOutputDto.build(b);
+            });
 
             return BaseOutput.success().setData(brandOutBasePage);
         } catch (TraceBizException e) {
