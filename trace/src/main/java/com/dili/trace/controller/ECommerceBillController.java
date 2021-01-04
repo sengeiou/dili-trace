@@ -12,6 +12,7 @@ import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +143,13 @@ public class ECommerceBillController {
 				return BaseOutput.failure("参数错误");
 			}
 			input.getBill().setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
-			this.eCommerceBillService.createECommerceBill(input.getBill(), input.getSeparateSalesRecordList(),
+			List<SeparateSalesRecord> separateInputList=StreamEx.ofNullable(input.getSeparateSalesRecordList()).flatCollection(Function.identity()).nonNull().filter(r->{
+				return !StringUtils.isAllBlank(r.getTallyAreaNo(),r.getSalesUserName(),r.getSalesPlate());
+			}).toList();
+			if(separateInputList.isEmpty()){
+				return BaseOutput.failure("请填写分销信息");
+			}
+			this.eCommerceBillService.createECommerceBill(input.getBill(), separateInputList,
 					uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success("新增成功");
 		} catch (TraceBizException e) {
