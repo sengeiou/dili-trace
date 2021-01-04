@@ -32,10 +32,10 @@ import java.util.List;
 /**
  * 品牌接口
  */
-@RestController
-@RequestMapping(value = "/api/brandApi")
-@Api(value = "/api/brandApi", description = "品牌相关接口")
-@AppAccess(role = Role.ANY)
+//@RestController
+//@RequestMapping(value = "/api/brandApi")
+//@Api(value = "/api/brandApi", description = "品牌相关接口")
+//@AppAccess(role = Role.ANY)
 public class BrandApi {
     private static final Logger logger = LoggerFactory.getLogger(com.dili.trace.api.client.ClientBrandApi.class);
     @Autowired
