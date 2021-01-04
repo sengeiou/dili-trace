@@ -107,23 +107,23 @@
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <#resource code="commissionBill#add">
-            <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
-        </#resource>
-        <#resource code="commissionBill#audit">
-            <button id="audit-btn" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 进场审核</button>
-    </#resource>
-    <#resource code="commissionBill#batch-reviewCheck">
-            <button id="batch-reviewCheck-btn" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
-</#resource>
-<#resource code="commissionBill#createsheet">
-            <button id="createsheet-btn" type="button" class="btn btn-primary"><i class="fa  fa-print"></i> 创建打印报告</button>
-</#resource>
-<#resource code="commissionBill#detail">
-            <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa  fa-eye"></i> 查看</button>
-</#resource>
-<#resource code="commissionBill#export">
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('commissionBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
-</#resource>
+                <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            </#resource>
+            <#resource code="commissionBill#audit">
+                <button id="audit-btn" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 进场审核</button>
+            </#resource>
+            <#resource code="commissionBill#batch-reviewCheck">
+                <button id="batch-reviewCheck-btn" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
+            </#resource>
+            <#resource code="commissionBill#createsheet">
+                <button id="createsheet-btn" type="button" class="btn btn-primary"><i class="fa  fa-print"></i> 创建打印报告</button>
+            </#resource>
+            <#resource code="commissionBill#detail">
+                <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa  fa-eye"></i> 查看</button>
+            </#resource>
+            <#resource code="commissionBill#export">
+                <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('commissionBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            </#resource>
         </div>
         <table id="commissionBillGrid" data-toggle="table" data-title="委托登记单列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="false"
