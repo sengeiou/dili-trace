@@ -159,7 +159,7 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setName(user.getName());
 //		registerHead.setAddr(user.getAddr());
 //		registerHead.setIdCardNo(user.getCardNo());
-//		registerHead.setPhone(user.getPhone());
+		registerHead.setPhone(user.getContactsPhone());
 //		registerHead.setThirdPartyCode(user.getThirdPartyCode());
 		registerHead.setBillType(this.getBillType());
 		registerHead.setProductId(this.getProductId());
