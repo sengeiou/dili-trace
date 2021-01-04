@@ -402,7 +402,10 @@
                 // console.info(2)
             },
             formatResult: function (suggestion, currentValue) {
-                return suggestion.tallyAreaNo+"|"+suggestion.userName+"|"+suggestion.plate
+                let tallyAreaNo = suggestion.tallyAreaNo == undefined?"":suggestion.tallyAreaNo;
+                let userName = suggestion.userName == undefined?"":suggestion.userName;
+                let plate = suggestion.plate == undefined?"":suggestion.plate;
+                return tallyAreaNo+"|"+userName+"|"+plate
             },
             transformResult: function(response, originalQuery){
                 var suggestions=[]
