@@ -33,12 +33,7 @@ import java.util.List;
 @AppAccess(role = Role.NONE,url = "",subRoles = {})
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
-    @Autowired
-    private SgRegisterBillService registerBillService;
-    @Autowired
-    private BillService billService;
-    @Autowired
-    private DetectRecordService detectRecordService;
+
     @Autowired
     private DefaultConfiguration defaultConfiguration;
     @Autowired
@@ -52,7 +47,7 @@ public class DetectRecordApi {
      */
     @ApiOperation("上传检测记录")
     @RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord, HttpServletRequest req) {
+    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord) {
 
         LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
         if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
