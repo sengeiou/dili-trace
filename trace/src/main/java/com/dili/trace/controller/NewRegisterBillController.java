@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -368,15 +369,19 @@ public class NewRegisterBillController {
      * 审核
      *
      * @param id
-     * @param pass
+     * @param verifyStatus
      * @return
      */
     @RequestMapping(value = "/doAudit.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "pass", required = true) Boolean pass) {
+    BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "verifyStatus", required = true) Integer verifyStatus) {
         try {
-            registerBillService.auditRegisterBill(id, pass);
-            if (pass) {
+            BillVerifyStatusEnum billVerifyStatusEnum=BillVerifyStatusEnum.fromCode(verifyStatus).orElse(null);
+            if(billVerifyStatusEnum==null){
+                return BaseOutput.failure("审核状态错误");
+            }
+            registerBillService.auditRegisterBill(id, billVerifyStatusEnum);
+            if (BillVerifyStatusEnum.PASSED==billVerifyStatusEnum) {
                 Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
                 processService.afterBillPassed(id, marketId);
             }
@@ -458,7 +463,7 @@ public class NewRegisterBillController {
         if (CollectionUtils.isEmpty(idList)) {
             return BaseOutput.failure("参数错误");
         }
-        batchAuditDto.setPass(true);
+        batchAuditDto.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         batchAuditDto.setRegisterBillIdList(idList);
         return this.registerBillService.doBatchAudit(batchAuditDto);
     }
