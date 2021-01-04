@@ -489,7 +489,7 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.getAvaiableBill(id).orElse(null);
+        RegisterBill item = billService.get(id);
         if (item == null) {
 
             modelMap.put("registerBill", item);
