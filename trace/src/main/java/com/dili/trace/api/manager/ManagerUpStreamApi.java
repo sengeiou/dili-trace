@@ -12,6 +12,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.service.UpStreamService;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,10 @@ public class ManagerUpStreamApi {
         if(query.getSourceUserId() != null){
             userId = query.getSourceUserId();
         }
-
+        if (StringUtils.isBlank(query.getOrder())) {
+            query.setOrder("desc");
+            query.setSort("created");
+        }
         try {
             BasePage<UpStream> data = this.upStreamService.listPageUpStream(userId,query);
             return BaseOutput.success().setData(data);

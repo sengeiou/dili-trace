@@ -35,7 +35,7 @@ public class BasePageUtil {
 	}
 
 	public static <T, S> BasePage<T> convert(BasePage<S> sourcePage, Function<S, T> converter) {
-		List<T> dataList = StreamEx.of(sourcePage.getDatas()).map(item -> {
+		List<T> dataList = StreamEx.of(sourcePage.getDatas()).unordered().map(item -> {
 			if (item == null) {
 				return null;
 			}
