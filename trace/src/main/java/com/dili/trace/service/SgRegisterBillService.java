@@ -10,6 +10,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.*;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 
 /**
@@ -79,7 +80,7 @@ public interface SgRegisterBillService {
      * @param pass
      * @return
      */
-    int auditRegisterBill(Long id, Boolean pass);
+    int auditRegisterBill(Long id, BillVerifyStatusEnum verifyStatusEnum);
 
     /**
      * 撤销交易单
