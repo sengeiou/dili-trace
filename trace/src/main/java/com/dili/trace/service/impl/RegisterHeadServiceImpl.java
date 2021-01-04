@@ -83,7 +83,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             cq.setCustomerId(customer.getCode());
             this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
                 registerHead.setThirdPartyCode(card.getPrintingCard());
-                registerHead.setPhone(card.getPhone());
             });
 
             registerHead.setMarketId(marketId);
