@@ -123,6 +123,12 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`sample_time`")
     private Date sampleTime;
 
+    /**
+     * 检测编号
+     */
+    @Column(name = "`detect_code`")
+    private String detectCode;
+
     public Date getDetectTime() {
         return detectTime;
     }
@@ -283,5 +289,13 @@ public class DetectRequest extends BaseDomain {
 
     public void setDetectReservationTime(Date detectReservationTime) {
         this.detectReservationTime = detectReservationTime;
+    }
+
+    public String getDetectCode() {
+        return detectCode;
+    }
+
+    public void setDetectCode(String detectCode) {
+        this.detectCode = detectCode;
     }
 }
