@@ -139,6 +139,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             cq.setCustomerId(customer.getCode());
             this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
                 registerBill.setThirdPartyCode(card.getPrintingCard());
+                registerBill.setPhone(card.getPhone());
             });
 
             Long billId = this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
