@@ -35,7 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/manager/brandApi")
 @Api(value = "/api/manager/brandApi", description = "品牌相关接口")
-@AppAccess(role = Role.ANY)
+@AppAccess(role = Role.Manager)
 public class ManagerBrandApi {
     private static final Logger logger = LoggerFactory.getLogger(com.dili.trace.api.client.ClientBrandApi.class);
     @Autowired
