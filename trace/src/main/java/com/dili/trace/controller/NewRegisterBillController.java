@@ -96,6 +96,7 @@ public class NewRegisterBillController {
         modelMap.put("query", query);
         UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
         modelMap.put("user", user);
+        modelMap.put("isDeleted",YesOrNoEnum.NO.getCode());
 
         return "new-registerBill/index";
     }

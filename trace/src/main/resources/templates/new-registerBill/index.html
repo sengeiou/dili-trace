@@ -96,11 +96,8 @@
 
             <div class="form-group col">
                 <label for="isDeleted">是否已删除</label>
-                <select id="isDeleted" name="isDeleted" class="form-control">
-                    <option value="">--请选择--</option>
-                    <option value="1">是</option>
-                    <option value="0">否</option>
-                </select>
+                <select id="isDeleted" name="isDeleted" class="form-control"></select>
+                <#bcomboProvider _id="isDeleted" _provider="ynEnumStateProvider" _value="${isDeleted}" _onLoadSuccess=""/>
             </div>
 
             <div class="form-group col">
