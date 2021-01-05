@@ -128,7 +128,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * 批量进门
 	 * 
 	 * @param operateUser
-	 * @param checkInApiInput
+	 * @param billIdList
+	 * @param checkinStatusEnum
 	 * @return
 	 */
 	@Transactional
