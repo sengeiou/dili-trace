@@ -104,28 +104,28 @@ public class DetectTaskServiceImpl implements DetectTaskService {
 
     private void updateRegisterBill(DetectRecordParam detectRecord) {
         String samplecode = detectRecord.getRegisterBillCode();
-        RegisterBill registerBill = billService.findBySampleCode(samplecode);
+        RegisterBill registerBillItem = billService.findBySampleCode(samplecode);
 
-        if (registerBill == null) {
+        if (registerBillItem == null) {
             LOGGER.error("上传检测任务结果失败该采样单号无登记单");
             throw new TraceBizException("没有对应的登记单");
         }
 
-        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())) {
+        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBillItem.getDetectStatus())) {
             LOGGER.error("上传检测任务结果失败,该单号已完成检测");
             throw new TraceBizException("已完成检测");
         }
-        if (StringUtils.isNoneBlank(registerBill.getExeMachineNo())
-                && !registerBill.getExeMachineNo().equals(detectRecord.getExeMachineNo())) {
+        if (StringUtils.isNoneBlank(registerBillItem.getExeMachineNo())
+                && !registerBillItem.getExeMachineNo().equals(detectRecord.getExeMachineNo())) {
             LOGGER.error("上传检测任务结果失败，该仪器没有获取该登记单");
             throw new TraceBizException("该仪器无权操作该单据");
         }
-        DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElseThrow(() -> {
+        DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBillItem.getBillId()).orElseThrow(() -> {
             LOGGER.error("上传检测任务结果失败，检测请求不存在");
             return new TraceBizException("检测请求不存在");
         });
 
-        if (registerBill.getLatestDetectRecordId() != null) {
+        if (registerBillItem.getLatestDetectRecordId() != null) {
             // 复检
             /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
@@ -136,11 +136,14 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
             // registerBill.setDetectState(detectRecord.getDetectState());
         }
-        detectRecord.setRegisterBillCode(registerBill.getCode());
+        detectRecord.setRegisterBillCode(registerBillItem.getCode());
         detectRecord.setDetectRequestId(detectRequest.getId());
         detectRecord.setCreated(new Date());
         detectRecord.setModified(new Date());
         detectRecordService.saveDetectRecord(detectRecord);
+
+        RegisterBill registerBill=new RegisterBill();
+        registerBill.setId(registerBillItem.getBillId());
         registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 //		registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
         registerBill.setLatestDetectRecordId(detectRecord.getId());

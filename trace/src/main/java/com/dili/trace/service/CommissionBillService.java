@@ -19,6 +19,7 @@ import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.util.MarketUtil;
+import com.github.pagehelper.Page;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 委托单
@@ -63,6 +61,14 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         dto.setMarketId(MarketUtil.returnMarket());
         dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
+
+        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
+        //检测值
+        // Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
+        StreamEx.of(page.getDatas()).forEach(rb -> {
+            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+        });
+
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
         EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
         return out.toString();

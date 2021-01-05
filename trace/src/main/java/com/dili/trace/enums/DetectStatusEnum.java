@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public enum DetectStatusEnum {
     /**
-     * 初始状态
+     * 待预约
      */
     NONE(0, "待预约"),
 
