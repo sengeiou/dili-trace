@@ -41,7 +41,7 @@ import one.util.streamex.StreamEx;
  * (管理员)进出门操作接口
  */
 @SuppressWarnings("deprecation")
-@Api(value = "/api/manager/managerCheckinRecordApi")
+@Api(value = "/api/manager/managerCheckinOutRecordApi")
 @RestController
 @AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
 @RequestMapping(value = "/api/manager/managerCheckinOutRecordApi")

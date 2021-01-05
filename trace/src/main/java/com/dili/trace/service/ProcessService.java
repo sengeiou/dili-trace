@@ -11,6 +11,8 @@ import com.dili.trace.enums.MarketEnum;
 import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.uap.sdk.domain.Firm;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import java.util.Optional;
  */
 @Service
 public class ProcessService {
+    private static final Logger logger= LoggerFactory.getLogger(ProcessService.class);
 
     @Resource
     ProductRpcService productRpcService;
@@ -57,6 +60,7 @@ public class ProcessService {
      * @param marketId
      */
     public void afterBillPassed(Long billId, Long marketId) {
+        logger.debug("afterBillPassed:billId={},marketId={}",billId,marketId);
         RegisterBill registerBill = billService.get(billId);
         Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
@@ -68,8 +72,11 @@ public class ProcessService {
         // 杭果和寿光市场，审核通过后系统自动进门
         if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))
                 || marketCode.equals(marketCodeMap.get(MarketEnum.SDSG.getCode()))) {
+            logger.debug("杭果和寿光自动进门");
             List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
                     .doCheckin(optUser, Lists.newArrayList(billId), CheckinStatusEnum.ALLOWED);
+        }else{
+            logger.debug("其他市场状态不变");
         }
     }
 
