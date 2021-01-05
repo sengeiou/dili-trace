@@ -30,6 +30,7 @@
         </appender>
         <jmxConfigurator/>
         <logger name="org.zalando.logbook.Logbook" level="trace" />
+        <logger name="com.dili.trace" level="debug" />
     </springProfile>
     <!-- 测试环境 -->
     <springProfile name="test">
@@ -50,6 +51,7 @@
         </appender>
         <jmxConfigurator/>
         <logger name="org.zalando.logbook.Logbook" level="trace" />
+        <logger name="com.dili.trace" level="debug" />
     </springProfile>
     <!-- 灰度环境 -->
     <springProfile name="pre">
