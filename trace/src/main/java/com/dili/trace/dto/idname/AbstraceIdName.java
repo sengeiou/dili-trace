@@ -4,6 +4,7 @@ public abstract class AbstraceIdName {
     protected Long id;
     protected String name;
     protected Long marketId;
+    protected String marketName;
 
     public Long getMarketId() {
         return marketId;
@@ -27,5 +28,13 @@ public abstract class AbstraceIdName {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMarketName() {
+        return marketName;
+    }
+
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 }

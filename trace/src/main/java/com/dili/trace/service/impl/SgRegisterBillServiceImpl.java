@@ -1205,7 +1205,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             // 维护接单时间
             updatable.setConfirmTime(new Date());
             // 维护检测编号
-            updatable.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+            updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
             this.detectRequestService.updateSelective(updatable);
 
             RegisterBill bill = this.billService.get(item.getBillId());

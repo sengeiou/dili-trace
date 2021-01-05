@@ -232,7 +232,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
         // 维护检测编号
-        detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+        detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
         this.detectRequestService.updateSelective(detectRequest);
         //patch bill单上的requestId
         updateBillDetectRequestId(bill.getBillId(),item.getId());
@@ -258,7 +258,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @return
      */
     @Transactional
-    public RegisterBill createCommissionBillByUser(RegisterBill bill) {
+    public RegisterBill createCommissionBillByUser(RegisterBill bill, OperatorUser operatorUser) {
         if (bill.getWeight() == null || bill.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TraceBizException("重量不能小于零");
         }
@@ -285,7 +285,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         DetectRequest updateDetectRequest = new DetectRequest();
         updateDetectRequest.setId(detectRequest.getId());
         // 维护检测编号
-        updateDetectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+
+        updateDetectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
         this.detectRequestService.updateSelective(updateDetectRequest);
 
         RegisterBill updatable=new RegisterBill();
@@ -305,9 +306,9 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @return
      */
     @Transactional
-    public List<RegisterBill> createCommissionBillByUser(List<RegisterBill> billList) {
+    public List<RegisterBill> createCommissionBillByUser(List<RegisterBill> billList, OperatorUser operatorUser) {
         return StreamEx.of(billList).filter(Objects::nonNull).map(bill -> {
-            return this.createCommissionBillByUser(bill);
+            return this.createCommissionBillByUser(bill, operatorUser);
         }).toList();
     }
 

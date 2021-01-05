@@ -6,6 +6,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
@@ -18,6 +19,7 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
@@ -165,11 +167,16 @@ public class CommissionBillController {
             return BaseOutput.failure("参数错误");
         }
 
+        Firm firm = this.uapRpcService.getCurrentFirm().orElse(null);
+        if (firm == null) {
+            return BaseOutput.failure("登录用户市场查询失败");
+        }
+
         List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
                 .nonNull()
                 .map(rbInputDto -> {
                     CustomerExtendDto customer=new CustomerExtendDto();
-                    RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
+                    RegisterBill rb = rbInputDto.build(customer, firm.getId());
                     rb.setIdCardNo(input.getIdCardNo());
                     rb.setName(input.getName());
                     rb.setCorporateName(input.getCorporateName());
@@ -203,7 +210,10 @@ public class CommissionBillController {
                     return rb;
                 }).toList();
         try {
-            this.commissionBillService.createCommissionBillByManager(billList, this.uapRpcService.getCurrentOperator().get());
+            OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().orElseThrow(() -> {
+                throw new TraceBizException("用户未登录");
+            });
+            this.commissionBillService.createCommissionBillByManager(billList, operatorUser);
             return BaseOutput.success("新增成功").setData(billList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

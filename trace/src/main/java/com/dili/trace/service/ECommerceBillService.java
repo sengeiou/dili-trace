@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -81,6 +82,12 @@ public class ECommerceBillService {
         dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
 
+        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
+        //检测值
+        // Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
+        StreamEx.of(page.getDatas()).forEach(rb -> {
+            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+        });
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
         EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
         return out.toString();
@@ -209,7 +216,7 @@ public class ECommerceBillService {
             detectRequest.setDetectType(DetectTypeEnum.OTHERS.getCode());
             detectRequest.setDetectResult(DetectResultEnum.PASSED.getCode());
             // 维护检测编号
-            detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+            detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
             this.detectRequestService.updateSelective(detectRequest);
 
 
@@ -220,7 +227,7 @@ public class ECommerceBillService {
             detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
             detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
             // 维护检测编号
-            detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+            detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
             this.detectRequestService.updateSelective(detectRequest);
         } else {
             throw new TraceBizException("参数错误");
