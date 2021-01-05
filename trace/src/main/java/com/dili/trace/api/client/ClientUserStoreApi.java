@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,10 +88,13 @@ public class ClientUserStoreApi {
             userStore.setUserId(userId);
             UserStore queObj = new UserStore();
             queObj.setUserId(userId);
+            queObj.setStoreName(userStore.getStoreName().trim());
             //查询用户店铺列表
             List<UserStore> storeList =userStoreService.listByExample(queObj);
             //用户无店铺则新增
             if(storeList.isEmpty()){
+                userStore.setCreated(new Date());
+                userStore.setModified(new Date());
                 userStoreService.insert(userStore);
             }else{
                 //验证店铺名是否已存在
@@ -113,7 +117,7 @@ public class ClientUserStoreApi {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return BaseOutput.failure("查询出错");
+            return BaseOutput.failure("服务端出错");
         }
 
     }
