@@ -3,26 +3,26 @@ package com.dili.trace.api.client;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.entity.LoginSessionContext;
 import com.dili.customer.sdk.enums.CustomerEnum;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.sg.trace.glossary.UserTypeEnum;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.input.CommissionBillInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.CommissionBillService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BeanMapUtil;
 import io.swagger.annotations.ApiImplicitParam;
@@ -96,7 +96,12 @@ public class ClientCommissionBillApi {
 
                 return registerBill;
             }).toList();
-            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(inputBillList);
+
+            OperatorUser operatorUser = sessionData.getOptUser().orElseThrow(() -> {
+                return new TraceBizException("用户未登录");
+            });
+
+            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(inputBillList, operatorUser);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

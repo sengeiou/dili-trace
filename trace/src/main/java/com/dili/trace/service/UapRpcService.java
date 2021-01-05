@@ -33,6 +33,8 @@ public class UapRpcService {
     public Optional<OperatorUser> getCurrentOperator() {
         return this.getCurrentUserTicket().map(ut -> {
             OperatorUser dto = new OperatorUser(ut.getId(), ut.getRealName());
+            dto.setMarketId(ut.getFirmId());
+            dto.setMarketName(ut.getFirmName());
             return dto;
         });
     }

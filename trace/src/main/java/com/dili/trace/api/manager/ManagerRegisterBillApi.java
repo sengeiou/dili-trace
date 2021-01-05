@@ -112,7 +112,7 @@ public class ManagerRegisterBillApi {
             }
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
             List<Long> idList = this.registerBillService.createBillList(registerBills, createListBillParam.getUserId()
-                    , Optional.of(new OperatorUser(sessionData.getUserId(), sessionData.getUserName())), sessionData.getMarketId(),
+                    , sessionData.getOptUser(), sessionData.getMarketId(),
                     CreatorRoleEnum.MANAGER);
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {

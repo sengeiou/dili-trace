@@ -158,7 +158,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 // 维护接单时间
                 updatable.setConfirmTime(new Date());
                 // 维护检测编号
-                updatable.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+                updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.get().getMarketName()));
                 this.detectRequestService.updateSelective(updatable);
 
                 RegisterBill bill = this.billService.get(item.getBillId());
