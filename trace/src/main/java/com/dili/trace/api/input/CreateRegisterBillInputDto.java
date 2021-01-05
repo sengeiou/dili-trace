@@ -1,20 +1,16 @@
 package com.dili.trace.api.input;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.customer.sdk.domain.Customer;
+import com.dili.customer.sdk.domain.TallyingArea;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
-import com.dili.trace.enums.TruckTypeEnum;
-
+import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.persistence.Column;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class CreateRegisterBillInputDto {
         /**
@@ -309,7 +305,7 @@ public class CreateRegisterBillInputDto {
 //        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }
-    public RegisterBill build(Customer user,Long marketId) {
+    public RegisterBill build(CustomerExtendDto user, Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
         registerBill.setRegistType(this.getRegistType());
@@ -321,7 +317,19 @@ public class CreateRegisterBillInputDto {
         registerBill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
         registerBill.setHasDetectReport(YesOrNoEnum.NO.getCode());
         registerBill.setHasHandleResult(YesOrNoEnum.NO.getCode());
-//        registerBill.setTallyAreaNo(user.getTallyAreaNos());
+        List<TallyingArea> tallyingAreaList = user.getTallyingAreaList();
+        StringBuffer sourceIds = new StringBuffer();
+        StringBuffer sourceNames = new StringBuffer();
+        if (!CollectionUtils.isEmpty(tallyingAreaList)) {
+            tallyingAreaList.forEach(t -> {
+                sourceIds.append(t.getAssetsId()).append(",");
+                sourceNames.append(t.getAssetsName()).append(",");
+            });
+
+            registerBill.setSourceId(sourceIds.substring(0, sourceIds.length() - 1));
+            registerBill.setSourceName(sourceNames.substring(0, sourceNames.length() - 1));
+        }
+
 //        registerBill.setAddr(user.getAddr());
 //        registerBill.setIdCardNo(user.getCardNo());
         registerBill.setPhone(user.getContactsPhone());
