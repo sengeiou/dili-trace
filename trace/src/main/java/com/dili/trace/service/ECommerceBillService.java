@@ -1,30 +1,27 @@
 package com.dili.trace.service;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
-import com.dili.trace.dto.*;
-import com.dili.trace.enums.*;
-import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.dto.ECommerceBillPrintOutput;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.util.MarketUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,13 +33,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.ss.dto.IDTO;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
-
-import one.util.streamex.StreamEx;
-
 import javax.annotation.Resource;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 电商报备
@@ -53,21 +51,20 @@ public class ECommerceBillService {
 
     @Autowired
     CodeGenerateService codeGenerateService;
-
     @Autowired
     BillService billService;
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
     QrCodeService qrCodeService;
-
     @Value("${current.baseWebPath}")
     private String baseWebPath;
-
     @Autowired
     DetectRequestService detectRequestService;
     @Resource
     RegisterBillMapper billMapper;
+    @Autowired
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
 
     /**
@@ -211,6 +208,8 @@ public class ECommerceBillService {
             DetectRequest detectRequest = this.detectRequestService.createDefault(item.getId(), Optional.ofNullable(operatorUser));
             detectRequest.setDetectType(DetectTypeEnum.OTHERS.getCode());
             detectRequest.setDetectResult(DetectResultEnum.PASSED.getCode());
+            // 维护检测编号
+            detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
             this.detectRequestService.updateSelective(detectRequest);
 
 
@@ -220,6 +219,8 @@ public class ECommerceBillService {
             detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
             detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
             detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+            // 维护检测编号
+            detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
             this.detectRequestService.updateSelective(detectRequest);
         } else {
             throw new TraceBizException("参数错误");

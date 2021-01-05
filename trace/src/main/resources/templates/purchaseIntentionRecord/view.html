@@ -1,0 +1,77 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
+                    <input class="form-control input-sm"
+                           value="${purchaseIntentionRecord.created,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+                           readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.buyerName!}" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>买家名称</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.buyerName!}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>企业名称</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.buyerName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>买家手机号</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.buyerPhone!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.buyerPhone!}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${purchaseIntentionRecord.productName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>品牌</label>
+                    <input type="text" class="form-control input-sm"  value="${purchaseIntentionRecord.productName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>重量/KG</label>
+                    <input type="text" class="form-control input-sm"
+                           value=" ${purchaseIntentionRecord.productWeight!}" required
+                           readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.productName!}" required
+                           readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>进门时间</label>
+                    <input class="form-control input-sm"
+                           value="${purchaseIntentionRecord.created,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+                           readonly/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+</div>
+</#bodyOrigin>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
