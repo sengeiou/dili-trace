@@ -1,0 +1,1 @@
+ALTER TABLE dili_trace.register_bill MODIFY COLUMN source_name varchar(200)  NULL COMMENT '交易区名称或者理货区名称';
