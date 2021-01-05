@@ -38,7 +38,7 @@
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>身份证地址</label>
+                        身份证地址</label>
                     <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" required readonly>${registerBill.addr!}</textarea>
                 </div>
                 <div class="form-group">
@@ -118,8 +118,7 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <!--TODO:detectState 如何处理？-->
-                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectStatus==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
                                 </div>
                             </td>
                             <td>
@@ -127,7 +126,6 @@
                                     <input type="text" name="weight" class="form-control" value="${detectRecord.pdResult}" required readonly/>
                                 </div>
                             </td>
-
                              <td>
                                 <div class="input-group">
                                     <input type="text" name="weight" class="form-control input-sm" value="${detectRecord.detectOperator}" required readonly/>
