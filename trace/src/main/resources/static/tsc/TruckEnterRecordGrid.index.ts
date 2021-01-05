@@ -9,9 +9,25 @@ export class TruckEnterRecordGrid extends ListPage {
         //
         // let categoryController:CategoryController=new CategoryController();
         // let cityController:CityController=new CityController();
-
+        $('#detail-btn').on('click',async ()=>await this.openDetailPage())
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
+    }
+
+    private async  openDetailPage(){
+        var row=this.rows[0]
+        var url=this.toUrl('/truckEnterRecord/view.html?id='+row.id);
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '司机报备单详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
 
     public removeAllAndLoadData() {

@@ -50,6 +50,9 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <#resource code="truckEnterRecord#detail">
+                <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
+            </#resource>
             <#resource code="truckEnterRecord#export">
                 <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
             </#resource>
@@ -60,7 +63,7 @@
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
             <tr>
-
+                <th data-checkbox="true"></th>
                 <th data-field="driverName" data-sortable="true" data-align="center">
                     司机
                 </th>
