@@ -692,7 +692,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setId(registerBill.getDetectRequestId());
         updateParam.setDetectReservationTime(new Date());
         // 维护检测编号
-        updateParam.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+        updateParam.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(userTicket.getFirmName()));
         this.updateSelective(updateParam);
 
         // 审核状态：待审核 --> 待接单

@@ -111,7 +111,9 @@ public class SgRegisterBillApi {
 
 		}
 		try {
-			OperatorUser operatorUser = new OperatorUser(user.getId(), user.getName());
+			OperatorUser operatorUser = sessionContext.getSessionData().getOptUser().orElseThrow(() -> {
+				return new TraceBizException("用户未登录");
+			});
 			this.registerBillService.createRegisterBillList(billList, operatorUser);
 			return BaseOutput.success("新增成功").setData(billList);
 		} catch (TraceBizException e) {

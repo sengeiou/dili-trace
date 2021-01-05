@@ -72,7 +72,10 @@ public class SessionData {
         if (this.role == null || (this.role != Role.Manager && this.role != Role.Client)) {
             return Optional.empty();
         }
-        return Optional.of(new OperatorUser(this.getUserId(),this.getUserName()));
+        OperatorUser operatorUser = new OperatorUser(this.getUserId(), this.getUserName());
+        operatorUser.setMarketId(this.getMarketId());
+        operatorUser.setMarketName(this.getMarketName());
+        return Optional.of(operatorUser);
     }
 
     public boolean hasSubRole(CustomerEnum.CharacterType role){

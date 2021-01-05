@@ -1,7 +1,13 @@
 package com.dili.trace.util;
 
 
- 
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+
 public class ChineseStringUtil {
  
 	/**
@@ -30,6 +36,13 @@ public class ChineseStringUtil {
 		String s = " “中，。,. 国”，国‘家’。5：: ： ；；；；4  【】）";
 		System.out.println(s);
 		System.out.println(cToe(s));
+
+		String s0 = getFirstSpell("分");
+		String s1 = getFirstSpell("寿光");
+		String s2 = getFirstSpell("sg");
+		String s3 = getFirstSpell("杭水");
+		String s4 = getFirstSpell("杭州水果");
+		System.out.println("====s0:" + s0 + "====s1:" + s1 + "====s2:" + s2 + "=====s3:" + s3 + "====s4:" + s4);
 	}
  
 	/**
@@ -85,4 +98,87 @@ public class ChineseStringUtil {
 		}
 		return new String(c);
 	}
+
+	/**
+	 * 将字符串中的中文转化为拼音,其他字符不变
+	 *
+	 * @param inputString
+	 * @return
+	 */
+	public static String getPingYin(String inputString) {
+		HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+		format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+		format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+		format.setVCharType(HanyuPinyinVCharType.WITH_V);
+
+		char[] input = inputString.trim().toCharArray();
+		String output = "";
+
+		try {
+			for (int i = 0; i < input.length; i++) {
+				if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
+					String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
+					output += temp[0];
+				} else
+					output += java.lang.Character.toString(input[i]);
+			}
+		} catch (BadHanyuPinyinOutputFormatCombination e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
+
+	/**
+	 * 获取汉字串拼音首字母，英文字符不变
+	 * @param chinese 汉字串
+	 * @return 汉语拼音首字母
+	 */
+	public static String getFirstSpell(String chinese) {
+		StringBuffer pybf = new StringBuffer();
+		char[] arr = chinese.toCharArray();
+		HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+		defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+		defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] > 128) {
+				try {
+					String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);
+					if (temp != null) {
+						pybf.append(temp[0].charAt(0));
+					}
+				} catch (BadHanyuPinyinOutputFormatCombination e) {
+					e.printStackTrace();
+				}
+			} else {
+				pybf.append(arr[i]);
+			}
+		}
+		return pybf.toString().replaceAll("\\W", "").trim();
+	}
+
+	/**
+	 * 获取汉字串拼音，英文字符不变
+	 * @param chinese 汉字串
+	 * @return 汉语拼音
+	 */
+	public static String getFullSpell(String chinese) {
+		StringBuffer pybf = new StringBuffer();
+		char[] arr = chinese.toCharArray();
+		HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+		defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+		defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] > 128) {
+				try {
+					pybf.append(PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat)[0]);
+				} catch (BadHanyuPinyinOutputFormatCombination e) {
+					e.printStackTrace();
+				}
+			} else {
+				pybf.append(arr[i]);
+			}
+		}
+		return pybf.toString();
+	}
+
 }
