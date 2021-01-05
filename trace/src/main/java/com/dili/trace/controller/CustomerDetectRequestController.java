@@ -92,7 +92,6 @@ public class CustomerDetectRequestController {
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
         billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
         billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
-        billTypes.add(BillTypeEnum.E_COMMERCE_BILL.getCode());
         detectRequestDto.setBillTypes(billTypes);
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
