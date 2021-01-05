@@ -54,13 +54,20 @@ public class ProductRpcService {
 
         // 库存基本信息
         RegCreateDto createDto = this.buildCreateDtoFromBill(bill, opt, bill.getMarketId());
-        // 远程调用库存接口
-        BaseOutput<RegCreateResultDto> out = this.productRpc.create(createDto);
+        try{
+            // 远程调用库存接口
+            BaseOutput<RegCreateResultDto> out = this.productRpc.create(createDto);
 
-        if (out.isSuccess() && out.getData() != null) {
-            // 同步完成后更新和溯源库存的关联关系
-            updateStockIdAfterCreate(out, bill.getId());
-            return out.getData();
+            if (out.isSuccess() && out.getData() != null) {
+                // 同步完成后更新和溯源库存的关联关系
+                updateStockIdAfterCreate(out, bill.getId());
+                return out.getData();
+            }else{
+                logger.error("创建库存失败:{}",out.getMessage());
+            }
+
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
         }
         throw new TraceBizException("创建库存失败");
     }
@@ -122,6 +129,7 @@ public class ProductRpcService {
                     logger.error("创建库存成功，但是未返回StockId");
                 }
             } else {
+                logger.error("创建库存失败：{}",out.getMessage());
                 throw new TraceBizException("创建库存失败");
             }
         });
@@ -132,6 +140,7 @@ public class ProductRpcService {
         if (out.isSuccess() && out.getData() != null) {
             return;
         }
+        logger.error("扣减库存失败：{}",out.getMessage());
         throw new TraceBizException("扣减库存失败");
     }
 
