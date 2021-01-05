@@ -176,6 +176,11 @@ public class DetectRequestWithBillDto extends RegisterBill {
      */
     private List<Integer> billTypes;
 
+    /**
+     * 检测单编号
+     */
+    private String detectCode;
+
     @Override
     public Long getId() {
         return id;
@@ -441,5 +446,13 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     public void setBillTypes(List<Integer> billTypes) {
         this.billTypes = billTypes;
+    }
+
+    public String getDetectCode() {
+        return detectCode;
+    }
+
+    public void setDetectCode(String detectCode) {
+        this.detectCode = detectCode;
     }
 }
