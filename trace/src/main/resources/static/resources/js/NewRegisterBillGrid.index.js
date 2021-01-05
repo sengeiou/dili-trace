@@ -55,8 +55,9 @@ class NewRegisterBillGrid extends ListPage {
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             bs4pop.confirm('是否审核通过当前登记单？<br/>' + code, { type: 'warning', btns: [
-                    { label: '通过', className: 'btn-primary', onClick(cb) { resolve("true"); } },
-                    { label: '不通过', className: 'btn-primary', onClick(cb) { resolve("false"); } },
+                    { label: '通过', className: 'btn-primary', onClick(cb) { resolve(20); } },
+                    { label: '不通过', className: 'btn-primary', onClick(cb) { resolve(30); } },
+                    { label: '退回', className: 'btn-primary', onClick(cb) { resolve(10); } },
                     { label: '取消', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
                 ] });
         });
@@ -64,7 +65,7 @@ class NewRegisterBillGrid extends ListPage {
         if (result == 'cancel') {
             return;
         }
-        let url = this.toUrl("/newRegisterBill/doAudit.action?id=" + billId + "&pass=" + result);
+        let url = this.toUrl("/newRegisterBill/doAudit.action?id=" + billId + "&verifyStatus=" + result);
         try {
             var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
             if (!resp.success) {
@@ -348,7 +349,7 @@ class NewRegisterBillGrid extends ListPage {
             var cthis = this;
             try {
                 let url = this.toUrl("/newRegisterBill/doBatchAudit.action");
-                let reqData = JSON.stringify({ registerBillIdList: batchIdList, pass: true, passWithOriginCertifiyUrl: passWithOriginCertifiyUrl });
+                let reqData = JSON.stringify({ registerBillIdList: batchIdList, verifyStatus: true, passWithOriginCertifiyUrl: passWithOriginCertifiyUrl });
                 var resp = await jq.ajaxWithProcessing({ type: "POST", data: reqData, url: url, processData: true, dataType: "json", contentType: 'application/json;charset=utf-8' });
                 if (!resp.success) {
                     bs4pop.alert(resp.message, { type: 'error' });

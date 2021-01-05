@@ -38,7 +38,19 @@ public enum DetectRequestMessageEvent {
     /**
      * 导出
      */
-    export("export");
+    export("export"),
+    /**
+     * 预约检测
+     */
+    appointment("appointment-btn"),
+    /**
+     * 批量复检
+     */
+    batchReview("batchReview-btn"),
+    /**
+     * 创建打印报告
+     */
+    createSheet("createSheet-btn");
 
     private DetectRequestMessageEvent(String code) {
         this.code = code;
