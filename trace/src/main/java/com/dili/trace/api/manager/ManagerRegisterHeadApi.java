@@ -290,6 +290,9 @@ public class ManagerRegisterHeadApi {
     public BaseOutput<RegisterHead> viewRegisterHead(@RequestBody BaseDomain baseDomain) {
         try {
             RegisterHead registerHead = registerHeadService.get(baseDomain.getId());
+            if(registerHead==null){
+                return BaseOutput.failure("数据不存在");
+            }
             //修改重量返回的格式，只取整数部分
             if (registerHead.getWeight() != null) {
                 registerHead.setWeight(weightTransform(registerHead.getWeight()));
