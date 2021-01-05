@@ -5,9 +5,15 @@
         <div class="row row-cols-6">
 
             <div class="form-group col">
-                <label for="registType">报备单类型</label>
+                <label for="registType">报备方式</label>
                 <select id="registType" name="registType" class="form-control"></select>
                 <#bcomboProvider _id="registType" _provider="registTypeProvider" _value="" _onLoadSuccess=""/>
+            </div>
+
+            <div class="form-group col">
+                <label for="billType">报备单类型</label>
+                <select id="billType" name="billType" class="form-control"></select>
+                <#bcomboProvider _id="billType" _provider="BillTypeEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
 
             <div class="form-group col">
@@ -176,6 +182,7 @@
             <#resource code="newRegisterBill#add">
                 <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
             </#resource>
+                <button id="btn_add_commissionbill" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增委托单</button>
             <#resource code="newRegisterBill#edit">
                 <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 修改</button>
             </#resource>
