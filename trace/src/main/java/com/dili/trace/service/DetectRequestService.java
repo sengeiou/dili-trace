@@ -3,12 +3,9 @@ package com.dili.trace.service;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
@@ -18,12 +15,14 @@ import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.*;
+import com.dili.trace.dto.DetectRequestOutDto;
+import com.dili.trace.dto.DetectRequestWithBillDto;
+import com.dili.trace.dto.IdNameDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -52,7 +51,6 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     BillService billService;
     @Resource
     DetectRequestMapper detectRequestMapper;
-
     @Autowired
     UpStreamService upStreamService;
     @Autowired
@@ -61,6 +59,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     ImageCertService imageCertService;
     @Autowired
     CustomerRpcService customerRpcService;
+    @Autowired
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 创建检测请求
@@ -691,6 +691,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         DetectRequest updateParam = new DetectRequest();
         updateParam.setId(registerBill.getDetectRequestId());
         updateParam.setDetectReservationTime(new Date());
+        // 维护检测编号
+        updateParam.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
         this.updateSelective(updateParam);
 
         // 审核状态：待审核 --> 待接单

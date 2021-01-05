@@ -21,10 +21,7 @@ import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.glossary.*;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -55,7 +52,8 @@ import java.util.stream.Collectors;
 @Service
 public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
-
+    @Autowired
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
     @Autowired
@@ -1206,6 +1204,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             updatable.setId(item.getId());
             // 维护接单时间
             updatable.setConfirmTime(new Date());
+            // 维护检测编号
+            updatable.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
             this.detectRequestService.updateSelective(updatable);
 
             RegisterBill bill = this.billService.get(item.getBillId());

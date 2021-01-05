@@ -1,7 +1,6 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.*;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -15,14 +14,11 @@ import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.util.MarketUtil;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.session.SessionContext;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +47,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
     DetectRequestService detectRequestService;
     @Resource
     RegisterBillMapper billMapper;
+    @Autowired
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 分页查询委托单
@@ -227,6 +225,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+        // 维护检测编号
+        detectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
         this.detectRequestService.updateSelective(detectRequest);
         //patch bill单上的requestId
         updateBillDetectRequestId(bill.getBillId(),item.getId());
@@ -276,13 +276,17 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         this.billService.insertSelective(bill);
         DetectRequest detectRequest=this.detectRequestService.createDefault(bill.getBillId(),Optional.empty());
 
+        DetectRequest updateDetectRequest = new DetectRequest();
+        updateDetectRequest.setId(detectRequest.getId());
+        // 维护检测编号
+        updateDetectRequest.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
+        this.detectRequestService.updateSelective(updateDetectRequest);
+
         RegisterBill updatable=new RegisterBill();
         updatable.setDetectRequestId(detectRequest.getId());
         updatable.setId(bill.getBillId());
         updatable.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         this.billService.updateSelective(updatable);
-
-
 
         return bill;
     }

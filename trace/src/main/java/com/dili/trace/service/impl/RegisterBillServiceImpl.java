@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
     @Autowired
-    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService ;
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
     @Autowired
     ImageCertService imageCertService;
     @Autowired
@@ -151,12 +151,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             // 创建检测请求
             DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
 
-            // 如果管理创建登记单，更新检测状态
+            // 如果管理创建登记单，更新检测状态和检测编号
             if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
                 DetectRequest updatable = new DetectRequest();
                 updatable.setId(item.getId());
                 // 维护接单时间
                 updatable.setConfirmTime(new Date());
+                // 维护检测编号
+                updatable.setDetectCode(uidRestfulRpcService.bizNumber(BizNumberType.DETECT_REQUEST.getType()));
                 this.detectRequestService.updateSelective(updatable);
 
                 RegisterBill bill = this.billService.get(item.getBillId());
