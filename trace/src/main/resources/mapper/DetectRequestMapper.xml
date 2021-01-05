@@ -69,6 +69,12 @@
         <if test="userId != null">
             AND b.user_id=#{userId}
         </if>
+        <if test="createdStart != null">
+            <![CDATA[ AND b.created >= #{createdStart} ]]>
+        </if>
+        <if test="createdEnd != null">
+            <![CDATA[ AND b.created <= #{createdEnd} ]]>
+        </if>
         <if test="detectStatusList != null  and detectStatusList.size()>0">
             AND b.detect_status
             <foreach collection="detectStatusList" open=" IN (" close=")" item="detectStatus" separator=",">
