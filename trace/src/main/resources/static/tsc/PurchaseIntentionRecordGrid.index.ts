@@ -24,7 +24,7 @@ export class PurchaseIntentionRecordGrid extends ListPage {
         var url=this.toUrl('/purchaseIntentionRecord/view.html?id='+row.id);
         //@ts-ignore
         var dia = bs4pop.dialog({
-            title: '报备单详情',
+            title: '买家报备单详情',
             content: url,
             isIframe: true,
             closeBtn: true,
