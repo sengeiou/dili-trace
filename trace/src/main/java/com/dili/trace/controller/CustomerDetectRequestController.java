@@ -274,7 +274,6 @@ public class CustomerDetectRequestController {
             condition.setRegisterBillCode(item.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
-
         List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
