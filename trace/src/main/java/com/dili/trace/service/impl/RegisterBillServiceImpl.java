@@ -133,9 +133,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             RegisterBill registerBill = dto.build(user,marketId);
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
-            CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
+            CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
 
-            Customer cq=new Customer();
+            Customer cq = new Customer();
             cq.setCustomerId(customer.getCode());
             this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
                 registerBill.setThirdPartyCode(card.getPrintingCard());
@@ -200,7 +200,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setPlate(plate);
         registerBill.setModified(new Date());
 //        registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
-        // TODO:需要确认是否是这个值
         registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 
         // 补单直接进门状态
