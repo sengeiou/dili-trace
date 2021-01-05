@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.service.AssetsRpcService;
@@ -13,10 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -64,5 +62,18 @@ public class TruckEnterRecordController {
         queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         return this.truckEnterRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
+    }
+
+    /**
+     * 司机报备查看页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/view.html", method = RequestMethod.GET)
+    public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
+        TruckEnterRecord truckEnterRecord = truckEnterRecordService.get(id);
+        modelMap.put("truckEnterRecord",truckEnterRecord);
+        return "truckEnterRecord/view";
     }
 }
