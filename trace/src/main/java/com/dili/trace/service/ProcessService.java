@@ -67,10 +67,10 @@ public class ProcessService {
         String marketCode = marketService.getMarketById(marketId).map(Firm::getCode).orElseThrow(() -> {
             return new TraceBizException("市场不存在");
         });
-
+        logger.debug("afterBillPassed:marketCode={}",marketCode);
         // 杭果和寿光市场，审核通过后系统自动进门
         if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))
-                || marketCode.equals(marketCodeMap.get(MarketEnum.SDSG.getCode()))) {
+                || marketCode.equals(marketCodeMap.get(MarketEnum.SDSG.getCode()))||marketId.equals(8L)) {
             logger.debug("杭果和寿光自动进门");
             List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
                     .doCheckin(optUser, Lists.newArrayList(billId), CheckinStatusEnum.ALLOWED);
