@@ -136,7 +136,7 @@ public class ProductStock extends BaseDomain {
     private String weightUnitName;
 
     public String getWeightUnitName() {
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.getWeightUnit());
     }
 
     public void setWeightUnitName(String weightUnitName) {

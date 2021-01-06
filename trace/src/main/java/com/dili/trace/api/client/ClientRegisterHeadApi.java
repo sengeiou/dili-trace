@@ -88,7 +88,7 @@ public class ClientRegisterHeadApi {
 
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
                 registerHeadBasePage.getDatas().forEach(e -> {
-                    e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
+                    e.setWeightUnitName(WeightUnitEnum.toName(e.getWeightUnit()));
                     e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
                     UpStream upStream = this.upStreamService.get(e.getUpStreamId());
                     if (upStream != null) {

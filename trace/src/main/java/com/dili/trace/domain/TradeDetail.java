@@ -231,7 +231,7 @@ public class TradeDetail extends BaseDomain {
 
     @Transient
     public String getWeightUnitName() {
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.getWeightUnit());
     }
     // public Integer getStatus() {
     // 	return status;

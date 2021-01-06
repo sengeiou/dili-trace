@@ -55,7 +55,7 @@ public class BillReportDto extends BaseDomain{
         return PreserveTypeEnum.fromCode(this.getPreserveType()).map(PreserveTypeEnum::getName).orElse("");
     }
     public String getWeightUnitName(){
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.getWeightUnit());
     }
     public String getMeasureTypeName(){
         return MeasureTypeEnum.fromCode(this.getMeasureType()).map(MeasureTypeEnum::getName).orElse("");
