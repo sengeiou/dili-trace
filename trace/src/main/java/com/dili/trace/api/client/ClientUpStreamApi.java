@@ -97,6 +97,8 @@ public class ClientUpStreamApi {
         try {
             input.setUserIds(Arrays.asList(userId));
             input.setSourceUserId(userId);
+            //市场id
+            input.setMarketId(sessionContext.getSessionData().getMarketId());
             return this.upStreamService.addUpstream(input,new OperatorUser(userId,sessionContext.getUserName()),true);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
