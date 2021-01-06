@@ -226,10 +226,10 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
         }
 
-        if (registerHead.getWeightUnit() == null) {
+        WeightUnitEnum.fromCode(registerHead.getWeightUnit()).orElseThrow(()->{
             logger.error("重量单位不能为空");
-            throw new TraceBizException("重量单位不能为空");
-        }
+            return new TraceBizException("重量单位不能为空");
+        });
          return BaseOutput.success();
     }
 
