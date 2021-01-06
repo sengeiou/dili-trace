@@ -119,6 +119,8 @@ public class CustomerRpcService {
                             return sessionData;
                         }).findFirst();
 
+                    }else{
+                        logger.error("userId={},marketId={},message:{}",userId,marketId,out.getMessage());
                     }
 
                 }

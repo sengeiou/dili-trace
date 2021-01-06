@@ -91,12 +91,12 @@ public class RegisterBillHistory extends BaseDomain {
     @ApiModelProperty(value = "用户iD")
     @Column(name = "`user_id`")
     private Long userId;
-    /**
-     * 摊位号
-     */
-    @ApiModelProperty(value = "摊位号")
-    @Column(name = "`tally_area_no`")
-    private String tallyAreaNo;
+//    /**
+//     * 摊位号
+//     */
+//    @ApiModelProperty(value = "摊位号")
+//    @Column(name = "`tally_area_no`")
+//    private String tallyAreaNo;
 
     /**
      * 车牌
@@ -336,6 +336,20 @@ public class RegisterBillHistory extends BaseDomain {
     @ApiModelProperty(value = "审核操作人ID")
     @Column(name = "`verify_operator_id`")
     private Long verifyOperatorId;
+
+    /**
+     * 产生时间
+     */
+    @Column(name = "`history_time`")
+    private Date historyTime;
+
+    public Date getHistoryTime() {
+        return historyTime;
+    }
+
+    public void setHistoryTime(Date historyTime) {
+        this.historyTime = historyTime;
+    }
 
     public String getVerifyOperatorName() {
         return verifyOperatorName;
@@ -693,19 +707,6 @@ public class RegisterBillHistory extends BaseDomain {
         this.truckType = truckType;
     }
 
-    /**
-     * @return String return the tallyAreaNo
-     */
-    public String getTallyAreaNo() {
-        return tallyAreaNo;
-    }
-
-    /**
-     * @param tallyAreaNo the tallyAreaNo to set
-     */
-    public void setTallyAreaNo(String tallyAreaNo) {
-        this.tallyAreaNo = tallyAreaNo;
-    }
 
     /**
      * @return String return the reason

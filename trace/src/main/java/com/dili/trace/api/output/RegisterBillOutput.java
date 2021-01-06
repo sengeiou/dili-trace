@@ -62,7 +62,7 @@ public class RegisterBillOutput {
         out.setUserName(bill.getName());
         out.setOriginName(bill.getOriginName());
         out.setTallyAreaNo(bill.getTallyAreaNo());
-        out.setWeightUnitName(WeightUnitEnum.fromCode(bill.getWeightUnit()).map(WeightUnitEnum::getName).orElse(""));
+        out.setWeightUnitName(WeightUnitEnum.toName(bill.getWeightUnit()));
         out.setBrandName(bill.getBrandName());
         out.setCode(bill.getCode());
         out.setBillType(bill.getBillType());

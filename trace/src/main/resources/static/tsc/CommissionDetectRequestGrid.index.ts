@@ -143,9 +143,8 @@ class CommissionDetectRequestGrid extends ListPage {
             bs4pop.alert("请选择一条数据", {type: 'warning'});
             return;
         }
-
         var idList = row.map(function (v, i) {
-            return v.id
+            return v.billId
         });
         let param = $.param({idList: idList}, true);
         let url = this.toUrl("/checkSheet/edit.html?" + param);
@@ -463,7 +462,6 @@ class CommissionDetectRequestGrid extends ListPage {
         }).filter(item => {
             return !_.isEmpty(item.checkSheetId)
         }).value().length > 0;
-
         var rowsArray = $.makeArray(rows);
         var nameArray = _.chain(rows).map(item => item.name).filter(item => !_.isEmpty(item)).value();
 
@@ -482,16 +480,16 @@ class CommissionDetectRequestGrid extends ListPage {
                 return accumulator;
             }, []);
 
-            $('#createsheet-btn').hide();
+            $('#createSheet-btn').hide();
             if (rowsArray.length == corporateNameArray.length && distinctCorporateNameArray.length == 1) { //全部都有企业名称，且企业名称相同
-                $('#createsheet-btn').show();
+                $('#createSheet-btn').show();
             } else if (rowsArray.length == nameArray.length && distinctCorporateNameArray.length == 0 && distinctNameArray.length == 1) { //全部没有企业名称，且业户名称相同
-                $('#createsheet-btn').show();
+                $('#createSheet-btn').show();
             } else {
-                $('#createsheet-btn').hide();
+                $('#createSheet-btn').hide();
             }
         } else {
-            $('#createsheet-btn').hide();
+            $('#createSheet-btn').hide();
         }
     }
 }

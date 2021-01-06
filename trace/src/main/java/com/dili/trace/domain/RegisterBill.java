@@ -84,9 +84,9 @@ public class RegisterBill extends BaseDomain {
     /**
      * 摊位号
      */
-    @ApiModelProperty(value = "摊位号")
-    @Column(name = "`tally_area_no`")
-    private String tallyAreaNo;
+//    @ApiModelProperty(value = "摊位号")
+//    @Column(name = "`tally_area_no`")
+//    private String tallyAreaNo;
 
     /**
      * 车牌
@@ -773,7 +773,7 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     public String getWeightUnitName() {
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.getWeightUnit());
     }
 
     @Transient

@@ -142,7 +142,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList, marketId))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     //下单消息
-                    String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "订单编号:" + request.getCode();
+                    String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.toName(request.getWeightUnit()) + "订单编号:" + request.getCode();
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName,request.getSellerMarketId());
                     // 卖家下单
                     userQrHistoryService.createUserQrHistoryForOrder(request.getId(), buyerId);
@@ -187,7 +187,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         //下单消息
         tradeRequests.stream().forEach(request ->
                 {
-                    String productName = "商品名称:" + request.getProductName() + ",  重量:" + request.getTradeWeight() + "(" + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "),  订单编号:" + request.getCode();
+                    String productName = "商品名称:" + request.getProductName() + ",  重量:" + request.getTradeWeight() + "(" + WeightUnitEnum.toName(request.getWeightUnit()) + "),  订单编号:" + request.getCode();
                     addMessage(buyerId, sellerUserIdList.get(0), request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), request.getCode(), productName,request.getSellerMarketId());
                 }
         );
@@ -777,7 +777,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
-            String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.fromCode(tradeRequest.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
+            String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.toName(tradeRequest.getWeightUnit()) + "),  订单编号:" + tradeRequest.getCode();
             addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName,tradeRequest.getSellerMarketId());
             userQrHistoryService.createUserQrHistoryForOrder(tradeRequest.getId(), tradeRequest.getBuyerId());
         }

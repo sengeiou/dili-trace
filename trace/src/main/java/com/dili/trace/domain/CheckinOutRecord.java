@@ -165,7 +165,7 @@ public class CheckinOutRecord extends BaseDomain {
 
     @Transient
     public String getWeightUnitName(){
-       return  WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+       return  WeightUnitEnum.toName(this.getWeightUnit());
     }
 
     public String getPlate() { return plate; }

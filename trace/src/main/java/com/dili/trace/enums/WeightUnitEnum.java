@@ -32,6 +32,9 @@ public enum WeightUnitEnum {
 	public static Optional<WeightUnitEnum> fromCode(Integer code) {
 		return StreamEx.of(WeightUnitEnum.values()).filterBy(WeightUnitEnum::getCode, code).findFirst();
 	}
+	public static String toName(Integer code) {
+		return WeightUnitEnum.fromCode(code).map(WeightUnitEnum::getName).orElse("");
+	}
 
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);

@@ -102,7 +102,7 @@ class CommissionDetectRequestGrid extends ListPage {
             return;
         }
         var idList = row.map(function (v, i) {
-            return v.id;
+            return v.billId;
         });
         let param = $.param({ idList: idList }, true);
         let url = this.toUrl("/checkSheet/edit.html?" + param);
@@ -355,19 +355,19 @@ class CommissionDetectRequestGrid extends ListPage {
                 }
                 return accumulator;
             }, []);
-            $('#createsheet-btn').hide();
+            $('#createSheet-btn').hide();
             if (rowsArray.length == corporateNameArray.length && distinctCorporateNameArray.length == 1) {
-                $('#createsheet-btn').show();
+                $('#createSheet-btn').show();
             }
             else if (rowsArray.length == nameArray.length && distinctCorporateNameArray.length == 0 && distinctNameArray.length == 1) {
-                $('#createsheet-btn').show();
+                $('#createSheet-btn').show();
             }
             else {
-                $('#createsheet-btn').hide();
+                $('#createSheet-btn').hide();
             }
         }
         else {
-            $('#createsheet-btn').hide();
+            $('#createSheet-btn').hide();
         }
     }
 }
