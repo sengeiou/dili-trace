@@ -183,7 +183,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
 //        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
-        registerBill.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL.getType()));
+        String code=uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL.getType());
+        logger.debug("registerBill.code={}",code);
+        registerBill.setCode(code);
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
