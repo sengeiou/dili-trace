@@ -183,6 +183,7 @@ public class ClientRegisterBillApi {
 
             logger.info("获取登记单列表 操作用户:{}", userId);
             input.setUserId(userId);
+            input.setMarketId(sessionData.getMarketId());
             BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
             return BaseOutput.success().setData(basePage);
         } catch (TraceBizException e) {
