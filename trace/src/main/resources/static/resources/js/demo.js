@@ -9,7 +9,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.demo = exports.DemoClass = void 0;
     class DemoClass {
         constructor(props) {
             $.makeArray("");

@@ -1,0 +1,224 @@
+<#bodyOrigin>
+        <form id="createAppointForm" class="form-inline" role="form">
+            <div class="form-item-group" style="margin-top: 0px !important;">
+                <div class="form-item-group">
+                    <h4 class="form-item-title">基础信息</h4>
+                    <input name="billId" value="${registerBill.id}" hidden>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
+
+                        <input class="form-control input-sm" value="<%if(null!= registerBill.created!){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>采样编号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.sampleCode!}"  readonly/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>${registerBill.registerSourceName!}</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.sourceName!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>业户姓名</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.name!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>身份证号</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.idCardNo!}"  readonly/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>身份证地址</label>
+                        <textarea name="addr" id="addr" class="form-control" cols="82" rows="1"  readonly>${registerBill.addr!}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>车牌号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.plate!}"  readonly/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>商品名称</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.productName!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>产地</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.originName!}"  readonly/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>重量/KG</label>
+                        <input type="text" class="form-control input-sm"  value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>"  readonly/>
+                    </div>
+
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>操作人</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
+                        <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName!}"  readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
+                        <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName!}"  readonly/>
+                    </div>
+                    <% if(registerBill.registerSource! == 2){ %>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>交易账号</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.tradeAccount!}"  readonly/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>印刷卡号</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.tradePrintingCard!}"  readonly/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>业户手机号</label>
+                        <input type="text" class="form-control input-sm" value="${registerBill.phone!}"  readonly/>
+                    </div>
+                    <% } %>
+                    <br>
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
+                        <input type="text" class="form-control input-sm isSelected" name="designatedName" id="designatedName" required />
+                        <input type="hidden" name="designatedId"  value=""/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right "><span class="red">&lowast;</span>预约检测时间</label>
+                            <input type="text" name="detectReservationTime" autocomplete="off" id="detectReservationTime" required class="form-control input-sm  laydatetime " />
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" style="width: unset !important;" onclick="doAppointment()">预约检测</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.window['CommissionDetectRequestGridObj'].removeAllAndLoadData()">取消</button>
+        </div>
+</#bodyOrigin>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script>
+    $(function(){
+        lay('.laydatetime').each(function(){
+            laydate.render({
+                elem: this
+                ,type: 'datetime'
+                ,trigger: 'click'
+            });
+        });
+        initAutoDetectComplete("#designatedName",'/commissionDetectRequest/getDetectUsers.action');
+    })
+    var resubmit=0;
+    function doAppointment(){
+        if(resubmit==0){
+            resubmit=1;
+        }else{
+            resubmit=0;
+            swal(
+                '错误',
+                '重复提交',
+                'error'
+            );
+            return;
+        }
+        if($('#createAppointForm').validate().form() != true){
+            resubmit = 0;
+            return;
+        }
+        var data=$('#createAppointForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        console.info(data);
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/commissionDetectRequest/appointment.action",
+            data :  JSON.stringify(data),
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.success){
+                    layer.alert('预约成功',{
+                            type:0,
+                            time : 600,
+                            end :function(){
+                                parent.window['CommissionDetectRequestGridObj'].removeAllAndLoadData()
+                            }
+                        },
+                        function () {
+                            parent.window['CommissionDetectRequestGridObj'].removeAllAndLoadData()
+                        }
+                    );
+                }else{
+                    resubmit=0;
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error: function(){
+                resubmit=0;
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+    }
+    /**
+     * 初始化自动完成框
+     */
+    function initAutoDetectComplete(selector,url){
+        $(selector).keydown(function (e){
+            if(e.keyCode == 13){
+            }
+        });
+        $(selector).data('oldvalue','');
+        $(selector).on('change',function () {
+            var oldvalue=$(selector).data('oldvalue');
+            var val=$(this).val();
+            if(oldvalue!=val){
+                $(this).siblings('input').val('');
+            }
+        });
+        // 产地联系输入
+        $(selector).devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                console.info('onSelect')
+                var self = this;
+                var idField = $(self).siblings('input');
+                console.log(idField);
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                $(selector).data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    }
+</script>

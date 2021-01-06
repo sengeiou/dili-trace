@@ -612,10 +612,17 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (item == null) {
             return Lists.newArrayList();
         }
+
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
-        // 待审核：可以预约申请（弹框二次确认）和撤销
+        // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
+        }
+        //待审核，且未预约检测或者已退回：可以预约检测
+        boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
+                && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
+        if(canApp){
+            msgStream.add(DetectRequestMessageEvent.appointment);
         }
         // 待接单：可以接单和撤销
         if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
@@ -628,7 +635,6 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                 msgStream.add(DetectRequestMessageEvent.manual);
             }
         }
-
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.get(item.getDetectRequestId());
             if (detectRequest != null) {
@@ -636,8 +642,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                 if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
                     if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.review);
+                        msgStream.add(DetectRequestMessageEvent.batchReview);
                     } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
                         msgStream.add(DetectRequestMessageEvent.review);
+                        msgStream.add(DetectRequestMessageEvent.batchReview);
                     }
                 }
                 // 检测合格，生成检测报告。
