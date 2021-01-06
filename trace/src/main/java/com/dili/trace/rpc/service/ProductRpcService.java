@@ -279,7 +279,7 @@ public class ProductRpcService {
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
         obj.setSource(StockRegisterSourceEnum.REG.getCode());
-        obj.setInStockNo(String.valueOf(bill.getBillId()));
+        obj.setInStockNo(bill.getCode());
         return obj;
     }
 }
