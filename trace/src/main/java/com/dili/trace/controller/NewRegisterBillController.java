@@ -383,7 +383,7 @@ public class NewRegisterBillController {
             registerBillService.auditRegisterBill(id, billVerifyStatusEnum);
             if (BillVerifyStatusEnum.PASSED==billVerifyStatusEnum) {
                 Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
-                processService.afterBillPassed(id, marketId);
+                processService.afterBillPassed(id, marketId,this.uapRpcService.getCurrentOperator());
             }
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
