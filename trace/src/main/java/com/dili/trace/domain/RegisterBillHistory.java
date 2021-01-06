@@ -337,6 +337,20 @@ public class RegisterBillHistory extends BaseDomain {
     @Column(name = "`verify_operator_id`")
     private Long verifyOperatorId;
 
+    /**
+     * 产生时间
+     */
+    @Column(name = "`history_time`")
+    private Date historyTime;
+
+    public Date getHistoryTime() {
+        return historyTime;
+    }
+
+    public void setHistoryTime(Date historyTime) {
+        this.historyTime = historyTime;
+    }
+
     public String getVerifyOperatorName() {
         return verifyOperatorName;
     }
