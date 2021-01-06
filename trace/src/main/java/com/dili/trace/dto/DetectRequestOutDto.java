@@ -306,7 +306,7 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
 
     public String getWeightUnitName() {
-        return WeightUnitEnum.fromCode(this.weightUnit).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.weightUnit);
     }
     @Transient
     public String getDetectStatusName(){
