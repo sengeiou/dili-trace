@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 @EnableRetry
@@ -114,6 +115,8 @@ public class TradePushServiceImpl extends BaseServiceImpl<TradePushLog, Long> im
             tradePushLog.setOrderId(tradeRequest.getId());
             tradePushLog.setOrderCode(tradeRequest.getCode());
         }
+        tradePushLog.setCreated(new Date());
+        tradePushLog.setModified(new Date());
         getDao().insert(tradePushLog);
     }
 }
