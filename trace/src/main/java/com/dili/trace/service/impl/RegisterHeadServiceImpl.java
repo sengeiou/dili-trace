@@ -343,7 +343,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
         if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
             registerHeadBasePage.getDatas().forEach(e ->{
-                e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
+                e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).map(WeightUnitEnum::getName).orElse(""));
             });
         }
         return registerHeadBasePage;
