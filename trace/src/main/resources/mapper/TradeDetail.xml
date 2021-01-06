@@ -27,6 +27,12 @@
       <if test="isDeleted != null">
         AND register_bill.is_deleted =#{isDeleted}
       </if>
+      <if test="verifyStatusList != null  and verifyStatusList.size()>0">
+        AND register_bill.verify_status
+        <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
+          #{verifyStatus}
+        </foreach>
+      </if>
       union 
       select id as bill_id,null as trade_detail_id,
       register_bill.verify_status,weight,weight,
@@ -55,6 +61,12 @@
       <if test="isDeleted != null">
         AND register_bill.is_deleted =#{isDeleted}
       </if>
+    <if test="verifyStatusList != null  and verifyStatusList.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
     ) t order by created desc
   </select>
 
