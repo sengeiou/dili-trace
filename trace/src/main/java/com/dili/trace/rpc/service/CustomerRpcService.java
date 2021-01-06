@@ -120,7 +120,7 @@ public class CustomerRpcService {
                         }).findFirst();
 
                     }else{
-                        logger.error("getCurrentCustomer:{}",out.getMessage());
+                        logger.error("userId={},marketId={},message:{}",userId,marketId,out.getMessage());
                     }
 
                 }
