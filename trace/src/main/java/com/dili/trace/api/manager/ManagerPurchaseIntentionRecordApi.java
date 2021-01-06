@@ -4,6 +4,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -36,6 +38,11 @@ public class ManagerPurchaseIntentionRecordApi {
     LoginSessionContext sessionContext;
     @Autowired
     PurchaseIntentionRecordService purchaseIntentionRecordService;
+
+    /**
+     * 重量最大值
+     */
+    private static final BigDecimal MAX_WEIGHT = new BigDecimal("99999999");
 
     /**
      * 查询买家进门报备信息
@@ -66,6 +73,11 @@ public class ManagerPurchaseIntentionRecordApi {
      */
     @RequestMapping(value = "/createPurchaseIntentionRecord.api")
     public BaseOutput createTruckEnterRecord(@RequestBody PurchaseIntentionRecord input) {
+        if (input.getProductWeight() != null){
+            if (input.getProductWeight().compareTo(MAX_WEIGHT) == 1){
+                return BaseOutput.failure("商品重量超出最大值99999999");
+            }
+        }
         SessionData sessionData = this.sessionContext.getSessionData();
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
