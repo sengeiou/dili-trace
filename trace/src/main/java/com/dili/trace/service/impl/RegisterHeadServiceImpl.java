@@ -227,8 +227,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         }
 
         WeightUnitEnum.fromCode(registerHead.getWeightUnit()).orElseThrow(()->{
-            logger.error("重量单位不能为空");
-            return new TraceBizException("重量单位不能为空");
+            logger.error("重量单位错误");
+            return new TraceBizException("重量单位错误");
         });
          return BaseOutput.success();
     }
