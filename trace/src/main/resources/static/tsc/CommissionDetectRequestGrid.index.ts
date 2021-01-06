@@ -165,7 +165,7 @@ class CommissionDetectRequestGrid extends ListPage {
     }
 
     /**
-     * 进门审核
+     * 预约检测
      */
     private audit() {
         let row = this.grid.bootstrapTable("getSelections");
@@ -180,7 +180,7 @@ class CommissionDetectRequestGrid extends ListPage {
             return;
         }
         console.log(row);
-        let url = this.toUrl("/commissionDetectRequest/appointment.html?billId=" + row[0].id);
+        let url = this.toUrl("/commissionDetectRequest/appointment.html?billId=" + row[0].billId);
         //@ts-ignore
         var audit_dia = bs4pop.dialog({
             title: '预约检测',

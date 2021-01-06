@@ -244,7 +244,7 @@ public class CommissionDetectRequestController {
     }
 
     /**
-     * 进入审核页面
+     * 进入预约检测页面
      *
      * @param modelMap
      * @return
@@ -254,6 +254,28 @@ public class CommissionDetectRequestController {
         RegisterBill item = this.billService.get(billId);
         modelMap.put("registerBill", item);
         return "commissionDetectRequest/appointment";
+    }
+
+
+    /**
+     * 预约检测
+     *
+     * @param detectRequest
+     * @return
+     */
+    @RequestMapping(value = "/doAppointment.action")
+    @ResponseBody
+    public BaseOutput doAppointment(@RequestBody  DetectRequest detectRequest) {
+        try {
+            detectRequestService.doAppointment(detectRequest);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure();
+        }
     }
 
     /**
