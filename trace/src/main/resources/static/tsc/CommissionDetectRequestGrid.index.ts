@@ -434,6 +434,7 @@ class CommissionDetectRequestGrid extends ListPage {
         await this.queryEventAndSetBtn();
         await this.queryCommissionBtn();
         $("#add-btn").show();
+        $("#export").show();
     }
 
     private async queryEventAndSetBtn(){
