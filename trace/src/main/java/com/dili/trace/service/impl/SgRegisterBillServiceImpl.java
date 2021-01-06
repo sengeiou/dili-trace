@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SgRegisterBillServiceImpl implements SgRegisterBillService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
     @Autowired
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
     @Autowired
@@ -103,8 +103,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         }
 //        inputBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
-        String code = this.codeGenerateService.nextRegisterBillCode();
-
+        String code=uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL.getType());
+        logger.debug("registerBill.code={}",code);
         inputBill.setCode(code);
 
         if (inputBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
@@ -139,7 +139,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         int result = this.billService.saveOrUpdate(inputBill);
         this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCerts());
         if (result == 0) {
-            LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
+            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
             throw new TraceBizException("创建失败");
         }
         return inputBill.getId();
@@ -161,15 +161,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         private BaseOutput checkBill (RegisterBill registerBill){
 
             if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
-                LOGGER.error("登记来源不能为空");
+                logger.error("登记来源不能为空");
                 return BaseOutput.failure("登记来源不能为空");
             }
             if (StringUtils.isBlank(registerBill.getName())) {
-                LOGGER.error("业户姓名不能为空");
+                logger.error("业户姓名不能为空");
                 return BaseOutput.failure("业户姓名不能为空");
             }
             if (StringUtils.isBlank(registerBill.getIdCardNo())) {
-                LOGGER.error("业户身份证号不能为空");
+                logger.error("业户身份证号不能为空");
                 return BaseOutput.failure("业户身份证号不能为空");
             }
 //		if (StringUtils.isBlank(registerBill.getAddr())) {
@@ -177,27 +177,27 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 //			return BaseOutput.failure("业户身份证地址不能为空");
 //		}
             if (StringUtils.isBlank(registerBill.getProductName())) {
-                LOGGER.error("商品名称不能为空");
+                logger.error("商品名称不能为空");
                 return BaseOutput.failure("商品名称不能为空");
             }
             if (StringUtils.isBlank(registerBill.getOriginName())) {
-                LOGGER.error("商品产地不能为空");
+                logger.error("商品产地不能为空");
                 return BaseOutput.failure("商品产地不能为空");
             }
 
             if (registerBill.getWeight() == null) {
-                LOGGER.error("商品重量不能为空");
+                logger.error("商品重量不能为空");
                 return BaseOutput.failure("商品重量不能为空");
             }
 
             if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
                 if (registerBill.getWeight().longValue() <= 0L) {
-                    LOGGER.error("商品重量不能小于0");
+                    logger.error("商品重量不能小于0");
                     return BaseOutput.failure("商品重量不能小于0");
                 }
             } else {
                 if (registerBill.getWeight().longValue() < 0L) {
-                    LOGGER.error("商品重量不能为负");
+                    logger.error("商品重量不能为负");
                     return BaseOutput.failure("商品重量不能为负");
                 }
             }
@@ -403,7 +403,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 try {
                     this.undoRegisterBill(registerBillId);
                 } catch (TraceBizException e) {
-                    LOGGER.warn(e.getMessage());
+                    logger.warn(e.getMessage());
                 }
 
             });
@@ -702,7 +702,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         @Override
         public RegisterBillOutputDto conversionDetailOutput (RegisterBill registerBill){
-            LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
+            logger.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
             RegisterBillOutputDto outputDto = new RegisterBillOutputDto();
             if (registerBill == null) {
                 return null;
