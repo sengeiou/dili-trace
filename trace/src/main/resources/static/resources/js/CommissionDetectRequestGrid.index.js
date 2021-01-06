@@ -130,7 +130,7 @@ class CommissionDetectRequestGrid extends ListPage {
             return;
         }
         console.log(row);
-        let url = this.toUrl("/commissionDetectRequest/appointment.html?billId=" + row[0].id);
+        let url = this.toUrl("/commissionDetectRequest/appointment.html?billId=" + row[0].billId);
         var audit_dia = bs4pop.dialog({
             title: '预约检测',
             content: url,
@@ -312,6 +312,7 @@ class CommissionDetectRequestGrid extends ListPage {
         await this.queryEventAndSetBtn();
         await this.queryCommissionBtn();
         $("#add-btn").show();
+        $("#export").show();
     }
     async queryEventAndSetBtn() {
         var rows = this.rows;

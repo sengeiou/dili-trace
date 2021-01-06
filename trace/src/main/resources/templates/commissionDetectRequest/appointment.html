@@ -145,7 +145,7 @@
         console.info(data);
         $.ajax({
             type: "POST",
-            url: "${contextPath}/commissionDetectRequest/appointment.action",
+            url: "${contextPath}/commissionDetectRequest/doAppointment.action",
             data :  JSON.stringify(data),
             dataType: "json",
             async : true,
