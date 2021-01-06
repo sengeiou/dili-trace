@@ -23,6 +23,8 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.util.MarketUtil;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -59,6 +61,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     ImageCertService imageCertService;
     @Autowired
     CustomerRpcService customerRpcService;
+    @Autowired
+    MarketService marketService;
     @Autowired
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
@@ -758,6 +762,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 人工检测-检测请求
+     *
      * @param detectRequestId
      */
     private void manualCheckDetectRequest(Long detectRequestId, Boolean pass) {
@@ -773,5 +778,52 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateRequest.setDetectResult(pass ? DetectResultEnum.PASSED.getCode() : DetectResultEnum.FAILED.getCode());
         updateRequest.setModified(new Date());
         this.updateSelective(updateRequest);
+    }
+
+    /**
+     * 执行预约检测
+     *
+     * @param detectRequest
+     */
+    public void doAppointment(DetectRequest detectRequest) {
+        Long billId = detectRequest.getBillId();
+        if (null == billId) {
+            throw new TraceBizException("预约检测单据Id为空");
+        }
+        RegisterBill bill = billService.get(billId);
+        Long marketId = bill.getMarketId();
+        Firm firm = marketService.getMarketById(marketId).orElse(null);
+        if (null == firm) {
+            throw new TraceBizException("预约检测单据marketId为空");
+        }
+        //更新报备单检测状态
+        updateBillStatus(detectRequest.getBillId(), DetectStatusEnum.WAIT_DESIGNATED.getCode());
+
+        //生成检测单号
+        String detectCode = uidRestfulRpcService.detectRequestBizNumber(firm.getName());
+        detectRequest.setId(bill.getDetectRequestId());
+        detectRequest.setDetectCode(detectCode);
+        updateSelective(detectRequest);
+    }
+
+    /**
+     * 更新报备单状态
+     *
+     * @param billId
+     * @param code
+     */
+    private void updateBillStatus(Long billId, Integer code) {
+        if (null == billId) {
+            LOGGER.error("=====>>>> billId is Null");
+            return;
+        }
+        if (null == code) {
+            LOGGER.error("=====>>>> status code is Null");
+            return;
+        }
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setId(billId);
+        registerBill.setDetectStatus(code);
+        billService.updateSelective(registerBill);
     }
 }
