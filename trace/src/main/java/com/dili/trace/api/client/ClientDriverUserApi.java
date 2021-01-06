@@ -252,7 +252,7 @@ public class ClientDriverUserApi {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("register", e);
-            return BaseOutput.failure(e.getMessage());
+            return BaseOutput.failure("服务端出错");
         }
     }
 
