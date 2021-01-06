@@ -546,7 +546,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
                 .orElseThrow(() -> new TraceBizException("参数错误"));
         if (BillVerifyStatusEnum.PASSED == toVerifyState) {
-            processService.afterBillPassed(billItem.getId(), billItem.getMarketId());
+            processService.afterBillPassed(billItem.getId(), billItem.getMarketId(),operatorUser);
         }
 
         //新增消息

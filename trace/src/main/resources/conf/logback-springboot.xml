@@ -31,6 +31,7 @@
         <jmxConfigurator/>
         <logger name="org.zalando.logbook.Logbook" level="trace" />
         <logger name="com.dili.trace" level="debug" />
+        <logger name="com.dili.trace.dao" level="ERROR" />
     </springProfile>
     <!-- 测试环境 -->
     <springProfile name="test">
@@ -52,6 +53,7 @@
         <jmxConfigurator/>
         <logger name="org.zalando.logbook.Logbook" level="trace" />
         <logger name="com.dili.trace" level="debug" />
+        <logger name="com.dili.trace.dao" level="ERROR" />
     </springProfile>
     <!-- 灰度环境 -->
     <springProfile name="pre">

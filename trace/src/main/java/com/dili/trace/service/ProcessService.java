@@ -59,10 +59,9 @@ public class ProcessService {
      * @param billId
      * @param marketId
      */
-    public void afterBillPassed(Long billId, Long marketId) {
+    public void afterBillPassed(Long billId, Long marketId,Optional<OperatorUser> optUser) {
         logger.debug("afterBillPassed:billId={},marketId={}",billId,marketId);
         RegisterBill registerBill = billService.get(billId);
-        Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
         Map<String, String> marketCodeMap = marketService.getMarketCodeMap();
         String marketCode = marketService.getMarketById(marketId).map(Firm::getCode).orElseThrow(() -> {
