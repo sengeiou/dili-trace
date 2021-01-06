@@ -69,7 +69,8 @@ public class ProductRpcService {
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
         }
-        throw new TraceBizException("创建库存失败");
+        return null;
+//        throw new TraceBizException("创建库存失败");
     }
 
     /**
@@ -105,7 +106,8 @@ public class ProductRpcService {
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
         }
-        throw new TraceBizException("扣减库存失败");
+        return Lists.newArrayList();
+       // throw new TraceBizException("扣减库存失败");
     }
 
     /**
@@ -137,7 +139,7 @@ public class ProductRpcService {
                 }
             } else {
                 logger.error("创建库存失败：{}",out.getMessage());
-                throw new TraceBizException("创建库存失败");
+                //throw new TraceBizException("创建库存失败");
             }
         });
 
@@ -148,7 +150,8 @@ public class ProductRpcService {
             return;
         }
         logger.error("扣减库存失败：{}",out.getMessage());
-        throw new TraceBizException("扣减库存失败");
+        return;
+       // throw new TraceBizException("扣减库存失败");
     }
 
     /**
