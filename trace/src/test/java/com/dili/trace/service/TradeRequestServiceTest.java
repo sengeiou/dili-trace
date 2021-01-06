@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.ProductStockInput;
@@ -102,7 +103,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void createAndCancelTradeRequest() {
         TradeRequest request = this.createBuyTradeRequest(this.createBatchStock());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(), TradeOrderTypeEnum.SELL, 8L);
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(), TradeOrderTypeEnum.SELL, 8L, Optional.empty());
     }
 
     @Test
@@ -114,7 +115,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         TradeDetailInputDto input = new TradeDetailInputDto();
         input.setTradeDetailId(tradeDetail.getId());
         input.setTradeWeight(request.getTradeWeight());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input), TradeOrderTypeEnum.SELL, 8L);
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input), TradeOrderTypeEnum.SELL, 8L, Optional.empty());
     }
 
     @Test
@@ -223,7 +224,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         // tdinput.setTradeDetailId(5016L);
         // tdinput.setTradeWeight(BigDecimal.valueOf(85));
         // input.setTradeDetailInputList(Lists.newArrayList(tdinput));
-        this.tradeRequestService.createSellRequest(30L, 29L, Lists.newArrayList(input), 11L);
+        this.tradeRequestService.createSellRequest(30L, 29L, Lists.newArrayList(input), 11L, Optional.empty());
 
         // Long requestId =
         // this.tradeRequestService.createSellRequest(request,Lists.newArrayList());

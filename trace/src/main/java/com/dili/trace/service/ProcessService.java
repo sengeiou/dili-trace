@@ -32,14 +32,12 @@ public class ProcessService {
     ProductRpcService productRpcService;
     @Resource
     BillService billService;
-    @Resource
-    LoginSessionContext sessionContext;
+
     @Resource
     private MarketService marketService;
     @Resource
     CheckinOutRecordService checkinOutRecordService;
-    @Autowired
-    UapRpcService uapRpcService;
+
     @Autowired
     TradeDetailService tradeDetailService;
 
@@ -67,10 +65,10 @@ public class ProcessService {
         String marketCode = marketService.getMarketById(marketId).map(Firm::getCode).orElseThrow(() -> {
             return new TraceBizException("市场不存在");
         });
-        logger.debug("afterBillPassed:marketCode={}",marketCode);
+
         // 杭果和寿光市场，审核通过后系统自动进门
         if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))
-                || marketCode.equals(marketCodeMap.get(MarketEnum.SDSG.getCode()))||marketId.equals(8L)) {
+                || marketCode.equals(marketCodeMap.get(MarketEnum.SDSG.getCode()))) {
             logger.debug("杭果和寿光自动进门");
             List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
                     .doCheckin(optUser, Lists.newArrayList(billId), CheckinStatusEnum.ALLOWED);
@@ -86,9 +84,8 @@ public class ProcessService {
      * @param billId
      * @param marketId
      */
-    public void afterCheckIn(Long billId, Long marketId) {
+    public void afterCheckIn(Long billId, Long marketId,Optional<OperatorUser> optUser ) {
         RegisterBill registerBill = billService.get(billId);
-        Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
         // 进门之后向 UAP 同步库存
         productRpcService.create(registerBill, optUser);
@@ -100,8 +97,7 @@ public class ProcessService {
      * @param sellerDetailList
      * @param marketId
      */
-    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId) {
-        Optional<OperatorUser> optUser = this.sessionContext.getSessionData().getOptUser();
+    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId, Optional<OperatorUser> optUser) {
         // 交易之后向 UAP 同步库存
         productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
     }
