@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.ss.retrofitful.annotation.RestfulScan;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.rpc.dto.RegCreateResultDto;
@@ -7,13 +8,19 @@ import com.dili.trace.rpc.service.ProductRpcService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.servlet.ServletContext;
 import java.math.BigDecimal;
@@ -36,8 +44,24 @@ import java.util.Optional;
 //@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
 //@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
 //@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc"})
-@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc","com.dili.trace.rpc","com.dili.bpmc.sdk.rpc"})
+
+
+//处理事务支持
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@MapperScan(basePackages = {"com.dili.ss.uid.mapper","com.dili.trace.dao", "com.dili.ss.dao"})
+@ComponentScan(basePackages = {"com.dili.ss.uid","com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
+@RestfulScan({"com.dili.ss.uid","com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
+//@DTOScan({"com.dili.trace","com.dili.ss"})
+//@Import(DynamicRoutingDataSourceRegister.class)
+@EnableScheduling
+
+@EnableAsync
+@EnableFeignClients(basePackages = {"com.dili.ss.uid","com.dili.assets.sdk.rpc"
+        , "com.dili.customer.sdk.rpc"
+        , "com.dili.trace.rpc"
+        , "com.dili.bpmc.sdk.rpc"})
 @Import(FeignClientsConfiguration.class)
+@ServletComponentScan
 @EnableDiscoveryClient
 public class ProductRpcServiceTest {
     @MockBean

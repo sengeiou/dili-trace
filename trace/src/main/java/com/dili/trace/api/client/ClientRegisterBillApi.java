@@ -195,15 +195,14 @@ public class ClientRegisterBillApi {
     }
     /**
      * 查看进门登记单
-     * @param baseDomain
+     * @param query
      * @return
      */
     @ApiOperation("查看进门登记单")
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
-    public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
+    public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody RegisterBill query) {
         try {
-            RegisterBill query=new RegisterBill();
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         query.setMarketId(this.sessionContext.getSessionData().getMarketId());
         query.setUserId(this.sessionContext.getSessionData().getUserId());
@@ -211,7 +210,7 @@ public class ClientRegisterBillApi {
             return new TraceBizException("数据不存在");
         });
 
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_BILL.getCode());
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(query.getId(), BillTypeEnum.REGISTER_BILL.getCode());
             registerBill.setImageCerts(imageCerts);
 
             UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
