@@ -1,15 +1,15 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.*;
-import com.dili.trace.enums.DetectResultEnum;
-import com.dili.trace.service.QrCodeService;
 import com.dili.trace.dto.CheckSheetAliasInputDto;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.CheckSheetPrintOutput;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +34,6 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
     @Autowired
     CheckSheetDetailService checkSheetDetailService;
     @Autowired
-    CodeGenerateService codeGenerateService;
-    @Autowired
     ApproverInfoService approverInfoService;
     @Autowired
     Base64SignatureService base64SignatureService;
@@ -45,6 +43,8 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
     QrCodeService qrCodeService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
 
     @Value("${current.baseWebPath}")
@@ -62,7 +62,7 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
         Triple<CheckSheet, List<CheckSheetDetail>, BillTypeEnum> triple = this.buildCheckSheet(input, operatorUser);
         CheckSheet checkSheet = triple.getLeft();
         // 生成编号，插入数据库
-        String checkSheetCode = this.codeGenerateService.nextCheckSheetCode(triple.getRight());
+        String checkSheetCode = this.uidRestfulRpcService.nextCheckSheetCode(triple.getRight());
         checkSheet.setCode(checkSheetCode);
         checkSheet.setQrcodeUrl(this.baseWebPath + "/checkSheet/detail/" + checkSheetCode);
         checkSheet.setOperatorId(operatorUser.getId());
@@ -183,7 +183,7 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 
         input.setOperatorId(operatorUser.getId());
         input.setOperatorName(operatorUser.getName());
-        input.setCode(this.codeGenerateService.getMaskCheckSheetCode(triple.getRight()));
+        input.setCode(this.uidRestfulRpcService.getMaskCheckSheetCode(triple.getRight()));
 
         input.setCreated(new Date());
         input.setModified(new Date());

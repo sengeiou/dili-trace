@@ -1,23 +1,22 @@
 package com.dili.trace.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeperatePrintReport;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.service.impl.CodeGenerateServiceImpl;
+import com.dili.trace.dto.SeperatePrintReportOutputDto;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
+import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.domain.SeperatePrintReport;
-import com.dili.trace.dto.SeperatePrintReportOutputDto;
-import com.google.common.collect.Lists;
-
-import one.util.streamex.StreamEx;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * SeperatePrintReportService
@@ -31,7 +30,7 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 	@Autowired
 	QrCodeService qrCodeService;
 	@Autowired
-	CodeGenerateServiceImpl codeGenerateService;
+	UidRestfulRpcService uidRestfulRpcService;
 
 	@Value("${current.baseWebPath}")
 	private String baseWebPath;
@@ -69,7 +68,7 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 				r.setModified(new Date());
 				r.setOperatorId(operatorUser.getId());
 				r.setOperatorName(operatorUser.getName());
-				r.setCode(this.codeGenerateService.nextECOMMERCE_BILL_SEPERATE_REPORT_CODE());
+				r.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.ECOMMERCE_BILL_SEPERATE_REPORT_CODE.getType()));
 				this.insertSelective(r);
 				return r;
 			});

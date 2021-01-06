@@ -19,9 +19,11 @@ import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.dto.thirdparty.report.ReportOrderDetailDto;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import one.util.streamex.EntryStream;
@@ -54,8 +56,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     @Autowired
     ProductStockService batchStockService;
     @Autowired
-    CodeGenerateService codeGenerateService;
-    @Autowired
     TradeDetailService tradeDetailService;
     @Autowired
     TradeOrderService tradeOrderService;
@@ -75,6 +75,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     CustomerRpcService customerRpcService;
     @Autowired
     ProcessService processService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 返回真实mapper
@@ -248,14 +250,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return request;
     }
 
-
     /**
      * 查询下一个code
      * @return
      */
     private String getNextCode() {
-        return this.codeGenerateService.nextTradeRequestCode();
-
+        return this.uidRestfulRpcService.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
     }
 
     /**

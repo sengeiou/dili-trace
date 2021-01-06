@@ -3,6 +3,7 @@ package com.dili.trace.rpc.service;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.api.UidRestfulRpc;
 import com.dili.trace.util.ChineseStringUtil;
@@ -35,7 +36,7 @@ public class UidRestfulRpcService {
      */
     public String bizNumber(String type) {
         BaseOutput<String> out = this.uidRestfulRpc.bizNumber(type);
-        if(out!=null&&out.isSuccess()&& StringUtils.isNotBlank(out.getData())){
+        if (out!=null&&out.isSuccess()&& StringUtils.isNotBlank(out.getData())){
             return out.getData().trim();
         } else {
             if (out != null) {
@@ -67,5 +68,37 @@ public class UidRestfulRpcService {
         }
 
         return returnCode.toString();
+    }
+
+    /**
+     * 生成 CheckSheet 编号
+     * @param taskTypeEnum
+     * @return
+     */
+    public String nextCheckSheetCode(BillTypeEnum taskTypeEnum) {
+        if (BillTypeEnum.REGISTER_BILL==taskTypeEnum) {
+            return this.bizNumber(BizNumberType.REGISTER_BILL_CHECKSHEET_CODE.getType());
+        }else if (BillTypeEnum.COMMISSION_BILL==taskTypeEnum) {
+            return this.bizNumber(BizNumberType.COMMISSION_BILL_CHECKSHEET_CODE.getType());
+        }else {
+            throw new TraceBizException("不支持的类型");
+        }
+    }
+
+    /**
+     * CheckSheet 保密编号
+     * @param taskTypeEnum
+     * @return
+     */
+    public String getMaskCheckSheetCode(BillTypeEnum taskTypeEnum) {
+
+        if (BillTypeEnum.REGISTER_BILL==taskTypeEnum) {
+            return BizNumberType.REGISTER_BILL_CHECKSHEET_CODE.getPrefix()+"******";
+        } else if (BillTypeEnum.COMMISSION_BILL==taskTypeEnum) {
+            return BizNumberType.COMMISSION_BILL_CHECKSHEET_CODE.getPrefix()+"******";
+        } else {
+            throw new TraceBizException("不支持的类型");
+        }
+
     }
 }
