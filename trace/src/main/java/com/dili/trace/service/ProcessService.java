@@ -32,14 +32,12 @@ public class ProcessService {
     ProductRpcService productRpcService;
     @Resource
     BillService billService;
-    @Resource
-    LoginSessionContext sessionContext;
+
     @Resource
     private MarketService marketService;
     @Resource
     CheckinOutRecordService checkinOutRecordService;
-    @Autowired
-    UapRpcService uapRpcService;
+
     @Autowired
     TradeDetailService tradeDetailService;
 
@@ -86,9 +84,8 @@ public class ProcessService {
      * @param billId
      * @param marketId
      */
-    public void afterCheckIn(Long billId, Long marketId) {
+    public void afterCheckIn(Long billId, Long marketId,Optional<OperatorUser> optUser ) {
         RegisterBill registerBill = billService.get(billId);
-        Optional<OperatorUser> optUser = uapRpcService.getCurrentOperator();
 
         // 进门之后向 UAP 同步库存
         productRpcService.create(registerBill, optUser);
@@ -100,8 +97,7 @@ public class ProcessService {
      * @param sellerDetailList
      * @param marketId
      */
-    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId) {
-        Optional<OperatorUser> optUser = this.sessionContext.getSessionData().getOptUser();
+    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId, Optional<OperatorUser> optUser) {
         // 交易之后向 UAP 同步库存
         productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
     }
