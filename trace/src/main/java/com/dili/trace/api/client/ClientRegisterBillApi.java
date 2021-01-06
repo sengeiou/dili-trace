@@ -196,7 +196,7 @@ public class ClientRegisterBillApi {
     /**
      * 查看进门登记单
      * @param query
-     * @return
+     * @RETURN
      */
     @ApiOperation("查看进门登记单")
     @SuppressWarnings("unchecked")
