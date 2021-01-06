@@ -533,7 +533,7 @@ public class TradeRequest extends BaseDomain {
 
     @Transient
     public String getWeightUnitName() {
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+        return WeightUnitEnum.toName(this.getWeightUnit());
     }
 
     @Transient

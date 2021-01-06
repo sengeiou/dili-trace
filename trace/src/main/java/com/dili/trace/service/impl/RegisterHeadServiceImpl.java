@@ -226,10 +226,10 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
         }
 
-        if (registerHead.getWeightUnit() == null) {
-            logger.error("重量单位不能为空");
-            throw new TraceBizException("重量单位不能为空");
-        }
+        WeightUnitEnum.fromCode(registerHead.getWeightUnit()).orElseThrow(()->{
+            logger.error("重量单位错误");
+            return new TraceBizException("重量单位错误");
+        });
          return BaseOutput.success();
     }
 
@@ -343,7 +343,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
         if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
             registerHeadBasePage.getDatas().forEach(e ->{
-                e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
+                e.setWeightUnitName(WeightUnitEnum.toName(e.getWeightUnit()));
             });
         }
         return registerHeadBasePage;

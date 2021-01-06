@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -35,30 +37,35 @@ import javax.servlet.ServletContext;
 @ActiveProfiles("dev")
 @WebAppConfiguration("src/main/resources")
 @EnableTransactionManagement
-//@Transactional
 @Transactional(propagation = Propagation.NEVER)
 @Rollback
-@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
-@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
-@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
+//@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
+//@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
+//@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc"})
+
+
+//处理事务支持
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@MapperScan(basePackages = {"com.dili.ss.uid.mapper","com.dili.trace.dao", "com.dili.ss.dao"})
+@ComponentScan(basePackages = {"com.dili.ss.uid","com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
+@RestfulScan({"com.dili.ss.uid","com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
+//@DTOScan({"com.dili.trace","com.dili.ss"})
+//@Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling
 
 @EnableAsync
-@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc"
+@EnableFeignClients(basePackages = {"com.dili.ss.uid","com.dili.assets.sdk.rpc"
         , "com.dili.customer.sdk.rpc"
         , "com.dili.trace.rpc"
         , "com.dili.bpmc.sdk.rpc"})
 @Import(FeignClientsConfiguration.class)
+@ServletComponentScan
 @EnableDiscoveryClient
-
 public class DetectRecordApiTest   {
     @MockBean
     ErrorAttributes attributes;
     @MockBean
     ServletContext servletContext;
-    @SpyBean
-    DataAuthRefRpc dataAuthRefRpc;
-
 
     @Autowired
     DetectRecordApi detectRecordApi;
