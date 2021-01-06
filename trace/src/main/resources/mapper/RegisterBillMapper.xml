@@ -8,7 +8,6 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="register_source" jdbcType="TINYINT" property="registerSource" />
-    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
