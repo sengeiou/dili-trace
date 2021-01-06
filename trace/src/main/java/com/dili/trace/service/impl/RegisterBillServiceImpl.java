@@ -164,7 +164,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 RegisterBill bill = this.billService.get(item.getBillId());
                 bill.setOperatorName(oprUser.getName());
                 bill.setOperatorId(oprUser.getId());
-                bill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode()); // 新增完为：待采样
+                bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
                 this.billService.update(bill);
             }
 

@@ -1211,7 +1211,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             RegisterBill bill = this.billService.get(item.getBillId());
             bill.setOperatorName(operatorUser.getName());
             bill.setOperatorId(operatorUser.getId());
-            bill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode()); // 新增完为：待采样
+            bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
             this.billService.update(bill);
             return 1;
         }).mapToInt(Integer::valueOf).sum();
