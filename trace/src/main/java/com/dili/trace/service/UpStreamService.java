@@ -16,6 +16,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
 
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +53,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	/**
 	 * 分页查询上游信息
 	 */
-	public BasePage<UpStream> listPageUpStream(Long userId, UpStream query) {
-		if (userId == null) {
+	public BasePage<UpStream> listPageUpStream(UpStreamDto query) {
+		if (query == null||query.getUserIds()==null||query.getUserIds().isEmpty()) {
 			BasePage<UpStream> result = new BasePage<>();
 
 			result.setPage(1);
@@ -63,12 +64,14 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			result.setStartIndex(1L);
 			return result;
 		}
-
+		String userIdListStr=StreamEx.of(query.getUserIds()).map(String::valueOf).joining(",");
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+				"id in(select upstream_id from r_user_upstream where user_id in(" + userIdListStr + ") )");
 		BasePage<UpStream> page = this.listPageByExample(query);
 		return page;
 	}
+
+
 
 	/**
 	 * 删除用户上游关系

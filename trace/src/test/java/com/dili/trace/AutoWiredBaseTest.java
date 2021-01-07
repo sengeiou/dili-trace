@@ -79,10 +79,10 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	}
 
 
-	@Test
-	public void test() {
-		this.UpStreamService.listPageUpStream(11L, new UpStream());
-	}
+//	@Test
+//	public void test() {
+//		this.UpStreamService.listPageUpStream(11L, new UpStream());
+//	}
 /*
 	protected Category findCategory() {
 		//TODO

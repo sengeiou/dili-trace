@@ -39,6 +39,9 @@ public enum RegistTypeEnum {
 		return StreamEx.of(RegistTypeEnum.values()).filterBy(RegistTypeEnum::getCode, code).findFirst();
 	}
 
+	public static String name(Integer code){
+		return RegistTypeEnum.fromCode(code).map(RegistTypeEnum::getName).orElse("");
+	}
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);
 	}
