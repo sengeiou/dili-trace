@@ -25,8 +25,6 @@ public enum RegistTypeEnum {
 	PARTIAL(30, "分批进场"),
 	;
 
-	;
-
 	private String name;
 	private Integer code;
 
