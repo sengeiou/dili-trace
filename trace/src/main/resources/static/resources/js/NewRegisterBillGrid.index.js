@@ -30,6 +30,7 @@ class NewRegisterBillGrid extends ListPage {
         $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
+        $('#update-img-btn').on('click', async () => await this.doUpdateImg());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
         this.grid.bootstrapTable({
             onLoadSuccess: async () => {
@@ -51,6 +52,20 @@ class NewRegisterBillGrid extends ListPage {
         (async () => {
             await super.queryGridData();
         })();
+    }
+    async doUpdateImg() {
+        let row = this.rows[0];
+        let url = this.toUrl('/newRegisterBill/update_image.html?id=' + row.billId);
+        var update_img_dia = bs4pop.dialog({
+            title: '修改图片',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '88%',
+            height: '98%',
+            btns: []
+        });
     }
     async doAudit(billId, code) {
         bs4pop.removeAll();
