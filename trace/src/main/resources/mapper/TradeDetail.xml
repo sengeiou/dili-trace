@@ -33,7 +33,10 @@
           #{verifyStatus}
         </foreach>
       </if>
-      union 
+      <if test="marketId != null">
+        AND register_bill.market_id =#{marketId}
+      </if>
+      union
       select id as bill_id,null as trade_detail_id,
       register_bill.verify_status,weight,weight,
       weight_unit,
@@ -66,6 +69,9 @@
       <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
         #{verifyStatus}
       </foreach>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id =#{marketId}
     </if>
     ) t order by created desc
   </select>

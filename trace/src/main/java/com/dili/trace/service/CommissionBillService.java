@@ -19,7 +19,6 @@ import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.util.MarketUtil;
-import com.github.pagehelper.Page;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -209,7 +208,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
-        bill.setCode(this.codeGenerateService.nextCommissionBillCode());
+        bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
         bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
 
 
@@ -269,7 +268,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
-        bill.setCode(this.codeGenerateService.nextCommissionBillCode());
+        bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
 //		bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
 //        bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());

@@ -434,7 +434,9 @@ public class ECommerceBillService {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
-        bill.setCode(this.codeGenerateService.nextECommerceBillCode());
+        String code = uidRestfulRpcService.bizNumber(BizNumberType.ECOMMERCE_BILL.getType());
+        logger.debug("ECommerceBill.code={}", code);
+        bill.setCode(code);
         List<ImageCert>imageCertList=StreamEx.ofNullable(bill.getImageCerts()).flatCollection(Function.identity()).nonNull().filter(img->{
             return img.getCertType()!=null&&StringUtils.isNotBlank(img.getUid());
         }).toList();
