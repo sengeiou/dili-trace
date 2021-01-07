@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.customer.sdk.domain.Customer;
 import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
@@ -42,8 +43,8 @@ public class DriverUserService extends TraceBaseService<UserDriverRef, Long> {
         queRef.setSellerId(ref.getSellerId());
         queRef.setDriverId(ref.getDriverId());
         List<UserDriverRef> oldUserDriverList = listByExample(queRef);
-        CustomerExtendDto driverUser = userService.findCustomerByIdOrEx(ref.getDriverId(), marketId);
-        CustomerExtendDto seller = userService.findCustomerByIdOrEx(ref.getSellerId(), marketId);
+        Customer driverUser = userService.findCustByIdOrEx(ref.getDriverId());
+        Customer seller = userService.findCustByIdOrEx(ref.getSellerId());
         Long driverId = ref.getDriverId();
         String driverName = "";
         if (null != driverUser) {
@@ -69,13 +70,13 @@ public class DriverUserService extends TraceBaseService<UserDriverRef, Long> {
             addUserDriver.setSellerId(ref.getSellerId());
             addUserDriver.setSellerName(sellerName);
             addUserDriver.setShareTime(ref.getShareTime());
-            List<TallyingArea> tallyingAreaList = seller.getTallyingAreaList();
-            if (CollectionUtils.isEmpty(tallyingAreaList)) {
-                addUserDriver.setTallyAreaNos("");
-            } else {
-                String assetsName = StreamEx.of(tallyingAreaList).map(TallyingArea::getAssetsName).collect(Collectors.joining(","));
-                addUserDriver.setTallyAreaNos(assetsName);
-            }
+//            List<TallyingArea> tallyingAreaList = seller.getTallyingAreaList();
+//            if (CollectionUtils.isEmpty(tallyingAreaList)) {
+//                addUserDriver.setTallyAreaNos("");
+//            } else {
+//                String assetsName = StreamEx.of(tallyingAreaList).map(TallyingArea::getAssetsName).collect(Collectors.joining(","));
+//                addUserDriver.setTallyAreaNos(assetsName);
+//            }
             driverUserMapper.insert(addUserDriver);
         }
     }

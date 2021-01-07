@@ -70,6 +70,21 @@ public class RegDetailDto {
      */
     private String brand;
 
+    /**
+     * 商品id
+     */
+    private Long productId;
+
+    /**
+     * 商品名称
+     */
+    private String productName;
+
+    /**
+     * 商品编号
+     */
+    private String productNo;
+
     public String getLevel() {
         return level;
     }
@@ -180,5 +195,29 @@ public class RegDetailDto {
 
     public void setStockId(Long stockId) {
         this.stockId = stockId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductNo() {
+        return productNo;
+    }
+
+    public void setProductNo(String productNo) {
+        this.productNo = productNo;
     }
 }

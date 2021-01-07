@@ -4,16 +4,14 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
-import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.PurchaseIntentionRecord;
-import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
-import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
-import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,8 @@ public class ManagerPurchaseIntentionRecordApi {
     LoginSessionContext sessionContext;
     @Autowired
     PurchaseIntentionRecordService purchaseIntentionRecordService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 重量最大值
@@ -82,6 +82,7 @@ public class ManagerPurchaseIntentionRecordApi {
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
         input.setModified(new Date());
+        input.setCode(uidRestfulRpcService.bizNumber(BizNumberType.PURCHASE_INTENTION_RECORD_CODE.getType()));
         this.purchaseIntentionRecordService.insertSelective(input);
         return BaseOutput.successData(input.getId());
     }

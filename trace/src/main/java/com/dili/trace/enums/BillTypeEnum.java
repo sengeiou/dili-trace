@@ -50,6 +50,10 @@ public enum BillTypeEnum {
 	 * 商务单
 	 */
 	E_COMMERCE_BILL(7, "商务单"),
+	/**
+	 * 司机报备单
+	 */
+	TRUCK_ENTER_RECORD_BILL(8, "司机报备单"),
 
 
 

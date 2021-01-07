@@ -35,6 +35,8 @@ public enum BizNumberType {
     ECOMMERCE_BILL_SEPERATE_REPORT_CODE("ecommerce_bill_seperate_report_code", "电商单分销打印编号", "SGDSR", "yyyyMMdd", 5, "1"),
     COMMISSION_BILL_CODE("commission_bill_code", "委托单编号", "dw","yyyyMMdd",  5, "1"),
     STOCK_CODE("stock_code", "库存编号", "st","yyyyMMdd",  5, "1"),
+    TRUCK_ENTER_RECORD_CODE("truck_enter_record_code", "司机报备编号", "dr","yyyyMMdd",  5, "1"),
+    PURCHASE_INTENTION_RECORD_CODE("purchase_intention_record_code", "买家报备编号", "pr","yyyyMMdd",  5, "1"),
 
     ;
     //业务号类型,对应biz_number表中的type
