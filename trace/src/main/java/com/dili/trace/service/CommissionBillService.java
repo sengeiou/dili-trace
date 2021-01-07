@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -58,7 +59,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         RegisterBillDto dto = this.preBuildDTO(query);
         dto.setBillType(this.supportedBillType().getCode());
         dto.setMarketId(MarketUtil.returnMarket());
-        dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
+        dto.setIsDeleted(YesOrNoEnum.NO.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
 
         Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
