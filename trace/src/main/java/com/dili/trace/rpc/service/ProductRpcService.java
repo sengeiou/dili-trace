@@ -66,7 +66,7 @@ public class ProductRpcService {
                 updateStockIdAfterCreate(out, bill.getId());
                 logger.debug("创建库存成功");
                 return out.getData();
-            }else{
+            } else {
                 logger.error("创建库存失败:{}",out.getMessage());
             }
 
@@ -285,6 +285,8 @@ public class ProductRpcService {
         detailDto.setPlace(bill.getOriginName());
         detailDto.setPrice(bill.getUnitPrice());
         detailDto.setWeight(bill.getWeight());
+        detailDto.setProductId(bill.getProductId());
+        detailDto.setProductName(bill.getProductName());
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
         obj.setSource(StockRegisterSourceEnum.REG.getCode());
