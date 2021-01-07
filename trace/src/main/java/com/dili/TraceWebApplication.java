@@ -57,6 +57,7 @@ public class TraceWebApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
+        System.setProperty("druid.mysql.usePingMethod","false");
         SpringApplication sa = new SpringApplication(TraceWebApplication.class);
         sa.addListeners(new ApplicationPidFileWriter());
         ConfigurableApplicationContext ctx = sa.run(args);
