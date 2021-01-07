@@ -65,7 +65,7 @@ public class ProductRpcService {
                 // 同步完成后更新和溯源库存的关联关系
                 updateStockIdAfterCreate(out, bill.getId());
                 return out.getData();
-            }else{
+            } else {
                 logger.error("创建库存失败:{}",out.getMessage());
             }
 
@@ -282,6 +282,8 @@ public class ProductRpcService {
         detailDto.setPlace(bill.getOriginName());
         detailDto.setPrice(bill.getUnitPrice());
         detailDto.setWeight(bill.getWeight());
+        detailDto.setProductId(bill.getProductId());
+        detailDto.setProductName(bill.getProductName());
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
         obj.setSource(StockRegisterSourceEnum.REG.getCode());
