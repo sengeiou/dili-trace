@@ -84,6 +84,7 @@ public class ClientRegisterHeadApi {
             logger.info("获取进门主台账单列表 操作用户:{}", userId);
             input.setSort("created");
             input.setOrder("desc");
+            input.setUserId(userId);
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
 
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
