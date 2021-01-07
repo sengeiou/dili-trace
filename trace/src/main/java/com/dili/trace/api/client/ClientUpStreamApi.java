@@ -41,20 +41,14 @@ public class ClientUpStreamApi {
      * 分页查询上游信息
      */
     @RequestMapping(value = "/listPagedUpStream.api", method = { RequestMethod.POST, RequestMethod.GET })
-    public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream query) {
-        Long userId = sessionContext.getAccountId();
-        if (userId == null){
-            return BaseOutput.failure("未登陆用户");
-        }
-        if(query.getSourceUserId() != null){
-            userId = query.getSourceUserId();
-        }
+    public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStreamDto query) {
         if (StringUtils.isBlank(query.getOrder())) {
             query.setOrder("desc");
             query.setSort("created");
         }
+        query.setUserIds(Arrays.asList(this.sessionContext.getSessionData().getUserId()));
         try {
-            BasePage<UpStream> data = this.upStreamService.listPageUpStream(userId,query);
+            BasePage<UpStream> data = this.upStreamService.listPageUpStream(query);
             return BaseOutput.success().setData(data);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
