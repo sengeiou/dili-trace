@@ -64,8 +64,9 @@ public class ProductRpcService {
             if (out.isSuccess() && out.getData() != null) {
                 // 同步完成后更新和溯源库存的关联关系
                 updateStockIdAfterCreate(out, bill.getId());
+                logger.debug("创建库存成功");
                 return out.getData();
-            }else{
+            } else {
                 logger.error("创建库存失败:{}",out.getMessage());
             }
 
@@ -101,6 +102,7 @@ public class ProductRpcService {
 
             BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
             if (out.isSuccess() && out.getData() != null) {
+                logger.debug("扣减库存成功");
                 return out.getData();
             } else {
                 logger.error("扣减库存失败:{}",out.getMessage());
@@ -137,6 +139,7 @@ public class ProductRpcService {
                     condition.setId(createDto.getTradeDetailId());
                     condition.setThirdPartyStockId(regDetailDtos.get(0).getStockId());
                     tradeDetailService.updateSelective(condition);
+                    logger.debug("创建库存成功");
                 } else {
                     logger.error("创建库存成功，但是未返回StockId");
                 }
@@ -152,7 +155,7 @@ public class ProductRpcService {
         if (out.isSuccess() && out.getData() != null) {
             return;
         }
-        logger.error("扣减库存失败：{}",out.getMessage());
+        logger.error("创建库存失败：{}",out.getMessage());
         return;
        // throw new TraceBizException("扣减库存失败");
     }
@@ -282,6 +285,8 @@ public class ProductRpcService {
         detailDto.setPlace(bill.getOriginName());
         detailDto.setPrice(bill.getUnitPrice());
         detailDto.setWeight(bill.getWeight());
+        detailDto.setProductId(bill.getProductId());
+        detailDto.setProductName(bill.getProductName());
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
         obj.setSource(StockRegisterSourceEnum.REG.getCode());

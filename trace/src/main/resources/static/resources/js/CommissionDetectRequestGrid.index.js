@@ -310,7 +310,6 @@ class CommissionDetectRequestGrid extends ListPage {
             $(btn).hide();
         });
         await this.queryEventAndSetBtn();
-        await this.queryCommissionBtn();
         $("#add-btn").show();
         $("#export").show();
     }
@@ -323,51 +322,6 @@ class CommissionDetectRequestGrid extends ListPage {
         }
         catch (e) {
             console.error(e);
-        }
-    }
-    async queryCommissionBtn() {
-        var rows = this.rows;
-        if (rows.length == 0) {
-            return;
-        }
-        var exists_detectState_pass = _.chain(rows).filter(item => {
-            return 50 == item.detectStatus;
-        }).filter(item => {
-            return !_.isUndefined(item.checkSheetId);
-        }).filter(item => {
-            return !_.isNull(item.checkSheetId);
-        }).filter(item => {
-            return !_.isEmpty(item.checkSheetId);
-        }).value().length > 0;
-        var rowsArray = $.makeArray(rows);
-        var nameArray = _.chain(rows).map(item => item.name).filter(item => !_.isEmpty(item)).value();
-        if (exists_detectState_pass) {
-            var distinctNameArray = nameArray.reduce(function (accumulator, currentValue, index, array) {
-                if ($.inArray(currentValue, array, index + 1) == -1) {
-                    accumulator.push(currentValue);
-                }
-                return accumulator;
-            }, []);
-            var corporateNameArray = _.chain(rows).map(item => item.corporateName).filter(item => !_.isEmpty(item)).value();
-            var distinctCorporateNameArray = corporateNameArray.reduce(function (accumulator, currentValue, index, array) {
-                if ($.inArray(currentValue, array, index + 1) == -1) {
-                    accumulator.push(currentValue);
-                }
-                return accumulator;
-            }, []);
-            $('#createSheet-btn').hide();
-            if (rowsArray.length == corporateNameArray.length && distinctCorporateNameArray.length == 1) {
-                $('#createSheet-btn').show();
-            }
-            else if (rowsArray.length == nameArray.length && distinctCorporateNameArray.length == 0 && distinctNameArray.length == 1) {
-                $('#createSheet-btn').show();
-            }
-            else {
-                $('#createSheet-btn').hide();
-            }
-        }
-        else {
-            $('#createSheet-btn').hide();
         }
     }
 }
