@@ -79,7 +79,7 @@ public class ECommerceBillService {
         RegisterBillDto dto = this.preBuildDTO(query);
         dto.setMarketId(MarketUtil.returnMarket());
         dto.setBillType(this.supportedBillType().getCode());
-        dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
+        dto.setIsDeleted(YesOrNoEnum.NO.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
 
         Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
