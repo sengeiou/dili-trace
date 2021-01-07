@@ -91,7 +91,6 @@ class ListPage extends WebConfig {
 
     constructor(grid: any, queryform: any, queryBtn: any, listPageUrl: string,otherParams:object={}) {
         super();
-        debugger
         this.grid = grid;
         this.queryform = queryform;
         this.queryBtn = queryBtn;
@@ -157,7 +156,6 @@ class ListPage extends WebConfig {
                 order: params.order,
                 metadata:metadata
             }
-            debugger
             $.extend(temp, this.queryform.serializeJSON());
             $.extend(temp, this.otherParams);
             let jsonData = jq.removeEmptyProperty(temp);
