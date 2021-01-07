@@ -80,7 +80,7 @@ public class LoginComponent {
 						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
 					} else if (LoginIdentityTypeEnum.SYS_MANAGER == identityType) {
 						return this.manageSystemComponent.sysManagerLogin(loginInput.getUsername(),
-								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
+							loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
 //						OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(),
 //								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
 						// prepareSessionId(operatorUser.getId(), operatorUser.getName(),

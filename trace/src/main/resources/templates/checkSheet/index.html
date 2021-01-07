@@ -98,9 +98,9 @@
 </#bs4Body>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
-<script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/CheckSheet.index.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/CheckSheet.index.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 <script>
@@ -113,7 +113,7 @@
         type: 'datetime'
     });
     $(function () {
-        var checkSheetIndex=new CheckSheetIndex($('#checkSheetGrid'),$('#queryForm'),$('#queryForm'),$('#toolbar'));
+        var checkSheetIndex=new CheckSheetIndex($('#checkSheetGrid'),$('#queryForm'),$('#toolbar'),'${billType}');
     });
 
 </script>

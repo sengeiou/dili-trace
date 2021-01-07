@@ -87,13 +87,16 @@ class ListPage extends WebConfig {
     protected queryform: any;
     protected  queryBtn: any;
     protected listPageUrl: string;
+    protected otherParams:object;
 
-    constructor(grid: any, queryform: any, queryBtn: any, listPageUrl: string) {
+    constructor(grid: any, queryform: any, queryBtn: any, listPageUrl: string,otherParams:object={}) {
         super();
+        debugger
         this.grid = grid;
         this.queryform = queryform;
         this.queryBtn = queryBtn;
         this.listPageUrl = listPageUrl;
+        this.otherParams=otherParams;
         (async ()=>{
             await this.init();
         })();
@@ -141,6 +144,7 @@ class ListPage extends WebConfig {
         }
         return metadata;
     }
+
     protected refreshTableOptions(){
         let url=this.toUrl(this.listPageUrl)
         let metadata=this.buildMetaData();
@@ -153,9 +157,10 @@ class ListPage extends WebConfig {
                 order: params.order,
                 metadata:metadata
             }
-
-            let data = $.extend(temp, this.queryform.serializeJSON());
-            let jsonData = jq.removeEmptyProperty(data);
+            debugger
+            $.extend(temp, this.queryform.serializeJSON());
+            $.extend(temp, this.otherParams);
+            let jsonData = jq.removeEmptyProperty(temp);
 
             return JSON.stringify(jsonData);
         }

@@ -68,12 +68,14 @@ class WebConfig {
     }
 }
 class ListPage extends WebConfig {
-    constructor(grid, queryform, queryBtn, listPageUrl) {
+    constructor(grid, queryform, queryBtn, listPageUrl, otherParams = {}) {
         super();
+        debugger;
         this.grid = grid;
         this.queryform = queryform;
         this.queryBtn = queryBtn;
         this.listPageUrl = listPageUrl;
+        this.otherParams = otherParams;
         (async () => {
             await this.init();
         })();
@@ -120,8 +122,10 @@ class ListPage extends WebConfig {
                 order: params.order,
                 metadata: metadata
             };
-            let data = $.extend(temp, this.queryform.serializeJSON());
-            let jsonData = jq.removeEmptyProperty(data);
+            debugger;
+            $.extend(temp, this.queryform.serializeJSON());
+            $.extend(temp, this.otherParams);
+            let jsonData = jq.removeEmptyProperty(temp);
             return JSON.stringify(jsonData);
         };
         this.grid.bootstrapTable('refreshOptions', {
