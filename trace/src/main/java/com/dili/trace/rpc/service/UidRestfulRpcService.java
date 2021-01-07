@@ -99,6 +99,13 @@ public class UidRestfulRpcService {
         } else {
             throw new TraceBizException("不支持的类型");
         }
+    }
 
+    /**
+     * TRUCK_ENTER_RECORD_BILL 司机报备单
+     * @return
+     */
+    public String getTruckEnterRecordCode() {
+        return this.bizNumber(BizNumberType.TRUCK_ENTER_RECORD_CODE.getType());
     }
 }
