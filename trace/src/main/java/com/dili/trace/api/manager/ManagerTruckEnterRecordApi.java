@@ -9,6 +9,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,8 @@ public class ManagerTruckEnterRecordApi {
     LoginSessionContext sessionContext;
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 查询司机报备信息
@@ -77,6 +80,7 @@ public class ManagerTruckEnterRecordApi {
             LOGGER.error("司机报备没有车型");
             return BaseOutput.failure("车型必填");
         }
+        input.setCode(uidRestfulRpcService.getTruckEnterRecordCode());
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
         input.setModified(new Date());

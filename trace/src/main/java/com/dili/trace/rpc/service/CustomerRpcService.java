@@ -84,14 +84,14 @@ public class CustomerRpcService {
 
 
         try {
-            Long userId =  NumUtils.toLong(request.getHeader("userId")).orElse(null);
-            Long marketId =  NumUtils.toLong(request.getHeader("marketId")).orElse(null);
-            if(marketId==null||userId==null){
+            Long userId = NumUtils.toLong(request.getHeader("userId")).orElse(null);
+            Long marketId = NumUtils.toLong(request.getHeader("marketId")).orElse(null);
+            if (marketId == null || userId == null) {
                 return Optional.empty();
             }
 
             try {
-         
+
                 if (!marketId.equals(0L)) {
                     CustomerQueryInput query = new CustomerQueryInput();
                     query.setId(userId);
@@ -119,8 +119,8 @@ public class CustomerRpcService {
                             return sessionData;
                         }).findFirst();
 
-                    }else{
-                        logger.error("userId={},marketId={},message:{}",userId,marketId,out.getMessage());
+                    } else {
+                        logger.error("userId={},marketId={},message:{}", userId, marketId, out.getMessage());
                     }
 
                 }
@@ -164,6 +164,33 @@ public class CustomerRpcService {
             List<CustomerEnum.CharacterType> subRoleList = StreamEx.ofNullable(access.subRoles()).flatArray(Function.identity()).toList();
             return c.getSubRoles().containsAll(subRoleList);
         }).orElse(false);
+    }
+
+    /**
+     * 查询客户
+     *
+     * @param customerId
+     * @return
+     */
+    public com.dili.customer.sdk.domain.Customer findCustByIdOrEx(Long customerId) {
+        return this.findCustById(customerId).orElseThrow(() -> {
+            return new TraceBizException("查询客户信息失败");
+        });
+    }
+
+    /**
+     * 查询客户
+     *
+     * @param customerId
+     * @return
+     */
+    public Optional<com.dili.customer.sdk.domain.Customer> findCustById(Long customerId) {
+
+        BaseOutput<com.dili.customer.sdk.domain.Customer> out = this.customerRpc.getById(customerId);
+        if (out != null && out.isSuccess() && out.getData() != null) {
+            return Optional.ofNullable(out.getData());
+        }
+        return Optional.empty();
     }
 
     /**
@@ -295,8 +322,8 @@ public class CustomerRpcService {
      * @param cust
      * @return
      */
-    public Optional<com.dili.trace.domain.Customer> findCustomer(com.dili.trace.domain.Customer cust,Long marketId) {
-        return this.listCustomers(cust.getCustomerId(), cust.getPrintingCard(),marketId);
+    public Optional<com.dili.trace.domain.Customer> findCustomer(com.dili.trace.domain.Customer cust, Long marketId) {
+        return this.listCustomers(cust.getCustomerId(), cust.getPrintingCard(), marketId);
     }
 
     /**
@@ -306,11 +333,11 @@ public class CustomerRpcService {
      * @param cardNo
      * @return
      */
-    private Optional<com.dili.trace.domain.Customer> listCustomers(String customerCode, String cardNo,Long marketId) {
+    private Optional<com.dili.trace.domain.Customer> listCustomers(String customerCode, String cardNo, Long marketId) {
         if (StringUtils.isAllBlank(customerCode, cardNo)) {
             return Optional.empty();
         }
-        return this.queryCardInfoByCustomerCode(customerCode, cardNo,marketId).map(card -> {
+        return this.queryCardInfoByCustomerCode(customerCode, cardNo, marketId).map(card -> {
 
             com.dili.trace.domain.Customer customer = new Customer();
             customer.setPrintingCard(card.getCardNo());
@@ -319,7 +346,7 @@ public class CustomerRpcService {
             customer.setIdNo(card.getCustomerCertificateNumber());
             customer.setId(card.getCustomerId());
             Long customerId = card.getCustomerId();
-            this.findCustomerById(customerId,marketId).ifPresent(cust -> {
+            this.findCustomerById(customerId, marketId).ifPresent(cust -> {
                 customer.setPhone(cust.getContactsPhone());
                 customer.setAddress(cust.getCertificateAddr());
                 customer.setCustomerId(cust.getCode());
@@ -336,7 +363,7 @@ public class CustomerRpcService {
      * @param customerCode
      * @throws IOException
      */
-    public Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo,Long marketId) {
+    public Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo, Long marketId) {
         CardQueryInput input = new CardQueryInput();
         input.setFirmId(marketId);
         input.setCustomerCode(StringUtils.trimToNull(customerCode));
