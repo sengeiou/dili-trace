@@ -13,7 +13,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
-                    <input type="text" class="form-control input-sm" value="" readonly/>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.code}" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -23,8 +23,8 @@
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>企业名称</label>
-                    <input type="text" class="form-control input-sm" value="" required readonly/>
+                        企业名称</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.corporateName!}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -34,7 +34,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm" value="" required readonly/>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.plate!}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
@@ -44,21 +44,20 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>品牌</label>
-                    <input type="text" class="form-control input-sm"  value="" required readonly/>
+                        品牌</label>
+                    <input type="text" class="form-control input-sm"  value="${purchaseIntentionRecord.brandName!}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>重量/KG</label>
+                        <span class="red">&lowast;</span>重量</label>
                     <input type="text" class="form-control input-sm"
-                           value=" ${purchaseIntentionRecord.productWeight!}" required
-                           readonly/>
+                           value=" ${purchaseIntentionRecord.productWeight!} ${purchaseIntentionRecord.weightUnitName!}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>产地</label>
-                    <input type="text" class="form-control input-sm" value="" required
+                        产地</label>
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.originName!}" required
                            readonly/>
                 </div>
                 <div class="form-group">

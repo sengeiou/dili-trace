@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -152,6 +153,14 @@ public class PurchaseIntentionRecord extends BaseDomain {
     @ApiModelProperty(value = "产地")
     @Column(name = "`origin_name`")
     private String originName;
+
+    /**
+     * 重量单位名称
+     */
+    @Transient
+    public String getWeightUnitName() {
+        return WeightUnitEnum.toName(this.weightUnit);
+    }
 
     @Override
     public Long getId() {
