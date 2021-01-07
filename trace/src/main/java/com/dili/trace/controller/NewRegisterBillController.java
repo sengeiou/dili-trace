@@ -835,6 +835,73 @@ public class NewRegisterBillController {
     }
 
     /**
+     * 跳转到statics页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @ApiOperation("跳转到修改图片页面")
+    @RequestMapping(value = "/update_image.html", method = RequestMethod.GET)
+    public String update_image(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id,
+                               @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
+
+        RegisterBill item = billService.get(id);
+        if (item == null) {
+            modelMap.put("registerBill", item);
+            return "new-registerBill/update_image";
+        }
+        if (displayWeight == null) {
+            displayWeight = false;
+        }
+        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(item.getRegisterSource())) {
+            // 分销信息
+            if (item.getSalesType() != null
+                    && item.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+                // 分销
+                List<SeparateSalesRecord> records = separateSalesRecordService
+                        .findByRegisterBillCode(item.getCode());
+                modelMap.put("separateSalesRecords", records);
+            }
+        } else {
+            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            condition.setRegisterBillCode(item.getCode());
+            modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+        }
+        List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
+        modelMap.put("detectRecordList", detectRecordList);
+        modelMap.put("displayWeight", displayWeight);
+        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        registerBill.setImageCerts(imageCerts);
+        modelMap.put("registerBill", registerBill);
+        return "new-registerBill/update_image";
+    }
+
+    /**
+     * 更新图片
+     *
+     * @param registerBill
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateImage.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput updateImage(@RequestBody RegisterBill registerBill) {
+        try {
+            this.registerBillService.doUpdateImage(registerBill);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
+
+
+    /**
      * 显示条数
      *
      * @param registerBill

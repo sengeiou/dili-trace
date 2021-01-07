@@ -330,4 +330,10 @@ public interface SgRegisterBillService {
      * @param messageEvent
      */
     public Optional<RegisterBill> checkEvent(Long billId, RegisterBillMessageEvent messageEvent);
+
+    /**
+     * 修改图片
+     * @param registerBill
+     */
+    void doUpdateImage(RegisterBill registerBill);
 }

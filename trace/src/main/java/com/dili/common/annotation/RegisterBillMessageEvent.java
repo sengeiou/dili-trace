@@ -35,7 +35,11 @@ public enum RegisterBillMessageEvent {
     batch_auto("batch-auto-btn"),
     batch_sampling("batch-sampling-btn"),
     batch_undo("batch-undo-btn"),
-    createsheet("createsheet-btn");
+    createsheet("createsheet-btn"),
+    /**
+     * 修改图片
+     */
+    updateImage("update-img-btn");
 
     private RegisterBillMessageEvent(String code) {
         this.code = code;

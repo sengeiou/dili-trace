@@ -1258,7 +1258,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     RegisterBillMessageEvent.COPY
                     , RegisterBillMessageEvent.DETAIL
                     , RegisterBillMessageEvent.upload_origincertifiy
-                    , RegisterBillMessageEvent.upload_handleresult);
+                    , RegisterBillMessageEvent.upload_handleresult
+                    , RegisterBillMessageEvent.updateImage);
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo
                         , RegisterBillMessageEvent.audit
@@ -1311,7 +1312,14 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             return StreamEx.of(this.queryEvents(item)).filterBy(Function.identity(), messageEvent).map((v) -> item).findFirst();
         }
 
-        private List<RegisterBillMessageEvent> queryEvents (RegisterBill bill){
+    @Override
+    public void doUpdateImage(RegisterBill registerBill) {
+        List<ImageCert> imageCertList = registerBill.getImageCerts();
+        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        this.billService.updateHasImage(registerBill.getId(), imageCertList);
+    }
+
+    private List<RegisterBillMessageEvent> queryEvents (RegisterBill bill){
             if (bill == null) {
                 return Lists.newArrayList();
             }
