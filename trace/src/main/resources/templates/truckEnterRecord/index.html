@@ -58,17 +58,23 @@
             </#resource>
         </div>
         <table id="grid" data-toggle="table" data-title="司机进门列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
-               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
             <tr>
                 <th data-checkbox="true"></th>
-                <th data-field="driverName" data-sortable="true" data-align="center">
-                    司机
+                <th data-field="code" data-sortable="true" data-align="center">
+                    报备编号
                 </th>
-                <th data-field="driverPhone" data-sortable="true" data-align="center">
-                    司机电话
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    进门时间
+                </th>
+                <th data-field="driverName" data-sortable="true" data-align="center">
+                    司机名称
+                </th>
+                <th data-field="corporateName" data-sortable="true" data-align="center">
+                    企业名称
                 </th>
                 <th data-field="truckPlate" data-sortable="true" data-align="center">
                     车牌
@@ -76,8 +82,8 @@
                 <th data-field="truckTypeName" data-sortable="true" data-align="center">
                     车型
                 </th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    时间
+                <th data-field="driverPhone" data-sortable="true" data-align="center">
+                    手机号码
                 </th>
             </tr>
             </thead>
