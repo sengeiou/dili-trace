@@ -27,7 +27,7 @@ class NewRegisterBillGrid extends ListPage {
         // $(window.document.body).attr("trace_id",this.uid);
         var cthis=this;
         window['RegisterBillGridObj']=this;
-
+        //@ts-ignore
         $('#edit-btn').on('click',async ()=>await this.openEditPage())
         $('#btn_add').on('click',async ()=>await this.openCreatePage())
         $('#copy-btn').on('click',async ()=>await this.openCopyPage())
@@ -48,7 +48,7 @@ class NewRegisterBillGrid extends ListPage {
 
         $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
-
+        $('#update-img-btn').on('click',async ()=>await this.doUpdateImg());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
         this.grid.bootstrapTable({
@@ -67,6 +67,7 @@ class NewRegisterBillGrid extends ListPage {
 
         }, false);
     }
+
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
@@ -76,6 +77,23 @@ class NewRegisterBillGrid extends ListPage {
             await super.queryGridData();
         })();
     }
+
+    public async doUpdateImg(){
+        let row=this.rows[0]
+        let url=this.toUrl('/newRegisterBill/update_image.html?id='+row.billId);
+        //@ts-ignore
+        var update_img_dia = bs4pop.dialog({
+            title: '修改图片',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '88%',
+            height: '98%',
+            btns: []
+        });
+    }
+
     public async doAudit(billId:string,code:string){
         //@ts-ignore
         bs4pop.removeAll();
@@ -623,6 +641,7 @@ class NewRegisterBillGrid extends ListPage {
     private async queryEventAndSetBtn(){
         var rows=this.rows;
         try{
+            //@ts-ignore
             var billIdList=_.chain(rows).map(v=>v.id).value();
             var resp=await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'),billIdList);
             // console.info(resp)

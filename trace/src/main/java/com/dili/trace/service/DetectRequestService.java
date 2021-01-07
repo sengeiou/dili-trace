@@ -616,6 +616,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
+
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
@@ -788,6 +789,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequest
      */
+    @Transactional(rollbackFor = Exception.class)
     public void doAppointment(DetectRequest detectRequest) {
         Long billId = detectRequest.getBillId();
         if (null == billId) {

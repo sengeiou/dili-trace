@@ -1,0 +1,559 @@
+
+<#bodyOrigin>
+    <style>
+        .form-inline .table-showlist table .input-sm {
+             width: 200px;
+        }
+        .es-list { max-height: 220px !important; }
+    </style>
+<div class="main-container" style="margin: 0;padding: 0;">
+    <div class="form-box border">
+        <form id="updateImageForm" class="form-inline" role="form" targetId="${registerBill.code}">
+        	<input type="hidden" name="id" value="${registerBill.id}">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
+
+                    <input class="form-control input-sm" value="<%if(null!= registerBill.created!){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>采样编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.sampleCode!}"  readonly/>
+                </div>
+
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>${registerBill.registerSourceName!}</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.sourceName!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo!}"  readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证地址</label>
+                    <textarea name="addr" id="addr" class="form-control" cols="82" rows="1"  readonly>${registerBill.addr!}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate!}"  readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.productName!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.originName!}"  readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>重量/KG</label>
+                    <input type="text" class="form-control input-sm"  value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>"  readonly/>
+                </div>
+
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>操作人</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName!}"  readonly/>
+                </div>
+                <% if(registerBill.registerSource! == 2){ %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>交易账号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradeAccount!}"  readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>印刷卡号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradePrintingCard!}"  readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户手机号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.phone!}"  readonly/>
+                </div>
+                <% } %>
+
+            <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
+                <label class="label-title text-right">园区卡号</label>
+                <div class="input-group">
+
+                <input type="text" class="form-control input-sm" disabled readonly name="b2" <% if( registerBill.tradePrintingCard!=null){%>value="${registerBill.tradePrintingCard}"<%}else{%>value="888880"<%}%> data-value-type="skip"   id="printingCardInput" style="width: 147px;"/>
+                <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" value="${registerBill.tradePrintingCard}" style="width: 147px;"/>
+                <span class="input-group-addon"> <span class="glyphicon" id="queryByCardNoBtn">检索</span> </span>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label class="label-title text-right">
+                <span class="red">&lowast;</span>业户姓名</label>
+            <input type="text" class="form-control input-sm" name="name" id="name"  value="${registerBill.name}" tabindex="-1"  readonly/>
+            <input type="hidden"  name="userId" id="userId" value="${registerBill.userId}"   readonly/>
+        </div>
+        <div class="form-group">
+            <label class="label-title text-right">
+                <span class="red">&lowast;</span>身份证号</label>
+            <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" value="${registerBill.idCardNo}"  readonly/>
+        </div>
+        <div class="form-group">
+            <label class="label-title text-right">身份证地址</label>
+            <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" tabindex="-1"  readonly style="width: 200px;">${registerBill.addr}</textarea>
+        </div>
+            <br>
+        <div class="form-group">
+            <label class="label-title text-right">
+                <span class="red">&lowast;</span>业户手机号</label>
+            <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"  value="${registerBill.phone}"  readonly/>
+        </div>
+        </div>
+
+            <%
+            var imageCount = registerBill.imageCerts.~size!0;
+            %>
+            <div class="form-item-group" id="originCertifiyDiv">
+                <h4 class="form-item-title">产地证明</h4>
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY].~size!0)>0){%>
+
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY]){
+                %>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete" style="display: none">删除</span>
+                    </div>
+                </div>
+                <%}%>
+                <%}%>
+            </div>
+
+            <div class="form-item-group" id="detectReportDiv">
+                <h4 class="form-item-title">检测报告</h4>
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
+
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
+                %>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                    <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete" style="display: none">删除</span>
+                    </div>
+                </div>
+                <%}%>
+                <%}%>
+                </div>
+
+
+
+            <div id="handleResultContainer">
+                <div class="form-item-group" id="handleResultDiv">
+                    <h4 class="form-item-title">处理结果图片</h4>
+                    <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
+
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete" style="display: none">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%}%>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="doEdit()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<script type="text/javascript">
+   var initWithLocalStorage=false;
+</script>
+<#registerBill_createJs />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script type="text/javascript">
+    let imageItemCount = '${registerBill.imageCerts.~size!0}';
+    function getDetectReportCount(selector){
+        var count=$(selector).find('.fileimg-box').length;
+        return count;
+    }
+    function initImageBtns(selector, certType){
+        var tempHtml=$(selector)
+        var deleteImg=tempHtml.find('.fileimg-delete');
+        var viewImg=tempHtml.find('.fileimg-view');
+        deleteImg.on('click', function () {
+            $(this).parents('.fileimg-box').remove();
+            if(getDetectReportCount(selector)==0){
+                createDetectReportAndAppendTemplate(selector, certType);
+            }
+        });
+        viewImg.on('click',function () {
+            var url = $(this).parent().siblings(".magnifying").attr('src');
+            if(url){
+                layer.open({
+                    title:'图片',
+                    type: 1,
+                    skin: 'layui-layer-rim',
+                    closeBtn: 2,
+                    area: ['90%', '90%'], // 宽高
+                    content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                });
+            }
+        });
+    }
+
+    function createDetectReportAndAppendTemplate(selector, certType){
+        if(getDetectReportCount(selector)==10){
+            return;
+        }
+        // $("[href$='.jpg']")
+        selector.find("[name$='[certType]']").val(certType);
+        var tempHtml=$(template('imageCertItem', {index: imageItemCount++}));
+        $(selector).append(tempHtml);
+        var fileEl=tempHtml.find('input[type="file"]');
+        initFileUpload(fileEl,function(){createDetectReportAndAppendTemplate(selector, certType);});
+        initImageBtns(tempHtml, certType);
+
+    }
+    // 文件上传组件初始化
+    function initFileUpload(selecter,success) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var uid= res.result.data;
+                    $(this).siblings("input:hidden:first").val(uid);
+
+
+                    var url = "${imageViewPathPrefix}/" + uid;
+                    $(this).siblings('.magnifying').attr('src', url).show();
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    success();
+                }
+            },
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+                // /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+
+var currentUser={"depId":"${user.departmentId!}"
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"departmentName":"${department.name!}"};
+	var editForm={
+			tableData:[],
+			plate:''
+	}
+	function buildEditFormData(editForm){
+	     $('#goodsTable tbody tr').each(function(){
+		  	    var inputs=$(this).find('.input-sm');
+		  	     var oldRow=[];
+		  	     //debugger
+			  	 inputs.each(function(k,v){
+			  		oldRow.push($(this).val())
+			  	 });
+		  	   editForm.tableData.push(oldRow);
+		     });
+	     editForm.plate=$('#plate').val();
+	}
+	function submitLog(){
+		var newData={
+				tableData:[],
+				plate:''
+		};
+		buildEditFormData(newData);
+		var content="【编号】："+$('#updateImageForm').attr('targetId');
+		if(editForm.plate!=newData.plate){
+			content=content+'<br/>【车牌号】:从"'+editForm.plate+'"改为"'+newData.plate+'"';
+		}
+		
+		$.each(newData.tableData,function(i,arr){
+			var oldArr=editForm.tableData[i];
+			$.each(arr,function(k,v){
+				if(v!=oldArr[k]){
+					if(k==0){
+						content=content+'<br/>【商品名称】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}else if(k==1){
+						content=content+'<br/>【产地】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}else if(k==2){
+						content=content+'<br/>【商品重量】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}
+					
+				}
+			})
+			
+		});
+		TLOG.component.operateLog('登记单管理',"修改",content);
+
+	}
+   $(function () {
+       initImageBtns($(document.body));
+       createDetectReportAndAppendTemplate($('#detectReportDiv'), 1);
+       createDetectReportAndAppendTemplate($('#handleResultContainer').find('#handleResultDiv'), 8);
+       createDetectReportAndAppendTemplate($('#originCertifiyDiv'), 2);
+
+	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
+	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});
+	     $('#goodsTable').find('input[name="originName_1"]').val('${registerBill.originName!}');
+	     $('#goodsTable').find('input[name="originId_1"]').val(${registerBill.originId});
+	     $('#goodsTable').find('input[name="weight_1"]').val(${registerBill.weight});
+	     var  originCertifiyUrl='${registerBill.originCertifiyUrl!}';
+	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val(originCertifiyUrl);
+	     if(originCertifiyUrl!=''){
+	    	 //$('.view-div').show();
+	    	 //$('.upload-div').hide();
+	     }
+	     buildEditFormData(editForm);
+
+         //初始化控件
+         $('#plate').editableSelect({ 
+             filter: false ,
+         });
+         var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
+        	 return $(v).text();
+         });
+         appendCachedPlate(userplateList,'#plate');
+
+   });
+
+    function buildUpdateTableData(){
+        var data=$('#updateImageForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        return data;
+    }
+
+   function doEdit(){
+       if($('#updateImageForm').validate().form() != true){
+           return;
+       }
+	   var registerSource = $("#registerSource").val();
+       var registerBills = buildUpdateTableData(registerSource);
+       var data=$('#updateImageForm').serializeJSON({useIntKeysAsArrayIndex:true});
+       console.log("data===>",data)
+       if(registerBills.length!=1){
+       }
+       var formData=registerBills;
+       formData['id']=$('form').find('input[name="id"]').val();
+        layer.confirm('确认修改数据?', {
+                     type: 0,
+                     title: '提示',
+                     btn: ['确定','取消'],
+                     yes:function(){
+                    	 $.ajax({
+                             type: "POST",
+                             url: "${contextPath}/newRegisterBill/updateImage.action",
+                             processData:true,
+                             dataType: "json",
+                             data: JSON.stringify(data),
+                             async : true,
+                             contentType: "application/json; charset=utf-8",
+                             success: function (ret) {
+                                 if(ret.success){
+                                	 submitLog();
+                                     layer.alert('操作成功',{
+                  							title:'操作',
+                                           	time : 600,
+                                           	end :function(){
+                                           		 // parent.closeWin('view_win');
+                                                parent.window['RegisterBillGridObj'].removeAllAndLoadData()
+                                           	}
+                                          },
+                                     	 function () {
+                                            parent.closeWin('view_win');
+                                         }
+                                     );
+                                     
+                                 }else{
+                                     swal(
+                                             '操作',
+                                             ret.result,
+                                             'info'
+                                     );
+                                     layer.closeAll();
+
+                                 }
+                                 
+                             },
+                             error: function(){
+
+                                 swal(
+                                         '错误',
+                                         '远程访问失败',
+                                         'error'
+                                 );
+                                 layer.closeAll();
+                             }
+                         });
+                     }
+          });
+       
+	   
+   }
+</script>
+
+
+<style>
+    /*a  upload */
+    .a-upload {
+        padding: 4px 28px;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        color: #fff !important;
+        background-color: #3370ff;
+    }
+
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
+</style>
+<script id="goodsItem" type="text/html">
+    <tr>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}"  required />
+                <input type="text" name="productId_{{index}}" hidden/>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}"  required />
+                <input type="text" name="originId_{{index}}" hidden  />
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6"  range="0 999999" value="0" />
+            </div>
+        </td>
+        <td>
+            <div class="upload-div">
+                <a href="javascript:;" class="a-upload" tabindex="-1" style="background: #eee;    border-color: #ccc;    text-decoration: none;">
+                    <span>上传</span>
+                </a>
+            </div>
+            <div class="view-div" style="display: none;">
+                <span>已上传</span>
+                <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
+                <a href="javascript:$('#originCertifiyUrl_{{index}}').trigger('click')">重新上传</a>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+
+</script>
+
+
+<script id="imageCertItem" type="text/html">
+    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+        <span class="fileimg-plus-icon">+</span>
+        <span class="fileimg-des">点击上传</span>
+        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+        <input type="hidden" name="imageCerts[{{index}}][uid]">
+        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <img class="magnifying">
+        <div class="fileimg-cover" style="display: none;"></div>
+        <div class="fileimg-edit" style="display: none;">
+            <span class="fileimg-view">查看</span>
+            <span class="fileimg-delete">删除</span>
+        </div>
+    </div>
+</script>
