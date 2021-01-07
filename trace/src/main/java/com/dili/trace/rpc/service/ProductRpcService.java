@@ -7,6 +7,7 @@ import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.StockInUnitEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.StockRegisterSourceEnum;
 import com.dili.trace.rpc.api.ProductRpc;
 import com.dili.trace.rpc.dto.*;
@@ -42,6 +43,8 @@ public class ProductRpcService {
     BillService billService;
     @Autowired
     TradeDetailService tradeDetailService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
     /**
      * 创建库存
@@ -251,8 +254,8 @@ public class ProductRpcService {
         this.firmRpcService.getFirmById(marketId).ifPresent(firm -> {
             obj.setFirmName(firm.getName());
         });
-        // obj.setInStockNo(String.valueOf(bill.getBillId()));
-        // obj.setInStockNo();
+        // 库存系统要校验InStockNo字段唯一，传报备单主键交易场景有问题，所以生成个唯一单号
+        obj.setInStockNo(uidRestfulRpcService.bizNumber(BizNumberType.STOCK_CODE.getType()));
         optUser.ifPresent(o -> {
             obj.setOperatorId(o.getId());
             obj.setOperatorName(o.getName());
@@ -282,7 +285,7 @@ public class ProductRpcService {
 
         obj.setRegDetailDtos(Lists.newArrayList(detailDto));
         obj.setSource(StockRegisterSourceEnum.REG.getCode());
-        obj.setInStockNo(bill.getCode());
+        // obj.setInStockNo(bill.getCode());
         return obj;
     }
 }

@@ -70,6 +70,8 @@ class NewRegisterBillGrid extends ListPage {
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
+        //@ts-ignore
+        $(this).closest("body").removeClass("modal-open");
         (async ()=>{
             await super.queryGridData();
         })();
@@ -579,9 +581,8 @@ class NewRegisterBillGrid extends ListPage {
     }
     private openCreatePage() {
         let url = this.toUrl("/newRegisterBill/create.html");
-        var cthis=this;
         //@ts-ignore
-        var dia = bs4pop.dialog({
+        var createDia = bs4pop.dialog({
             title: '新增报备单',
             content: url,
             isIframe: true,
@@ -591,7 +592,6 @@ class NewRegisterBillGrid extends ListPage {
             height: '98%',
             btns: [],
             onShowEnd:function(){
-                dia.$el.find('iframe')[0].contentWindow['RegisterBillGridObj']=cthis;
             }
         });
     }

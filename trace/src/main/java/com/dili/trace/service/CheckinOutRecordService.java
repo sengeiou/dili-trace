@@ -38,8 +38,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	@Autowired
 	UpStreamService upStreamService;
 	@Autowired
-	CodeGenerateService codeGenerateService;
-	@Autowired
 	TradeDetailService tradeDetailService;
 	@Autowired
 	TradeService tradeService;
