@@ -64,7 +64,7 @@ public class ManageSystemComponent {
         StreamEx.of(LoginIdentityTypeEnum.values()).map(LoginIdentityTypeEnum::getAuthUrl)
                 .filter(StringUtils::isNotBlank).forEach(auth -> {
 
-            logger.warn(">>>>>>>>>>>>>>请注意配置登录访问权限: {}", auth);
+            //logger.warn(">>>>>>>>>>>>>>请注意配置登录访问权限: {}", auth);
 
         });
     }
