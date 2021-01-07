@@ -96,7 +96,7 @@ public class CommissionDetectRequestController {
     String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
         detectRequestDto.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
-        detectRequestDto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
+        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();
     }

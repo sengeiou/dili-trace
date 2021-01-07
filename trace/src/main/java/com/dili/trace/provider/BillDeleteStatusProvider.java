@@ -1,10 +1,10 @@
 package com.dili.trace.provider;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.enums.BillDeleteStatusEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class BillDeleteStatusProvider implements ValueProvider {
 	private static List<ValuePair<?>> buildValuePair() {
 
 		List<ValuePair<?>> list = new ArrayList<>();
-		list.addAll(Stream.of(BillDeleteStatusEnum.values())
+		list.addAll(Stream.of(YesOrNoEnum.values())
 				.map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString())).collect(Collectors.toList()));
 		return list;
 	}
