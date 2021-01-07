@@ -10,7 +10,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.ss.uid.service.BizNumberService;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -19,7 +18,9 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
-import com.dili.trace.glossary.*;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.NumUtils;
@@ -54,8 +55,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     ImageCertService imageCertService;
     @Autowired
     UserPlateService userPlateService;
-    @Autowired
-    CodeGenerateService codeGenerateService;
     @Autowired
     UsualAddressService usualAddressService;
     @Autowired

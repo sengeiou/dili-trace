@@ -1,6 +1,6 @@
 class CheckSheetIndex extends ListPage {
-    constructor(grid, queryform, toolbar) {
-        super(grid, queryform, queryform.find('#query'), "/checkSheet/listPage.action");
+    constructor(grid, queryform, toolbar, billType) {
+        super(grid, queryform, queryform.find('#query'), "/checkSheet/listPage.action", { 'billType': billType });
         this.grid = grid;
         this.queryform = queryform;
         window['checkSheetIndex'] = this;
