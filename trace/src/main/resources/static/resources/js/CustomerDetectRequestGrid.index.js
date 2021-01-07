@@ -15,7 +15,23 @@ class CustomerDetectRequestGrid extends ListPage {
         $('#review-btn').on('click', async () => await this.doReviewCheck());
         $('#undo-btn').on('click', async () => await this.doUndo());
         $('#detail-btn').on('click', async () => await this.openDetailPage());
+        $('#createSheet-btn').on('click', async () => await this.openCreateSheetPage());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+    }
+    async openCreateSheetPage() {
+        let rows = this.rows;
+        let idList = rows.map(function (v, i) { return v.billId; });
+        let url = this.toUrl('/checkSheet/edit.html?' + $.param({ idList: idList }, true));
+        window.dia = bs4pop.dialog({
+            title: '打印检测报告',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
     async doBookingRequest() {
         debugger;

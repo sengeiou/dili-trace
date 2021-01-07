@@ -20,10 +20,8 @@ import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.*;
-import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
@@ -653,6 +651,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                     }
                 }
                 // 检测合格，生成检测报告。
+                else if (DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
+                    if (item.getCheckSheetId() == null) {
+                        msgStream.add(DetectRequestMessageEvent.createSheet);
+                    }
+                }
             }
         }
         return msgStream;
