@@ -34,6 +34,7 @@ public enum BizNumberType {
     TRADE_REQUEST_CODE("trade_request_code", "交易单编号","HZSY", "yyyyMMddHH",5, "1"),
     ECOMMERCE_BILL_SEPERATE_REPORT_CODE("ecommerce_bill_seperate_report_code", "电商单分销打印编号", "SGDSR", "yyyyMMdd", 5, "1"),
     COMMISSION_BILL_CODE("commission_bill_code", "委托单编号", "dw","yyyyMMdd",  5, "1"),
+    STOCK_CODE("stock_code", "库存编号", "st","yyyyMMdd",  5, "1"),
 
     ;
     //业务号类型,对应biz_number表中的type
