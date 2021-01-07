@@ -25,7 +25,6 @@ public class PurchaseIntentionRecord extends BaseDomain {
     @Column(name = "`market_id`")
     private Long marketId;
 
-
     /**
      * 买家姓名
      */
@@ -111,6 +110,48 @@ public class PurchaseIntentionRecord extends BaseDomain {
     @ApiModelProperty(value = "操作人ID")
     @Column(name = "`operator_id`")
     private Long operatorId;
+
+    /**
+     * 买家报备编号
+     */
+    @ApiModelProperty(value = "买家报备编号")
+    @Column(name = "`code`")
+    private String code;
+
+    /**
+     * 企业名称
+     */
+    @ApiModelProperty(value = "企业名称")
+    @Column(name = "`corporate_name`")
+    private String corporateName;
+
+    /**
+     * 品牌ID
+     */
+    @ApiModelProperty(value = "品牌ID")
+    @Column(name = "`brand_id`")
+    private Long brandId;
+
+    /**
+     * 品牌名称
+     */
+    @ApiModelProperty(value = "品牌名称")
+    @Column(name = "`brand_name`")
+    private String brandName;
+
+    /**
+     * 产地ID
+     */
+    @ApiModelProperty(value = "产地ID")
+    @Column(name = "`origin_id`")
+    private Long originId;
+
+    /**
+     * 产地
+     */
+    @ApiModelProperty(value = "产地")
+    @Column(name = "`origin_name`")
+    private String originName;
 
     @Override
     public Long getId() {
@@ -224,5 +265,53 @@ public class PurchaseIntentionRecord extends BaseDomain {
 
     public void setPlate(String plate) {
         this.plate = plate;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCorporateName() {
+        return corporateName;
+    }
+
+    public void setCorporateName(String corporateName) {
+        this.corporateName = corporateName;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public Long getOriginId() {
+        return originId;
+    }
+
+    public void setOriginId(Long originId) {
+        this.originId = originId;
+    }
+
+    public String getOriginName() {
+        return originName;
+    }
+
+    public void setOriginName(String originName) {
+        this.originName = originName;
     }
 }

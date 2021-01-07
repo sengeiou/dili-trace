@@ -8,6 +8,14 @@
                 <input type="text" class="form-control" name="likeBuyerName" id="likeBuyerName"/>
             </div>
             <div class="form-group col">
+                <label for="likeCode">报备单号</label>
+                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+            </div>
+            <div class="form-group col">
+                <label for="likePlate">车牌号</label>
+                <input type="text" class="form-control" name="likePlate" id="likePlate"/>
+            </div>
+            <div class="form-group col">
                 <label for="productName">商品</label>
                 <input type="hidden" name="productId" id="productId" />
                 <input type="text" class="form-control" name="productName" id="productName" for="productId"/>
@@ -29,8 +37,23 @@
                     </div>
                 </div>
             </div>
-
-
+            <div class="form-group col-auto">
+                <label for="checkinCreatedStart">进门时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="col-auto align-self-center mt-3">
                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
@@ -55,18 +78,35 @@
             <thead>
             <tr>
                 <th data-checkbox="true"></th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    登记时间
+                </th>
+                <th data-field="code" data-sortable="true" data-align="center">
+                    登记编号
+                </th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    进门时间
+                </th>
                 <th data-field="buyerName" data-sortable="true" data-align="center">
                     买家姓名
                 </th>
-
                 <th data-field="buyerPhone" data-sortable="true" data-align="center">
                     买家电话
                 </th>
-                <th data-field="productName" data-sortable="true" data-align="center">
-                    商品
+                <th data-field="corporateName" data-sortable="true" data-align="center">
+                    企业名称
                 </th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    时间
+                <th data-field="plate" data-sortable="true" data-align="center">
+                    车牌
+                </th>
+                <th data-field="productName" data-sortable="true" data-align="center">
+                    采购商品
+                </th>
+                <th data-field="productWeight" data-sortable="true" data-align="center">
+                    重量
+                </th>
+                <th data-field="originName" data-sortable="true" data-align="center">
+                    产地
                 </th>
             </tr>
             </thead>
