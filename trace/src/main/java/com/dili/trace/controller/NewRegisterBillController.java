@@ -36,6 +36,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -529,6 +530,12 @@ public class NewRegisterBillController {
 
         RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+        DetectRequest detectRequest = detectRequestService.get(registerBill.getDetectRequestId());
+        modelMap.put("detectRequest", detectRequest);
+        String pieceNum = registerBill.getPieceNum().toString();
+        String pieceWeight = registerBill.getPieceWeight().toString();
+        modelMap.put("pieceNum", new BigDecimal(pieceNum.substring(0,pieceNum.indexOf("."))));
+        modelMap.put("pieceWeight", new BigDecimal(pieceWeight.substring(0,pieceWeight.indexOf("."))));
 
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCerts(imageCerts);
