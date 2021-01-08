@@ -158,7 +158,7 @@ public class CommissionDetectRequestController {
 //        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
 
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
-        item.setImageCerts(imageCerts);
+        item.setImageCertList(imageCerts);
 
         modelMap.put("registerBill", item);
 
@@ -212,7 +212,7 @@ public class CommissionDetectRequestController {
                     rb.setAddr(input.getAddr());
                     rb.setUserId(input.getUserId());
                     List<ImageCert> imageList = StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
-                    rb.setImageCerts(imageList);
+                    rb.setImageCertList(imageList);
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());

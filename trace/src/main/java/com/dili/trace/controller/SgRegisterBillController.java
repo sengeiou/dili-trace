@@ -146,7 +146,7 @@ public class SgRegisterBillController {
 ////                            , rbInputDto.getHandleResultUrl(),
 ////                            rbInputDto.getOriginCertifiyUrl());
 //                    List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
-//                    rb.setImageCerts(imageList);
+//                    rb.setImageCertList(imageList);
 //                    rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
 //                    rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 //                    rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
@@ -322,7 +322,7 @@ public class SgRegisterBillController {
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item),registerBill);
 
         List<ImageCert>imageCerts=this.registerBillService.findImageCertListByBillId(item.getBillId());
-        registerBill.setImageCerts(imageCerts);
+        registerBill.setImageCertList(imageCerts);
 
         modelMap.put("registerBill", registerBill);
 
@@ -654,7 +654,7 @@ public class SgRegisterBillController {
 
         if (null != registerBill) {
             registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-            registerBill.setImageCerts(this.registerBillService.findImageCertListByBillId(registerBill.getBillId()));
+            registerBill.setImageCertList(this.registerBillService.findImageCertListByBillId(registerBill.getBillId()));
         }
 
         modelMap.put("registerBill", registerBill);

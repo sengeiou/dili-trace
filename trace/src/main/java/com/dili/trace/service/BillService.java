@@ -185,11 +185,11 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
      * @return
      */
     public Long saveHandleResult(RegisterBill input) {
-        if (input == null || input.getId() == null || input.getImageCerts() == null
+        if (input == null || input.getId() == null || input.getImageCertList() == null
                 || StringUtils.isBlank(input.getHandleResult())) {
             throw new TraceBizException("参数错误");
         }
-        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
         if (imageCertList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
@@ -254,7 +254,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
         if (imageCertList.isEmpty()) {
             throw new TraceBizException("请上传报告");
         }
@@ -286,7 +286,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
 
         if (imageCertList.isEmpty()) {
             throw new TraceBizException("请上传报告");

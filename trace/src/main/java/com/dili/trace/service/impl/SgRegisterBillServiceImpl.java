@@ -137,7 +137,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         inputBill.setCheckinStatus(YesOrNoEnum.NO.getCode());
         int result = this.billService.saveOrUpdate(inputBill);
-        this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCerts());
+        this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCertList());
         if (result == 0) {
             logger.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
             throw new TraceBizException("创建失败");
@@ -745,7 +745,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     || StringUtils.isAnyBlank(input.getHandleResult())) {
                 throw new TraceBizException("参数错误");
             }
-            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity())
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity())
                     .nonNull().toList();
             if (!imageCertList.isEmpty()) {
                 imageCertList = StreamEx.of(imageCertList).filter(img -> {
@@ -812,7 +812,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (registerBill == null) {
                 throw new TraceBizException("数据错误");
             }
-            if (registerBill.getImageCerts() == null || registerBill.getImageCerts().isEmpty()) {
+            if (registerBill.getImageCertList() == null || registerBill.getImageCertList().isEmpty()) {
                 throw new TraceBizException("请上传产地证明");
             }
 
@@ -870,7 +870,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (input == null || input.getId() == null) {
                 throw new TraceBizException("参数错误");
             }
-            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
             if (!imageCertList.isEmpty()) {
                 imageCertList = StreamEx.of(imageCertList).filter(img -> {
                     // 只取uid不为空，并且类型为处理结果的照片
@@ -906,7 +906,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (input == null || input.getId() == null) {
                 throw new TraceBizException("参数错误");
             }
-            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
             if (!imageCertList.isEmpty()) {
                 imageCertList = StreamEx.of(imageCertList).filter(img -> {
                     // 只取uid不为空，并且类型为处理结果的照片
@@ -1314,7 +1314,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public void doUpdateImage(RegisterBill registerBill) {
-        List<ImageCert> imageCertList = registerBill.getImageCerts();
+        List<ImageCert> imageCertList = registerBill.getImageCertList();
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
         this.billService.updateHasImage(registerBill.getId(), imageCertList);
     }

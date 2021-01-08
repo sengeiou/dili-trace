@@ -339,7 +339,7 @@ public class ClientRegisterHeadApi {
             if (null != registerBills && CollectionUtils.isNotEmpty(registerBills)) {
                 registerBills.forEach(e -> {
                     List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
-                    e.setImageCerts(imageCerts);
+                    e.setImageCertList(imageCerts);
                     UpStream u = upStreamService.get(e.getUpStreamId());
                     e.setUpStreamName(u.getName());
                 });

@@ -571,7 +571,7 @@ public class RegisterBill extends BaseDomain {
     }
 
     @Transient
-    private List<ImageCert> imageCerts;
+    private List<ImageCert> imageCertList;
 
     @Transient
     private String tradeRequestCode;
@@ -737,12 +737,12 @@ public class RegisterBill extends BaseDomain {
         this.tradeRequestCode = tradeRequestCode;
     }
 
-    public List<ImageCert> getImageCerts() {
-        return imageCerts;
+    public List<ImageCert> getImageCertList() {
+        return imageCertList;
     }
 
-    public void setImageCerts(List<ImageCert> imageCerts) {
-        this.imageCerts = imageCerts;
+    public void setImageCertList(List<ImageCert> imageCertList) {
+        this.imageCertList = imageCertList;
     }
 
     public Integer getVerifyStatus() {

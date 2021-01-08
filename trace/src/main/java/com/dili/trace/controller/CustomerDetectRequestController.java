@@ -282,7 +282,7 @@ public class CustomerDetectRequestController {
 //        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
 
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
-        item.setImageCerts(imageCerts);
+        item.setImageCertList(imageCerts);
 
         modelMap.put("registerBill", item);
 

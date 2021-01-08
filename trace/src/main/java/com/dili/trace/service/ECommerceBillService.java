@@ -437,10 +437,10 @@ public class ECommerceBillService {
         String code = uidRestfulRpcService.bizNumber(BizNumberType.ECOMMERCE_BILL.getType());
         logger.debug("ECommerceBill.code={}", code);
         bill.setCode(code);
-        List<ImageCert>imageCertList=StreamEx.ofNullable(bill.getImageCerts()).flatCollection(Function.identity()).nonNull().filter(img->{
+        List<ImageCert>imageCertList=StreamEx.ofNullable(bill.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(img->{
             return img.getCertType()!=null&&StringUtils.isNotBlank(img.getUid());
         }).toList();
-        bill.setImageCerts(imageCertList);
+        bill.setImageCertList(imageCertList);
 //		bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         bill.setDetectStatus(DetectStatusEnum.NONE.getCode());
@@ -458,7 +458,7 @@ public class ECommerceBillService {
 
         bill.setMarketId(MarketUtil.returnMarket());
         this.billService.insertSelective(bill);
-        this.billService.updateHasImage(bill.getBillId(),bill.getImageCerts());
+        this.billService.updateHasImage(bill.getBillId(),bill.getImageCertList());
         return bill.getId();
     }
 

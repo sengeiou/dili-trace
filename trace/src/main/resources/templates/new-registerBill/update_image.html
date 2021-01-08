@@ -139,7 +139,7 @@
         </div>
 
             <%
-            var imageCount = registerBill.imageCerts.~size!0;
+            var imageCount = registerBill.imageCertList.~size!0;
             %>
             <div class="form-item-group" id="originCertifiyDiv">
                 <h4 class="form-item-title">产地证明</h4>
@@ -151,8 +151,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
-                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -174,8 +174,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
-                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                    <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -200,8 +200,8 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
-                        <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
                         <div class="fileimg-edit" style="display: block;">
@@ -237,7 +237,7 @@
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script type="text/javascript">
-    let imageItemCount = '${registerBill.imageCerts.~size!0}';
+    let imageItemCount = '${registerBill.imageCertList.~size!0}';
     function getDetectReportCount(selector){
         var count=$(selector).find('.fileimg-box').length;
         return count;
@@ -547,8 +547,8 @@ var currentUser={"depId":"${user.departmentId!}"
         <span class="fileimg-plus-icon">+</span>
         <span class="fileimg-des">点击上传</span>
         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-        <input type="hidden" name="imageCerts[{{index}}][uid]">
-        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <input type="hidden" name="imageCertList[{{index}}][uid]">
+        <input type="hidden" name="imageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
         <img class="magnifying">
         <div class="fileimg-cover" style="display: none;"></div>
         <div class="fileimg-edit" style="display: none;">
