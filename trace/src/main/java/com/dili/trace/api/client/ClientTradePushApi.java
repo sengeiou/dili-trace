@@ -83,7 +83,7 @@ public class ClientTradePushApi {
             }
 
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId());
-            registerBill.setImageCerts(imageCerts);
+            registerBill.setImageCertList(imageCerts);
             TradePushLog pushLog = new TradePushLog();
             pushLog.setTradeDetailId(tradeDetailId);
             pushLog.setSort("created");

@@ -167,7 +167,7 @@ public class ManagerRegisterBillApi {
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         return StreamEx.of(this.registerBillService.listByExample(query)).findFirst().map(bill -> {
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(bill.getId(), BillTypeEnum.REGISTER_BILL.getCode());
-            bill.setImageCerts(imageCerts);
+            bill.setImageCertList(imageCerts);
 
             Optional.ofNullable(upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
                 bill.setUpStreamName(up.getName());
@@ -202,7 +202,7 @@ public class ManagerRegisterBillApi {
 //            RegisterBill registerBill = registerBillService.get(baseDomain.getId());
 //
 //            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
-//            registerBill.setImageCerts(imageCerts);
+//            registerBill.setImageCertList(imageCerts);
 //
 //            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
 //            registerBill.setUpStreamName(upStream.getName());

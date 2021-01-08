@@ -264,8 +264,8 @@
 
             <div class="form-item-group">
             		<h4 class="form-item-title">产地证明</h4>
-                          <%if((registerBill.imageCerts.~size!0)>0){
-                        	for(img in registerBill.imageCerts){
+                          <%if((registerBill.imageCertList.~size!0)>0){
+                        	for(img in registerBill.imageCertList){
                             if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
@@ -276,8 +276,8 @@
             </div>
             <div class="form-item-group">
             		<h4 class="form-item-title">检测报告</h4>
-                          <%if((registerBill.imageCerts.~size!0)>0){
-                        	for(img in registerBill.imageCerts){
+                          <%if((registerBill.imageCertList.~size!0)>0){
+                        	for(img in registerBill.imageCertList){
                             if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">

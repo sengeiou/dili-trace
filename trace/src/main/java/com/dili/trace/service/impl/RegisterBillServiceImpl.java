@@ -843,14 +843,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
             RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
-            outputdto.setImageCerts(imageCertList);
+            outputdto.setImageCertList(imageCertList);
             outputdto.setUpStreamName(upStreamName);
             outputdto.setWeight(tradeDetailItem.getTotalWeight());
             return outputdto;
         } else if (registerBill.getId() != null) {
             RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
             outputdto.setUpStreamName(upStreamName);
-            outputdto.setImageCerts(imageCertList);
+            outputdto.setImageCertList(imageCertList);
             outputdto.setWeight(registerBill.getWeight());
             return outputdto;
         } else {

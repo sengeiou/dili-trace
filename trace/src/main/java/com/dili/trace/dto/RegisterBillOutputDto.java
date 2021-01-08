@@ -55,7 +55,7 @@ public class RegisterBillOutputDto extends RegisterBill {
     }
     @JSONField(serialize = false)
     public Map<ImageCertTypeEnum, List<ImageCert>> getGroupedImageCertList() {
-        return StreamEx.ofNullable(this.getImageCerts()).flatCollection(Function.identity()).filter(item->item.getCertType()!=null)
+        return StreamEx.ofNullable(this.getImageCertList()).flatCollection(Function.identity()).filter(item->item.getCertType()!=null)
                 .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), Function.identity())
                 .grouping();
     }

@@ -481,7 +481,7 @@ public class RegisterBillController {
         try {
 
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            List<ImageCert> imageCerts = input.getImageCerts();
+            List<ImageCert> imageCerts = input.getImageCertList();
             Long id = this.registerBillService.doEdit(input, imageCerts, Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {

@@ -148,7 +148,7 @@
                     %>
                         <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
                             <span class="fileimg-plus-icon" style="display: none" >+</span>
-                            <span class="fileimg-des" style="display: none" >点击上传${registerBill.imageCerts}</span>
+                            <span class="fileimg-des" style="display: none" >点击上传</span>
                             <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
                             <input type="hidden" name="globalImageCertList[${imgLP.index-1}][uid]">
                             <input type="hidden" name="globalImageCertList[${imgLP.index-1}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
