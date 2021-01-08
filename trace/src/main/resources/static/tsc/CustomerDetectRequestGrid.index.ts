@@ -54,7 +54,7 @@ class CustomerDetectRequestGrid extends ListPage {
         debugger
         var selected = this.rows[0];
         var url= this.toUrl( "/customerDetectRequest/doBookingRequest.action?billId="+ selected.billId);
-        let sure=await popwrapper.confirm('请确认是否预约申请？',undefined);
+        let sure=await popwrapper.confirm('请确认是否预约检测？',undefined);
         if(!sure){
             return;
         }
