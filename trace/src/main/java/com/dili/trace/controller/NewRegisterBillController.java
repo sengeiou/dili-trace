@@ -533,12 +533,10 @@ public class NewRegisterBillController {
         DetectRequest detectRequest = detectRequestService.get(registerBill.getDetectRequestId());
         modelMap.put("detectRequest", detectRequest);
         if (null != registerBill.getPieceNum()) {
-            String pieceNum = registerBill.getPieceNum().toString();
-            modelMap.put("pieceNum", new BigDecimal(pieceNum.substring(0,pieceNum.indexOf("."))));
+            modelMap.put("pieceNum", registerBill.getPieceNum().setScale(0, BigDecimal.ROUND_DOWN));
         }
         if (null != registerBill.getPieceWeight()) {
-            String pieceWeight = registerBill.getPieceWeight().toString();
-            modelMap.put("pieceWeight", new BigDecimal(pieceWeight.substring(0,pieceWeight.indexOf("."))));
+            modelMap.put("pieceWeight", registerBill.getPieceWeight().setScale(0, BigDecimal.ROUND_DOWN));
         }
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCerts(imageCerts);
