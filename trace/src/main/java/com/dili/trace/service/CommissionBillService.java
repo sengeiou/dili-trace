@@ -219,7 +219,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());
-        bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+        bill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         bill.setPlate("");
 
         bill.setMarketId(MarketUtil.returnMarket());
