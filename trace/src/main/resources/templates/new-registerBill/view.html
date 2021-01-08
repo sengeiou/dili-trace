@@ -112,17 +112,46 @@
                 </div>
             </div>
             <div class="form-item-group">
-            		<h4 class="form-item-title">检测报告</h4>
-                          <%if((registerBill.imageCerts.~size!0)>0){
-                        	for(img in registerBill.imageCerts){
-                            if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()){
-                        	%>
-                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
-							</div>
-                        <%	} }
-                        }%>
+                <h4 class="form-item-title">产地证明</h4>
+                <%if((registerBill.imageCerts.~size!0)>0){
+                for(img in registerBill.imageCerts){
+                if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()){
+                %>
+                <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    <img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
+                </div>
+                <%	} }
+                }%>
             </div>
+            <div class="form-item-group">
+                <h4 class="form-item-title">检测报告</h4>
+                <%if((registerBill.imageCerts.~size!0)>0){
+                for(img in registerBill.imageCerts){
+                if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()){
+                %>
+                <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    <img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
+                </div>
+                <%	} }
+                }%>
+            </div>
+
+            <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">处理结果图片</h4>
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
+                %>
+                <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    <img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
+                </div>
+                <%}%>
+            </div>
+            <div class="form-group">
+                <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
+                <input type="text" class="form-control input-sm"   value="${registerBill.handleResult}" required readonly/>
+            </div>
+
+            <%}%>
         </form>
     </div>
 
