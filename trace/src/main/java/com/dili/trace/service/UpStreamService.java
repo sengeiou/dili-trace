@@ -123,6 +123,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 				throw new TraceBizException("法人姓名不超过20位！");
 			}
 
+			validateDuplicateIdCardNo(upStreamDto.getIdCard());
+
 			UpStreamDto query = new UpStreamDto();
 			query.setSourceUserId(upStreamDto.getSourceUserId());
 			query.setTelphone(upStreamDto.getTelphone());
@@ -146,6 +148,20 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		}
 
 		return BaseOutput.success();
+	}
+
+	/**
+	 * 验证身份证号是否唯一
+	 *
+	 * @param idCard
+	 */
+	private void validateDuplicateIdCardNo(String idCard) {
+		UpStreamDto dto = new UpStreamDto();
+		dto.setIdCard(idCard);
+		List<UpStream> streamList = getActualDao().select(dto);
+		if (CollectionUtils.isNotEmpty(streamList) && streamList.size() > 0) {
+			throw new TraceBizException("已存在身份证号:" + idCard + "的企业/个人");
+		}
 	}
 
 	/**
