@@ -186,7 +186,7 @@
             <#resource code="newRegisterBill#batch-audit">
                 <button id="batch-audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-id-card"></i> 批量审核</button>
             </#resource>
-            <#resource code="newRegisterBill#audit-withoutDetect">
+            <#resource code="newRegisterBill#audit-withoutDetect_hide">
                 <button id="audit-withoutDetect-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-check-square"></i> 审核不检测</button>
             </#resource>
             <#resource code="newRegisterBill#review">
@@ -222,7 +222,7 @@
             <#resource code="newRegisterBill#upload-detectreport_hide">
                 <button id="upload-detectreport-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-upload"></i>上传检测报告</button>
             </#resource>
-            <#resource code="newRegisterBill#remove-reportAndcertifiy">
+            <#resource code="newRegisterBill#remove-reportAndcertifiy_hide">
                 <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-trash"></i>删除检测报告和产地证明</button>
             </#resource>
             <#resource code="newRegisterBill#copy_hide">
@@ -251,8 +251,11 @@
                 <th data-field="code" data-sortable="true" data-align="center">
                     报备编号
                 </th>
+                <th data-field="detectStatusName" data-sort-name="detect_status" data-sortable="true" data-align="center" >
+                    检测状态
+                </th>
                 <th data-field="verifyStatusName"  data-sort-name="verify_status" data-sortable="true" data-align="center" >
-                    状态
+                    审核状态
                 </th>
                 <th data-field="registTypeName" data-sort-name="regist_type" data-sortable="true" data-align="center">
                     报备单类型
