@@ -532,11 +532,14 @@ public class NewRegisterBillController {
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
         DetectRequest detectRequest = detectRequestService.get(registerBill.getDetectRequestId());
         modelMap.put("detectRequest", detectRequest);
-        String pieceNum = registerBill.getPieceNum().toString();
-        String pieceWeight = registerBill.getPieceWeight().toString();
-        modelMap.put("pieceNum", new BigDecimal(pieceNum.substring(0,pieceNum.indexOf("."))));
-        modelMap.put("pieceWeight", new BigDecimal(pieceWeight.substring(0,pieceWeight.indexOf("."))));
-
+        if (null != registerBill.getPieceNum()) {
+            String pieceNum = registerBill.getPieceNum().toString();
+            modelMap.put("pieceNum", new BigDecimal(pieceNum.substring(0,pieceNum.indexOf("."))));
+        }
+        if (null != registerBill.getPieceWeight()) {
+            String pieceWeight = registerBill.getPieceWeight().toString();
+            modelMap.put("pieceWeight", new BigDecimal(pieceWeight.substring(0,pieceWeight.indexOf("."))));
+        }
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCerts(imageCerts);
 
