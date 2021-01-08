@@ -157,6 +157,10 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 * @param idCard
 	 */
 	private void validateDuplicateIdCardNo(Long marketId, String idCard) {
+		if(StringUtils.isBlank(idCard)){
+			LOGGER.info("无需校验身份证号");
+			return;
+		}
 		UpStreamDto dto = new UpStreamDto();
 		dto.setIdCard(idCard);
 		dto.setMarketId(marketId);
