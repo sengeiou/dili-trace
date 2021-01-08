@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.Customer;
 import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -8,6 +9,9 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.dao.DriverUserMapper;
 import com.dili.trace.domain.UserDriverRef;
+import com.dili.trace.dto.query.UserDriverRefQueryDto;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.util.BasePageUtil;
 import one.util.streamex.StreamEx;
@@ -87,8 +91,11 @@ public class DriverUserService extends TraceBaseService<UserDriverRef, Long> {
      * @param user
      * @return
      */
-    public BasePage<UserDriverRef> getDriverUserList(UserDriverRef user) {
-
+    public BasePage<UserDriverRef> getDriverUserList(UserDriverRefQueryDto user) {
+        user.setIsCheckIn(YesOrNoEnum.NO.getCode());
+        user.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+        user.setIsDelete(YesOrNoEnum.NO.getCode());
+        user.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         return super.buildQuery(user).listPageByFun(u -> driverUserMapper.getDriverUserList(u));
     }
 

@@ -14,6 +14,7 @@ import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserDriverRef;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.dto.query.UserDriverRefQueryDto;
 import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.DriverUserService;
@@ -201,7 +202,7 @@ public class ClientDriverUserApi {
      */
     @ApiOperation(value = "获取司机用户列表", notes = "获取司机用户列表")
     @RequestMapping(value = "/getDriverUserList.api", method = RequestMethod.POST)
-    public BaseOutput<BasePage<UserDriverRef>> getDriverUserList(@RequestBody UserDriverRef user) {
+    public BaseOutput<BasePage<UserDriverRef>> getDriverUserList(@RequestBody UserDriverRefQueryDto user) {
         try {
             BasePage<UserDriverRef> userList = driverUserService.getDriverUserList(user);
             return BaseOutput.success().setData(userList);

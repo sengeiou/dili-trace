@@ -3,10 +3,7 @@ package com.dili.trace.domain;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -769,6 +766,11 @@ public class RegisterBill extends BaseDomain {
     @Transient
     public String getVerifyStatusName() {
         return BillVerifyStatusEnum.name(this.getVerifyStatus());
+    }
+
+    @Transient
+    public String getRegistTypeName() {
+        return RegistTypeEnum.name(this.getRegistType());
     }
 
     @Transient

@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import java.util.*;
 
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.dili.common.exception.TraceBizException;
@@ -16,6 +17,8 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
 
+import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +55,10 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	/**
 	 * 分页查询上游信息
 	 */
-	public BasePage<UpStream> listPageUpStream(Long userId, UpStream query) {
-		if (userId == null) {
+	public BasePage<UpStream> listPageUpStream(UpStreamDto query) {
+
+		String userIdListStr=StreamEx.ofNullable(query.getUserIds()).flatCollection(Function.identity()).append(query.getUserId()).nonNull().map(String::valueOf).joining(",");
+		if(StringUtils.isBlank(userIdListStr)){
 			BasePage<UpStream> result = new BasePage<>();
 
 			result.setPage(1);
@@ -63,12 +68,13 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			result.setStartIndex(1L);
 			return result;
 		}
-
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+				"id in(select upstream_id from r_user_upstream where user_id in(" + userIdListStr + ") )");
 		BasePage<UpStream> page = this.listPageByExample(query);
 		return page;
 	}
+
+
 
 	/**
 	 * 删除用户上游关系

@@ -11,9 +11,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.BillDeleteStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
@@ -173,7 +173,7 @@ public class CheckSheetController {
                     + checkSheet.getLikeApproverUserName().trim() + "')) ");
         }
         Long marketId = MarketUtil.returnMarket();
-        Integer deleteCode = BillDeleteStatusEnum.NORMAL.getCode();
+        Integer deleteCode = YesOrNoEnum.NO.getCode();
 
         sqlList.add(" id in(select check_sheet_id from check_sheet_detail where register_bill_id in (select id from register_bill where bill_type="
                 + checkSheet.getBillType()
