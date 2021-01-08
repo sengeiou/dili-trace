@@ -17,6 +17,18 @@ public class UserDriverRefQueryDto extends UserDriverRef {
     @Transient
     private Integer verifyStatus;
 
+
+    @Transient
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     public Integer getVerifyStatus() {
         return verifyStatus;
     }
