@@ -29,7 +29,7 @@ public class DetectStatusProvider implements ValueProvider {
 	private static List<ValuePair<?>> buildValuePair(){
 		
 		List<ValuePair<?>> list = new ArrayList<>();
-		list.addAll(Stream.of(DetectStatusEnum.values()).filter(item -> (item != DetectStatusEnum.NONE && item != DetectStatusEnum.RETURN_DETECT))
+		list.addAll(Stream.of(DetectStatusEnum.values()).filter(item -> (item != DetectStatusEnum.RETURN_DETECT))
                 .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
                 .collect(Collectors.toList()));
 		return list;
