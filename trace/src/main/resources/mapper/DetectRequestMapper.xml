@@ -114,6 +114,7 @@
           b.plate,
           b.bill_type,
           b.origin_certifiy_url originCertifiyUrl,
+          b.truck_type,
           up.name upStreamName,
           d.*
         FROM

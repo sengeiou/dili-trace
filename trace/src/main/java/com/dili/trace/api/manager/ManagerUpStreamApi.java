@@ -80,9 +80,9 @@ public class ManagerUpStreamApi {
      */
     @RequestMapping(value = "/doCreateUpStream.api", method = RequestMethod.POST)
     public BaseOutput<Long> doCreateUpStream(@RequestBody UpStreamDto input) {
-        Long userId = sessionContext.getAccountId();
+        Long userId = input.getUserId();
         if (userId == null){
-            return BaseOutput.failure("未登陆用户");
+            return BaseOutput.failure("参数错误");
         }
         if(input.getSourceUserId() != null){
             userId = input.getSourceUserId();

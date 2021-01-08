@@ -26,6 +26,8 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private Integer billType;
     @Transient
+    private Integer truckType;
+    @Transient
     private Integer detectStatus;
     /**
      * 商品名称
@@ -297,6 +299,14 @@ public class DetectRequestOutDto extends DetectRequest {
         this.originId = originId;
     }
 
+    public Integer getTruckType() {
+        return truckType;
+    }
+
+    public void setTruckType(Integer truckType) {
+        this.truckType = truckType;
+    }
+
     @Transient
     public String getBillTypeName() {
         return BillTypeEnum.fromCode(this.billType).map(BillTypeEnum::getName).orElse("");
@@ -308,12 +318,14 @@ public class DetectRequestOutDto extends DetectRequest {
     public String getWeightUnitName() {
         return WeightUnitEnum.toName(this.weightUnit);
     }
+
     @Transient
-    public String getDetectStatusName(){
+    public String getDetectStatusName() {
         return DetectStatusEnum.fromCode(this.detectStatus).map(DetectStatusEnum::getName).orElse("");
     }
+
     @Transient
-    public String getVerifyStatusName(){
+    public String getVerifyStatusName() {
         return BillVerifyStatusEnum.fromCode(this.verifyStatus).map(BillVerifyStatusEnum::getName).orElse("");
     }
 }
