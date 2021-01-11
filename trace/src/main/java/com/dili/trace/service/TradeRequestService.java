@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -215,7 +216,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBizException("购买总重量不能为空或小于0");
         }
 
-        User buyer = this.customerRpcService.findUserFromCustomerById(buyerId, marketId).orElseThrow(() -> {
+        CustomerExtendDto buyer = this.customerRpcService.findCustomerById(buyerId, marketId).orElseThrow(() -> {
             return new TraceBizException("买家信息不存在");
         });
         ProductStock batchStock = this.batchStockService.get(input.getProductStockId());
@@ -225,7 +226,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerId != null && !sellerId.equals(batchStock.getUserId())) {
             throw new TraceBizException("没有权限销售当前商品");
         }
-        User seller = this.customerRpcService.findUserFromCustomerById(batchStock.getUserId(), marketId).orElseThrow(() -> {
+        CustomerExtendDto seller = this.customerRpcService.findCustomerById(batchStock.getUserId(), marketId).orElseThrow(() -> {
             return new TraceBizException("卖家信息不存在");
         });
 
@@ -282,10 +283,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     return new TraceBizException("操作库存失败");
                 });
 
-        User buyer = this.customerRpcService.findUserFromCustomerById(requestItem.getBuyerId(), requestItem.getBuyerMarketId()).orElseThrow(() -> {
+        CustomerExtendDto buyer = this.customerRpcService.findCustomerById(requestItem.getBuyerId(), requestItem.getBuyerMarketId()).orElseThrow(() -> {
             return new TraceBizException("买家不存在");
         });
-        User seller = this.customerRpcService.findUserFromCustomerById(requestItem.getSellerId(), requestItem.getBuyerMarketId()).orElseThrow(() -> {
+        CustomerExtendDto seller = this.customerRpcService.findCustomerById(requestItem.getSellerId(), requestItem.getBuyerMarketId()).orElseThrow(() -> {
             return new TraceBizException("卖家不存在");
         });
         BigDecimal totalTradeWeight = requestItem.getTradeWeight();

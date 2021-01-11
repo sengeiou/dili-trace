@@ -213,7 +213,7 @@ public class CustomerRpcService {
      * @return
      */
     public Optional<CustomerExtendDto> findCustomerById(Long customerId, Long marketId) {
-
+        logger.debug("findCustomerById: customerId={},marketId={}");
         BaseOutput<CustomerExtendDto> out = this.customerRpc.get(customerId, marketId);
 
         if (out.isSuccess()) {
@@ -228,15 +228,7 @@ public class CustomerRpcService {
      * @param customerId
      * @return
      */
-    public Optional<User> findUserFromCustomerById(Long customerId, Long marketId) {
-        return this.findCustomerById(customerId, marketId).map(c -> {
-            User user = DTOUtils.newInstance(User.class);
-            user.setId(c.getId());
-            user.setName(c.getName());
-            user.setMarketId(marketId);
-            return Optional.of(user);
-        }).orElse(Optional.empty());
-    }
+
 
     /**
      * 查询客户
