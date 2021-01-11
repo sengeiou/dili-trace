@@ -1,5 +1,6 @@
 package com.dili.trace.dto;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.DetectTypeEnum;
 
@@ -8,6 +9,7 @@ import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Alvin.Li
@@ -182,6 +184,33 @@ public class DetectRequestWithBillDto extends RegisterBill {
      * 检测单编号
      */
     private String detectCode;
+
+    private Date detectReservationTime;
+
+    private Integer isPrintCheckSheet;
+
+    @Transient
+    public String getIsPrintCheckSheetName() {
+        return Optional.ofNullable(YesOrNoEnum.getYesOrNoEnum(this.isPrintCheckSheet)).map(YesOrNoEnum::getName).orElse("");
+    }
+
+    @Override
+    public Integer getIsPrintCheckSheet() {
+        return isPrintCheckSheet;
+    }
+
+    @Override
+    public void setIsPrintCheckSheet(Integer isPrintCheckSheet) {
+        this.isPrintCheckSheet = isPrintCheckSheet;
+    }
+
+    public Date getDetectReservationTime() {
+        return detectReservationTime;
+    }
+
+    public void setDetectReservationTime(Date detectReservationTime) {
+        this.detectReservationTime = detectReservationTime;
+    }
 
     @Override
     public Long getId() {
@@ -459,7 +488,7 @@ public class DetectRequestWithBillDto extends RegisterBill {
     }
 
     @Transient
-    public String getDetectTypeName(){
+    public String getDetectTypeName() {
         return DetectTypeEnum.toName(this.detectType);
     }
 }

@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.CheckSheetAliasInputDto;
@@ -82,6 +83,7 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
             RegisterBill bill = new RegisterBill();
             bill.setId(id);
             bill.setCheckSheetId(checkSheet.getId());
+            bill.setIsPrintCheckSheet(YesOrNoEnum.YES.getCode());
             return bill;
 
         }).collect(Collectors.toList());
