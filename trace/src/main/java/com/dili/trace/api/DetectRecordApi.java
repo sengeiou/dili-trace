@@ -29,7 +29,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/detect")
 @Api(value = "/api/detect", description = "检测任务相关接口")
-//@InterceptConfiguration(loginRequired = false)
 @AppAccess(role = Role.NONE,url = "",subRoles = {})
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);

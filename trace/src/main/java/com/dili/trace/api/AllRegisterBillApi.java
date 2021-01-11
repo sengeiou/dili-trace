@@ -29,9 +29,9 @@ import io.swagger.annotations.ApiOperation;
 /**
  * Created by laikui on 2019/7/26.
  */
-@RestController
-@RequestMapping(value = "/api/allRegisterBillApi")
-@Api(value = "/api/allRegisterBillApi", description = "登记单相关接口")
+//@RestController
+//@RequestMapping(value = "/api/allRegisterBillApi")
+//@Api(value = "/api/allRegisterBillApi", description = "登记单相关接口")
 public class AllRegisterBillApi {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AllRegisterBillApi.class);
 	@Autowired

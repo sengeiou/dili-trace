@@ -49,6 +49,12 @@ class NewRegisterBillGrid extends ListPage {
         $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
         $('#update-img-btn').on('click',async ()=>await this.doUpdateImg());
+
+        $('select[name="detectResultSelect"]').on('change',async (o,n)=>{
+            var data=JSON.parse($('select[name="detectResultSelect"]').val().toString());
+            $('input[name="detectType"]').val(data['detectType']);
+            $('input[name="detectResult"]').val(data['detectResult']);
+        });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
         this.grid.bootstrapTable({

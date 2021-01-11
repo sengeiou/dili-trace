@@ -246,7 +246,7 @@
       SELECT r.id, b.id billId, b.`created` billCreated, b.`code`, b.`verify_status`, b.`detect_status`,b.`bill_type`,b.`name`,b.`corporate_name`,
       b.`plate`, b.`product_id`,b.`product_name`,b.`product_alias_name`, b.`brand_id`, b.`brand_name`, b.`weight`, b.`weight_unit`, b.`origin_id`, b.`origin_name`,b.`has_detect_report`, b.`has_origin_certifiy`,
       r.`created`, r.`confirm_time`, r.`sample_time`, b.`sample_code`, r.`detect_time`,r.`detect_type`, r.`detect_result`, r.`detector_id`, r.`detector_name`, b.`has_handle_result`, b.`is_deleted`, r.`detect_code`,
-      b.check_sheet_id
+      b.check_sheet_id,b.is_print_checksheet,r.detect_reservation_time
       FROM detect_request r
       JOIN register_bill b ON (r.id = b.detect_request_id)
       left join trade_detail on b.id=trade_detail.bill_id

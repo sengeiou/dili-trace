@@ -50,7 +50,12 @@ public enum DetectRequestMessageEvent {
     /**
      * 创建打印报告
      */
-    createSheet("createSheet-btn");
+    createSheet("createSheet-btn"),
+    /**
+     * 上传处理结果
+     */
+    uploadHandleResult("upload-handleresult-btn")
+    ;
 
     private DetectRequestMessageEvent(String code) {
         this.code = code;
