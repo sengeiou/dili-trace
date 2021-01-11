@@ -213,7 +213,7 @@ public class CustomerRpcService {
      * @return
      */
     public Optional<CustomerExtendDto> findCustomerById(Long customerId, Long marketId) {
-        logger.debug("findCustomerById: customerId={},marketId={}");
+        logger.debug("findCustomerById: customerId={},marketId={}",customerId,marketId);
         BaseOutput<CustomerExtendDto> out = this.customerRpc.get(customerId, marketId);
 
         if (out.isSuccess()) {
