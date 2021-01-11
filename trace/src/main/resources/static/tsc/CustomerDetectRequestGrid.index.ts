@@ -25,6 +25,11 @@ class CustomerDetectRequestGrid extends ListPage {
         $('#detail-btn').on('click',async ()=>await this.openDetailPage());
         $('#createSheet-btn').on('click',async ()=>await this.openCreateSheetPage());
         $('#upload-handleresult-btn').on('click',async ()=>await this.openUploadHandleResultPage());
+        $('select[name="detectResultSelect"]').on('change',async (o,n)=>{
+            var data=JSON.parse($('select[name="detectResultSelect"]').val().toString());
+            $('input[name="detectType"]').val(data['detectType']);
+            $('input[name="detectResult"]').val(data['detectResult']);
+        });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }
 
