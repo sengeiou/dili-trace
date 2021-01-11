@@ -71,7 +71,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param operatorUser 操作用户
      * @return
      */
-    public DetectRequest createDetectRequestForBill(DetectRequestInputDto inputDto, Optional<OperatorUser> operatorUser) {
+    public DetectRequest createDetectRequestForBill(DetectRequestInputDto inputDto, OperatorUser operatorUser) {
         Long billId=inputDto.getBillId();
         RegisterBill billItem = this.billService.get(billId);
         if (billItem == null) {
@@ -90,17 +90,16 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+        detectRequest.setDetectReservationTime(new Date());
+        detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
 
         detectRequest.setBillId(billId);
         detectRequest.setCreated(new Date());
         detectRequest.setModified(new Date());
         this.insert(detectRequest);
 
-
-        operatorUser.ifPresent(opt -> {
-            detectRequest.setCreatorId(opt.getId());
-            detectRequest.setCreatorName(opt.getName());
-        });
+        detectRequest.setCreatorId(operatorUser.getId());
+        detectRequest.setCreatorName(operatorUser.getName());
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(billId);
         registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
@@ -689,10 +688,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param billId
      */
     public void bookingRequest(Long billId, UserTicket userTicket) {
+
+        this.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getUserName()), Optional.empty());
+
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
-        // 初始【待审核】状态才可以预约申请
+        // 初始【待预约】状态才可以预约申请
         if (!DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
@@ -708,7 +710,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(userTicket.getFirmName()));
         this.updateSelective(updateParam);
 
-        // 审核状态：待审核 --> 待接单
+        // 检测状态：待预约 --> 待接单
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(billId);
         updateBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
@@ -805,6 +807,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         String detectCode = uidRestfulRpcService.detectRequestBizNumber(firm.getName());
         detectRequest.setId(bill.getDetectRequestId());
         detectRequest.setDetectCode(detectCode);
+        detectRequest.setDetectReservationTime(new Date());
         updateSelective(detectRequest);
     }
 
