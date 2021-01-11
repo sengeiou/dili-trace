@@ -17,8 +17,6 @@
       <if test="keyword != null and keyword!=''">
           <![CDATA[ AND ref.seller_name like '%{keyword}%']]>
       </if>
-
-       GROUP BY ref.driver_id
   </select>
 
     <update id="updateUserDriverRefByIDParam" parameterType="com.dili.trace.domain.UserDriverRef" >
