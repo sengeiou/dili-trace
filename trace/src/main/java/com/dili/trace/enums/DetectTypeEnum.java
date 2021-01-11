@@ -45,7 +45,9 @@ public enum DetectTypeEnum {
         }
         return Optional.empty();
     }
-
+    public static String toName(Integer code) {
+        return DetectTypeEnum.fromCode(code).map(DetectTypeEnum::getName).orElse("");
+    }
     public Boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);
     }
