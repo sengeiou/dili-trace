@@ -4,7 +4,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.domain.User;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -12,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 交易订单服务
+ */
 @Service
 @Transactional
 public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
@@ -42,6 +44,16 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
 
     }
+
+    /**
+     * 创建订单
+     * @param sellerId
+     * @param buyerId
+     * @param orderType
+     * @param tradeOrderStatusEnum
+     * @param marketId
+     * @return
+     */
     public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum,
                                        Long marketId) {
 
@@ -57,6 +69,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
     }
 
+    /**
+     * 创建订单
+     * @param seller
+     * @param buyer
+     * @param orderType
+     * @param tradeOrderStatusEnum
+     * @return
+     */
     public TradeOrder createTradeOrder(CustomerExtendDto seller, CustomerExtendDto buyer,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
 
         TradeOrder tradeOrder = new TradeOrder();
@@ -73,6 +93,11 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return tradeOrder;
     }
 
+    /**
+     * 处理订单
+     * @param tradeOrderItem
+     * @param tradeStatusEnum
+     */
     public void handleTradeOrder(TradeOrder tradeOrderItem, TradeOrderStatusEnum tradeStatusEnum) {
         tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());
         this.updateSelective(tradeOrderItem);
