@@ -14,6 +14,12 @@ class CommissionBillGrid extends ListPage {
         $('#createsheet-btn').on('click', async () => await this.doCreateCheckSheet());
         $('#batch-reviewCheck-btn').on('click', async () => await this.doReviewCheck());
 
+        $('select[name="detectResultSelect"]').on('change',async (o,n)=>{
+            var data=JSON.parse($('select[name="detectResultSelect"]').val().toString());
+            $('input[name="detectType"]').val(data['detectType']);
+            $('input[name="detectResult"]').val(data['detectResult']);
+        });
+
         let categoryController: CategoryController = new CategoryController();
         let cityController: CityController = new CityController();
 

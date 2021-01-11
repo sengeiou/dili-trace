@@ -69,9 +69,16 @@
                 <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col">
-                <label for="detectResult">检测结果</label>
-                <select id="detectResult" name="detectResult" class="form-control"></select>
-                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
+                <label for="detectResultSelect">检测结果</label>
+                <select id="detectResultSelect" name="detectResultSelect" class="form-control" data-value-type="skip">
+                    <option value='{"detectType":"","detectResult":"}'>-- 请选择 --</option>
+                    <option value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>初检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>初检不合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>复检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>复检不合格</option>
+                </select>
+                <input type="hidden" name="detectType">
+                <input type="hidden" name="detectResult">
             </div>
             <div class="form-group col-auto">
                 <label for="billCreatedStart">报备时间</label>
@@ -257,7 +264,7 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/CustomerDetectRequestGrid.index.js"></script>
+<script src="${contextPath!}/resources/js/CustomerDetectRequestGrid.index.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 
 <script type="text/javascript">
