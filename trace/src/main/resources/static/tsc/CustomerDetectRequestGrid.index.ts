@@ -24,10 +24,29 @@ class CustomerDetectRequestGrid extends ListPage {
         $('#undo-btn').on('click',async ()=>await this.doUndo());
         $('#detail-btn').on('click',async ()=>await this.openDetailPage());
         $('#createSheet-btn').on('click',async ()=>await this.openCreateSheetPage());
-
+        $('#upload-handleresult-btn').on('click',async ()=>await this.openUploadHandleResultPage());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }
 
+
+    /**
+     * 上传处理结果
+     */
+    private async openUploadHandleResultPage(){
+        var row=this.rows[0]
+        var url=this.toUrl('/newRegisterBill/uploadHandleResult.html?id='+row.billId);
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '上传处理结果',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
 
     private async openCreateSheetPage(){
         let rows=this.rows;
