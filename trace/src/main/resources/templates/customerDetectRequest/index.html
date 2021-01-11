@@ -144,7 +144,7 @@
                 <button id="booking-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 预约检测</button>
             </#resource>
             <#resource code="customerDetectRequest#assign">
-                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-file-text"></i> 接单</button>
             </#resource>
             <#resource code="customerDetectRequest#sampling">
                 <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
@@ -166,6 +166,9 @@
             </#resource>
             <#resource code="customerDetectRequest#createsheet">
                 <button id="createSheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-print"></i>创建打印报告</button>
+            </#resource>
+            <#resource code="customerDetectRequest#upload-handleresult">
+            <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-upload"></i>上传处理结果</button>
             </#resource>
             <#resource code="customerDetectRequest#export">
                 <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>

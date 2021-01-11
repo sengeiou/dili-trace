@@ -124,7 +124,7 @@
             </#resource>
 
             <#resource code="commissionDetectRequest#assign">
-                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-file-text"></i> 接单</button>
             </#resource>
             <#resource code="commissionDetectRequest#sampling">
                 <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
@@ -144,7 +144,6 @@
             <#resource code="commissionDetectRequest#export">
                 <button id="export"  type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
             </#resource>
-
 
             <#resource code="commissionDetectRequest#appointment">
             <button id="appointment-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 预约检测</button>
@@ -215,7 +214,7 @@
                 <th data-field="detectTime"  data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResultName"  data-sort-name="detect_result" data-sortable="true" data-align="center">
+                <th data-field="detectResult" data-sort-name="detect_result" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
                     检测结果
                 </th>
                 <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">
