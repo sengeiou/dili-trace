@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
@@ -122,7 +123,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * 通过交易行为创建批次，同时更新相应的库存信息
 	 */
 	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-			Long sellerId, User buyer, TradeOrderTypeEnum tradeOrderTypeEnum) {
+										 Long sellerId, CustomerExtendDto buyer, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		if (tradeDetailItem == null) {
 			throw new TraceBizException("数据不存在");
 		}
@@ -221,7 +222,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 */
 
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-			User buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
+									   CustomerExtendDto buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		// 查询或新增买家总库存
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
 		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
@@ -272,7 +273,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * @param buyer
 	 * @return
 	 */
-	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
+	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, CustomerExtendDto buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		Date now=new Date();
 

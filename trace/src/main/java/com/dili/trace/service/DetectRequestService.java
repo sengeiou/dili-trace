@@ -630,13 +630,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         // 待接单：可以接单和撤销
         if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.assign, DetectRequestMessageEvent.undo));
-        // 待采样：可以采样检测、主动送检
-        }else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
+        // 待采样：可以采样检测、主动送检、人工检测
+        } else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.auto, DetectRequestMessageEvent.sampling));
-            // 待采样并且管理员创建：可以人工检测
-            if (CreatorRoleEnum.MANAGER.equalsToCode(item.getCreatorRole())) {
-                msgStream.add(DetectRequestMessageEvent.manual);
-            }
+            msgStream.add(DetectRequestMessageEvent.manual);
         }
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.get(item.getDetectRequestId());
