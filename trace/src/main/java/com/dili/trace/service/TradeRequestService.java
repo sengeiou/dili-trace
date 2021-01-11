@@ -179,8 +179,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerUserIdList.size() != 1) {
             throw new TraceBizException("参数错误");
         }
+        Long sellerUserId=sellerUserIdList.get(0);
 
-        List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserIdList.get(0), null, buyerId, batchStockInputList, marketId))
+        logger.debug("buyerId={},sellerUserId={}",buyerId,sellerUserId);
+        List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserId, null, buyerId, batchStockInputList, marketId))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL, marketId,optUser);
                 }).toList();
