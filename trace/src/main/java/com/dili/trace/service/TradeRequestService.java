@@ -608,63 +608,63 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param sellerId
      * @param buyerId
      */
-//    void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
-//        User seller = this.userService.get(sellerId);
-//        if (seller == null) {
-//            throw new TraceBizException("卖家信息不存在");
-//        }
-//
-//        User buyer = this.userService.get(buyerId);
-//        if (buyer == null) {
-//            throw new TraceBizException("买家信息不存在");
-//        }
-//
-//        UpStream buyersUStream = StreamEx
-//                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(buyerId, UserFlagEnum.UP, sellerId)).findFirst()
-//                .orElse(null);
-//
-//        UpStream sellersDStream = StreamEx
-//                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(sellerId, UserFlagEnum.DOWN, buyerId)).findFirst()
-//                .orElse(null);
-//        if (buyersUStream == null) {
-//            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
-//            upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
-//            upStreamDto.setUserIds(Arrays.asList(buyerId));
-//            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-//        }
-//
-//        if (sellersDStream == null) {
-//            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
-//            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
-//            upStreamDto.setUserIds(Arrays.asList(sellerId));
-//            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-//        }
-//
-//    }
+    void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
+        User seller = this.userService.get(sellerId);
+        if (seller == null) {
+            throw new TraceBizException("卖家信息不存在");
+        }
 
-//    /**
-//     * 为用户增加上下游
-//     * @param user
-//     * @return
-//     */
-//    private UpStreamDto createUpStreamDtoFromUser(User user) {
-//        UpStreamDto upStreamDto = new UpStreamDto();
-//        upStreamDto.setName(user.getName());
-//        upStreamDto.setIdCard(user.getCardNo());
-//        upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
-//        upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
-//        upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
-//        upStreamDto.setLegalPerson(user.getLegalPerson());
-//        upStreamDto.setLicense(user.getLicense());
-//        upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
-//        upStreamDto.setTelphone(user.getPhone());
-//        if (UserTypeEnum.USER.equalsCode(user.getUserType())) {
-//            upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
-//        } else {
-//            upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
-//        }
-//        return upStreamDto;
-//    }
+        User buyer = this.userService.get(buyerId);
+        if (buyer == null) {
+            throw new TraceBizException("买家信息不存在");
+        }
+
+        UpStream buyersUStream = StreamEx
+                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(buyerId, UserFlagEnum.UP, sellerId)).findFirst()
+                .orElse(null);
+
+        UpStream sellersDStream = StreamEx
+                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(sellerId, UserFlagEnum.DOWN, buyerId)).findFirst()
+                .orElse(null);
+        if (buyersUStream == null) {
+            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
+            upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
+            upStreamDto.setUserIds(Arrays.asList(buyerId));
+            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+        }
+
+        if (sellersDStream == null) {
+            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
+            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
+            upStreamDto.setUserIds(Arrays.asList(sellerId));
+            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+        }
+
+    }
+
+    /**
+     * 为用户增加上下游
+     * @param user
+     * @return
+     */
+    private UpStreamDto createUpStreamDtoFromUser(User user) {
+        UpStreamDto upStreamDto = new UpStreamDto();
+        upStreamDto.setName(user.getName());
+        upStreamDto.setIdCard(user.getCardNo());
+        upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+        upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
+        upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
+        upStreamDto.setLegalPerson(user.getLegalPerson());
+        upStreamDto.setLicense(user.getLicense());
+        upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
+        upStreamDto.setTelphone(user.getPhone());
+        if (UserTypeEnum.USER.equalsCode(user.getUserType())) {
+            upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
+        } else {
+            upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
+        }
+        return upStreamDto;
+    }
 
     /**
      * 查询分页数据
