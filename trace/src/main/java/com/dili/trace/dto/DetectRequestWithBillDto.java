@@ -1,8 +1,10 @@
 package com.dili.trace.dto;
 
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.DetectTypeEnum;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -454,5 +456,10 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     public void setDetectCode(String detectCode) {
         this.detectCode = detectCode;
+    }
+
+    @Transient
+    public String getDetectTypeName(){
+        return DetectTypeEnum.toName(this.detectType);
     }
 }
