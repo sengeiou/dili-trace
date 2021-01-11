@@ -69,9 +69,16 @@
                 <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col">
-                <label for="detectResult">检测结果</label>
-                <select id="detectResult" name="detectResult" class="form-control"></select>
-                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
+                <label for="detectResultSelect">检测结果</label>
+                <select id="detectResultSelect" name="detectResultSelect" class="form-control" data-value-type="skip">
+                    <option value='{"detectType":"","detectResult":"}'>-- 请选择 --</option>
+                    <option value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>初检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>初检不合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>复检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>复检不合格</option>
+                </select>
+                <input type="hidden" name="detectType">
+                <input type="hidden" name="detectResult">
             </div>
             <div class="form-group col-auto">
                 <label for="billCreatedStart">报备时间</label>
@@ -137,7 +144,7 @@
                 <button id="booking-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 预约检测</button>
             </#resource>
             <#resource code="customerDetectRequest#assign">
-                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+                <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-file-text"></i> 接单</button>
             </#resource>
             <#resource code="customerDetectRequest#sampling">
                 <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
@@ -159,6 +166,9 @@
             </#resource>
             <#resource code="customerDetectRequest#createsheet">
                 <button id="createSheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-print"></i>创建打印报告</button>
+            </#resource>
+            <#resource code="customerDetectRequest#upload-handleresult">
+            <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-upload"></i>上传处理结果</button>
             </#resource>
             <#resource code="customerDetectRequest#export">
                 <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
@@ -257,7 +267,7 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/CustomerDetectRequestGrid.index.js"></script>
+<script src="${contextPath!}/resources/js/CustomerDetectRequestGrid.index.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 
 <script type="text/javascript">

@@ -26,6 +26,11 @@ class CommissionDetectRequestGrid extends ListPage {
         $('#appointment-btn').on('click', async () => await this.audit());
         $('#createSheet-btn').on('click', async () => await this.doCreateCheckSheet());
         $('#batchReview-btn').on('click', async () => await this.doBatchReviewCheck());
+        $('select[name="detectResultSelect"]').on('change',async (o,n)=>{
+            var data=JSON.parse($('select[name="detectResultSelect"]').val().toString());
+            $('input[name="detectType"]').val(data['detectType']);
+            $('input[name="detectResult"]').val(data['detectResult']);
+        });
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }

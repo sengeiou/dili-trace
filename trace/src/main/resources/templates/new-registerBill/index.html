@@ -42,9 +42,16 @@
             </div>
 
             <div class="form-group col">
-                <label for="detectResult">检测结果</label>
-                <select id="detectResult" name="detectResult" class="form-control"></select>
-                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
+                <label for="detectResultSelect">检测结果</label>
+                <select id="detectResultSelect" name="detectResultSelect" class="form-control" data-value-type="skip">
+                    <option value='{"detectType":"","detectResult":"}'>-- 请选择 --</option>
+                    <option value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>初检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.INITIAL_CHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>初检不合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>复检合格</option>
+                    <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>复检不合格</option>
+                </select>
+                <input type="hidden" name="detectType">
+                <input type="hidden" name="detectResult">
             </div>
 
             <div class="form-group col">
@@ -213,7 +220,7 @@
             <#resource code="newRegisterBill#createsheet">
                 <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-print"></i>创建打印报告</button>
             </#resource>
-            <#resource code="newRegisterBill#upload-handleresult">
+            <#resource code="newRegisterBill#upload-handleresult_hide">
                 <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-upload"></i>上传处理结果</button>
             </#resource>
             <#resource code="newRegisterBill#upload-origincertifiy_hide">
@@ -323,7 +330,7 @@
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CategoryController.js"></script>
 <script src="${contextPath!}/resources/js/CityController.js"></script>
-<script src="${contextPath!}/resources/js/NewRegisterBillGrid.index.js"></script>
+<script src="${contextPath!}/resources/js/NewRegisterBillGrid.index.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 
 

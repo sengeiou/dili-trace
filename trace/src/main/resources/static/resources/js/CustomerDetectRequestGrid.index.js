@@ -16,7 +16,27 @@ class CustomerDetectRequestGrid extends ListPage {
         $('#undo-btn').on('click', async () => await this.doUndo());
         $('#detail-btn').on('click', async () => await this.openDetailPage());
         $('#createSheet-btn').on('click', async () => await this.openCreateSheetPage());
+        $('#upload-handleresult-btn').on('click', async () => await this.openUploadHandleResultPage());
+        $('select[name="detectResultSelect"]').on('change', async (o, n) => {
+            var data = JSON.parse($('select[name="detectResultSelect"]').val().toString());
+            $('input[name="detectType"]').val(data['detectType']);
+            $('input[name="detectResult"]').val(data['detectResult']);
+        });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+    }
+    async openUploadHandleResultPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/uploadHandleResult.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '上传处理结果',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
     async openCreateSheetPage() {
         let rows = this.rows;

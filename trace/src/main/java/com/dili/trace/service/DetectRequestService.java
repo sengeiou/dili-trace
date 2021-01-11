@@ -615,8 +615,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             return Lists.newArrayList();
         }
 
-        List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
-
+        List<DetectRequestMessageEvent> msgStream = Lists.newArrayList(DetectRequestMessageEvent.uploadHandleResult);
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
@@ -624,13 +623,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
-        if(canApp){
+        if (canApp) {
             msgStream.add(DetectRequestMessageEvent.appointment);
         }
         // 待接单：可以接单和撤销
         if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.assign, DetectRequestMessageEvent.undo));
-        // 待采样：可以采样检测、主动送检、人工检测
+            // 待采样：可以采样检测、主动送检、人工检测
         } else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.auto, DetectRequestMessageEvent.sampling));
             msgStream.add(DetectRequestMessageEvent.manual);
@@ -730,8 +729,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
         // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
-        if (!(DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus()) && CreatorRoleEnum.MANAGER.equalsToCode(registerBill.getCreatorRole()))) {
-            throw new TraceBizException("操作失败，审核状态已改变或不是管理员报备单！");
+        if (!DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
+            throw new TraceBizException("操作失败，审核状态已改变！");
         }
         if (registerBill.getDetectRequestId() == null) {
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");

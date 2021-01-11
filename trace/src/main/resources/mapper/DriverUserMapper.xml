@@ -15,7 +15,7 @@
         <![CDATA[ AND ref.seller_id=#{sellerId}]]>
       </if>
       <if test="keyword != null and keyword!=''">
-          <![CDATA[ AND ref.seller_name like '%{keyword}%']]>
+          <![CDATA[ AND (ref.seller_name LIKE CONCAT('%',#{keyword},'%'))]]>
       </if>
   </select>
 
