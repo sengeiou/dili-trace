@@ -133,7 +133,6 @@ public class ClientDetectRequestApi {
         try {
             DetectRequest item = this.detectRequestService.createDetectRequestForBill(input, Optional.empty());
 
-
             return BaseOutput.successData(item.getId());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

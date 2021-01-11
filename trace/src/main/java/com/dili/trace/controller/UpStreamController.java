@@ -38,6 +38,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -103,7 +104,7 @@ public class UpStreamController {
         if (StringUtils.isNotBlank(upStreamDto.getLikeUserName())) {
             //通过userName查询上游企业id
             Set<Long> upstreamIds = buildUpstreamIdsByLikeName(upStreamDto.getLikeUserName());
-            if (upstreamIds.isEmpty()) {
+            if (CollectionUtils.isEmpty(upstreamIds)) {
                 return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
             }
             upStreamDto.setIds(new ArrayList<>(upstreamIds));
@@ -195,8 +196,8 @@ public class UpStreamController {
         }
         RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
         rUserUpstream.setUserIds(userIds);
-        return rUserUpStreamService.listByExample(rUserUpstream).stream()
-                .map(o -> o.getUpstreamId()).collect(Collectors.toSet());
+        return StreamEx.ofNullable(rUserUpStreamService.listByExample(rUserUpstream))
+                .flatCollection(Function.identity()).map(o -> o.getUpstreamId()).collect(Collectors.toSet());
 
     }
 

@@ -184,11 +184,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         try {
             //取用户id
             SessionData sessionData = customer.get();
-            if(null==sessionData){
+            if (null == sessionData) {
                 return;
             }
             Long userId = sessionData.getUserId();
-            if(null==userId){
+            if (null == userId) {
                 return;
             }
             String key_user = syncUserTimeKey + userId;
@@ -228,18 +228,17 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         //当前时间
         Date currentDate = DateUtils.getCurrentDate();
         //redis中没有过期时间,重新设置
-        if(null==syncUserTime){
-            syncUserInfoAdd(userId,key_user);
-        }else{
+        if (null == syncUserTime) {
+            syncUserInfoAdd(userId, key_user);
+        } else {
             //当前时间在同步过期时间之后，则调用同步方法同步用户
             if (currentDate.after(syncUserTime)) {
                 doSyncUserRpc(userId);
                 //秒转分
-                int second = 60;
-                Date newSyncDate = DateUtils.addSeconds(syncUserTime, userEffectMin * second);
+                Date newSyncDate = DateUtils.addMinutes(syncUserTime, userEffectMin);
                 //同步过期时间+10分钟仍然在当前时间之前，则取当前时间+10分钟作新的同步过期时间
                 if (currentDate.after(newSyncDate)) {
-                    newSyncDate = DateUtils.addSeconds(DateUtils.getCurrentDate(), userEffectMin * second);
+                    newSyncDate = DateUtils.addMinutes(DateUtils.getCurrentDate(), userEffectMin);
                 }
                 redisUtil.set(key_user, newSyncDate);
             }

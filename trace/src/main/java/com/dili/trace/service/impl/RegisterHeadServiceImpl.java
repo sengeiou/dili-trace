@@ -195,7 +195,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         }
         if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
                 NumUtils.MAX_WEIGHT.compareTo(registerHead.getPieceWeight()) < 0) {
-            logger.error("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+            logger.error("商品件重不能大于{}", NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
 
@@ -209,7 +209,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品重量不能小于0");
         }
         if (NumUtils.MAX_WEIGHT.compareTo(registerHead.getWeight()) < 0) {
-            logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+            logger.error("商品重量不能大于{}", NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
 
@@ -222,7 +222,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         // 商品单价校验（如果有）
         if (Objects.nonNull(registerHead.getUnitPrice())
                 && NumUtils.MAX_UNIT_PRICE.compareTo(registerHead.getUnitPrice()) < 0) {
-            logger.error("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
+            logger.error("商品单价不能大于{}", NumUtils.MAX_UNIT_PRICE.toString());
             throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
         }
 

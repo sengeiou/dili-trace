@@ -284,8 +284,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         DetectRequest updateDetectRequest = new DetectRequest();
         updateDetectRequest.setId(detectRequest.getId());
-        // 维护检测编号
 
+        // 维护检测编号
         updateDetectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
         this.detectRequestService.updateSelective(updateDetectRequest);
 
