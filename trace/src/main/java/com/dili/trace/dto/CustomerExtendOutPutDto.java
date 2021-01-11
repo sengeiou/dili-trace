@@ -1,10 +1,6 @@
 package com.dili.trace.dto;
 
-import com.dili.customer.sdk.domain.TallyingArea;
-import com.dili.customer.sdk.domain.dto.CharacterTypeGroupDto;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-
-import java.util.List;
 
 /**
  * Description:
@@ -13,8 +9,17 @@ import java.util.List;
  * @date 2020/12/29
  */
 public class CustomerExtendOutPutDto extends CustomerExtendDto {
+    /**
+     * 市场主键
+     */
     private Long marketId;
+    /**
+     * 市场名称
+     */
     private String marketName;
+    /**
+     * 园区卡号
+     */
     private String tradePrintingCard;
 
     public Long getMarketId() {

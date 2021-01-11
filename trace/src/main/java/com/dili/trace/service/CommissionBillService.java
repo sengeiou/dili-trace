@@ -273,7 +273,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 //		bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
 //        bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
-        bill.setDetectStatus(DetectStatusEnum.NONE.getCode());
+        bill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         bill.setBillType(this.supportedBillType().getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
@@ -284,8 +284,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         DetectRequest updateDetectRequest = new DetectRequest();
         updateDetectRequest.setId(detectRequest.getId());
-        // 维护检测编号
 
+        // 维护检测编号
         updateDetectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
         this.detectRequestService.updateSelective(updateDetectRequest);
 

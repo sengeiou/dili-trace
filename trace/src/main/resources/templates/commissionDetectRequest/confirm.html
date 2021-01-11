@@ -43,7 +43,7 @@
 
 <script type="text/javascript">
 
-    lay('.laydatetime').each(function(){
+    lay('.laydatetime').each(function() {
         laydate.render({
             elem: this
             ,type: 'datetime'
@@ -55,7 +55,7 @@
         initAutoComplete('#designatedName','/customerDetectRequest/detector');
     });
 
-    async function callDoAssign(){
+    async function callDoAssign() {
         let designatedId = $("#designatedId").val();
         let designatedName = $("#designatedName").val();
         let detectTime = $("#detectTime").val();
@@ -65,9 +65,9 @@
     /**
      * 初始化自动完成框
      */
-    function initAutoComplete(selector,url){
-        $(selector).keydown(function (e){
-            if(e.keyCode == 13){
+    function initAutoComplete(selector,url) {
+        $(selector).keydown(function (e) {
+            if(e.keyCode == 13) {
                 // $(selector).data('keycode',e.keyCode);
                 // console.info('keydown')
             }
@@ -77,7 +77,7 @@
         $(selector).on('change',function () {
             var oldvalue=$(selector).data('oldvalue');
             var val=$(this).val();
-            if(oldvalue!=val){
+            if(oldvalue!=val) {
                 $(this).siblings('input').val('');
             }
         });

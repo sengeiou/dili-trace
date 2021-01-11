@@ -40,7 +40,7 @@ public class UidRestfulRpcService {
             return out.getData().trim();
         } else {
             if (out != null) {
-                logger.error("生成编号出错：" + out.getCode()+"--"+out.getMessage()+"--"+out.getErrorData());
+                logger.error("生成编号出错：{}--{}--{}", out.getCode(), out.getMessage(), out.getErrorData());
             }
         }
         throw new TraceBizException("生成编号出错");
@@ -62,7 +62,7 @@ public class UidRestfulRpcService {
         if (StringUtils.isNotEmpty(marketName)) {
             // 市场首字母
             String marketFirstSpell = ChineseStringUtil.getFirstSpell(marketName.substring(0, 1));
-            returnCode.insert(2, marketFirstSpell);
+            returnCode.insert(DETECT_CODE_PREFIX.length(), marketFirstSpell);
         } else {
             logger.error("生成检测编号出错：获取市场失败");
         }
