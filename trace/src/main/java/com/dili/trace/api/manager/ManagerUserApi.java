@@ -12,6 +12,7 @@ import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -203,27 +204,32 @@ public class ManagerUserApi {
 
     /**
      * 构建卖家、买家、司机查询返回对象
+     *
      * @param marketId
      * @param pageOutput
      * @return
      */
     private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerExtendDto>> pageOutput) {
         PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
-        List<CustomerExtendDto> customerList = pageOutput.getData();
-        List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
-        customerList.forEach(c -> {
-            CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
-            BeanUtils.copyProperties(c, customerOutput);
-            customerOutput.setMarketId(marketId);
-            customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
-            Optional<CardResultDto> cardResultDto = this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId);
-            cardResultDto.ifPresent(cardInfo -> {
-                customerOutput.setTradePrintingCard(cardInfo.getCardNo());
-            });
-            customerOutputList.add(customerOutput);
-        });
-        BeanUtils.copyProperties(pageOutput, page);
-        page.setData(customerOutputList);
+        if (null != pageOutput) {
+            List<CustomerExtendDto> customerList = pageOutput.getData();
+            List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(customerList)) {
+                customerList.forEach(c -> {
+                    CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
+                    BeanUtils.copyProperties(c, customerOutput);
+                    customerOutput.setMarketId(marketId);
+                    customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                    Optional<CardResultDto> cardResultDto = this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId);
+                    cardResultDto.ifPresent(cardInfo -> {
+                        customerOutput.setTradePrintingCard(cardInfo.getCardNo());
+                    });
+                    customerOutputList.add(customerOutput);
+                });
+            }
+            BeanUtils.copyProperties(pageOutput, page);
+            page.setData(customerOutputList);
+        }
         return page;
     }
 
