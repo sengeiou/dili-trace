@@ -55,24 +55,24 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @return
      * @throws Exception
      */
-    public String listPage(RegisterBillDto query) throws Exception {
-        RegisterBillDto dto = this.preBuildDTO(query);
-        dto.setBillType(this.supportedBillType().getCode());
-        dto.setMarketId(MarketUtil.returnMarket());
-        dto.setIsDeleted(YesOrNoEnum.NO.getCode());
-        BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
-
-        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
-        //检测值
-        // Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
-        StreamEx.of(page.getDatas()).forEach(rb -> {
-            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
-        });
-
-        List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
-        EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
-        return out.toString();
-    }
+//    public String listPage(RegisterBillDto query) throws Exception {
+//        RegisterBillDto dto = this.preBuildDTO(query);
+//        dto.setBillType(this.supportedBillType().getCode());
+//        dto.setMarketId(MarketUtil.returnMarket());
+//        dto.setIsDeleted(YesOrNoEnum.NO.getCode());
+//        BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
+//
+//        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(page.getDatas()).map(RegisterBill::getDetectRequestId).toList());
+//        //检测值
+//        // Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
+//        StreamEx.of(page.getDatas()).forEach(rb -> {
+//            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+//        });
+//
+//        List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
+//        EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
+//        return out.toString();
+//    }
 
     /**
      * 构造查询条件
@@ -80,44 +80,44 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @param dto
      * @return
      */
-    private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
-        String attr = dto.getAttr();
-        String attrValue = dto.getAttrValue();
-        if (attrValue != null && (StringUtils.isNotBlank(attrValue))) {
-            switch (attr) {
-                case "code":
-                    dto.setCode(attrValue);
-                    break;
-                case "latestDetectOperator":
-                    dto.setLatestDetectOperator(attrValue);
-                    break;
-                case "name":
-                    dto.setName(attrValue);
-                    break;
-                case "likeSampleCode":
-                    dto.setLikeSampleCode(attrValue);
-                    break;
-            }
-        }
-
-        StringBuilder sql = new StringBuilder();
-        Boolean hasCheckSheet = dto.getHasCheckSheet();
-        if (hasCheckSheet != null) {
-            if (sql.length() > 0) {
-                sql.append(" AND ");
-            }
-            if (hasCheckSheet) {
-                sql.append("  (check_sheet_id is not null) ");
-            } else {
-                sql.append("  (check_sheet_id is null) ");
-            }
-        }
-        if (sql.length() > 0) {
-            dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
-        }
-
-        return dto;
-    }
+//    private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
+//        String attr = dto.getAttr();
+//        String attrValue = dto.getAttrValue();
+//        if (attrValue != null && (StringUtils.isNotBlank(attrValue))) {
+//            switch (attr) {
+//                case "code":
+//                    dto.setCode(attrValue);
+//                    break;
+//                case "latestDetectOperator":
+//                    dto.setLatestDetectOperator(attrValue);
+//                    break;
+//                case "name":
+//                    dto.setName(attrValue);
+//                    break;
+//                case "likeSampleCode":
+//                    dto.setLikeSampleCode(attrValue);
+//                    break;
+//            }
+//        }
+//
+//        StringBuilder sql = new StringBuilder();
+//        Boolean hasCheckSheet = dto.getHasCheckSheet();
+//        if (hasCheckSheet != null) {
+//            if (sql.length() > 0) {
+//                sql.append(" AND ");
+//            }
+//            if (hasCheckSheet) {
+//                sql.append("  (check_sheet_id is not null) ");
+//            } else {
+//                sql.append("  (check_sheet_id is null) ");
+//            }
+//        }
+//        if (sql.length() > 0) {
+//            dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+//        }
+//
+//        return dto;
+//    }
 
     /**
      * 当前支持的登记单类型
