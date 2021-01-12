@@ -14,13 +14,18 @@
     <result column="register_bill_code" jdbcType="BIGINT" property="registerBillCode" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="detect_batch_no" jdbcType="VARCHAR" property="detectBatchNo" />
+    <result column="normal_result" jdbcType="VARCHAR" property="normalResult" />
+    <result column="detect_company" jdbcType="VARCHAR" property="detectCompany" />
+    <result column="detect_request_id" jdbcType="BIGINT" property="detectRequestId" />
+
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, detect_time, detect_operator, detect_type, detect_state, pd_result, register_bill_code, 
-    created, modified
+    created, modified,detect_batch_no,normal_result,detect_company,detect_request_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
