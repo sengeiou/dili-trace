@@ -591,6 +591,17 @@ public class RegisterBill extends BaseDomain {
     @Transient
     private String truckTypeName;
 
+    @Transient
+    private String isPrintCheckSheetName;
+
+    public String getIsPrintCheckSheetName() {
+        return YesOrNoEnum.getYesOrNoEnum(this.getIsPrintCheckSheet()).getName();
+    }
+
+    public void setIsPrintCheckSheetName(String isPrintCheckSheetName) {
+        this.isPrintCheckSheetName = isPrintCheckSheetName;
+    }
+
     public Integer getSalesType() {
         return salesType;
     }

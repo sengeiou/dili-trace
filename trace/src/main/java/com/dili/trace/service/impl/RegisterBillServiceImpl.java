@@ -162,6 +162,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerBill.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
         operatorUser.ifPresent(op -> {
             registerBill.setOperatorName(op.getName());
             registerBill.setOperatorId(op.getId());
@@ -915,6 +916,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerBill.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
         operatorUser.ifPresent(op -> {
             registerBill.setOperatorName(op.getName());
             registerBill.setOperatorId(op.getId());

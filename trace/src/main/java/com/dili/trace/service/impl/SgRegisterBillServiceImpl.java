@@ -98,6 +98,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         inputBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         inputBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
         inputBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
+        inputBill.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
         if(null==inputBill.getTareWeight()){
             inputBill.setTareWeight(BigDecimal.ZERO);
         }
