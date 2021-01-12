@@ -4,8 +4,10 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IBaseDomain;
+import com.dili.ss.util.POJOUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,6 +41,9 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
             if (example.getRows() == null || example.getRows() <= 0) {
                 example.setRows(10);
             }
+            if (StringUtils.isNotBlank(example.getSort())) {
+                example.setSort(POJOUtils.humpToLineFast(example.getSort()));
+            }
             this.domain = example;
         }
 
@@ -61,9 +66,16 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
          */
         public <S extends BaseDomain> BasePage<S> listPageByFun(Function<U, List<S>> function) {
 
-
             PageHelper.startPage(this.domain.getPage(), this.domain.getRows());
-//            PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
+            if(StringUtils.isNotBlank(this.domain.getSort())){
+                if(StringUtils.isNotBlank(this.domain.getOrder())){
+                    PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
+                }else{
+                    PageHelper.orderBy(this.domain.getSort());
+                }
+
+            }
+
             List<S> list = function.apply(this.domain);
             Page<S> page = (Page) list;
             BasePage<S> result = new BasePage<S>();

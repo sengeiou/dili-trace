@@ -6,6 +6,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
@@ -67,12 +68,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 创建检测请求
      *
-     * @param inputDto       报备单ID
+     * @param inputDto     报备单ID
      * @param operatorUser 操作用户
      * @return
      */
     public DetectRequest createDetectRequestForBill(DetectRequestInputDto inputDto, OperatorUser operatorUser) {
-        Long billId=inputDto.getBillId();
+        Long billId = inputDto.getBillId();
         RegisterBill billItem = this.billService.get(billId);
         if (billItem == null) {
             throw new TraceBizException("登记单不存在");
@@ -320,21 +321,14 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @return
      */
     public EasyuiPageOutput listBasePageByExample(DetectRequestWithBillDto query) throws Exception {
-        if (query.getPage() == null || query.getPage() < 0) {
-            query.setPage(1);
-        }
-        if (query.getRows() == null || query.getRows() <= 0) {
-            query.setRows(10);
-        }
-        PageHelper.startPage(query.getPage(), query.getRows());
-        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
-        List<DetectRequestWithBillDto> list = this.detectRequestMapper.queryListByExample(query);
-        Page<DetectRequestWithBillDto> page = (Page) list;
+        BasePage<DetectRequestWithBillDto> page = super.buildQuery(query).listPageByFun(q -> {
+            return this.detectRequestMapper.queryListByExample(q);
+        });
 
         EasyuiPageOutput out = new EasyuiPageOutput();
-        List results = ValueProviderUtils.buildDataByProvider(query, list);
+        List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
         out.setRows(results);
-        out.setTotal(page.getTotal());
+        out.setTotal(page.getTotalItem());
 
         return out;
     }
@@ -345,7 +339,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param id             检测请求ID
      * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
-     * @param detectTime 检测时间
+     * @param detectTime     检测时间
      */
     @Transactional(rollbackFor = Exception.class)
     public void confirm(Long id, Long designatedId, String designatedName, Date detectTime) {
@@ -384,11 +378,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @return
      */
     public BasePage<DetectRequestOutDto> listPageByUserCategory(DetectRequestQueryDto domain) {
-        if (StringUtils.isNotBlank(domain.getSort())) {
-//            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
-        }
-        domain.setOrder(null);
-        BasePage<DetectRequestOutDto> result = super.buildQuery(domain).listPageByFun(q->{
+        BasePage<DetectRequestOutDto> result = super.buildQuery(domain).listPageByFun(q -> {
             List<DetectRequestOutDto> list = this.detectRequestMapper.selectListPageByUserCategory(q);
             return list;
         });
@@ -397,14 +387,16 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 根据检测状态统计
+     *
      * @param queryDto
      * @return
      */
-    public List<CountDetectStatusDto>  countByDetectStatus(DetectRequestQueryDto queryDto){
+    public List<CountDetectStatusDto> countByDetectStatus(DetectRequestQueryDto queryDto) {
 
 
         return this.detectRequestMapper.countByDetectStatus(queryDto);
     }
+
     /**
      * 查询检测详情
      *
@@ -413,7 +405,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      */
     public DetectRequestOutDto getDetectRequestDetail(DetectRequestQueryDto detectRequestDto) {
         DetectRequestOutDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
-        if(dto==null){
+        if (dto == null) {
             throw new TraceBizException("数据不存在");
         }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
@@ -473,26 +465,14 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @return
      */
     public BasePage<SampleSourceListOutputDto> listPagedSampleSourceDetect(DetectRequestQueryDto query) {
-        if (query.getPage() == null || query.getPage() < 0) {
-            query.setPage(1);
-        }
-        if (query.getRows() == null || query.getRows() <= 0) {
-            query.setRows(10);
-        }
-        PageHelper.startPage(query.getPage(), query.getRows());
-        List<SampleSourceListOutputDto> list = this.detectRequestMapper.queryListBySampleSource(query);
-        Page<SampleSourceListOutputDto> page = (Page) list;
-        BasePage<SampleSourceListOutputDto> result = new BasePage<SampleSourceListOutputDto>();
-        result.setDatas(list);
-        result.setPage(page.getPageNum());
-        result.setRows(page.getPageSize());
-        result.setTotalItem(page.getTotal());
-        result.setTotalPage(page.getPages());
-        result.setStartIndex(page.getStartRow());
+
+        BasePage<SampleSourceListOutputDto> result = super.buildQuery(query).listPageByFun(q -> {
+            return this.detectRequestMapper.queryListBySampleSource(q);
+        });
         return result;
     }
 
-   /* *//**
+    /* *//**
      * 创建场外委托单
      *
      * @param input
@@ -602,6 +582,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 查询可操作事件
+     *
      * @param billId
      * @return
      */
@@ -659,6 +640,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 撤销检测请求
+     *
      * @param id
      */
     public void undoDetectRequest(Long id) {
@@ -684,6 +666,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 预约申请
+     *
      * @param billId
      */
     public void bookingRequest(Long billId, UserTicket userTicket) {
@@ -721,6 +704,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 人工直接检测通过或者退回
+     *
      * @param billId
      * @param pass
      * @param userTicket
@@ -746,7 +730,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     }
 
     /**
-     *  人工检测-报备单
+     * 人工检测-报备单
+     *
      * @param registerBill
      * @param pass
      * @param userTicket

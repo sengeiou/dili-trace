@@ -81,6 +81,10 @@ public class ManagerDetectRquestApi {
         }
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
+        if(StringUtils.isBlank(detectRequestDto.getSort())){
+            detectRequestDto.setSort("created");
+            detectRequestDto.setOrder("desc");
+        }
 
         BasePage<DetectRequestOutDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);
@@ -264,6 +268,10 @@ public class ManagerDetectRquestApi {
     public BaseOutput<BasePage<SampleSourceListOutputDto>> listPagedSampleSourceDetect(@RequestBody DetectRequestQueryDto query) {
         try {
             query.setIsDeleted(YesOrNoEnum.NO.getCode());
+            if(StringUtils.isBlank(query.getSort())){
+                query.setSort("created");
+                query.setOrder("desc");
+            }
             BasePage<SampleSourceListOutputDto> basePage = this.detectRequestService.listPagedSampleSourceDetect(query);
             return BaseOutput.success().setData(basePage);
         } catch (TraceBizException e) {
