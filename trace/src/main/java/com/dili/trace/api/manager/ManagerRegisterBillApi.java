@@ -106,13 +106,16 @@ public class ManagerRegisterBillApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
             List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
-                    .nonNull().toList();
+                    .nonNull().map(dto->{
+                        dto.setMarketId(sessionData.getMarketId());
+                        return dto;
+                    }).toList();
             if (registerBills.isEmpty()) {
                 return BaseOutput.failure("没有登记单");
             }
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
             List<Long> idList = this.registerBillService.createBillList(registerBills, createListBillParam.getUserId()
-                    , sessionData.getOptUser(), sessionData.getMarketId(),
+                    , sessionData.getOptUser(),
                     CreatorRoleEnum.MANAGER);
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {

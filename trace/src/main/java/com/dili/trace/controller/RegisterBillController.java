@@ -44,9 +44,9 @@ import java.util.stream.Stream;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
-@Api("/registerBill")
-@Controller
-@RequestMapping("/registerBill")
+//@Api("/registerBill")
+//@Controller
+//@RequestMapping("/registerBill")
 public class RegisterBillController {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillController.class);
     @Autowired
@@ -174,8 +174,7 @@ public class RegisterBillController {
             registerBill.setAddr(customer.getCertificateAddr());
             registerBill.setUserId(customer.getId());
             try {
-                Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
-                        Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
+                Long billId = registerBillService.createRegisterBill(registerBill, Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 
             } catch (TraceBizException e) {
                 return BaseOutput.failure(e.getMessage());
