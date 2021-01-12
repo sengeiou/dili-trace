@@ -210,7 +210,6 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("登记单来源类型错误");
         }
         bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
-        bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
 
 
         bill.setBillType(this.supportedBillType().getCode());
