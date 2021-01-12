@@ -124,23 +124,24 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                     Optional<OperatorUser> operatorUser, Long marketId, CreatorRoleEnum creatorRoleEnum) {
-        CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
+                                     Optional<OperatorUser> operatorUser, CreatorRoleEnum creatorRoleEnum) {
+
 
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-            RegisterBill registerBill = dto.build(user,marketId);
+            CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, dto.getMarketId());
+            RegisterBill registerBill = dto.build(user,dto.getMarketId());
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
-            CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),marketId);
+            CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),dto.getMarketId());
 
             Customer cq = new Customer();
             cq.setCustomerId(customer.getCode());
-            this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
+            this.clientRpcService.findCustomer(cq,dto.getMarketId()).ifPresent(card->{
                 registerBill.setThirdPartyCode(card.getPrintingCard());
             });
 
-            Long billId = this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+            Long billId = this.createRegisterBill(registerBill, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
             OperatorUser oprUser = operatorUser.orElseThrow(() -> {
@@ -173,7 +174,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Transactional
     @Override
-    public Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList,
+    public Long createRegisterBill(RegisterBill registerBill,
                                    Optional<OperatorUser> operatorUser) {
         this.checkBill(registerBill);
 
@@ -239,7 +240,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
         // 保存图片
-        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        List<ImageCert> imageCertList= StreamEx.ofNullable(registerBill.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
         if (!imageCertList.isEmpty()) {
             imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
         }

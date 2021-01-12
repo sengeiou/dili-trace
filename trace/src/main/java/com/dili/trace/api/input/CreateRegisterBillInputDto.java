@@ -13,7 +13,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class CreateRegisterBillInputDto {
-        /**
+    /**
+     * 市场ID
+     */
+    private Long marketId;
+    /**
      * 商品别名
      */
     private String productAliasName;
@@ -77,7 +81,7 @@ public class CreateRegisterBillInputDto {
     /**
      * 单价
      */
-    private  BigDecimal unitPrice;
+    private BigDecimal unitPrice;
 
     /**
      * 规格
@@ -259,7 +263,8 @@ public class CreateRegisterBillInputDto {
      * 图片证明列表
      */
     private List<ImageCert> imageCertList;
-    public RegisterBill build(Long userId,String userName,Long marketId) {
+
+    public RegisterBill build(Long userId, String userName, Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
         registerBill.setRegistType(this.getRegistType());
@@ -305,6 +310,7 @@ public class CreateRegisterBillInputDto {
 //        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }
+
     public RegisterBill build(CustomerExtendDto user, Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
@@ -419,6 +425,7 @@ public class CreateRegisterBillInputDto {
     public void setWeightUnit(Integer weightUnit) {
         this.weightUnit = weightUnit;
     }
+
 
     /**
      * @return String return the specName
@@ -686,5 +693,13 @@ public class CreateRegisterBillInputDto {
 
     public void setProductAliasName(String productAliasName) {
         this.productAliasName = productAliasName;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }
