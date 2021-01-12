@@ -168,7 +168,7 @@ public class CustomerDetectRequestController {
             Map<String, Object> obj = Maps.newHashMap();
             obj.put("id", c.getId());
             obj.put("data", name);
-            obj.put("value", c.getUserName());
+            obj.put("value", c.getRealName());
             list.add(obj);
         }
 
