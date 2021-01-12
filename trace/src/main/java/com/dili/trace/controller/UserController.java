@@ -202,9 +202,7 @@ public class UserController {
     @RequestMapping(value = "/listByCondition.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput listByCondition(@RequestBody UserListDto userListDto) {
-        UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
-        userQuery.setUserName(userListDto.getLikeName());
-        return BaseOutput.success().setData(userRpc.listByExample(userQuery).getData());
+        return BaseOutput.success().setData(userService.findUserBylikeName(userListDto.getLikeName()));
     }
 
     /**

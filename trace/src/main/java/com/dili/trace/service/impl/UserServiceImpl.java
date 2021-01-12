@@ -677,6 +677,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
+    public List<User> findUserBylikeName(String likeName) {
+        if (StringUtils.isBlank(likeName)) {
+            return Lists.newArrayList();
+        }
+        Example e = new Example(User.class);
+        e.or().orLike("name", "%" + likeName.trim() + "%");
+        return this.getDao().selectByExample(e);
+    }
+
+    @Override
     public UserQrOutput getUserQrCode(Long userId) throws Exception {
         User userItem = this.get(userId);
         if (userItem == null) {
