@@ -21,6 +21,7 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestOutDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -131,7 +132,11 @@ public class ClientDetectRequestApi {
             return BaseOutput.failure("参数错误");
         }
         try {
-            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input, Optional.empty());
+            Optional<OperatorUser> optUser = this.sessionContext.getSessionData().getOptUser();
+            OperatorUser operatorUser = optUser.orElseThrow(() -> {
+                return new TraceBizException("你还未登录");
+            });
+            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input, operatorUser);
 
             return BaseOutput.successData(item.getId());
         } catch (TraceBizException e) {

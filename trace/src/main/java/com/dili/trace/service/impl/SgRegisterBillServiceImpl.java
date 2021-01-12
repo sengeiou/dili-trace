@@ -1197,22 +1197,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public int createRegisterBillList(List<RegisterBill> registerBillList, OperatorUser operatorUser) {
         return StreamEx.ofNullable(registerBillList).flatCollection(Function.identity()).nonNull().map(rb -> {
             Long registerBillId = this.createRegisterBill(rb);
-            // 寿光管理端，新增完报备单的同时新增检测请求
-            DetectRequest item = this.detectRequestService.createByBillId(registerBillId, DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(),operatorUser.getName()), Optional.empty());
-
-            DetectRequest updatable = new DetectRequest();
-            updatable.setId(item.getId());
-            // 维护接单时间
-            updatable.setConfirmTime(new Date());
-            // 维护检测编号
-            updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
-            this.detectRequestService.updateSelective(updatable);
-
-            RegisterBill bill = this.billService.get(item.getBillId());
-            bill.setOperatorName(operatorUser.getName());
-            bill.setOperatorId(operatorUser.getId());
-            bill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode()); // 新增完为：待采样
-            this.billService.update(bill);
             return 1;
         }).mapToInt(Integer::valueOf).sum();
     }
