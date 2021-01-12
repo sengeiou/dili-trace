@@ -174,8 +174,7 @@ public class RegisterBillController {
             registerBill.setAddr(customer.getCertificateAddr());
             registerBill.setUserId(customer.getId());
             try {
-                Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
-                        Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
+                Long billId = registerBillService.createRegisterBill(registerBill, Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 
             } catch (TraceBizException e) {
                 return BaseOutput.failure(e.getMessage());

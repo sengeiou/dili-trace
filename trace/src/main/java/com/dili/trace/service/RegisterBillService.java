@@ -62,7 +62,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @param registerBill
      * @return
      */
-    Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
+    Long createRegisterBill(RegisterBill registerBill, Optional<OperatorUser> operatorUser);
 
     /**
      * 修改单个报备单
@@ -84,7 +84,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     /**
      * 进门后审核
      *
-     * @param input
+     * @param billId
      * @param operatorUser
      * @return
      */
@@ -99,7 +99,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @return
      */
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                     Optional<OperatorUser> operatorUser, Long marketId, CreatorRoleEnum creatorRoleEnum);
+                                     Optional<OperatorUser> operatorUser,  CreatorRoleEnum creatorRoleEnum);
 
     /**
      * 分页查询
