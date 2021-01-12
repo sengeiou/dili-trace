@@ -11,7 +11,7 @@
         width:100% !important;
     }
 </style>
-<div class="main-container">
+<div class="main-container" style="padding: 0">
     <div class="topicTop">
         <!--<div class="toppic-title">
             <span class="topic-title-text maincolor">货品信息详情</span>
@@ -110,23 +110,74 @@
                     <input type="text" class="form-control input-sm" value="${registerBill.sampleCode!}" required readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
-                    <input type="text" class="form-control input-sm" value="<%if(null!= detectRequest.detectTime!){%>${detectRequest.detectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" required readonly/>
-                </div>
-                <br>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
-                    <input type="text" class="form-control input-sm" value="${detectRequest.detectResult!}" required readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测员</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.isDeletedName!}" required readonly/>
-                </div>
-                <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>是否删除</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.isDeletedName!}" required readonly/>
                 </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>打印报告</label>
+                    <input type="text" class="form-control input-sm"value="<%if(null!= registerBill.isPrintCheckSheetName!){%>${registerBill.isPrintCheckSheetName}<%}else{%>-<%}%>" required readonly/>
+                </div>
             </div>
+
+            <div class="form-item-group">
+                <h4 class="form-item-title">检测信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                        <th><span class="red">&lowast;</span>检测时间</th>
+                        <th><span class="red">&lowast;</span>检测批号</th>
+                        <th><span class="red">&lowast;</span>标准数值</th>
+                        <th><span class="red">&lowast;</span>检测类型</th>
+                        <th><span class="red">&lowast;</span>检测结果</th>
+                        <th><span class="red">&lowast;</span>检测数值</th>
+                        <th><span class="red">&lowast;</span>检测人员</th>
+                        </tr>
+                        </thead>
+                        <% for(detectRecord in detectRecordList!){%>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="${detectRecord.detectTime,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="${detectRecord.detectBatchNo}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="${detectRecord.normalResult}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="<%if(detectRecord.detectType == 1){%>初检<%}else{%>复检<%}%>" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control" value="${detectRecord.pdResult}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm" value="${detectRecord.detectOperator}" required readonly/>
+                                </div>
+                            </td>
+                        </tr>
+                        <%}%>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+
             <div class="form-item-group">
                 <h4 class="form-item-title">产地证明</h4>
                 <%if((registerBill.imageCertList.~size!0)>0){
