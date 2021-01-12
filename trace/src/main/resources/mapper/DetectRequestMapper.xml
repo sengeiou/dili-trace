@@ -115,6 +115,8 @@
           b.bill_type,
           b.origin_certifiy_url originCertifiyUrl,
           b.truck_type,
+          b.brand_name,
+          b.brand_id,
           up.name upStreamName,
           d.*
         FROM

@@ -217,7 +217,6 @@ public class ClientDetectRequestApi {
             //设置最新检测记录
             if (null != detail && StringUtils.isNotBlank(detail.getBillCode())) {
                 detail.setDetectRecordList(detectRecordService.findTop2AndLatest(detail.getBillCode()));
-                ;
             }
             return BaseOutput.successData(detail);
         } catch (TraceBizException e) {
