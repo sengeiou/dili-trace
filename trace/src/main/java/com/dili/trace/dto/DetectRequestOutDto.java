@@ -135,7 +135,7 @@ public class DetectRequestOutDto extends DetectRequest {
      * 品牌ID
      */
     @Transient
-    private String brandId;
+    private Long brandId;
 
 
     public String getBillCode() {
@@ -326,11 +326,11 @@ public class DetectRequestOutDto extends DetectRequest {
         this.brandName = brandName;
     }
 
-    public String getBrandId() {
+    public Long getBrandId() {
         return brandId;
     }
 
-    public void setBrandId(String brandId) {
+    public void setBrandId(Long brandId) {
         this.brandId = brandId;
     }
 
