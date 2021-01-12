@@ -86,7 +86,8 @@ public class CustomerDetectRequestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "DetectRequest", paramType = "form", value = "DetectRequest的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
+    public @ResponseBody
+    String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
         List<Integer> billTypes = new ArrayList<>();
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
@@ -116,8 +117,9 @@ public class CustomerDetectRequestController {
 
     /**
      * 接单
-     * @param id 检测请求ID
-     * @param designatedId 检测员ID
+     *
+     * @param id             检测请求ID
+     * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
      * @return 指派结果
      */
@@ -168,7 +170,7 @@ public class CustomerDetectRequestController {
             Map<String, Object> obj = Maps.newHashMap();
             obj.put("id", c.getId());
             obj.put("data", name);
-            obj.put("value", c.getUserName());
+            obj.put("value", c.getRealName());
             list.add(obj);
         }
 
@@ -186,8 +188,8 @@ public class CustomerDetectRequestController {
     @RequestMapping("/queryEvents.action")
     @ResponseBody
     public List<String> queryEvents(@RequestBody List<Long> billIdList) {
-        List<DetectRequestMessageEvent> list= Lists.newArrayList();
-        if (billIdList == null || billIdList.size()==0) {
+        List<DetectRequestMessageEvent> list = Lists.newArrayList();
+        if (billIdList == null || billIdList.size() == 0) {
             return StreamEx.of(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
@@ -195,11 +197,11 @@ public class CustomerDetectRequestController {
         // 只要有记录，可以导出和查看详情
         list.add(DetectRequestMessageEvent.export);
         list.add(DetectRequestMessageEvent.detail);
-        if(billIdList.size()==1){
+        if (billIdList.size() == 1) {
             return StreamEx.of(this.detectRequestService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
-        }else{
+        } else {
             return StreamEx.of(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();

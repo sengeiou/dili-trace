@@ -591,6 +591,17 @@ public class RegisterBill extends BaseDomain {
     @Transient
     private String truckTypeName;
 
+    @Transient
+    private String isPrintCheckSheetName;
+
+    public String getIsPrintCheckSheetName() {
+        return this.getIsPrintCheckSheet() == null ? null : YesOrNoEnum.getYesOrNoEnum(this.getIsPrintCheckSheet()).getName();
+    }
+
+    public void setIsPrintCheckSheetName(String isPrintCheckSheetName) {
+        this.isPrintCheckSheetName = isPrintCheckSheetName;
+    }
+
     public Integer getSalesType() {
         return salesType;
     }
@@ -673,7 +684,7 @@ public class RegisterBill extends BaseDomain {
     private String corporateName;
 
     /**
-     *商品别名
+     * 商品别名
      */
     @ApiModelProperty(value = "商品别名")
     @Column(name = "`product_alias_name`")
@@ -1384,7 +1395,7 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     public String getSourceDesc() {
-         return this.getRegisterSourceName() + (StringUtils.isBlank(this.sourceName) ? "" : ("：" + this.sourceName));
+        return this.getRegisterSourceName() + (StringUtils.isBlank(this.sourceName) ? "" : ("：" + this.sourceName));
     }
 
     public void setRegisterSource(Integer registerSource) {

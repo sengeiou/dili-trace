@@ -42,9 +42,9 @@ import java.util.function.Function;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
-@Api("/commissionBill")
-@Controller
-@RequestMapping("/commissionBill")
+//@Api("/commissionBill")
+//@Controller
+//@RequestMapping("/commissionBill")
 public class CommissionBillController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommissionBillController.class);
@@ -142,15 +142,15 @@ public class CommissionBillController {
      * @return
      * @throws Exception
      */
-    @ApiOperation(value = "分页查询CommissionBill", notes = "分页查询CommissionBill，返回easyui分页信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
-    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    Object listPage(@RequestBody  RegisterBillDto input) throws Exception {
-        return JSON.parse(this.commissionBillService.listPage(input));
-
-    }
+//    @ApiOperation(value = "分页查询CommissionBill", notes = "分页查询CommissionBill，返回easyui分页信息")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
+//    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
+//    public @ResponseBody
+//    Object listPage(@RequestBody  RegisterBillDto input) throws Exception {
+//        return JSON.parse(this.commissionBillService.listPage(input));
+//
+//    }
 
     /**
      * 新增CommissionBill

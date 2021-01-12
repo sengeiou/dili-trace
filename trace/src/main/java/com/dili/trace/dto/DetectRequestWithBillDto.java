@@ -189,6 +189,7 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     private Integer isPrintCheckSheet;
 
+    @Override
     @Transient
     public String getIsPrintCheckSheetName() {
         return Optional.ofNullable(YesOrNoEnum.getYesOrNoEnum(this.isPrintCheckSheet)).map(YesOrNoEnum::getName).orElse("");

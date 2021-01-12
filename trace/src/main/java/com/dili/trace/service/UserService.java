@@ -131,6 +131,13 @@ public interface UserService extends BaseService<User, Long> {
     public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
 
     /**
+     * 根据名字模糊查询
+     * @param likeName
+     * @return
+     */
+    public List<User> findUserBylikeName(String likeName);
+
+    /**
      * @param userId
      * @return
      * @throws Exception

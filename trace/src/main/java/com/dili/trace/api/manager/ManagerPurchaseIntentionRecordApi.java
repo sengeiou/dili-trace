@@ -12,6 +12,7 @@ import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
+import com.dili.trace.util.NumUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,6 @@ public class ManagerPurchaseIntentionRecordApi {
     PurchaseIntentionRecordService purchaseIntentionRecordService;
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
-
-    /**
-     * 重量最大值
-     */
-    private static final BigDecimal MAX_WEIGHT = new BigDecimal("99999999");
 
     /**
      * 查询买家进门报备信息
@@ -74,8 +70,8 @@ public class ManagerPurchaseIntentionRecordApi {
     @RequestMapping(value = "/createPurchaseIntentionRecord.api")
     public BaseOutput createTruckEnterRecord(@RequestBody PurchaseIntentionRecord input) {
         if (input.getProductWeight() != null){
-            if (input.getProductWeight().compareTo(MAX_WEIGHT) == 1){
-                return BaseOutput.failure("商品重量超出最大值99999999");
+            if (input.getProductWeight().compareTo(NumUtils.MAX_WEIGHT) == 1){
+                return BaseOutput.failure("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
             }
         }
         SessionData sessionData = this.sessionContext.getSessionData();

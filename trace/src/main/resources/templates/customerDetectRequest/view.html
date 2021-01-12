@@ -1,5 +1,5 @@
 <#bodyOrigin>
-<div class="main-container">
+<div class="main-container" style="padding: 0">
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
@@ -127,7 +127,7 @@
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>打印报告</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.isPrintCheckSheet!}" required readonly/>
+                    <input type="text" class="form-control input-sm"value="<%if(null!= registerBill.isPrintCheckSheetName!){%>${registerBill.isPrintCheckSheetName}<%}else{%>-<%}%>" required readonly/>
                 </div>
                 <br>
                 <% if(registerBill.registerSource! == 2){ %>
