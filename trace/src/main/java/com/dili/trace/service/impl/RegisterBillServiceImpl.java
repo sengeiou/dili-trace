@@ -141,7 +141,34 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 registerBill.setThirdPartyCode(card.getPrintingCard());
             });
             registerBill.setImageCertList(dto.getImageCertList());
-            return this.createRegisterBill(registerBill, operatorUser);
+            Long billId = this.createRegisterBill(registerBill, operatorUser);
+
+            // 寿光管理端，新增完报备单的同时新增检测请求
+            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
+                return new TraceBizException("用户未登录");
+            });
+
+            // 创建检测请求
+            DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
+
+            // 如果管理创建登记单，更新检测状态和检测编号
+            if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
+                DetectRequest updatable = new DetectRequest();
+                updatable.setId(item.getId());
+                // 维护接单时间
+                updatable.setConfirmTime(new Date());
+                // 维护检测编号
+                updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.get().getMarketName()));
+                this.detectRequestService.updateSelective(updatable);
+
+                RegisterBill bill = this.billService.get(item.getBillId());
+                bill.setOperatorName(oprUser.getName());
+                bill.setOperatorId(oprUser.getId());
+                bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
+                this.billService.update(bill);
+            }
+
+            return billId;
         }).toList();
     }
 
@@ -212,7 +239,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
-        // 保存图片
         // 保存图片
         List<ImageCert> imageCertList= StreamEx.ofNullable(registerBill.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
         if (!imageCertList.isEmpty()) {
@@ -891,7 +917,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
                                                          Optional<OperatorUser> operatorUser, Long marketId) {
-     CustomerExtendDto customer=   this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
+        CustomerExtendDto customer=   this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
             return new TraceBizException("查询客户信息失败");
         });
         return StreamEx.of(registerBills).nonNull().map(dto -> {
