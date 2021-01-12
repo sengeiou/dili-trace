@@ -140,7 +140,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             this.clientRpcService.findCustomer(cq,dto.getMarketId()).ifPresent(card->{
                 registerBill.setThirdPartyCode(card.getPrintingCard());
             });
-
+            registerBill.setImageCertList(dto.getImageCertList());
             Long billId = this.createRegisterBill(registerBill, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
@@ -917,7 +917,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
                                                          Optional<OperatorUser> operatorUser, Long marketId) {
-     CustomerExtendDto customer=   this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
+        CustomerExtendDto customer=   this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
             return new TraceBizException("查询客户信息失败");
         });
         return StreamEx.of(registerBills).nonNull().map(dto -> {
