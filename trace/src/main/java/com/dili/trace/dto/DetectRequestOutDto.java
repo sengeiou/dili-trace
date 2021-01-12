@@ -9,6 +9,7 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -137,6 +138,12 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private Long brandId;
 
+
+    /**
+     * 规格名称
+     */
+    @Transient
+    private String specName;
 
     public String getBillCode() {
         return billCode;
@@ -332,6 +339,14 @@ public class DetectRequestOutDto extends DetectRequest {
 
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
+    }
+
+    public String getSpecName() {
+        return specName;
+    }
+
+    public void setSpecName(String specName) {
+        this.specName = specName;
     }
 
     @Transient
