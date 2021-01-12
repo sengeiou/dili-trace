@@ -126,6 +126,17 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private String billCode;
 
+    /**
+     * 品牌名称
+     */
+    @Transient
+    private String brandName;
+    /**
+     * 品牌ID
+     */
+    @Transient
+    private String brandId;
+
 
     public String getBillCode() {
         return billCode;
@@ -305,6 +316,22 @@ public class DetectRequestOutDto extends DetectRequest {
 
     public void setTruckType(Integer truckType) {
         this.truckType = truckType;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public String getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
     }
 
     @Transient
