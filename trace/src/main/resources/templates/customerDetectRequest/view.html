@@ -116,6 +116,14 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>打印报告</label>
                     <input type="text" class="form-control input-sm"value="<%if(null!= registerBill.isPrintCheckSheetName!){%>${registerBill.isPrintCheckSheetName}<%}else{%>-<%}%>" required readonly/>
                 </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>品牌</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.brandName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>是否进门</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.isCheckInName!}" required readonly/>
+                </div>
                 <br>
                 <% if(registerBill.registerSource! == 2){ %>
                 <div class="form-group">
@@ -136,7 +144,6 @@
                     <input type="text" class="form-control input-sm" value="${registerBill.phone!}" required readonly/>
                 </div>
                 <% } %>
-
                 <br>
 
             </div>
