@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CityQueryDto;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.service.AssetsRpcService;
@@ -36,7 +37,7 @@ public class CityController {
      */
     @RequestMapping(value = "/listCities.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<List<CityDto>> listCities(@RequestBody CityDto query) {
+    public BaseOutput<List<CityDto>> listCities(@RequestBody CityQueryDto query) {
         try {
             return BaseOutput.successData(this.cityService.listCityByInput(query));
         } catch (Exception e) {

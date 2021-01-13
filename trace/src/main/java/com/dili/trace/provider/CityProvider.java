@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CityQueryDto;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
@@ -25,7 +26,7 @@ public class CityProvider implements ValueProvider {
     CityRpcService cityService;
 
     @Override
-    public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) { CityDto cityListInput = new CityDto();
+    public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) { CityQueryDto cityListInput = new CityQueryDto();
         if(null == val){
             cityListInput.setLevelType(1);
         }else{

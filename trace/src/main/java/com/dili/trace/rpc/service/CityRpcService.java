@@ -1,6 +1,7 @@
 package com.dili.trace.rpc.service;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CityQueryDto;
 import com.dili.assets.sdk.rpc.CityRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.google.common.collect.Lists;
@@ -29,7 +30,7 @@ public class CityRpcService {
      * @return
      */
     public List<CityDto> listCityByCondition(String keyword) {
-        CityDto query = new CityDto();
+        CityQueryDto query = new CityQueryDto();
         query.setKeyword(keyword);
         return this.listCityByInput(query);
 
@@ -39,8 +40,8 @@ public class CityRpcService {
      * @param condition
      * @return
      */
-    public List<CityDto> listCityByCondition(CityDto condition) {
-        CityDto query = new CityDto();
+    public List<CityDto> listCityByCondition(CityQueryDto condition) {
+        CityQueryDto query = new CityQueryDto();
         query.setId(condition.getId());
         query.setCityCode(condition.getCityCode());
         query.setLevelType(condition.getLevelType());
@@ -56,7 +57,7 @@ public class CityRpcService {
      * @param query
      * @return
      */
-    public List<CityDto> listCityByInput(CityDto query) {
+    public List<CityDto> listCityByInput(CityQueryDto query) {
         List<CityDto> result = this.listCity(query);
         return result;
 
@@ -69,7 +70,7 @@ public class CityRpcService {
      * @return
      */
     public Optional<CityDto> findCityById(Long id) {
-        CityDto cityDto = new CityDto();
+        CityQueryDto cityDto = new CityQueryDto();
         cityDto.setId(id);
         return StreamEx.of(this.listCity(cityDto)).findFirst();
     }
@@ -80,7 +81,7 @@ public class CityRpcService {
      * @param query
      * @return
      */
-    private List<CityDto> listCity(CityDto query) {
+    private List<CityDto> listCity(CityQueryDto query) {
         try {
             BaseOutput<List<CityDto>> out = this.cityRpc.listByExample(query);
             if (!out.isSuccess()) {
