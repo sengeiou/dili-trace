@@ -12,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * tradeorder服务
+ */
 @Service
 @Transactional
 public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
-    @Autowired
-    UserService userService;
     @Autowired
     CustomerRpcService customerRpcService;
 
@@ -42,6 +43,16 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
 
     }
+
+    /**
+     * 创建tradeOrder
+     * @param sellerId
+     * @param buyerId
+     * @param orderType
+     * @param tradeOrderStatusEnum
+     * @param marketId
+     * @return
+     */
     public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum,
                                        Long marketId) {
 
@@ -57,6 +68,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
     }
 
+    /**
+     * 创建TradeOrder
+     * @param seller
+     * @param buyer
+     * @param orderType
+     * @param tradeOrderStatusEnum
+     * @return
+     */
     public TradeOrder createTradeOrder(CustomerExtendDto seller, CustomerExtendDto buyer,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
 
         TradeOrder tradeOrder = new TradeOrder();
@@ -72,6 +91,12 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         this.insertSelective(tradeOrder);
         return tradeOrder;
     }
+
+    /**
+     * 处理tradeorder
+     * @param tradeOrderItem
+     * @param tradeStatusEnum
+     */
 
     public void handleTradeOrder(TradeOrder tradeOrderItem, TradeOrderStatusEnum tradeStatusEnum) {
         tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());

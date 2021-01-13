@@ -42,8 +42,6 @@ import io.swagger.annotations.Api;
 public class ClientProductStockApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
 	@Autowired
-	private UserService userService;
-	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	ProductStockService batchStockService;

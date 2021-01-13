@@ -42,8 +42,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
-	UserService userService;
-	@Autowired
 	UpStreamService upStreamService;
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
