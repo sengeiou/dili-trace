@@ -98,7 +98,7 @@ public class NewRegisterBillController {
         modelMap.put("query", query);
         UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
         modelMap.put("user", user);
-        modelMap.put("isDeleted",YesOrNoEnum.NO.getCode());
+        modelMap.put("isDeleted", YesOrNoEnum.NO.getCode());
 
         return "new-registerBill/index";
     }
@@ -377,14 +377,14 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "verifyStatus", required = true) Integer verifyStatus) {
         try {
-            BillVerifyStatusEnum billVerifyStatusEnum=BillVerifyStatusEnum.fromCode(verifyStatus).orElse(null);
-            if(billVerifyStatusEnum==null){
+            BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(verifyStatus).orElse(null);
+            if (billVerifyStatusEnum == null) {
                 return BaseOutput.failure("审核状态错误");
             }
             registerBillService.auditRegisterBill(id, billVerifyStatusEnum);
-            if (BillVerifyStatusEnum.PASSED==billVerifyStatusEnum) {
+            if (BillVerifyStatusEnum.PASSED == billVerifyStatusEnum) {
                 Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
-                processService.afterBillPassed(id, marketId,this.uapRpcService.getCurrentOperator());
+                processService.afterBillPassed(id, marketId, this.uapRpcService.getCurrentOperator());
             }
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -537,6 +537,14 @@ public class NewRegisterBillController {
         }
         if (null != registerBill.getPieceWeight()) {
             modelMap.put("pieceWeight", registerBill.getPieceWeight().setScale(0, BigDecimal.ROUND_DOWN));
+        }
+        if (null != registerBill.getTareWeight()) {
+            modelMap.put("tareWeight", registerBill.getTareWeight().setScale(0, BigDecimal.ROUND_DOWN));
+        }
+        if (null != registerBill.getUpStreamId()) {
+            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+            String upStreamName = Optional.ofNullable(upStream).orElse(new UpStream()).getName();
+            modelMap.put("upStreamName", upStreamName);
         }
         List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCertList(imageCerts);
