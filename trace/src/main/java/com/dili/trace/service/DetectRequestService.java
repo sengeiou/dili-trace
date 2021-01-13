@@ -763,6 +763,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateRequest.setDetectTime(new Date());
         // 检测结果
         updateRequest.setDetectResult(pass ? DetectResultEnum.PASSED.getCode() : DetectResultEnum.FAILED.getCode());
+        // 初检
+        updateRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         updateRequest.setModified(new Date());
         this.updateSelective(updateRequest);
     }
