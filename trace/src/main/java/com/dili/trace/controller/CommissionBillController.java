@@ -43,8 +43,8 @@ import java.util.function.Function;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 //@Api("/commissionBill")
-//@Controller
-//@RequestMapping("/commissionBill")
+@Controller
+@RequestMapping("/commissionBill")
 public class CommissionBillController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommissionBillController.class);
@@ -81,18 +81,18 @@ public class CommissionBillController {
      * @param modelMap
      * @return
      */
-    @ApiOperation("跳转到CommissionBill页面")
-    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-        Date now = new Date();
-        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        // modelMap.put("state", RegisterBillStateEnum.WAIT_CHECK.getCode());
-        UserTicket user = SessionContext.getSessionContext().getUserTicket();
-        modelMap.put("user", user);
-
-        return "commissionBill/index";
-    }
+//    @ApiOperation("跳转到CommissionBill页面")
+//    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
+//    public String index(ModelMap modelMap) {
+//        Date now = new Date();
+//        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+//        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+//        // modelMap.put("state", RegisterBillStateEnum.WAIT_CHECK.getCode());
+//        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+//        modelMap.put("user", user);
+//
+//        return "commissionBill/index";
+//    }
 
     /**
      * 跳转到CommissionBill页面
