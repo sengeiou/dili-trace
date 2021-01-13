@@ -830,13 +830,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             UserOutput outPutDto = new UserOutput();
             User user = this.userService.get(td);
             if (user != null && user.getYn().equals(YesOrNoEnum.YES.getCode())) {
-                outPutDto.setId(td);
+                outPutDto.setUserId(td);
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);
-                outPutDto.setName(user.getName());
+                outPutDto.setUserName(user.getName());
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
-                    outPutDto.setName(userStoreExists.getStoreName());
+                    outPutDto.setUserName(userStoreExists.getStoreName());
                 }
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
                 outPutDto.setTallyAreaNos(user.getTallyAreaNos());

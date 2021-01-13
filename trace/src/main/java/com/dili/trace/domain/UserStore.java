@@ -20,7 +20,11 @@ public class UserStore extends BaseDomain {
      */
     @Column(name = "`store_name`")
     private String storeName;
-
+    /**
+     * 业户名
+     */
+    @Column(name = "`user_name`")
+    private String userName;
     /**
      * 业户主键
      */
@@ -79,5 +83,13 @@ public class UserStore extends BaseDomain {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

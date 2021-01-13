@@ -95,6 +95,7 @@ public class ClientUserStoreApi {
             if(storeList.isEmpty()){
                 userStore.setCreated(new Date());
                 userStore.setModified(new Date());
+                userStore.setUserName(this.sessionContext.getSessionData().getUserName());
                 userStoreService.insert(userStore);
             }else{
                 //验证店铺名是否已存在
@@ -102,10 +103,12 @@ public class ClientUserStoreApi {
                 queStore.setStoreName(userStore.getStoreName());
                 List<UserStore> oldList=userStoreService.listByExample(queStore);
                 if(oldList.isEmpty()){
+                    userStore.setUserName(this.sessionContext.getSessionData().getUserName());
                     this.userStoreService.updateExactByExample(userStore, queObj);
                 }else{
                     //旧店铺名与新店铺名一致
                     if(userStore.getStoreName().equals(storeList.get(0).getStoreName())){
+                        userStore.setUserName(this.sessionContext.getSessionData().getUserName());
                         this.userStoreService.updateExactByExample(userStore, queObj);
                         return BaseOutput.success("success");
                     }
