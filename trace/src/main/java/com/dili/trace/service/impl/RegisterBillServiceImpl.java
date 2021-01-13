@@ -24,6 +24,7 @@ import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.NumUtils;
+import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -131,6 +132,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
             CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, dto.getMarketId());
             RegisterBill registerBill = dto.build(user,dto.getMarketId());
+            if(StringUtils.isNotBlank(registerBill.getPlate())){
+                if(!RegUtils.isCarNo(registerBill.getPlate().trim())){
+                    throw new TraceBizException("车牌格式错误");
+                }
+            }
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
             CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),dto.getMarketId());
