@@ -12,6 +12,7 @@ import com.dili.ss.domain.PageOutput;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.rpc.dto.CardResultDto;
+import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.AssetsRpcService;
 import io.swagger.annotations.Api;
@@ -47,7 +48,7 @@ public class ManagerUserApi {
     @Autowired
     CustomerRpcService customerRpcService;
     @Autowired
-    AssetsRpcService assetsRpcService;
+    CarTypeRpcService carTypeRpcService;
 
 //    /**
 //     * 商户审核统计概览
@@ -215,7 +216,7 @@ public class ManagerUserApi {
     private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerExtendDto>> pageOutput, ClientTypeEnum clientTypeEnum) {
         PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
         if (null != pageOutput) {
-            Map<Long, String> carTypeMap = StreamEx.ofNullable(this.assetsRpcService.listCarType(new CarTypePublicDTO(), marketId)).flatCollection(Function.identity())
+            Map<Long, String> carTypeMap = StreamEx.ofNullable(this.carTypeRpcService.listCarType()).flatCollection(Function.identity())
                     .mapToEntry(CarTypeDTO::getId, CarTypeDTO::getName).toMap();
 
             List<CustomerExtendDto> customerList = pageOutput.getData();

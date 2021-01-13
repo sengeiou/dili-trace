@@ -3,6 +3,7 @@ package com.dili.trace.api;
 import java.util.List;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CityQueryDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Countries;
 
@@ -39,7 +40,7 @@ public class CityApi {
      */
     @ApiOperation(value = "城市接口查询【接口已通】", notes = "城市接口查询")
     @RequestMapping(value = "/listCityByCondition", method = RequestMethod.POST)
-    public BaseOutput<List<CityDto>> listCityByCondition(@RequestBody CityDto city) {
+    public BaseOutput<List<CityDto>> listCityByCondition(@RequestBody CityQueryDto city) {
         try {
             return BaseOutput.successData(this.cityService.listCityByCondition(city));
         } catch (Exception e) {

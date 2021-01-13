@@ -31,21 +31,21 @@ public class AssetsRpcService {
     /**
      * 查询车型
      */
-    public List<CarTypeDTO> listCarType(CarTypePublicDTO carTypePublicDTO, Long marketId) {
-
-        try {
-            carTypePublicDTO.setMarketId(marketId);
-            BaseOutput<List<CarTypeDTO>> out = this.assetsRpc.listCarType(carTypePublicDTO);
-            if (out != null && out.isSuccess()) {
-                return StreamEx.ofNullable(out.getData())
-                        .flatCollection(Function.identity()).nonNull()
-                        .filter(dto -> StringUtils.isNotBlank(dto.getName())).toList();
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Lists.newArrayList();
-    }
+//    public List<CarTypeDTO> listCarType(CarTypePublicDTO carTypePublicDTO, Long marketId) {
+//
+//        try {
+//            carTypePublicDTO.setMarketId(marketId);
+//            BaseOutput<List<CarTypeDTO>> out = this.assetsRpc.listCarType(carTypePublicDTO);
+//            if (out != null && out.isSuccess()) {
+//                return StreamEx.ofNullable(out.getData())
+//                        .flatCollection(Function.identity()).nonNull()
+//                        .filter(dto -> StringUtils.isNotBlank(dto.getName())).toList();
+//            }
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//        }
+//        return Lists.newArrayList();
+//    }
 
 
     /**

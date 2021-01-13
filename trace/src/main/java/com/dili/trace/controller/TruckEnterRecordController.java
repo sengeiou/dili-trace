@@ -5,6 +5,7 @@ import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
@@ -28,7 +29,7 @@ public class TruckEnterRecordController {
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
     @Autowired
-    AssetsRpcService assetsRpcService;
+    CarTypeRpcService carTypeRpcService;
     @Autowired
     UapRpcService uapRpcService;
 
@@ -41,7 +42,7 @@ public class TruckEnterRecordController {
     @ApiOperation("跳转到TruckEnterRecord页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, HttpServletRequest req) {
-        List<CarTypeDTO> carTypeList = this.assetsRpcService.listCarType(new CarTypePublicDTO(), uapRpcService.getCurrentFirm().get().getId());
+        List<CarTypeDTO> carTypeList = this.carTypeRpcService.listCarType();
         modelMap.put("carTypeList", carTypeList);
         return "truckEnterRecord/index";
     }
