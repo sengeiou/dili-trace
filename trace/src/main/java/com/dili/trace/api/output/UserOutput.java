@@ -5,140 +5,151 @@ package com.dili.trace.api.output;
  */
 public class UserOutput {
 
-	/**
-	 * 主键
-	 */
-	private Long id;
+    /**
+     * 主键
+     */
+    private Long userId;
 
-	/**
-	 * 业户状态 {@link com.dili.trace.enums.ValidateStateEnum}
-	 */
-	private Integer validateState;
+    /**
+     * 业户状态 {@link com.dili.trace.enums.ValidateStateEnum}
+     */
+    private Integer validateState;
 
-	/**
-	 * 手机号
-	 */
-	private String phone;
+    /**
+     * 手机号
+     */
+    private String phone;
 
-	/**
-	 * 摊位号
-	 */
-	private String tallyAreaNos;
+    /**
+     * 摊位号
+     */
+    private String tallyAreaNos;
 
-	/**
-	 * 姓名
-	 */
-	private String name;
+    /**
+     * 姓名
+     */
+    private String userName;
 
-	/**
-	 * 还不知道
-	 */
-	private String numbers;
+    private String storeName;
 
-	/**
-	 * 二维码状态 {@link com.dili.trace.glossary.UserQrStatusEnum}
-	 */
-	private Integer qrStatus;
+    /**
+     * 还不知道
+     */
+    private String numbers;
 
-	/**
-	 * 还不知道
-	 */
-	private Integer cnt;
+    /**
+     * 二维码状态 {@link com.dili.trace.glossary.UserQrStatusEnum}
+     */
+    private Integer qrStatus;
 
-	/**
-	 * 市场名称
-	 */
-	private String marketName;
+    /**
+     * 还不知道
+     */
+    private Integer cnt;
 
-	/**
-	 * 营业执照
-	 */
-	private String businessLicenseUrl;
+    /**
+     * 市场名称
+     */
+    private String marketName;
 
-	/**
-	 * 用户类型 {@ling com.dili.trace.glossary.UserTypeEnum}
-	 */
-	private Integer userType;
+    /**
+     * 营业执照
+     */
+    private String businessLicenseUrl;
 
-	public Integer getUserType() {
-		return userType;
-	}
+    /**
+     * 用户类型 {@ling com.dili.trace.glossary.UserTypeEnum}
+     */
+    private Integer userType;
 
-	public void setUserType(Integer userType) {
-		this.userType = userType;
-	}
+    public Integer getUserType() {
+        return userType;
+    }
 
-	public String getBusinessLicenseUrl() {
-		return businessLicenseUrl;
-	}
+    public void setUserType(Integer userType) {
+        this.userType = userType;
+    }
 
-	public void setBusinessLicenseUrl(String businessLicenseUrl) {
-		this.businessLicenseUrl = businessLicenseUrl;
-	}
+    public String getBusinessLicenseUrl() {
+        return businessLicenseUrl;
+    }
 
-	public String getMarketName() {
-		return marketName;
-	}
+    public void setBusinessLicenseUrl(String businessLicenseUrl) {
+        this.businessLicenseUrl = businessLicenseUrl;
+    }
 
-	public void setMarketName(String marketName) {
-		this.marketName = marketName;
-	}
+    public String getMarketName() {
+        return marketName;
+    }
 
-	public Integer getQrStatus() {
-		return qrStatus;
-	}
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
 
-	public void setQrStatus(Integer qrStatus) {
-		this.qrStatus = qrStatus;
-	}
+    public Integer getQrStatus() {
+        return qrStatus;
+    }
 
-	public String getNumbers() {
-		return numbers;
-	}
+    public void setQrStatus(Integer qrStatus) {
+        this.qrStatus = qrStatus;
+    }
 
-	public void setNumbers(String numbers) {
-		this.numbers = numbers;
-	}
+    public String getNumbers() {
+        return numbers;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setNumbers(String numbers) {
+        this.numbers = numbers;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
-	public Integer getValidateState() {
-		return validateState;
-	}
+    public Integer getValidateState() {
+        return validateState;
+    }
 
-	public void setValidateState(Integer validateState) {
-		this.validateState = validateState;
-	}
+    public void setValidateState(Integer validateState) {
+        this.validateState = validateState;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-	public String getTallyAreaNos() {
-		return tallyAreaNos;
-	}
+    public String getTallyAreaNos() {
+        return tallyAreaNos;
+    }
 
-	public void setTallyAreaNos(String tallyAreaNos) {
-		this.tallyAreaNos = tallyAreaNos;
-	}
+    public void setTallyAreaNos(String tallyAreaNos) {
+        this.tallyAreaNos = tallyAreaNos;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
 
     /**
      * @return Integer return the cnt
