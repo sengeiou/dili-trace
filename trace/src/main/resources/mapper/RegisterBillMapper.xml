@@ -1394,6 +1394,7 @@
     r.`detect_source`,
     r.`detect_time`,
     r.`detect_result`,
+    r.`detect_type`,
     r.`detector_name`,
     b.`check_sheet_id`,
     b.`checkin_status`,

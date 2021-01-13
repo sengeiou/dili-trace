@@ -643,6 +643,9 @@ public class RegisterBillDto extends RegisterBill {
 
     @Transient
     public String getDetectDesc() {
+        if (DetectTypeEnum.NEW.getCode().equals(this.detectType) && DetectResultEnum.NONE.getCode().equals(this.detectResult)){
+            return DetectResultEnum.name(this.detectResult);
+        }
         return DetectTypeEnum.toName(this.detectType)+ DetectResultEnum.name(this.detectResult);
     }
 }
