@@ -11,11 +11,11 @@
             </div>
 
 
-            <div class="form-group col">
+            <!--div class="form-group col">
                 <label for="registerSource">登记来源</label>
                 <select id="registerSource" name="registerSource" class="form-control"></select>
                 <#bcomboProvider _id="registerSource" _provider="registerSourceProvider" _value="" _onLoadSuccess=""/>
-            </div>
+            </div-->
 
             <div class="form-group col">
                 <label for="likeProductName">商品</label>
@@ -54,10 +54,10 @@
                 <input type="hidden" name="detectResult">
             </div>
 
-            <div class="form-group col">
+            <!--div class="form-group col">
                 <label for="likeTallyAreaNo">理货区号</label>
                 <input type="text" class="form-control" name="likeTallyAreaNo" id="likeTallyAreaNo"/>
-            </div>
+            </div-->
 
             <div class="form-group col">
                 <label for="likePlate">车牌号</label>
@@ -261,11 +261,9 @@
                 <th data-field="sampleCode"  data-sort-name="sample_code" data-sortable="true" data-align="center">
                     采样编号
                 </th>
-
-                <th data-field="sourceDesc"  data-sort-name="" data-sortable="false" data-align="center">
+                <!--th data-field="sourceDesc"  data-sort-name="" data-sortable="false" data-align="center">
                     登记来源
-                </th>
-
+                </th-->
                 <th data-field="detectStatusName" data-sort-name="detect_status" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
@@ -310,7 +308,7 @@
                 <th data-field="detectTime"   data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResult"  data-sort-name="detect_result" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
+                <th data-field="detectDesc"  data-sort-name="detect_result" data-sortable="false" data-align="center">
                     检测结果
                 </th>
                 <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">

@@ -2,6 +2,7 @@ package com.dili.trace.dto;
 
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 
 import javax.persistence.Column;
@@ -491,5 +492,9 @@ public class DetectRequestWithBillDto extends RegisterBill {
     @Transient
     public String getDetectTypeName() {
         return DetectTypeEnum.toName(this.detectType);
+    }
+    @Transient
+    public String getDetectDesc() {
+        return DetectTypeEnum.toName(this.detectType)+ DetectResultEnum.name(this.detectResult);
     }
 }
