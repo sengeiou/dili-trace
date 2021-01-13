@@ -31,11 +31,17 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>报备编号</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
                 </div>
+
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.sourceDesc}"  readonly/>
+                </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.detectStatusName!}" required readonly/>
                 </div>
-                <br>
+
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.verifyStatusName!}" required readonly/>
@@ -44,11 +50,12 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>报备单类型</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.registTypeName!}" required readonly/>
                 </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>业户名称</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.name!}" required readonly/>
                 </div>
-                <br>
+
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>企业名称</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.corporateName!}" required readonly/>
@@ -57,11 +64,11 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>车牌号</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.plate!}" required readonly/>
                 </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>商品</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.productName!}" required readonly/>
                 </div>
-                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>品牌</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.brandName!}" required readonly/>
@@ -70,11 +77,12 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>重量/KG</label>
                     <input type="text" class="form-control input-sm"  value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>" required readonly/>
                 </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>产地</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.originName!}" required readonly/>
                 </div>
-                <br>
+
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>件数</label>
                     <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum!){%>${pieceNum}<%}else{%>-<%}%>" required readonly/>
@@ -83,11 +91,11 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>件重</label>
                     <input type="text" class="form-control input-sm" value="<%if(null!= pieceWeight!){%>${pieceWeight}<%}else{%>-<%}%>" required readonly/>
                 </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>合计</label>
                     <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum! && null!= pieceWeight){%>${pieceNum*pieceWeight}<%}else{%>-<%}%>" required readonly/>
                 </div>
-                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>到货时间</label>
                     <input type="text" class="form-control input-sm" value=" " required readonly/>
@@ -96,11 +104,11 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测报告</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.hasDetectReportName!}" required readonly/>
                 </div>
+                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>产地证明</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.hasOriginCertifiyName!}" required readonly/>
                 </div>
-                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>采样时间</label>
                     <input type="text" class="form-control input-sm" value="<%if(null!= detectRequest.sampleTime!){%>${detectRequest.sampleTime,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" required readonly/>
@@ -113,10 +121,13 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>是否删除</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.isDeletedName!}" required readonly/>
                 </div>
-                <br>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>打印报告</label>
                     <input type="text" class="form-control input-sm"value="<%if(null!= registerBill.isPrintCheckSheetName!){%>${registerBill.isPrintCheckSheetName}<%}else{%>-<%}%>" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>是否进门</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.isCheckInName!}" required readonly/>
                 </div>
             </div>
 

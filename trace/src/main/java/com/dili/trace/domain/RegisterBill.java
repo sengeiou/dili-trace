@@ -1227,6 +1227,11 @@ public class RegisterBill extends BaseDomain {
         return YesOrNoEnum.YES.getCode().equals(this.getIsDeleted()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
     }
 
+    @Transient
+    public String getIsCheckInName() {
+        return YesOrNoEnum.YES.getCode().equals(this.getIsCheckin()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
+    }
+
     /**
      * @return Integer return the isDeleted
      */
