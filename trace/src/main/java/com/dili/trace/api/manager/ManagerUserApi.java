@@ -1,5 +1,7 @@
 package com.dili.trace.api.manager;
 
+import com.dili.assets.sdk.dto.CarTypeDTO;
+import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -7,11 +9,14 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.ss.domain.PageOutput;
-import com.dili.trace.dto.CustomerExtendOutPutDto;
+import com.dili.trace.dto.*;
+import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.service.AssetsRpcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 管理用户接口
@@ -39,6 +46,8 @@ public class ManagerUserApi {
     private LoginSessionContext sessionContext;
     @Autowired
     CustomerRpcService customerRpcService;
+    @Autowired
+    AssetsRpcService assetsRpcService;
 
 //    /**
 //     * 商户审核统计概览
@@ -143,9 +152,7 @@ public class ManagerUserApi {
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, marketId);
 
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
-            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
-
-            return page;
+            return getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER);
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -166,11 +173,8 @@ public class ManagerUserApi {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input, marketId);
-
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
-            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
-
-            return page;
+            return getListPageOutput(marketId, pageOutput, ClientTypeEnum.BUYER);
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -192,8 +196,7 @@ public class ManagerUserApi {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, marketId);
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
-            PageOutput<List<CustomerExtendOutPutDto>> page = getListPageOutput(marketId, pageOutput);
-            return page;
+            return getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -209,21 +212,39 @@ public class ManagerUserApi {
      * @param pageOutput
      * @return
      */
-    private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerExtendDto>> pageOutput) {
+    private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerExtendDto>> pageOutput, ClientTypeEnum clientTypeEnum) {
         PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
         if (null != pageOutput) {
+            Map<Long, String> carTypeMap = StreamEx.ofNullable(this.assetsRpcService.listCarType(new CarTypePublicDTO(), marketId)).flatCollection(Function.identity())
+                    .mapToEntry(CarTypeDTO::getId, CarTypeDTO::getName).toMap();
+
             List<CustomerExtendDto> customerList = pageOutput.getData();
             List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(customerList)) {
                 customerList.forEach(c -> {
                     CustomerExtendOutPutDto customerOutput = new CustomerExtendOutPutDto();
-                    BeanUtils.copyProperties(c, customerOutput);
                     customerOutput.setMarketId(marketId);
                     customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
+                    customerOutput.setId(c.getId());
+                    customerOutput.setName(c.getName());
+
+                    customerOutput.setPhone(c.getContactsPhone());
+                    customerOutput.setClientType(clientTypeEnum.getCode());
+
                     Optional<CardResultDto> cardResultDto = this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId);
                     cardResultDto.ifPresent(cardInfo -> {
                         customerOutput.setTradePrintingCard(cardInfo.getCardNo());
                     });
+
+                    List<VehicleInfoDto> vehicleInfoDtoList = StreamEx.ofNullable(c.getVehicleInfoList()).flatCollection(Function.identity()).map(v -> {
+                        VehicleInfoDto vehicleInfoDto = new VehicleInfoDto();
+                        vehicleInfoDto.setVehiclePlate(v.getRegistrationNumber());
+                        vehicleInfoDto.setVehicleType(v.getTypeNumber());
+                        vehicleInfoDto.setVehicleTypeName(carTypeMap.getOrDefault(v.getTypeNumber(), ""));
+                        return vehicleInfoDto;
+                    }).toList();
+                    customerOutput.setVehicleInfoList(vehicleInfoDtoList);
+
                     customerOutputList.add(customerOutput);
                 });
             }
