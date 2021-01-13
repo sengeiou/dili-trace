@@ -3,6 +3,8 @@ package com.dili.trace.dto;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
@@ -637,5 +639,10 @@ public class RegisterBillDto extends RegisterBill {
 
     public void setDetectTime(Date detectTime) {
         this.detectTime = detectTime;
+    }
+
+    @Transient
+    public String getDetectDesc() {
+        return DetectTypeEnum.toName(this.detectType)+ DetectResultEnum.name(this.detectResult);
     }
 }
