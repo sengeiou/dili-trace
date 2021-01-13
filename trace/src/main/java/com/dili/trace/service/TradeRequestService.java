@@ -52,8 +52,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Transactional
 public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     private static final Logger logger = LoggerFactory.getLogger(TradeRequestService.class);
-    @Autowired
-    UserService userService;
+
     @Autowired
     ProductStockService batchStockService;
     @Autowired
@@ -608,39 +607,39 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param sellerId
      * @param buyerId
      */
-    void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
-        User seller = this.userService.get(sellerId);
-        if (seller == null) {
-            throw new TraceBizException("卖家信息不存在");
-        }
-
-        User buyer = this.userService.get(buyerId);
-        if (buyer == null) {
-            throw new TraceBizException("买家信息不存在");
-        }
-
-        UpStream buyersUStream = StreamEx
-                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(buyerId, UserFlagEnum.UP, sellerId)).findFirst()
-                .orElse(null);
-
-        UpStream sellersDStream = StreamEx
-                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(sellerId, UserFlagEnum.DOWN, buyerId)).findFirst()
-                .orElse(null);
-        if (buyersUStream == null) {
-            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
-            upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
-            upStreamDto.setUserIds(Arrays.asList(buyerId));
-            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-        }
-
-        if (sellersDStream == null) {
-            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
-            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
-            upStreamDto.setUserIds(Arrays.asList(sellerId));
-            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-        }
-
-    }
+//    void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
+//        User seller = this.userService.get(sellerId);
+//        if (seller == null) {
+//            throw new TraceBizException("卖家信息不存在");
+//        }
+//
+//        User buyer = this.userService.get(buyerId);
+//        if (buyer == null) {
+//            throw new TraceBizException("买家信息不存在");
+//        }
+//
+//        UpStream buyersUStream = StreamEx
+//                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(buyerId, UserFlagEnum.UP, sellerId)).findFirst()
+//                .orElse(null);
+//
+//        UpStream sellersDStream = StreamEx
+//                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(sellerId, UserFlagEnum.DOWN, buyerId)).findFirst()
+//                .orElse(null);
+//        if (buyersUStream == null) {
+//            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
+//            upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
+//            upStreamDto.setUserIds(Arrays.asList(buyerId));
+//            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+//        }
+//
+//        if (sellersDStream == null) {
+//            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
+//            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
+//            upStreamDto.setUserIds(Arrays.asList(sellerId));
+//            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+//        }
+//
+//    }
 
     /**
      * 为用户增加上下游
@@ -828,20 +827,20 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
-            User user = this.userService.get(td);
-            if (user != null && user.getYn().equals(YesOrNoEnum.YES.getCode())) {
+            com.dili.customer.sdk.domain.Customer cust= this.customerRpcService.findCustByIdOrEx(td);
+            if (cust != null) {
                 outPutDto.setUserId(td);
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);
-                outPutDto.setUserName(user.getName());
+                outPutDto.setUserName(cust.getName());
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setUserName(userStoreExists.getStoreName());
                 }
-                outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
-                outPutDto.setTallyAreaNos(user.getTallyAreaNos());
-                outPutDto.setMarketName(user.getMarketName());
-                outPutDto.setUserType(user.getUserType());
+//                outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+//                outPutDto.setTallyAreaNos(user.getTallyAreaNos());
+//                outPutDto.setMarketName(user.getMarketName());
+//                outPutDto.setUserType(user.getUserType());
                 outPutDtoList.add(outPutDto);
             }
         });
