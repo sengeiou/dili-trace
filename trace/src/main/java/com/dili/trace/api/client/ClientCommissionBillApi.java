@@ -56,8 +56,6 @@ public class ClientCommissionBillApi {
     @Autowired
     BillService billService;
     @Autowired
-    UserService userService;
-    @Autowired
     LoginSessionContext sessionContext;
 
     /**
@@ -131,9 +129,6 @@ public class ClientCommissionBillApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             Long userId = sessionData.getUserId();
-            if (!UserTypeEnum.COMMISSION_USER.equalsToCode(this.userService.get(userId).getUserType())) {
-                return BaseOutput.failure("您不是场外用户");
-            }
 
             registerBill.setUserId(userId);
             registerBill.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
@@ -166,10 +161,6 @@ public class ClientCommissionBillApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             Long userId = sessionData.getUserId();
-            User user = userService.get(userId);
-            if (!UserTypeEnum.COMMISSION_USER.equalsToCode(user.getUserType())) {
-                return BaseOutput.failure("您不是场外用户");
-            }
 
             logger.info("获取登记单详情:{}", input.getBillId());
             RegisterBill registerBill = billService.get(input.getBillId());

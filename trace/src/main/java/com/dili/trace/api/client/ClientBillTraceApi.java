@@ -46,8 +46,6 @@ import io.swagger.annotations.Api;
 public class ClientBillTraceApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBillTraceApi.class);
 	@Autowired
-	private UserService userService;
-	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;
