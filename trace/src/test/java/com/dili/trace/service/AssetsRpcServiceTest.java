@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.function.Function;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @WebAppConfiguration("src/main/resources")
 @EnableTransactionManagement
 @Transactional(propagation = Propagation.NEVER)
