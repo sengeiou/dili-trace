@@ -236,7 +236,26 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setUnitPrice(BigDecimal.ZERO);
         }
 
+//更新主台账单剩余重量
+        if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
+            RegisterHead registerHead = new RegisterHead();
+            registerHead.setCode(registerBill.getRegisterHeadCode());
+            List<RegisterHead> registerHeadList = registerHeadService.listByExample(registerHead);
+            if (CollectionUtils.isNotEmpty(registerHeadList)) {
+                registerHead = registerHeadList.get(0);
+            } else {
+                throw new TraceBizException("未找到主台账单");
+            }
+            //主台账单的剩余重量小于进门登记单的总重量时给出提示
+            BigDecimal remianWeight = registerHead.getRemainWeight();
+            BigDecimal billWeight = registerBill.getWeight();
+            if (remianWeight == null || (remianWeight != null && remianWeight.compareTo(billWeight) == -1)) {
+                throw new TraceBizException("进门登记单的总重量大于主台账单的剩余重量，不可新增");
+            }
 
+            registerHead.setRemainWeight(remianWeight.subtract(billWeight));
+            registerHeadService.updateSelective(registerHead);
+        }
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
         if (result == 0) {
