@@ -595,7 +595,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             return Lists.newArrayList();
         }
 
-        List<DetectRequestMessageEvent> msgStream = Lists.newArrayList(DetectRequestMessageEvent.uploadHandleResult);
+        List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
@@ -622,9 +622,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                     if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.review);
                         msgStream.add(DetectRequestMessageEvent.batchReview);
-                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
-                        msgStream.add(DetectRequestMessageEvent.review);
-                        msgStream.add(DetectRequestMessageEvent.batchReview);
+                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
+                        msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
+                        if (item.getHasHandleResult() == 0) {
+                            msgStream.add(DetectRequestMessageEvent.review);
+                            msgStream.add(DetectRequestMessageEvent.batchReview);
+                        }
                     }
                 }
                 // 检测合格，生成检测报告。
