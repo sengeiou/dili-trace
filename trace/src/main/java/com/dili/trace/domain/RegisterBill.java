@@ -1220,7 +1220,7 @@ public class RegisterBill extends BaseDomain {
     }
 
     /**
-     * @return Integer return the isDeleted
+     * @return String return the isDeleted
      */
     @Transient
     public String getIsDeletedName() {
@@ -1230,6 +1230,14 @@ public class RegisterBill extends BaseDomain {
     @Transient
     public String getIsCheckInName() {
         return YesOrNoEnum.YES.getCode().equals(this.getIsCheckin()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
+    }
+
+    /**
+     * @return String return the isDeleted
+     */
+    @Transient
+    public String getTruckTypeShow() {
+        return TruckTypeEnum.FULL.getCode().equals(this.getTruckType()) ? TruckTypeEnum.FULL.getName() : TruckTypeEnum.POOL.getName();
     }
 
     /**
