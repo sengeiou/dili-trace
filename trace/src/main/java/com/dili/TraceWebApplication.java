@@ -1,5 +1,6 @@
 package com.dili;
 
+import com.dili.common.config.BuildConfiguration;
 import com.dili.ss.metadata.provider.DatetimeProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -61,7 +62,7 @@ public class TraceWebApplication extends SpringBootServletInitializer {
         SpringApplication sa = new SpringApplication(TraceWebApplication.class);
         sa.addListeners(new ApplicationPidFileWriter());
         ConfigurableApplicationContext ctx = sa.run(args);
-//        DatetimeProvider dtp = ctx.getBean(DatetimeProvider.class);
+//        BuildConfiguration dtp = ctx.getBean(BuildConfiguration.class);
 //        System.out.println(dtp);
     }
 
