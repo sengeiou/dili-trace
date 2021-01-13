@@ -1,6 +1,7 @@
 package com.dili.trace.rpc.service;
 
 import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
@@ -287,6 +288,7 @@ public class CustomerRpcService {
         buyer.setCharacterType(CustomerEnum.CharacterType.买家.getCode());
         queryInput.setCharacterType(buyer);
         queryInput.setMarketId(marketId);
+        logger.debug("listBuyer:marketId={},queryInput={}",marketId, JSON.toJSONString(queryInput));
         PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
         return pageOutput;
     }
