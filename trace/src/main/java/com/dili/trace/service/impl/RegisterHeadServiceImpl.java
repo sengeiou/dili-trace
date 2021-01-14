@@ -22,6 +22,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.NumUtils;
+import com.dili.trace.util.RegUtils;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -236,11 +237,12 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         });
 
         String specName=registerHead.getSpecName();
-
-        //String str = "abcDD_-34中";
-        String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
-        if(!Pattern.matches(regex, specName)) {
-            throw new TraceBizException("规格名称错误");
+        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+            throw new TraceBizException("规格名称包含非法字符");
+        }
+        String remark=registerHead.getRemark();
+        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+            throw new TraceBizException("备注包含非法字符");
         }
         return BaseOutput.success();
     }
