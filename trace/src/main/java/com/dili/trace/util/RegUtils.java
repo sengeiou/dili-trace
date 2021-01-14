@@ -1,5 +1,7 @@
 package com.dili.trace.util;
 
+import com.dili.common.exception.TraceBizException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,5 +13,11 @@ public class RegUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean isValidInput(String input) {
+        //String str = "abcDD_-34中";
+        String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
+        return Pattern.matches(regex, input);
     }
 }

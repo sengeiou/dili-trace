@@ -141,17 +141,17 @@
       <if test="created != null">
           <![CDATA[ AND date(r.created) = #{created} ]]>
       </if>
-      <if test="isDeleted != null">
-          AND b.is_deleted = #{isDeleted}
-      </if>
-      <if test="marketId != null">
-          AND b.market_id =#{marketId}
-      </if>
       <if test="createdStart != null">
           <![CDATA[ AND b.created >= #{createdStart} ]]>
       </if>
       <if test="createdEnd != null">
           <![CDATA[ AND b.created <= #{createdEnd} ]]>
+      </if>
+      <if test="isDeleted != null">
+          AND b.is_deleted = #{isDeleted}
+      </if>
+      <if test="marketId != null">
+          AND b.market_id =#{marketId}
       </if>
       group by r.detect_source
   </select>
@@ -201,6 +201,12 @@
       </if>
       <if test="created != null">
           <![CDATA[ AND date(r.created) = #{created} ]]>
+      </if>
+      <if test="createdStart != null">
+          <![CDATA[ AND b.created >= #{createdStart} ]]>
+      </if>
+      <if test="createdEnd != null">
+          <![CDATA[ AND b.created <= #{createdEnd} ]]>
       </if>
       <if test="isDeleted != null">
           AND b.is_deleted = #{isDeleted}
