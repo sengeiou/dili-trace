@@ -107,6 +107,21 @@ class CustomerDetectRequestGrid extends ListPage {
         let selected = this.rows[0];
         //@ts-ignore
         bs4pop.removeAll();
+        var url=this.toUrl('/customerDetectRequest/manualCheck_confirm.html?id='+selected.billId);
+        //@ts-ignore
+        var manual_dia = bs4pop.dialog({
+            title: '人工检测',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '80%',
+            height: '60%',
+            btns: []
+        });
+        /*let selected = this.rows[0];
+        //@ts-ignore
+        bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             //@ts-ignore
             bs4pop.confirm('是否人工检测通过当前登记单？<br/>'+selected.code,
@@ -137,10 +152,9 @@ class CustomerDetectRequestGrid extends ListPage {
             //@ts-ignore
             bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
-        debugger
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
-        }
+        }*/
     }
 
     /**
