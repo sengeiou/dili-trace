@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -136,6 +137,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 if(!RegUtils.isCarNo(registerBill.getPlate().trim())){
                     throw new TraceBizException("车牌格式错误");
                 }
+            }
+            String specName=registerBill.getSpecName();
+            //String str = "abcDD_-34中";
+            String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
+            if(!Pattern.matches(regex, specName)) {
+                throw new TraceBizException("规格名称错误");
             }
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
