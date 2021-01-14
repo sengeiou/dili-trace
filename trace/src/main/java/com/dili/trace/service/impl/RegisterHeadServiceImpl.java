@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * 进门主台账单接口实现
@@ -49,7 +50,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     private static final Logger logger = LoggerFactory.getLogger(RegisterHeadServiceImpl.class);
 
     @Autowired
-    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService ;
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
     @Autowired
     UserPlateService userPlateService;
@@ -72,16 +73,19 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Override
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads,
-                                             Optional<OperatorUser> operatorUser,Long marketId) {
+                                             Optional<OperatorUser> operatorUser, Long marketId) {
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
-            CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(dto.getUserId(),marketId);
+            CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(dto.getUserId(), marketId);
             RegisterHead registerHead = dto.build(customer);
 
-            Customer cq=new Customer();
+            String specName = registerHead.getSpecName();
+
+
+            Customer cq = new Customer();
             cq.setCustomerId(customer.getCode());
-            this.clientRpcService.findCustomer(cq,marketId).ifPresent(card->{
+            this.clientRpcService.findCustomer(cq, marketId).ifPresent(card -> {
                 registerHead.setThirdPartyCode(card.getPrintingCard());
             });
 
@@ -226,11 +230,19 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
         }
 
-        WeightUnitEnum.fromCode(registerHead.getWeightUnit()).orElseThrow(()->{
+        WeightUnitEnum.fromCode(registerHead.getWeightUnit()).orElseThrow(() -> {
             logger.error("重量单位错误");
             return new TraceBizException("重量单位错误");
         });
-         return BaseOutput.success();
+
+        String specName=registerHead.getSpecName();
+
+        //String str = "abcDD_-34中";
+        String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
+        if(!Pattern.matches(regex, specName)) {
+            throw new TraceBizException("规格名称错误");
+        }
+        return BaseOutput.success();
     }
 
     @Transactional
@@ -322,7 +334,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     }
 
     @Override
-    public BasePage<RegisterHead> listPageApi(RegisterHeadDto input){
+    public BasePage<RegisterHead> listPageApi(RegisterHeadDto input) {
 
         StringBuilder sql = new StringBuilder();
         buildLikeKeyword(input).ifPresent(sql::append);
@@ -336,13 +348,13 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             }
         }
 
-        if(sql.length() > 0){
+        if (sql.length() > 0) {
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
         }
 
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
-        if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
-            registerHeadBasePage.getDatas().forEach(e ->{
+        if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
+            registerHeadBasePage.getDatas().forEach(e -> {
                 e.setWeightUnitName(WeightUnitEnum.toName(e.getWeightUnit()));
             });
         }
@@ -354,9 +366,16 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (StringUtils.isNotBlank(query.getKeyword())) {
             String keyword = query.getKeyword().trim();
             sql = "( product_name like '%" + keyword + "%'  OR name like '%"
-                    + keyword + "%' OR id_card_no like '%" + keyword + "%' OR third_party_code like '%"+keyword+"%' OR phone like '%"+keyword+"%' )";
+                    + keyword + "%' OR id_card_no like '%" + keyword + "%' OR third_party_code like '%" + keyword + "%' OR phone like '%" + keyword + "%' )";
         }
         return Optional.ofNullable(sql);
 
     }
+
+    /*public static void main(String[] args) {
+        String str = "abcDD_-34中";
+        String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
+        System.out.println(Pattern.matches(regex, str));
+
+    }*/
 }
