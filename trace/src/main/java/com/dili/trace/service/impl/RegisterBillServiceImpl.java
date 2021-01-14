@@ -138,12 +138,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     throw new TraceBizException("车牌格式错误");
                 }
             }
-            String specName=registerBill.getSpecName();
-            //String str = "abcDD_-34中";
-            String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
-            if(!Pattern.matches(regex, specName)) {
-                throw new TraceBizException("规格名称错误");
-            }
+
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
 
             CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(),dto.getMarketId());
@@ -378,6 +373,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         if(registerBill.getMarketId()==null){
             throw new TraceBizException("市场不能为空");
+        }
+        String specName=registerBill.getSpecName();
+        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+            throw new TraceBizException("规格名称包含非法字符");
+        }
+        String remark=registerBill.getRemark();
+        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+            throw new TraceBizException("备注包含非法字符");
         }
         return BaseOutput.success();
     }

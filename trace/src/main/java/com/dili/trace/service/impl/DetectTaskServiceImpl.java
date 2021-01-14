@@ -120,24 +120,28 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             LOGGER.error("上传检测任务结果失败，该仪器没有获取该登记单");
             throw new TraceBizException("该仪器无权操作该单据");
         }
-        DetectRequest detectRequest = this.detectRequestService.findDetectRequestByBillId(registerBillItem.getBillId()).orElseThrow(() -> {
+        DetectRequest detectRequestItem = this.detectRequestService.findDetectRequestByBillId(registerBillItem.getBillId()).orElseThrow(() -> {
             LOGGER.error("上传检测任务结果失败，检测请求不存在");
             return new TraceBizException("检测请求不存在");
         });
-
+        DetectRequest detectRequest=new DetectRequest();
+        detectRequest.setId(detectRequestItem.getId());
         if (registerBillItem.getLatestDetectRecordId() != null) {
             // 复检
             /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
-            // '默认null,1.合格 2.不合格 3.复检合格 4.复检不合格',
-            // registerBill.setDetectState(detectRecord.getDetectState() + 2);
         } else {
             // 第一次检测
             detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
-            // registerBill.setDetectState(detectRecord.getDetectState());
         }
+        if(DetectTypeEnum.NEW.equalsToCode(detectRequestItem.getDetectType())&&DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())){
+            detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
+        }else if(DetectResultEnum.FAILED.equalsToCode(detectRequestItem.getDetectResult())){
+            detectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
+        }
+
         detectRecord.setRegisterBillCode(registerBillItem.getCode());
-        detectRecord.setDetectRequestId(detectRequest.getId());
+        detectRecord.setDetectRequestId(detectRequestItem.getId());
         detectRecord.setCreated(new Date());
         detectRecord.setModified(new Date());
         detectRecordService.saveDetectRecord(detectRecord);
