@@ -51,7 +51,7 @@ public class DfsRpcServiceTest {
     @Test
     public void uploadfile() throws IOException {
         File file = new File("e:/abc.txt");
-        String fileId = this.dfsRpcService.fileUpload(file).orElse(null);
+        String fileId = this.dfsRpcService.fileUpload(file);
         System.out.println(fileId);
         String url="http://gateway.diligrp.com:8285/dili-dfs/file/view/"+fileId;
         String content=HttpUtil.get(url);

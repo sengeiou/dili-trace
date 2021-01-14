@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -7,8 +8,10 @@ import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -229,16 +232,17 @@ public class CustomerDetectRequestController {
     /**
      * 人工检测
      *
-     * @param billId
-     * @param pass
+     * @param detectRecord
      * @return
      */
-    @RequestMapping(value = "/doManualCheck.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doManualCheck.action")
     public @ResponseBody
-    BaseOutput doManualCheck(@RequestParam(name = "billId", required = true) Long billId, @RequestParam(name = "pass", required = true) Boolean pass) {
+    BaseOutput doManualCheck(@RequestBody DetectRecordParam detectRecord) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            this.detectRequestService.manualCheck(billId, pass, userTicket);
+            detectRecord.setCreated(DateUtils.getCurrentDate());
+            detectRecord.setModified(DateUtils.getCurrentDate());
+            this.detectRecordService.saveDetectRecordManually(detectRecord, userTicket);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -289,5 +293,31 @@ public class CustomerDetectRequestController {
         modelMap.put("registerBill", item);
 
         return "customerDetectRequest/view";
+    }
+
+    /**
+     * 登记单录查看页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/manualCheck_confirm.html", method = RequestMethod.GET)
+    public String manualCheckConfirm(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
+        try {
+            RegisterBill item = billService.getAvaiableBill(id).orElse(null);
+            if (item == null) {
+                modelMap.put("registerBill", item);
+                return "customerDetectRequest/view";
+            }
+            List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
+            modelMap.put("detectRecordList", detectRecordList);
+
+            List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+            item.setImageCertList(imageCerts);
+            modelMap.put("registerBill", item);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return "customerDetectRequest/manualCheck_confirm";
     }
 }

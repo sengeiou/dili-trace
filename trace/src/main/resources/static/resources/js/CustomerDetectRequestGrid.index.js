@@ -78,32 +78,17 @@ class CustomerDetectRequestGrid extends ListPage {
     async doManualCheck() {
         let selected = this.rows[0];
         bs4pop.removeAll();
-        let promise = new Promise((resolve, reject) => {
-            bs4pop.confirm('是否人工检测通过当前登记单？<br/>' + selected.code, { type: 'warning', btns: [
-                    { label: '不通过', className: 'btn-primary', onClick(cb) { resolve("false"); } },
-                    { label: '通过', className: 'btn-primary', onClick(cb) { resolve("true"); } },
-                    { label: '取消', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
-                ] });
+        var url = this.toUrl('/customerDetectRequest/manualCheck_confirm.html?id=' + selected.billId);
+        var manual_dia = bs4pop.dialog({
+            title: '人工检测',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '80%',
+            height: '60%',
+            btns: []
         });
-        let result = await promise;
-        if (result == 'cancel') {
-            return;
-        }
-        let url = this.toUrl("/customerDetectRequest/doManualCheck.action?billId=" + selected.billId + "&pass=" + result);
-        try {
-            var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
-            if (!resp.success) {
-                bs4pop.alert(resp.message, { type: 'error' });
-                return;
-            }
-            await this.queryGridData();
-            bs4pop.removeAll();
-            bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
-        }
-        catch (e) {
-            debugger;
-            bs4pop.alert('远程访问失败', { type: 'error' });
-        }
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();

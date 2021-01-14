@@ -2,6 +2,7 @@ package com.dili.trace.api;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.rpc.service.DfsRpcService;
 import org.slf4j.Logger;
@@ -34,8 +35,11 @@ public class ImageApi {
      */
     @RequestMapping(value = "/upload.api", method = RequestMethod.POST)
     public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam(required = false) Boolean compress) {
+
         try {
-            return this.dfsRpcService.uploadImage(file);
+            return BaseOutput.successData(this.dfsRpcService.uploadImage(file));
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("upload", e);
             return BaseOutput.failure();
