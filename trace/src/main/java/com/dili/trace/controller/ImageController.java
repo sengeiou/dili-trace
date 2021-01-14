@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.rpc.service.DfsRpcService;
 import org.slf4j.Logger;
@@ -34,7 +35,9 @@ public class ImageController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress) {
         try {
-            return this.dfsRpcService.uploadImage(file);
+            return BaseOutput.successData(this.dfsRpcService.uploadImage(file));
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("upload", e);
             return BaseOutput.failure();
