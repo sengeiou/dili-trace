@@ -151,6 +151,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 //            return Optional.empty();
 //        }
         SessionData sessionData = SessionData.fromUserTicket(ut);
+        asyncRpcUser(Optional.ofNullable(sessionData));
         return Optional.ofNullable(sessionData);
     }
 
