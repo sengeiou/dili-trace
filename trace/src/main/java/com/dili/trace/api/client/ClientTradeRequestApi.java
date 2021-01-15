@@ -82,8 +82,15 @@ public class ClientTradeRequestApi {
 					&& !sessionContext.getAccountId().equals(condition.getSellerId())) {
 				return BaseOutput.failure("参数错误");
 			}
+			if(condition.getBuyerId()!=null){
+				condition.setBuyerMarketId(this.sessionContext.getSessionData().getMarketId());
+			}
+			if(condition.getSellerId()!=null){
+				condition.setSellerMarketId(this.sessionContext.getSessionData().getMarketId());
+			}
 			condition.setSort("created");
 			condition.setOrder("desc");
+
 			BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
 			List<TradeRequest> data = page.getDatas();
 			StreamEx.of(data).nonNull().forEach(td -> {
