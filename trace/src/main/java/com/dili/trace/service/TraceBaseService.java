@@ -31,7 +31,7 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
      *
      * @param <U>
      */
-    class ExampleQuery<U extends IBaseDomain> {
+    public class ExampleQuery<U extends IBaseDomain> {
         private U domain;
 
         public ExampleQuery(U example) {
