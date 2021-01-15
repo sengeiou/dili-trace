@@ -619,7 +619,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             if (detectRequest != null) {
                 // 检测不合格
                 if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
-                    //已检测，且复检不合格展示复检按钮
+                    //初检不合格的委托单可以进行复检
+                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType()) && BillTypeEnum.COMMISSION_BILL.equalsToCode(item.getBillType())) {
+                        msgStream.add(DetectRequestMessageEvent.review);
+                    }
+                    //已检测，且复检不合格的报备单展示复检按钮
                     if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
                         if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus()) && item.getHasHandleResult() == 0) {
