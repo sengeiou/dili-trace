@@ -12,7 +12,7 @@ public class DetectDescUtil {
             return "-";
         }
         if(DetectResultEnum.NONE.equalsToCode(detectResult)){
-            return "检测中";
+            return "-";
         }
         return DetectTypeEnum.toName(detectType)+ DetectResultEnum.name(detectResult);
 
