@@ -145,6 +145,33 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private String specName;
 
+    /**
+     * 审核时间
+     */
+    @Transient
+    private Date verifyDateTime;
+    /**
+     * 审核人
+     */
+    @Transient
+    private String verifyOperatorName;
+
+    public Date getVerifyDateTime() {
+        return verifyDateTime;
+    }
+
+    public void setVerifyDateTime(Date verifyDateTime) {
+        this.verifyDateTime = verifyDateTime;
+    }
+
+    public String getVerifyOperatorName() {
+        return verifyOperatorName;
+    }
+
+    public void setVerifyOperatorName(String verifyOperatorName) {
+        this.verifyOperatorName = verifyOperatorName;
+    }
+
     public String getBillCode() {
         return billCode;
     }

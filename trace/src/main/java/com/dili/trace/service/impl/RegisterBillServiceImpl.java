@@ -92,6 +92,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     ProcessService processService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    BillVerifyHistoryService billVerifyHistoryService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -704,6 +706,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateSelective(bill);
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(billItem.getId());
+        this.billVerifyHistoryService.createVerifyHistory(fromVerifyState,bill.getBillId(),operatorUser);
 
         // 创建相关的tradeDetail及batchStock数据
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem -> {
