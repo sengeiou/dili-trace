@@ -67,6 +67,16 @@
             <#resource code="purchaseIntentionRecord#detail">
                 <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
             </#resource>
+            <#resource code="purchaseIntentionRecord#add">
+                <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            </#resource>
+            <#resource code="purchaseIntentionRecord#edit">
+                <button id="edit-btn"   type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 修改</button>
+            </#resource>
+            <#resource code="purchaseIntentionRecord#undo">
+                <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-reply"></i>删除</button>
+            </#resource>
+
             <#resource code="purchaseIntentionRecord#export">
                 <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
             </#resource>

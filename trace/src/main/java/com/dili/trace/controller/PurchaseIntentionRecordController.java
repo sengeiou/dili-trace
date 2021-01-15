@@ -1,25 +1,41 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
+import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.uap.sdk.domain.Firm;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.FirmDto;
+import com.dili.uap.sdk.domain.dto.UserResourceQueryDto;
+import com.dili.uap.sdk.rpc.FirmRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 买家意向单信息
@@ -27,10 +43,17 @@ import java.util.List;
 @Controller
 @RequestMapping("/purchaseIntentionRecord")
 public class PurchaseIntentionRecordController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseIntentionRecordController.class);
+
     @Autowired
     PurchaseIntentionRecordService purchaseIntentionRecordService;
     @Autowired
     UapRpcService uapRpcService;
+    @Resource
+    UserRpc userRpc;
+    @Resource
+    FirmRpc firmRpc;
     /**
      * 跳转到PurchaseIntentionRecord页面
      *
@@ -73,5 +96,110 @@ public class PurchaseIntentionRecordController {
         PurchaseIntentionRecord purchaseIntentionRecord = purchaseIntentionRecordService.get(id);
         modelMap.put("purchaseIntentionRecord",purchaseIntentionRecord);
         return "purchaseIntentionRecord/view";
+    }
+
+    /**
+     * 买家报备新增页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/add.html", method = RequestMethod.GET)
+    public String add(ModelMap modelMap) {
+        User userItem = DTOUtils.newDTO(User.class);
+        modelMap.put("userItem", userItem);
+        return "purchaseIntentionRecord/add";
+    }
+
+    /**
+     * 买家报备编辑查看页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+    public String edit(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
+        PurchaseIntentionRecord purchaseIntentionRecord = purchaseIntentionRecordService.get(id);
+        modelMap.put("purchaseIntentionRecord",purchaseIntentionRecord);
+        return "purchaseIntentionRecord/view";
+    }
+
+    /**
+     * 买家报备查看页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/add_buyer.html", method = RequestMethod.GET)
+    public String addBuyer(ModelMap modelMap) throws Exception{
+        FirmDto firmDto = DTOUtils.newDTO(FirmDto.class);
+        firmDto.setDeleted(false);
+        firmDto.setFirmState(EnabledStateEnum.ENABLED.getCode());
+        BaseOutput<List<Firm>> baseOutput = firmRpc.listByExample(firmDto);
+        if(null!=baseOutput){
+            List<Firm> firmList = baseOutput.getData();
+            modelMap.put("firmList",firmList);
+           /* modelMap.put("clientTypeList", Stream.of(ClientTypeEnum.values())
+                    .collect(Collectors.toMap(ClientTypeEnum::getCode, ClientTypeEnum::getDesc)));*/
+        }
+        return "purchaseIntentionRecord/add_buyer";
+    }
+
+    /**
+     * 新增买家报备
+     * @param purchaseIntentionRecord
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/doAddBuyer.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput doAddBuyer(@RequestBody UserResourceQueryDto purchaseIntentionRecord) {
+        try {
+            logger.info(JSON.toJSONString(purchaseIntentionRecord));
+            if(true){
+                return BaseOutput.failure("暂无新增UAP买家接口");
+            }
+        }catch (TraceBizException e){
+            logger.error(e.getMessage());
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        }
+        return BaseOutput.failure();
+    }
+
+    /**
+     * 新增买家报备
+     * @param purchaseIntentionRecord
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/doAdd.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput doAdd(@RequestBody PurchaseIntentionRecord purchaseIntentionRecord) {
+        try {
+            purchaseIntentionRecordService.doAddPurchaseIntentionRecord(purchaseIntentionRecord, this.uapRpcService.getCurrentOperator().get());
+            logger.info(JSON.toJSONString(purchaseIntentionRecord));
+            return BaseOutput.success();
+        }catch (TraceBizException e){
+            logger.error(e.getMessage());
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        }
+    }
+
+    /**
+     * 更新买家报备内容
+     * @param purchaseIntentionRecord
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/doUpdate.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput doUpdate(@RequestBody PurchaseIntentionRecord purchaseIntentionRecord) {
+        try {
+
+            return BaseOutput.success();
+        }catch (TraceBizException e){
+            logger.error(e.getMessage());
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        }
     }
 }
