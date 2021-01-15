@@ -17,6 +17,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
 
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,6 +47,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	MarketService marketService;
+	@Autowired
+	CustomerRpcService customerRpcService;
 
 	/**
 	 * license 最大长度
@@ -226,13 +229,15 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	public void addUpstreamUsers(UpStreamDto upStreamDto, OperatorUser operatorUser) {
 		if (CollectionUtils.isNotEmpty(upStreamDto.getUserIds())) {
 			List<RUserUpstream> rUserUpstreams = new ArrayList<>();
-			upStreamDto.getUserIds().forEach(o -> {
+			upStreamDto.getUserIds().forEach(userId -> {
 				if (upStreamDto.getId() == null){
 					return;
 				}
+				String userName=this.customerRpcService.findCustByIdOrEx(userId).getName();
 				RUserUpstream rUserUpstream = new RUserUpstream();
 				rUserUpstream.setUpstreamId(upStreamDto.getId());
-				rUserUpstream.setUserId(o);
+				rUserUpstream.setUserId(userId);
+				rUserUpstream.setUserName(userName);
 				rUserUpstream.setCreated(new Date());
 				rUserUpstream.setModified(new Date());
 				if (CollUtil.isEmpty(rUserUpStreamService.listByExample(rUserUpstream))){
