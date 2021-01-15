@@ -18,6 +18,7 @@ import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.query.SellerQueryDto;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.service.*;
@@ -316,17 +317,16 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 查询卖家信息
-	 * @param queryCondition 查询条件（卖家名称、店铺名称、摊位号）
-	 * @param marketId 市场ID
+	 * @param query
 	 * @return 卖家列表
 	 */
-	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
-	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition, @RequestParam Long marketId) {
+	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.POST })
+	public BaseOutput<List<UserOutput>> listSeller(@RequestBody SellerQueryDto query) {
 		try {
 			SessionData sessionData = this.sessionContext.getSessionData();
 
 			Long userId = sessionData.getUserId();
-			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName(userId,"%"+queryCondition+"%", marketId)).nonNull().toList();
+			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName(userId,"%"+query.getKeyword()+"%", query.getMarketId())).nonNull().toList();
 			return BaseOutput.success().setData(list);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
