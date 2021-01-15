@@ -617,14 +617,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.get(item.getDetectRequestId());
             if (detectRequest != null) {
-                // 检测不合格，可以复检
+                // 检测不合格
                 if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
-                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
-                        msgStream.add(DetectRequestMessageEvent.review);
-                        msgStream.add(DetectRequestMessageEvent.batchReview);
-                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
+                    //已检测，且复检不合格展示复检按钮
+                    if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
-                        if (item.getHasHandleResult() == 0) {
+                        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus()) && item.getHasHandleResult() == 0) {
                             msgStream.add(DetectRequestMessageEvent.review);
                             msgStream.add(DetectRequestMessageEvent.batchReview);
                         }
