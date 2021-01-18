@@ -3,6 +3,7 @@ package com.dili.trace.dto.query;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.PurchaseIntentionRecord;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -49,6 +50,14 @@ public class PurchaseIntentionRecordQueryDto extends PurchaseIntentionRecord {
     @Column(name = "`buyer_name`")
     @Like(Like.RIGHT)
     private String likeBuyerName;
+
+
+    /**
+     * 买家电话查询
+     */
+    @Column(name = "`buyer_phone`")
+    @Like(Like.RIGHT)
+    private String likeBuyerPhone;
 
     /**
      * 报备编号查询
@@ -132,5 +141,13 @@ public class PurchaseIntentionRecordQueryDto extends PurchaseIntentionRecord {
 
     public void setLikePlate(String likePlate) {
         this.likePlate = likePlate;
+    }
+
+    public String getLikeBuyerPhone() {
+        return likeBuyerPhone;
+    }
+
+    public void setLikeBuyerPhone(String likeBuyerPhone) {
+        this.likeBuyerPhone = likeBuyerPhone;
     }
 }
