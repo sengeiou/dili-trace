@@ -56,6 +56,9 @@ class CustomerDetectRequestGrid extends ListPage {
     async doBookingRequest() {
         debugger;
         var selected = this.rows[0];
+        if (selected.verifyStatus == 30) {
+            bs4pop.alert('审核未通过登记单不能进行预约申请', { type: 'error' });
+        }
         var url = this.toUrl("/customerDetectRequest/doBookingRequest.action?billId=" + selected.billId);
         let sure = await popwrapper.confirm('请确认是否预约检测？', undefined);
         if (!sure) {
@@ -78,7 +81,7 @@ class CustomerDetectRequestGrid extends ListPage {
     async doManualCheck() {
         let selected = this.rows[0];
         bs4pop.removeAll();
-        var url = this.toUrl('/customerDetectRequest/manualCheck_confirm.html?id=' + selected.billId);
+        var url = this.toUrl('/customerDetectRequest/manualCheck_confirm.html??billId=' + selected.billId);
         var manual_dia = bs4pop.dialog({
             title: '人工检测',
             content: url,
@@ -98,7 +101,11 @@ class CustomerDetectRequestGrid extends ListPage {
     }
     async openAssignPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/customerDetectRequest/confirm.html?id=' + row.id);
+        if (_.isUndefined(row.billId) || row.billId == null) {
+            bs4pop.alert('请行进行预约检测', { type: 'error' });
+            return;
+        }
+        var url = this.toUrl('/customerDetectRequest/confirm.html?billId=' + row.billId);
         var dia = bs4pop.dialog({
             title: '接单',
             content: url,
@@ -110,7 +117,7 @@ class CustomerDetectRequestGrid extends ListPage {
             btns: []
         });
     }
-    async doAssign(id, designatedId, designatedName, detectTime) {
+    async doAssign(billId, designatedId, designatedName, detectTime) {
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             bs4pop.confirm('是否确认接单？<br/>', { type: 'warning', btns: [
@@ -122,7 +129,7 @@ class CustomerDetectRequestGrid extends ListPage {
         if (result == 'cancel') {
             return;
         }
-        let url = this.toUrl("/customerDetectRequest/doConfirm.action?id=" + id + "&designatedId=" + designatedId + "&designatedName=" + designatedName + "&detectTime=" + detectTime);
+        let url = this.toUrl("/customerDetectRequest/doConfirm.action?billId=" + billId + "&designatedId=" + designatedId + "&designatedName=" + designatedName + "&detectTime=" + detectTime);
         try {
             var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
             if (!resp.success) {
@@ -204,7 +211,7 @@ class CustomerDetectRequestGrid extends ListPage {
     async doUndo() {
         let selected = this.rows[0];
         let cthis = this;
-        let url = this.toUrl("/customerDetectRequest/doUndo.action?id=" + selected.id);
+        let url = this.toUrl("/customerDetectRequest/doUndo.action?billId=" + selected.billId);
         bs4pop.confirm('请确认是否撤销？', undefined, async function (sure) {
             if (!sure) {
                 return;
@@ -226,7 +233,7 @@ class CustomerDetectRequestGrid extends ListPage {
     }
     async openDetailPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/customerDetectRequest/view.html?id=' + row.billId);
+        var url = this.toUrl('/customerDetectRequest/view.html?billId=' + row.billId);
         var dia = bs4pop.dialog({
             title: '检测单详情',
             content: url,

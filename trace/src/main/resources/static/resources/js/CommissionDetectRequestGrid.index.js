@@ -166,7 +166,11 @@ class CommissionDetectRequestGrid extends ListPage {
     }
     async openAssignPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/commissionDetectRequest/confirm.html?id=' + row.id);
+        if (_.isUndefined(row.billId) || row.billId == null) {
+            bs4pop.alert('请行进行预约检测', { type: 'error' });
+            return;
+        }
+        var url = this.toUrl('/commissionDetectRequest/confirm.html?billId=' + row.billId);
         var dia = bs4pop.dialog({
             title: '接单',
             content: url,
@@ -178,7 +182,7 @@ class CommissionDetectRequestGrid extends ListPage {
             btns: []
         });
     }
-    async doAssign(id, designatedId, designatedName, detectTime) {
+    async doAssign(billId, designatedId, designatedName, detectTime) {
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             bs4pop.confirm('是否确认接单？<br/>', { type: 'warning', btns: [
@@ -190,7 +194,7 @@ class CommissionDetectRequestGrid extends ListPage {
         if (result == 'cancel') {
             return;
         }
-        let url = this.toUrl("/customerDetectRequest/doConfirm.action?id=" + id + "&designatedId=" + designatedId + "&designatedName=" + designatedName + "&detectTime=" + detectTime);
+        let url = this.toUrl("/customerDetectRequest/doConfirm.action?billId=" + billId + "&designatedId=" + designatedId + "&designatedName=" + designatedName + "&detectTime=" + detectTime);
         try {
             var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
             if (!resp.success) {

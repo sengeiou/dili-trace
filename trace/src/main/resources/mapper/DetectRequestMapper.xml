@@ -258,8 +258,8 @@
       r.`created`, r.`confirm_time`, r.`sample_time`, b.`sample_code`, r.`detect_time`,r.`detect_type`, r.`detect_result`, r.`detector_id`,
       r.`detector_name`, b.`has_handle_result`, b.`is_deleted`, r.`detect_code`,
       b.check_sheet_id,b.is_print_checksheet,r.detect_reservation_time
-      FROM detect_request r
-      JOIN register_bill b ON (r.id = b.detect_request_id)
+      FROM register_bill b
+      left JOIN detect_request r ON (r.id = b.detect_request_id)
       left join trade_detail on b.id=trade_detail.bill_id
       left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
       WHERE 1=1
@@ -356,6 +356,7 @@
               #{billType}
           </foreach>
       </if>
+      group by b.id
       order by  b.created desc
   </select>
 </mapper>

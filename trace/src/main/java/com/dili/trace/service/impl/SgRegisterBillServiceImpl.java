@@ -298,12 +298,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     // registerBill.setLatestDetectTime(new Date());
 //                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-                    registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
                 }
                 if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
                     // registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-                    registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
                 }
 
             } else {
@@ -353,6 +353,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     private int autoCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
@@ -514,6 +517,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     private int samplingCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
@@ -552,11 +558,18 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int spotCheckRegisterBillFromApp(Long id, SessionData sessionData) {
         RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        if(registerBill==null){
+            throw new TraceBizException("数据不存在");
+        }
+
         UserTicket userTicket = getOptUserFromApp(sessionData);
         return spotCheckRegisterBill(registerBill, userTicket);
     }
 
     private int spotCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());

@@ -105,13 +105,14 @@ public class CommissionDetectRequestController {
      * 接单页面
      *
      * @param modelMap
-     * @param id
+     * @param billId
      * @return
      */
     @RequestMapping(value = "/confirm.html", method = RequestMethod.GET)
-    public String assign(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        DetectRequest detectRequest = this.detectRequestService.get(id);
-        RegisterBill registerBill = this.billService.get(detectRequest.getBillId());
+    public String assign(ModelMap modelMap, @RequestParam(name = "billId", required = true) Long billId) {
+
+        RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElse(null);
+        DetectRequest detectRequest = StreamEx.ofNullable(registerBill).map(RegisterBill::getDetectRequestId).nonNull().map(this.detectRequestService::get).findFirst().orElse(null);
         modelMap.put("detectRequest", detectRequest);
         modelMap.put("registerBill", registerBill);
 
@@ -227,6 +228,7 @@ public class CommissionDetectRequestController {
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+                    rb.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
                     // 理货类型为交易区时才保存交易区号和id
                     if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
                         rb.setSourceName(input.getSourceName());

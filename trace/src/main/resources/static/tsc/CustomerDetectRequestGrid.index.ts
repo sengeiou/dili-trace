@@ -77,6 +77,10 @@ class CustomerDetectRequestGrid extends ListPage {
     private async  doBookingRequest() {
         debugger
         var selected = this.rows[0];
+        if(selected.verifyStatus==BillVerifyStatusEnum.NO_PASSED){
+            //@ts-ignore
+            bs4pop.alert('审核未通过登记单不能进行预约申请', {type: 'error'});
+        }
         var url= this.toUrl( "/customerDetectRequest/doBookingRequest.action?billId="+ selected.billId);
         let sure=await popwrapper.confirm('请确认是否预约检测？',undefined);
         if(!sure){
@@ -107,7 +111,7 @@ class CustomerDetectRequestGrid extends ListPage {
         let selected = this.rows[0];
         //@ts-ignore
         bs4pop.removeAll();
-        var url=this.toUrl('/customerDetectRequest/manualCheck_confirm.html?id='+selected.billId);
+        var url=this.toUrl('/customerDetectRequest/manualCheck_confirm.html??billId='+selected.billId);
         //@ts-ignore
         var manual_dia = bs4pop.dialog({
             title: '人工检测',
@@ -173,7 +177,12 @@ class CustomerDetectRequestGrid extends ListPage {
      */
     private async  openAssignPage(){
         var row=this.rows[0]
-        var url=this.toUrl('/customerDetectRequest/confirm.html?id='+row.id);
+        if(_.isUndefined(row.billId)||row.billId==null){
+            //@ts-ignore
+            bs4pop.alert('请行进行预约检测', {type: 'error'});
+            return;
+        }
+        var url=this.toUrl('/customerDetectRequest/confirm.html?billId='+row.billId);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '接单',
@@ -193,7 +202,7 @@ class CustomerDetectRequestGrid extends ListPage {
      * @param designatedId
      * @param designatedName
      */
-    public async doAssign(id:string, designatedId:string, designatedName:string, detectTime:string){
+    public async doAssign(billId:string, designatedId:string, designatedName:string, detectTime:string){
         //@ts-ignore
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
@@ -210,7 +219,7 @@ class CustomerDetectRequestGrid extends ListPage {
             return;
         }
 
-        let url= this.toUrl("/customerDetectRequest/doConfirm.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
+        let url= this.toUrl("/customerDetectRequest/doConfirm.action?billId="+billId+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
         try{
             var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
             if(!resp.success){
@@ -326,7 +335,7 @@ class CustomerDetectRequestGrid extends ListPage {
     private async doUndo(){
         let selected = this.rows[0];
         let cthis=this;
-        let url= this.toUrl( "/customerDetectRequest/doUndo.action?id="+ selected.id);
+        let url= this.toUrl( "/customerDetectRequest/doUndo.action?billId="+ selected.billId);
         //@ts-ignore
         bs4pop.confirm('请确认是否撤销？', undefined, async function (sure) {
             if(!sure){
@@ -359,7 +368,7 @@ class CustomerDetectRequestGrid extends ListPage {
      */
     private async  openDetailPage(){
         var row=this.rows[0]
-        var url=this.toUrl('/customerDetectRequest/view.html?id='+row.billId);
+        var url=this.toUrl('/customerDetectRequest/view.html?billId='+row.billId);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '检测单详情',

@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -217,7 +218,9 @@ public class ClientRegisterBillApi {
             registerBill.setImageCertList(imageCertList);
 
             UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
-            registerBill.setUpStreamName(upStream.getName());
+            if(upStream!=null){
+                registerBill.setUpStreamName(upStream.getName());
+            }
 
             //获取主台账单的总重量与剩余总重量
             if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {

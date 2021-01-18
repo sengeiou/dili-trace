@@ -204,7 +204,7 @@
                                 <td>
                                     <div class="input-group">
                                         <input type="text" class="form-control input-sm"
-                                               value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required
+                                               value="<%if(detectRecord.detectType == 20){%>初检<%}else if(detectRecord.detectType == 30){%>复检<%}else if(detectRecord.detectType == 40){%>抽检<%}else{%>其他<%}%><%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required
                                                readonly/>
                                     </div>
                                 </td>

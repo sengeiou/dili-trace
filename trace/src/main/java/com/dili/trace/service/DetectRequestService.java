@@ -336,21 +336,22 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 检测请求-接单
      *
-     * @param id             检测请求ID
+     * @param billId             登记单ID
      * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
      * @param detectTime     检测时间
      */
     @Transactional(rollbackFor = Exception.class)
-    public void confirm(Long id, Long designatedId, String designatedName, Date detectTime) {
-        DetectRequest detectRequest = this.get(id);
-        if (detectRequest == null) {
-            throw new RuntimeException("检测请求不存在。");
-        }
-        RegisterBill registerBill = billService.get(detectRequest.getBillId());
+    public void confirm(Long billId, Long designatedId, String designatedName, Date detectTime) {
+        RegisterBill registerBill=this.billService.getAvaiableBill(billId).orElse(null);
         if (registerBill == null) {
             throw new RuntimeException("检测请求关联的报备单据不存在。");
         }
+        DetectRequest detectRequest = this.get(registerBill.getDetectRequestId());
+        if (detectRequest == null) {
+            throw new RuntimeException("检测请求不存在。");
+        }
+
         if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_SAMPLE.getCode()) {
             throw new RuntimeException("检测请求已接单。");
         }
@@ -361,7 +362,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         billService.updateSelective(billParam);
         // 更新检测请求
         DetectRequest updateParam = new DetectRequest();
-        updateParam.setId(id);
+        updateParam.setId(detectRequest.getId());
         updateParam.setDesignatedId(designatedId);
         updateParam.setDesignatedName(designatedName);
         updateParam.setConfirmTime(new Date());
@@ -719,6 +720,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
         // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
         if (!DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，审核状态已改变！");
