@@ -26,6 +26,17 @@ public class UserStore extends BaseDomain {
     @Column(name = "`user_name`")
     private String userName;
     /**
+     * 业户市场ID
+     */
+    @Column(name = "`market_id`")
+    private Long marketId;
+
+    /**
+     * 业户市场
+     */
+    @Column(name = "`market_name`")
+    private String marketName;
+    /**
      * 业户主键
      */
     @Column(name = "`user_id`")
@@ -91,5 +102,21 @@ public class UserStore extends BaseDomain {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getMarketName() {
+        return marketName;
+    }
+
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 }
