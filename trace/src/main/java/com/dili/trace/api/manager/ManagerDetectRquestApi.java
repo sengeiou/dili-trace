@@ -20,6 +20,7 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestOutDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -147,6 +148,12 @@ public class ManagerDetectRquestApi {
         }
         try {
             RegisterBill bill = getBillByDetectRequestId(detectRequestDto.getId());
+            if(bill==null){
+                return BaseOutput.failure("数据不存在");
+            }
+            if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(bill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(bill.getVerifyStatus())){
+                return BaseOutput.failure("当前登记单不能进行接单");
+            }
             //未填写时间时，设置为当前时间
             if (null == detectRequestDto.getDetectTime()) {
                 detectRequestDto.setDetectTime(DateUtils.getCurrentDate());
