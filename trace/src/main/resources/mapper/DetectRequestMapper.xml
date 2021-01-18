@@ -356,6 +356,7 @@
               #{billType}
           </foreach>
       </if>
+      group by b.id
       order by  b.created desc
   </select>
 </mapper>
