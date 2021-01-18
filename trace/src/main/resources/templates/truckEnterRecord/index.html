@@ -24,7 +24,10 @@
                 <label for="likeDriverPhone">手机号</label>
                 <input type="text" class="form-control" name="likeDriverPhone" id="likeDriverPhone"/>
             </div>
-
+            <div class="form-group col">
+                <label for="likeCode">报备单号</label>
+                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+            </div>
             <div class="form-group col-auto">
                 <label for="createdStart">报备时间</label>
                 <div class="form-inline">
@@ -42,7 +45,23 @@
                     </div>
                 </div>
             </div>
-
+            <div class="form-group col-auto">
+                <label for="checkinCreatedStart">进门时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             <div class="col-auto align-self-center mt-3">
