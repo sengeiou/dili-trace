@@ -27,7 +27,7 @@
       <if test="isDeleted != null">
         AND register_bill.is_deleted =#{isDeleted}
       </if>
-      <if test="billTypes != null  and verifyStatusList.size()>0">
+      <if test="verifyStatusList != null  and verifyStatusList.size()>0">
         AND register_bill.verify_status
         <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
           #{verifyStatus}
