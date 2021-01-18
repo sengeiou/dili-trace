@@ -2,8 +2,11 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.TruckEnterRecordMapper;
 import com.dili.trace.domain.TruckEnterRecord;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +17,18 @@ import org.springframework.stereotype.Service;
 public class TruckEnterRecordService extends BaseServiceImpl<TruckEnterRecord, Long> {
     @Autowired
     TruckEnterRecordMapper truckEnterRecordMapper;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
 
+    /**
+     * 新增
+     * @param truckEnterRecord
+     * @return
+     */
     public BaseOutput addTruckEnterRecord(TruckEnterRecord truckEnterRecord) {
         try {
+            truckEnterRecord.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.TRUCK_ENTER_RECORD_CODE.getType()));
+            truckEnterRecord.setCreated(DateUtils.getCurrentDate());
             truckEnterRecordMapper.insertSelective(truckEnterRecord);
             return BaseOutput.success();
         } catch (Exception e){
@@ -25,6 +37,11 @@ public class TruckEnterRecordService extends BaseServiceImpl<TruckEnterRecord, L
         }
     }
 
+    /**
+     * 修改
+     * @param truckEnterRecord
+     * @return
+     */
     public BaseOutput updateTruckEnterRecord(TruckEnterRecord truckEnterRecord) {
         try {
             truckEnterRecordMapper.updateByPrimaryKeySelective(truckEnterRecord);
