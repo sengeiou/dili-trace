@@ -111,7 +111,7 @@ class CustomerDetectRequestGrid extends ListPage {
         let selected = this.rows[0];
         //@ts-ignore
         bs4pop.removeAll();
-        var url=this.toUrl('/customerDetectRequest/manualCheck_confirm.html??billId='+selected.billId);
+        var url=this.toUrl('/customerDetectRequest/manualCheck_confirm.html?billId='+selected.billId);
         //@ts-ignore
         var manual_dia = bs4pop.dialog({
             title: '人工检测',
