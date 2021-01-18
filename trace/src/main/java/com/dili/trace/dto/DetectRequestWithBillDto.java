@@ -189,23 +189,7 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     private Date detectReservationTime;
 
-    private Integer isPrintCheckSheet;
 
-    @Override
-    @Transient
-    public String getIsPrintCheckSheetName() {
-        return Optional.ofNullable(YesOrNoEnum.getYesOrNoEnum(this.isPrintCheckSheet)).map(YesOrNoEnum::getName).orElse("");
-    }
-
-    @Override
-    public Integer getIsPrintCheckSheet() {
-        return isPrintCheckSheet;
-    }
-
-    @Override
-    public void setIsPrintCheckSheet(Integer isPrintCheckSheet) {
-        this.isPrintCheckSheet = isPrintCheckSheet;
-    }
 
     public Date getDetectReservationTime() {
         return detectReservationTime;
