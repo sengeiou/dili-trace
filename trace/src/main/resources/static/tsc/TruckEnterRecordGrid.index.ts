@@ -10,10 +10,28 @@ export class TruckEnterRecordGrid extends ListPage {
         // let categoryController:CategoryController=new CategoryController();
         // let cityController:CityController=new CityController();
         $('#detail-btn').on('click',async ()=>await this.openDetailPage())
+        $('#add-btn').on('click',async () => await this.openAddPage())
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
     }
 
+    //新增司机报备
+    private async openAddPage() {
+        let url = this.toUrl("/truckEnterRecord/edit.html");
+        //@ts-ignore
+        var dia  = bs4pop.dialog({
+            title: '新增司机报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '70%',
+            height: '98%',
+            btns: []
+        });
+    }
+
+    //查看司机报备单详情
     private async  openDetailPage(){
         var row=this.rows[0]
         var url=this.toUrl('/truckEnterRecord/view.html?id='+row.id);

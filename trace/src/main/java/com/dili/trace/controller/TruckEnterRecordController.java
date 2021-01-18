@@ -2,16 +2,26 @@ package com.dili.trace.controller;
 
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.domain.TruckEnterRecord;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.trace.util.MarketUtil;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,6 +36,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/truckEnterRecord")
 public class TruckEnterRecordController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TruckEnterRecordController.class);
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
     @Autowired
@@ -76,5 +88,52 @@ public class TruckEnterRecordController {
         TruckEnterRecord truckEnterRecord = truckEnterRecordService.get(id);
         modelMap.put("truckEnterRecord",truckEnterRecord);
         return "truckEnterRecord/view";
+    }
+
+
+    /**
+     * 司机报备新增 OR 修改页面
+     * @param modelMap
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+    public String edit(ModelMap modelMap, Long id) {
+        if (null != id) {
+            TruckEnterRecord truckEnterRecord = truckEnterRecordService.get(id);
+            modelMap.put("truckEnterRecord",truckEnterRecord);
+        } else {
+            modelMap.put("truckEnterRecord",null);
+        }
+        return "truckEnterRecord/edit";
+    }
+
+    /**
+     * 保存数据
+     *
+     * @param truckEnterRecord
+     * @return
+     */
+    @RequestMapping(value = "/save.action", method = {RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput save(@RequestBody TruckEnterRecord truckEnterRecord) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            if (null == userTicket) {
+                return BaseOutput.failure("未登录或登录过期");
+            }
+            //设置市场id
+//            upStreamDto.setMarketId(MarketUtil.returnMarket());
+//            OperatorUser operatorUser = new OperatorUser(userTicket.getId(), userTicket.getRealName());
+//            return null == truckEnterRecord.getId() ? truckEnterRecordService.add(truckEnterRecord)
+//                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            return null;
+        } catch (BusinessException e) {
+            LOGGER.info("司机报备业务绑定保存异常！", e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("司机报备业务绑定保存异常！", e);
+            return BaseOutput.failure(e.getMessage());
+        }
     }
 }
