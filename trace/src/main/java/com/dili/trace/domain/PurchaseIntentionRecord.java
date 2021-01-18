@@ -155,6 +155,21 @@ public class PurchaseIntentionRecord extends BaseDomain {
     private String originName;
 
     /**
+     * 状态
+     */
+    @ApiModelProperty(value = "状态")
+    @Column(name = "`state`")
+    private Integer state;
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    /**
      * 重量单位名称
      */
     @Transient

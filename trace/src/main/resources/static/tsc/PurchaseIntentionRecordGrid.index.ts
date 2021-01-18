@@ -10,15 +10,13 @@ export class PurchaseIntentionRecordGrid extends ListPage {
         this.btns = this.toolbar.find('button');
         window['purchaseInt'] = this;
 
-        //
-        let categoryController: CategoryController = new CategoryController();
-        // let cityController:CityController=new CityController();
-        this.initAutoComplete($("[name='productName']"), function (query, done) {
-            categoryController.lookupCategories(query, done)
-        });
+        //@ts-ignore
         $('#detail-btn').on('click',async ()=>await this.openDetailPage())
+        //@ts-ignore
         $("#btn_add").on('click',async ()=>await this.openAddPage())
+        //@ts-ignore
         $("#edit-btn").on('click',async ()=>await this.openEditPage())
+        // @ts-ignore
         $("#undo-btn").on('click',async ()=>await this.doDelete())
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
@@ -26,11 +24,17 @@ export class PurchaseIntentionRecordGrid extends ListPage {
     }
 
     private async doDelete() {
+        var row = this.rows[0];
+        if(undefined==row){
+            //@ts-ignore
+            await bs4pop.alert("请选择一条数据", {type: 'warning'});
+            return;
+        }
         //@ts-ignore
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             //@ts-ignore
-            bs4pop.confirm('是否确认接单？<br/>',
+            bs4pop.confirm('是否确认删除？<br/>',
                 {type: 'warning',btns: [
                         {label: '是', className: 'btn-primary',onClick(cb){  resolve("true");}},
                         {label: '否', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
@@ -40,6 +44,24 @@ export class PurchaseIntentionRecordGrid extends ListPage {
         let result = await promise;
         if(result=='cancel'){
             return;
+        }
+        let id =row.id;
+        let url = this.toUrl("/purchaseIntentionRecord/doDelete.action?id=" + id);
+        try {
+            var resp = await jq.ajaxWithProcessing({type: "GET", url: url, processData: true, dataType: "json"});
+            if (!resp.success) {
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info', autoClose: 600});
+        } catch (e) {
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
         }
     }
 
@@ -73,7 +95,7 @@ export class PurchaseIntentionRecordGrid extends ListPage {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '48%',
+            width: '68%',
             height: '58%',
             btns: []
         });
@@ -190,6 +212,7 @@ export class PurchaseIntentionRecordGrid extends ListPage {
 
     public async resetButtons() {
         var btnArray = this.btns;
+        //@ts-ignore
         _.chain(btnArray).each((btn) => {
             //$(btn).hide();
         });
