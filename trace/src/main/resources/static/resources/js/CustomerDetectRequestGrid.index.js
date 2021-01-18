@@ -81,7 +81,7 @@ class CustomerDetectRequestGrid extends ListPage {
     async doManualCheck() {
         let selected = this.rows[0];
         bs4pop.removeAll();
-        var url = this.toUrl('/customerDetectRequest/manualCheck_confirm.html??billId=' + selected.billId);
+        var url = this.toUrl('/customerDetectRequest/manualCheck_confirm.html?billId=' + selected.billId);
         var manual_dia = bs4pop.dialog({
             title: '人工检测',
             content: url,
