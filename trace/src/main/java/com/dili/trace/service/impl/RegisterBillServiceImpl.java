@@ -104,7 +104,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public Optional<RegisterBill> selectByIdForUpdate(Long id) {
         return this.getActualDao().selectByIdForUpdate(id).map(billItem -> {
             if (YesOrNoEnum.YES.getCode().equals(billItem.getIsDeleted())) {
-                throw new TraceBizException("报备单已经被删除");
+                throw new TraceBizException("登记单已经被删除");
             }
             return billItem;
         });
@@ -121,7 +121,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             return Optional.empty();
         }
         if (YesOrNoEnum.YES.getCode().equals(billItem.getIsDeleted())) {
-            throw new TraceBizException("报备单已经被删除");
+            throw new TraceBizException("登记单已经被删除");
         }
         return Optional.of(billItem);
     }
@@ -491,6 +491,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
             throw new TraceBizException("不能删除审核未通过数据");
+        }
+        if(billItem.getDetectRequestId()!=null){
+            throw new TraceBizException("不能删除已发起检测的登记单");
         }
         RegisterBill bill = new RegisterBill();
         bill.setId(billItem.getBillId());
