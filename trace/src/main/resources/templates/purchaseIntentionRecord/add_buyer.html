@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>组织类型</label>
-                    <select class="form-control input-sm">
+                    <select class="form-control input-sm" name="organizationType">
                         <option value="10">个人</option>
                         <option value="20">企业</option>
                     </select>
@@ -59,14 +59,14 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        手机号码</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                        <span class="red">&lowast;</span>手机号码</label>
+                    <input name="contactsPhone" id="contactsPhone" type="text" class="form-control input-sm" tabindex="-1" required />
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>所属市场</label>
-                    <select class="form-control input-sm" id="marketId" required>
+                    <select class="form-control input-sm" id="marketId" name="customerMarket.marketId" required>
                         <option value="">请选择</option>
                         <% if( isNotEmpty(firmList) && firmList.~size>0)
                         for(firm in firmList){%>
@@ -90,7 +90,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                          业户单位名称</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                    <input name="bizName" id="bizName" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">

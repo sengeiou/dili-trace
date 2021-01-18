@@ -60,13 +60,13 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         手机号码</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                    <input name="contactsPhone" id="contactsPhone" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>所属市场</label>
-                    <select class="form-control input-sm" id="marketId" required>
+                    <select class="form-control input-sm" id="marketId" name="customerMarket.marketId"  required>
                         <option value="">请选择</option>
                         <% if( isNotEmpty(firmList) && firmList.~size>0)
                         for(firm in firmList){%>
