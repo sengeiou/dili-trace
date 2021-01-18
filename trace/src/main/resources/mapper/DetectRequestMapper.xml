@@ -314,6 +314,9 @@
       <if test="likeCode != null">
           AND b.code like '%${likeCode}%'
       </if>
+      <if test="likeDetectCode != null">
+          AND r.detect_code like '%${likeDetectCode}%'
+      </if>
       <if test="likePhone != null">
           AND b.phone like '%${likePhone}%'
       </if>
