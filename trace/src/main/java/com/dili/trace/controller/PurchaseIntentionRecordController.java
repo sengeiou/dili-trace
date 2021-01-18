@@ -3,29 +3,26 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.EnabledStateEnum;
-import com.dili.sg.trace.glossary.SalesTypeEnum;
+import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
+import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
-import com.dili.trace.enums.ClientTypeEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.MarketService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.FirmDto;
-import com.dili.uap.sdk.domain.dto.UserResourceQueryDto;
 import com.dili.uap.sdk.rpc.FirmRpc;
-import com.dili.uap.sdk.rpc.UserRpc;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -34,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 买家意向单信息
@@ -51,9 +46,12 @@ public class PurchaseIntentionRecordController {
     @Autowired
     UapRpcService uapRpcService;
     @Resource
-    UserRpc userRpc;
+    CustomerRpc customerRpc;
+    @Autowired
+    MarketService marketService;
     @Resource
     FirmRpc firmRpc;
+
     /**
      * 跳转到PurchaseIntentionRecord页面
      *
@@ -81,6 +79,7 @@ public class PurchaseIntentionRecordController {
     public @ResponseBody
     String listPage(@RequestBody PurchaseIntentionRecordQueryDto queryInput) throws Exception {
         queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
+        queryInput.setState(EnabledStateEnum.ENABLED.getCode());
         return this.purchaseIntentionRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
     }
@@ -94,7 +93,7 @@ public class PurchaseIntentionRecordController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
         PurchaseIntentionRecord purchaseIntentionRecord = purchaseIntentionRecordService.get(id);
-        modelMap.put("purchaseIntentionRecord",purchaseIntentionRecord);
+        modelMap.put("purchaseIntentionRecord", purchaseIntentionRecord);
         return "purchaseIntentionRecord/view";
     }
 
@@ -120,8 +119,8 @@ public class PurchaseIntentionRecordController {
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
         PurchaseIntentionRecord purchaseIntentionRecord = purchaseIntentionRecordService.get(id);
-        modelMap.put("purchaseIntentionRecord",purchaseIntentionRecord);
-        return "purchaseIntentionRecord/view";
+        modelMap.put("purchaseIntentionRecord", purchaseIntentionRecord);
+        return "purchaseIntentionRecord/edit";
     }
 
     /**
@@ -131,55 +130,81 @@ public class PurchaseIntentionRecordController {
      * @return
      */
     @RequestMapping(value = "/add_buyer.html", method = RequestMethod.GET)
-    public String addBuyer(ModelMap modelMap) throws Exception{
+    public String addBuyer(ModelMap modelMap) throws Exception {
         FirmDto firmDto = DTOUtils.newDTO(FirmDto.class);
         firmDto.setDeleted(false);
         firmDto.setFirmState(EnabledStateEnum.ENABLED.getCode());
         BaseOutput<List<Firm>> baseOutput = firmRpc.listByExample(firmDto);
-        if(null!=baseOutput){
+        if (null != baseOutput) {
             List<Firm> firmList = baseOutput.getData();
-            modelMap.put("firmList",firmList);
-           /* modelMap.put("clientTypeList", Stream.of(ClientTypeEnum.values())
-                    .collect(Collectors.toMap(ClientTypeEnum::getCode, ClientTypeEnum::getDesc)));*/
+            modelMap.put("firmList", firmList);
         }
         return "purchaseIntentionRecord/add_buyer";
     }
 
     /**
      * 新增买家报备
-     * @param purchaseIntentionRecord
-     * @return
+     *
+     * @param customer
      * @throws Exception
      */
     @RequestMapping(value = "/doAddBuyer.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput doAddBuyer(@RequestBody UserResourceQueryDto purchaseIntentionRecord) {
+    BaseOutput doAddBuyer(@RequestBody IndividualCustomerInput customer) {
         try {
-            logger.info(JSON.toJSONString(purchaseIntentionRecord));
-            if(true){
-                return BaseOutput.failure("暂无新增UAP买家接口");
-            }
-        }catch (TraceBizException e){
+            logger.info(JSON.toJSONString(customer));
+            customerRpc.registerIndividual(customer);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure().setErrorData(e.getMessage());
+        } catch (Exception e){
+            return BaseOutput.failure().setErrorData(e.getMessage());
         }
-        return BaseOutput.failure();
     }
 
     /**
      * 新增买家报备
-     * @param purchaseIntentionRecord
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/doDelete.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput doDelete(Long id) {
+        try {
+            PurchaseIntentionRecord record = new PurchaseIntentionRecord();
+            record.setId(id);
+            record.setState(EnabledStateEnum.DISABLED.getCode());
+            purchaseIntentionRecordService.updateSelective(record);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        }
+    }
+
+
+    /**
+     * 新增买家报备
+     *
+     * @param record
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/doAdd.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput doAdd(@RequestBody PurchaseIntentionRecord purchaseIntentionRecord) {
+    BaseOutput doAdd(@RequestBody PurchaseIntentionRecord record) {
         try {
-            purchaseIntentionRecordService.doAddPurchaseIntentionRecord(purchaseIntentionRecord, this.uapRpcService.getCurrentOperator().get());
-            logger.info(JSON.toJSONString(purchaseIntentionRecord));
+            record.setMarketId(MarketUtil.returnMarket());
+            purchaseIntentionRecordService.doAddPurchaseIntentionRecord(record, this.uapRpcService.getCurrentOperator().get());
+            logger.info(JSON.toJSONString(record));
             return BaseOutput.success();
-        }catch (TraceBizException e){
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure(e.getMessage()).setErrorData(e.getMessage());
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return BaseOutput.failure().setErrorData(e.getMessage());
         }
@@ -187,19 +212,22 @@ public class PurchaseIntentionRecordController {
 
     /**
      * 更新买家报备内容
-     * @param purchaseIntentionRecord
+     *
+     * @param record
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/doUpdate.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput doUpdate(@RequestBody PurchaseIntentionRecord purchaseIntentionRecord) {
+    BaseOutput doUpdate(@RequestBody PurchaseIntentionRecord record) {
         try {
-
+            record.setModified(DateUtils.getCurrentDate());
+            purchaseIntentionRecordService.updateSelective(record);
             return BaseOutput.success();
-        }catch (TraceBizException e){
+        } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure().setErrorData(e.getMessage());
         }
     }
+
 }

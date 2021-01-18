@@ -7,7 +7,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>买家名称</label>
-                    <input type="text" name="buyerName" class="form-control input-sm"   required />
+                    <input style="width: 355px" type="text" name="buyerName" class="form-control input-sm"   required />
                     <input type="hidden" name="buyerId">
                 </div>
                 <div class="form-group">
@@ -18,7 +18,7 @@
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>商品品类</label>
                     <input type="text" name="productName" class="form-control input-sm"   required />
-                    <input type="hidden" name="productId">
+                    <input type="hidden" name="productId" />
                 </div>
                 <br>
                 <div class="form-group">
@@ -38,8 +38,6 @@
                 <br>
             </div>
         </form>
-
-        <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
         <div class="text-center mt30">
             <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
             <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
@@ -48,6 +46,7 @@
 </div>
 
 </div>
+
 </#bodyOrigin>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script src="http://base.nong12.com/static/log/log.build.js"></script>
@@ -61,9 +60,8 @@
 <script>
     $(function(){
         let productNameEl=$('input[name="productName"]');
-        let buyerNameEl = $('input[name="buyerName"]');
         initAutoComplete(productNameEl,'/toll/category');
-        //initUserInfo();
+        initUserInfo();
         $("#addBuyer-btn").on("click",function(){
             goAddBuyer();
         });
@@ -71,7 +69,9 @@
         jQuery.validator.addMethod("isPlate", function(value, element) {
             return this.optional(element) || isLicensePlate(value.toUpperCase());
         }, "请输入正确格式的车牌");
+
     })
+
 
     // 正则验证车牌,验证通过返回true,不通过返回false
     function isLicensePlate(str) {
@@ -90,38 +90,33 @@
             closeBtn: true,
             backdrop: 'static',
             width: '68%',
-            height: '68%',
+            height: '88%',
             btns: []
         });
     }
     function initUserInfo() {
-        $("[name='buyerName']").on("keyup",function(){
-            console.log($(this).val());
-            let q = $(this).val();
-            $.ajax({
-                type: "POST",
-                url: '${contextPath}/user/listByCondition.action',
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                data: JSON.stringify({
-                    likeName: q
-                }),
-                success: function(result){
-                    if(result.success){
-                        console.log(result);
-                        $.map(result.data, function(item,index){
-                            return $.extend(item, {
-                                text: item.name+" "+item.cardNo
-                            });
-                        });
-                        success(result.data);
-                    }
-
-                },
-                error: function(){
-                    error.apply(this, arguments);
-                }
-            });
+        // 产地联系输入
+        let url = '${contextPath}/user/userQuery.action';
+        let selector= $('input[name="buyerName"]');
+        selector.devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            deferRequestBy:188,
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                let self = this;
+                let idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.userName.trim());
+                selector.data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
         });
     }
 
@@ -142,6 +137,19 @@ function create(){
         resubmit = 0;
         return;
     }
+    let buyerId = $("[name='buyerId']").val();
+
+    if(null==buyerId||undefined==buyerId||""==buyerId){
+        parent.bs4pop.alert("请选择下拉框中的买家");
+        resubmit = 0;
+        return;
+    }
+    let productId = $("[name='productId']").val();
+    if(null==productId||undefined==productId||""==productId){
+        parent.bs4pop.alert("请选择下拉框中的商品");
+        resubmit = 0;
+        return;
+    }
     var data=$('#updateForm').serializeJSON({useIntKeysAsArrayIndex:true});
     $.ajax({
         type: "POST",
@@ -152,7 +160,10 @@ function create(){
         contentType: "application/json; charset=utf-8",
         success: function (ret) {
             if (ret.success) {
-                parent.window['purchaseInt'].removeAllAndLoadData()
+                    parent.bs4pop.alert("登记成功", {type: 'success'}, function () {
+                        parent.window['purchaseInt'].removeAllAndLoadData()
+                    });
+
             } else {
                 resubmit=0;
                 swal(

@@ -34,6 +34,8 @@ import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -128,73 +130,6 @@ public class UserController {
     }
 
     /**
-     * 新增User
-     *
-     * @param user
-     * @return
-     */
-    @ApiOperation("新增User")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string")})
-    @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput<Long> insert(@RequestBody User user) {
-//        try {
-//            user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-//            user.setState(EnabledStateEnum.ENABLED.getCode());
-//            userService.register(user, false);
-//            return BaseOutput.success("新增成功").setData(user.getId());
-//        } catch (TraceBizException e) {
-//            LOGGER.error("register", e);
-//            return BaseOutput.failure(e.getMessage());
-//        } catch (Exception e) {
-//            LOGGER.error("register", e);
-            return BaseOutput.failure();
-//        }
-    }
-
-    /**
-     * 修改User
-     *
-     * @param user
-     * @return
-     */
-    @ApiOperation("修改User")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string")})
-    @RequestMapping(value = "/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput update(User user) {
-        try {
-
-            userService.updateUser(user);
-            return BaseOutput.success("修改成功");
-        } catch (TraceBizException e) {
-            LOGGER.error("修改用户", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("修改用户", e);
-            return BaseOutput.failure(e.getMessage());
-        }
-
-    }
-
-    /**
-     * 删除User
-     *
-     * @param id
-     * @return
-     */
-//    @ApiOperation("删除User")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long")})
-//    @RequestMapping(value = "/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
-//    public @ResponseBody
-//    BaseOutput delete(Long id) {
-//        return userService.deleteUser(id);
-//    }
-
-    /**
      * 业户条件查询
      *
      * @param userListDto
@@ -220,44 +155,6 @@ public class UserController {
     BaseOutput listByCondition(@RequestParam(name = "query") String keyword) {
         return BaseOutput.success().setData(userService.findUserByNameOrPhoneOrTallyNo(keyword));
     }
-
-    /**
-     * @param id
-     * @param enable 是否启用
-     * @return
-     */
-    @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput doEnable(Long id, Boolean enable) {
-//        try {
-//            userService.updateEnable(id, enable);
-//            return BaseOutput.success("修改用户状态成功");
-//        } catch (TraceBizException e) {
-//            LOGGER.error("修改用户状态", e);
-//            return BaseOutput.failure(e.getMessage());
-//        } catch (Exception e) {
-//            LOGGER.error("修改用户状态", e);
-            return BaseOutput.failure();
-//        }
-
-    }
-
-    /**
-     * 找回密码【接口已通】
-     *
-     * @param id
-     * @return
-     */
-//    @ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
-//    @RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
-//    @ResponseBody
-//    public BaseOutput<Boolean> resetPassword(Long id) {
-//        User user = DTOUtils.newDTO(User.class);
-//        user.setId(id);
-//        user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-//        userService.updateSelective(user);
-//        return BaseOutput.success().setData(true);
-//    }
 
     /**
      * 查询车牌
@@ -442,5 +339,64 @@ public class UserController {
             return BaseOutput.failure().setErrorData(e.getMessage());
         }
 
+    }
+
+
+    /**
+     * 根据名字查询品类信息
+     *
+     * @param name
+     * @return
+     */
+    @RequestMapping("/userQuery.action")
+    @ResponseBody
+    public Map<String, ?> listByName(String name) {
+        Map map = Maps.newHashMap();
+        try {
+            CustomerQueryInput queryInput = new CustomerQueryInput();
+            queryInput.setName(name);
+            queryInput.setMarketId(MarketUtil.returnMarket());
+            BaseOutput<List<CustomerExtendDto>> listByExample = customerRpc.list(queryInput);
+            List<Map<String, Object>> list = Lists.newArrayList();
+            if (null != listByExample) {
+                List<CustomerExtendDto> userList = listByExample.getData();
+                for (CustomerExtendDto user : userList) {
+                    Map<String, Object> obj = Maps.newHashMap();
+                    obj.put("id", user.getId());
+                    obj.put("userName", user.getName());
+                    obj.put("user", user);
+                    String val = bulldShowVal( user);
+                    obj.put("value", val);
+                    list.add(obj);
+                }
+            }
+            map.put("suggestions", list);
+            return map;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return map;
+    }
+
+    /**
+     * 构建显示值
+     *
+     * @param user
+     * @return
+     */
+    private String bulldShowVal( CustomerExtendDto user) {
+        StringBuilder showVal = new StringBuilder();
+        showVal.append(user.getName());
+        showVal.append("  |  ");
+        showVal.append(null == user.getCertificateNumber() ? "(无证件号)" : user.getCertificateNumber());
+        showVal.append("  |  ");
+        if(null!=user.getCustomerMarket()){
+            showVal.append(null==user.getCustomerMarket().getProfessionName()?"(无市场名称)":user.getCustomerMarket().getProfessionName());
+        }else{
+            showVal.append("(无市场)");
+        }
+        showVal.append("  |  ");
+        showVal.append(user.getCorporationName());
+        return showVal.toString();
     }
 }
