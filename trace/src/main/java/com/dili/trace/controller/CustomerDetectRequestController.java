@@ -143,14 +143,18 @@ public class CustomerDetectRequestController {
     /**
      * 撤销
      *
-     * @param id
+     * @param billId
      * @return
      */
     @RequestMapping(value = "/doUndo.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doUndo(@RequestParam(name = "id", required = true) Long id) {
+    BaseOutput doUndo(@RequestParam(name = "billId", required = true) Long billId) {
         try {
-            this.detectRequestService.undoDetectRequest(id);
+            this.billService.getAvaiableBill(billId).ifPresent(rb->{
+                if(rb.getDetectRequestId()!=null){
+                    this.detectRequestService.undoDetectRequest(rb.getDetectRequestId());
+                }
+            });
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -256,9 +260,9 @@ public class CustomerDetectRequestController {
      * @return
      */
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
-    public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
+    public String view(ModelMap modelMap, @RequestParam(required = true, name = "billId") Long billId
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.getAvaiableBill(id).orElse(null);
+        RegisterBill item = billService.getAvaiableBill(billId).orElse(null);
         if (item == null) {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
@@ -304,9 +308,9 @@ public class CustomerDetectRequestController {
      * @return
      */
     @RequestMapping(value = "/manualCheck_confirm.html", method = RequestMethod.GET)
-    public String manualCheckConfirm(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
+    public String manualCheckConfirm(ModelMap modelMap, @RequestParam(required = true, name = "billId") Long billId) {
         try {
-            RegisterBill item = billService.getAvaiableBill(id).orElse(null);
+            RegisterBill item = billService.getAvaiableBill(billId).orElse(null);
             if (item == null) {
                 modelMap.put("registerBill", item);
                 return "customerDetectRequest/view";
