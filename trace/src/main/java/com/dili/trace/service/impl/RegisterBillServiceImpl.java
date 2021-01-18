@@ -154,29 +154,29 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             Long billId = this.createRegisterBill(registerBill, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
-            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
-                return new TraceBizException("用户未登录");
-            });
+//            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
+//                return new TraceBizException("用户未登录");
+//            });
 
-            // 创建检测请求
-            DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
-
-            // 如果管理创建登记单，更新检测状态和检测编号
-            if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
-                DetectRequest updatable = new DetectRequest();
-                updatable.setId(item.getId());
-                // 维护接单时间
-                updatable.setConfirmTime(new Date());
-                // 维护检测编号
-                updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.get().getMarketName()));
-                this.detectRequestService.updateSelective(updatable);
-
-                RegisterBill bill = this.billService.get(item.getBillId());
-                bill.setOperatorName(oprUser.getName());
-                bill.setOperatorId(oprUser.getId());
-                bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
-                this.billService.update(bill);
-            }
+//            // 创建检测请求
+//            DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
+//
+//            // 如果管理创建登记单，更新检测状态和检测编号
+//            if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
+//                DetectRequest updatable = new DetectRequest();
+//                updatable.setId(item.getId());
+//                // 维护接单时间
+//                updatable.setConfirmTime(new Date());
+//                // 维护检测编号
+//                updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.get().getMarketName()));
+//                this.detectRequestService.updateSelective(updatable);
+//
+//                RegisterBill bill = this.billService.get(item.getBillId());
+//                bill.setOperatorName(oprUser.getName());
+//                bill.setOperatorId(oprUser.getId());
+//                bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
+//                this.billService.update(bill);
+//            }
 
             return billId;
         }).toList();
