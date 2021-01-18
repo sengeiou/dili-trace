@@ -173,6 +173,11 @@ class CustomerDetectRequestGrid extends ListPage {
      */
     private async  openAssignPage(){
         var row=this.rows[0]
+        if(_.isUndefined(row.billId)||row.billId==null){
+            //@ts-ignore
+            bs4pop.alert('请行进行预约检测', {type: 'error'});
+            return;
+        }
         var url=this.toUrl('/customerDetectRequest/confirm.html?billId='+row.billId);
         //@ts-ignore
         var dia = bs4pop.dialog({
