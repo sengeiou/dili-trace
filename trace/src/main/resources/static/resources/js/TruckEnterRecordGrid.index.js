@@ -16,7 +16,21 @@
             this.toolbar = toolbar;
             this.btns = this.toolbar.find('button');
             $('#detail-btn').on('click', async () => await this.openDetailPage());
+            $('#add-btn').on('click', async () => await this.openAddPage());
             this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+        }
+        async openAddPage() {
+            let url = this.toUrl("/truckEnterRecord/edit.html");
+            var dia = bs4pop.dialog({
+                title: '新增司机报备单',
+                content: url,
+                isIframe: true,
+                closeBtn: true,
+                backdrop: 'static',
+                width: '70%',
+                height: '98%',
+                btns: []
+            });
         }
         async openDetailPage() {
             var row = this.rows[0];

@@ -2,6 +2,7 @@ package com.dili.trace.dto.query;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.domain.TruckEnterRecord;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -36,6 +37,13 @@ public class TruckEnterRecordQueryDto extends TruckEnterRecord {
     @Column(name = "`driver_name`")
     @Like(Like.RIGHT)
     private String likeDriverName;
+
+    /**
+     * 手机号码模糊查询
+     */
+    @Column(name = "`driver_phone`")
+    @Like(Like.RIGHT)
+    private String likeDriverPhone;
 
 
     /**
@@ -82,5 +90,13 @@ public class TruckEnterRecordQueryDto extends TruckEnterRecord {
 
     public void setLikeTruckPlate(String likeTruckPlate) {
         this.likeTruckPlate = likeTruckPlate;
+    }
+
+    public String getLikeDriverPhone() {
+        return likeDriverPhone;
+    }
+
+    public void setLikeDriverPhone(String likeDriverPhone) {
+        this.likeDriverPhone = likeDriverPhone;
     }
 }

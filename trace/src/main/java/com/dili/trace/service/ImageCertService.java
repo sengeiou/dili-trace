@@ -98,7 +98,7 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
             return Lists.newArrayList();
         }
         Example e = new Example(ImageCert.class);
-        e.and().andIn("billId", billIdList);
+        e.and().andIn("billId", billIdList).andEqualTo("certType",ImageCertBillTypeEnum.BILL_TYPE.getCode());
         return this.getDao().selectByExample(e);
     }
 

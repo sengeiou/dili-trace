@@ -1,0 +1,216 @@
+<#bodyOrigin>
+<style>
+    .form-inline .table-showlist table .input-sm {
+        width: 200px;
+    }
+
+    /*a  upload */
+
+    .a-upload {
+        padding: 4px 28px;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        color: #fff !important;
+        background-color: #3370ff;
+    }
+
+    .a-upload input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
+
+    .es-list {
+        max-height: 220px !important;
+    }
+</style>
+<div class="main-container" style="width: 100%;margin: 0;padding: 0">
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>组织类型</label>
+                    <select class="form-control input-sm">
+                        <option value="10">个人</option>
+                        <option value="20">企业</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>客户名称</label>
+                    <input name="name" id="name" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>手机号码</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>所属市场</label>
+                    <select class="form-control input-sm" id="marketId" required>
+                        <option value="">请选择</option>
+                        <% if( isNotEmpty(firmList) && firmList.~size>0)
+                        for(firm in firmList){%>
+                        <option value="${firm.id}">${firm.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>客户类型</label>
+                    <select class="form-control input-sm" name="type">
+                        <option value="1">司机</option>
+                        <option value="2">卖家</option>
+                        <option value="3">买家</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-item-group">
+                <h4 class="form-item-title">经营信息</h4>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户单位名称</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>开店数量</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>销售类型</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>租金</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>经营面积</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上货品种</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                    <label class="label-title text-right">二三级品类</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上线供应商</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>采购数量</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上货频次</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>下线零售商</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" style="width: unset ;" onclick="createBuyer()">确认新增</button>&nbsp;&nbsp;
+    </div>
+</div>
+</#bodyOrigin>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/CityController.js"></script>
+<script src="${contextPath!}/resources/js/CategoryController.js"></script>
+
+<script type="text/javascript">
+    var resubmit = 0;
+    function createBuyer() {
+        if (resubmit == 0) {
+            resubmit = 1;
+        } else {
+            resubmit = 0;
+            swal(
+                '错误',
+                '重复提交',
+                'error'
+            );
+            return;
+        }
+        if ($('#createRecordForm').validate().form() != true) {
+            resubmit = 0;
+            return;
+        }
+        var data = $('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex: true});
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/purchaseIntentionRecord/doAddBuyer.action",
+            data: JSON.stringify(data),
+            dataType: "json",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if (ret.success) {
+                    parent.window['purchaseInt'].removeAllAndLoadData()
+                } else {
+                    resubmit = 0;
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error: function () {
+                resubmit = 0;
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+    }
+</script>
+

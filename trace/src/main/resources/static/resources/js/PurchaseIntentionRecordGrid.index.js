@@ -9,18 +9,62 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.PurchaseIntentionRecordGrid = void 0;
     class PurchaseIntentionRecordGrid extends ListPage {
         constructor(grid, queryform, toolbar) {
             super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
             this.toolbar = toolbar;
             this.btns = this.toolbar.find('button');
+            window['purchaseInt'] = this;
             let categoryController = new CategoryController();
             this.initAutoComplete($("[name='productName']"), function (query, done) {
                 categoryController.lookupCategories(query, done);
             });
             $('#detail-btn').on('click', async () => await this.openDetailPage());
+            $("#btn_add").on('click', async () => await this.openAddPage());
+            $("#edit-btn").on('click', async () => await this.openEditPage());
+            $("#undo-btn").on('click', async () => await this.doDelete());
             this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+        }
+        async doDelete() {
+            bs4pop.removeAll();
+            let promise = new Promise((resolve, reject) => {
+                bs4pop.confirm('是否确认接单？<br/>', { type: 'warning', btns: [
+                        { label: '是', className: 'btn-primary', onClick(cb) { resolve("true"); } },
+                        { label: '否', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
+                    ] });
+            });
+            let result = await promise;
+            if (result == 'cancel') {
+                return;
+            }
+        }
+        async openEditPage() {
+            var row = this.rows[0];
+            console.log(row);
+            var url = this.toUrl('/purchaseIntentionRecord/edit.html?id=' + row.id);
+            var dia = bs4pop.dialog({
+                title: '买家报备单详情',
+                content: url,
+                isIframe: true,
+                closeBtn: true,
+                backdrop: 'static',
+                width: '68%',
+                height: '68%',
+                btns: []
+            });
+        }
+        async openAddPage() {
+            var url = this.toUrl('/purchaseIntentionRecord/add.html');
+            var add_dia = bs4pop.dialog({
+                title: '新增买家报备单',
+                content: url,
+                isIframe: true,
+                closeBtn: true,
+                backdrop: 'static',
+                width: '48%',
+                height: '58%',
+                btns: []
+            });
         }
         async openDetailPage() {
             var row = this.rows[0];
@@ -31,8 +75,8 @@
                 isIframe: true,
                 closeBtn: true,
                 backdrop: 'static',
-                width: '98%',
-                height: '98%',
+                width: '68%',
+                height: '58%',
                 btns: []
             });
         }
