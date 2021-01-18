@@ -195,7 +195,7 @@
                 if(result.success){
                     $.map(result.data, function(item,index){
                         return $.extend(item, {
-                            text: item.name+" "+(undefined==item.cardNo?"(无身份证号)":item.cardNo)
+                            text: item.name+" "+(undefined==item.certificateNumber?"(无证件号)":item.certificateNumber)
                         });
                     });
                     success(result.data);
