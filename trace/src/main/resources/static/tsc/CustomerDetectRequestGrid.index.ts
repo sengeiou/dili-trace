@@ -77,6 +77,10 @@ class CustomerDetectRequestGrid extends ListPage {
     private async  doBookingRequest() {
         debugger
         var selected = this.rows[0];
+        if(selected.verifyStatus==BillVerifyStatusEnum.NO_PASSED){
+            //@ts-ignore
+            bs4pop.alert('审核未通过登记单不能进行预约申请', {type: 'error'});
+        }
         var url= this.toUrl( "/customerDetectRequest/doBookingRequest.action?billId="+ selected.billId);
         let sure=await popwrapper.confirm('请确认是否预约检测？',undefined);
         if(!sure){
