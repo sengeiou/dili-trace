@@ -719,6 +719,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
         // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
         if (!DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，审核状态已改变！");
