@@ -3,6 +3,7 @@ package com.dili.trace.api.client;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
@@ -76,45 +77,16 @@ public class ClientUserStoreApi {
      * 修改当前用户的用户店铺名称
      */
     @RequestMapping(value = "/updateUserStore.api", method = {RequestMethod.POST})
-    public BaseOutput<UserStore> updateUserStore(@RequestBody UserStore userStore) {
+    public BaseOutput<UserStore> updateUserStore(@RequestBody UserStore input) {
         try {
-            Long userId = userStore.getUserId();
-            if (null == userId) {
-                return BaseOutput.failure("userid为空");
-            }
-            if (StringUtils.isBlank(userStore.getStoreName())) {
-                return BaseOutput.failure("用户店铺名称不能为空");
-            }
-            userStore.setUserId(userId);
-            UserStore queObj = new UserStore();
-            queObj.setUserId(userId);
-            queObj.setStoreName(userStore.getStoreName().trim());
-            //查询用户店铺列表
-            List<UserStore> storeList =userStoreService.listByExample(queObj);
-            //用户无店铺则新增
-            if(storeList.isEmpty()){
-                userStore.setCreated(new Date());
-                userStore.setModified(new Date());
-                userStore.setUserName(this.sessionContext.getSessionData().getUserName());
-                userStoreService.insert(userStore);
-            }else{
-                //验证店铺名是否已存在
-                UserStore queStore = new UserStore();
-                queStore.setStoreName(userStore.getStoreName());
-                List<UserStore> oldList=userStoreService.listByExample(queStore);
-                if(oldList.isEmpty()){
-                    userStore.setUserName(this.sessionContext.getSessionData().getUserName());
-                    this.userStoreService.updateExactByExample(userStore, queObj);
-                }else{
-                    //旧店铺名与新店铺名一致
-                    if(userStore.getStoreName().equals(storeList.get(0).getStoreName())){
-                        userStore.setUserName(this.sessionContext.getSessionData().getUserName());
-                        this.userStoreService.updateExactByExample(userStore, queObj);
-                        return BaseOutput.success("success");
-                    }
-                    return BaseOutput.failure("店铺名已存在");
-                }
-            }
+
+            SessionData sessionData=this.sessionContext.getSessionData();
+
+            input.setUserId(sessionData.getUserId());
+            input.setUserName(sessionData.getUserName());
+            input.setMarketId(sessionData.getMarketId());
+            input.setMarketName(sessionData.getMarketName());
+            this.userStoreService.insertOrUpdateStore(input);
             return BaseOutput.success("success");
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
