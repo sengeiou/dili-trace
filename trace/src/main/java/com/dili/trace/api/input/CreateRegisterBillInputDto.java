@@ -366,6 +366,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setIsPrintCheckSheet(this.getIsPrintCheckSheet());
         registerBill.setTareWeight(this.getTareWeight());
         registerBill.setUnitPrice(this.getUnitPrice());
+        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
 //        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }
