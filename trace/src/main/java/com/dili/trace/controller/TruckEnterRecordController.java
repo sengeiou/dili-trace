@@ -122,12 +122,8 @@ public class TruckEnterRecordController {
             if (null == userTicket) {
                 return BaseOutput.failure("未登录或登录过期");
             }
-            //设置市场id
-//            upStreamDto.setMarketId(MarketUtil.returnMarket());
-//            OperatorUser operatorUser = new OperatorUser(userTicket.getId(), userTicket.getRealName());
-//            return null == truckEnterRecord.getId() ? truckEnterRecordService.add(truckEnterRecord)
-//                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
-            return null;
+            return null == truckEnterRecord.getId() ? truckEnterRecordService.addTruckEnterRecord(truckEnterRecord)
+                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
         } catch (BusinessException e) {
             LOGGER.info("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
@@ -135,5 +131,12 @@ public class TruckEnterRecordController {
             LOGGER.error("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput delete(Long id) {
+        this.truckEnterRecordService.delete(id);
+        return BaseOutput.success("删除成功");
     }
 }
