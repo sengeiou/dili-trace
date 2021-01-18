@@ -8,6 +8,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UserStoreService;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +42,17 @@ public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
         query.setMarketId(input.getMarketId());
         query.setStoreName(input.getStoreName().trim());
         List<UserStore> userStoreList = this.listByExample(query);
+        boolean otherUserHasThisStoreName=StreamEx.of(userStoreList).map(UserStore::getUserId).anyMatch(uid->!uid.equals(input.getUserId()));
+        if(otherUserHasThisStoreName){
+            throw new TraceBizException("店铺已经存在");
+        }
+
         if (userStoreList.isEmpty()) {
             input.setCreated(new Date());
             input.setModified(new Date());
             return this.insertSelective(input);
         } else {
             UserStore userStoreItem = userStoreList.get(0);
-            if (!userStoreItem.getUserId().equals(input.getUserId())) {
-                throw new TraceBizException("店铺已经存在");
-            }
             input.setId(userStoreItem.getId());
             input.setModified(new Date());
             return this.updateSelective(input);
