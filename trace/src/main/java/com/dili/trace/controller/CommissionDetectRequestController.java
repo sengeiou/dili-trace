@@ -227,6 +227,7 @@ public class CommissionDetectRequestController {
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+                    rb.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
                     // 理货类型为交易区时才保存交易区号和id
                     if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
                         rb.setSourceName(input.getSourceName());

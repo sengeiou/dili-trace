@@ -118,6 +118,19 @@ public class DetectRequestWithBillDto extends RegisterBill {
     private String likeCode;
 
     /**
+     * 预约单号模糊查询条件
+     */
+    private String likeDetectCode;
+
+    public String getLikeDetectCode() {
+        return likeDetectCode;
+    }
+
+    public void setLikeDetectCode(String likeDetectCode) {
+        this.likeDetectCode = likeDetectCode;
+    }
+
+    /**
      * 报备时间-开始查询条件
      */
     private Date billCreatedStart;
@@ -189,23 +202,7 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     private Date detectReservationTime;
 
-    private Integer isPrintCheckSheet;
 
-    @Override
-    @Transient
-    public String getIsPrintCheckSheetName() {
-        return Optional.ofNullable(YesOrNoEnum.getYesOrNoEnum(this.isPrintCheckSheet)).map(YesOrNoEnum::getName).orElse("");
-    }
-
-    @Override
-    public Integer getIsPrintCheckSheet() {
-        return isPrintCheckSheet;
-    }
-
-    @Override
-    public void setIsPrintCheckSheet(Integer isPrintCheckSheet) {
-        this.isPrintCheckSheet = isPrintCheckSheet;
-    }
 
     public Date getDetectReservationTime() {
         return detectReservationTime;
