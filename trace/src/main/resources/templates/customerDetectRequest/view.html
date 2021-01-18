@@ -62,9 +62,9 @@
                            readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>重量/KG</label>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>重量/${registerBill.weightUnitName!}</label>
                     <input type="text" class="form-control input-sm"
-                           value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>" required
+                           value=" ${registerBill.weight!,'0.00'}" required
                            readonly/>
                 </div>
                 <div class="form-group">
@@ -141,9 +141,9 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>皮重</label>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>皮重/${registerBill.weightUnitName!}</label>
                     <input type="text" class="form-control input-sm"
-                           value="<%if(null!= tareWeight!){%>${tareWeight}<%}else{%>-<%}%>" required readonly/>
+                           value="<%if(null!= tareWeight!){%>${tareWeight,'0.00'}<%}else{%>-<%}%>" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>商品规格</label>
@@ -152,7 +152,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>商品单价</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.unitPrice!}" required
+                    <input type="text" class="form-control input-sm" value="${registerBill.unitPrice!,'0.00'}" required
                            readonly/>
                 </div>
                 <br>

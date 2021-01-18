@@ -72,8 +72,8 @@
                     <input type="text" class="form-control input-sm" value="${registerBill.brandName!}" required readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>重量/KG</label>
-                    <input type="text" class="form-control input-sm"  value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>" required readonly/>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>重量/${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm"  value=" ${registerBill.weight!,'0.00'}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>产地</label>
@@ -128,8 +128,8 @@
                     <input type="text" class="form-control input-sm" value="${registerBill.truckTypeShow!}" required readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>皮重</label>
-                    <input type="text" class="form-control input-sm" value="<%if(null!= tareWeight!){%>${tareWeight}<%}else{%>-<%}%>" required readonly/>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>皮重${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm" value="<%if(null!= tareWeight!){%>${tareWeight,'0.00'}<%}else{%>-<%}%>" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
@@ -138,7 +138,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>商品单价</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.unitPrice!}" required readonly/>
+                    <input type="text" class="form-control input-sm" value="${registerBill.unitPrice!,'0.00'}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>上游企业</label>
