@@ -298,12 +298,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     // registerBill.setLatestDetectTime(new Date());
 //                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-                    registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
                 }
                 if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
                     // registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-                    registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
                 }
 
             } else {
