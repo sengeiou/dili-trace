@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -319,6 +320,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			dto.setRows(10);
 		}
 		dto.setIsDeleted(YesOrNoEnum.NO.getCode());
+		dto.setBillTypes(Arrays.asList(BillTypeEnum.REGISTER_BILL.getCode()));
 		PageHelper.startPage(dto.getPage(), dto.getRows());
 		List<TradeDetailBillOutput> list = this.tradeDetailMapper.selectTradeDetailAndBill(dto);
 		Page<TradeDetailBillOutput> page = (Page) list;

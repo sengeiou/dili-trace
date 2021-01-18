@@ -59,7 +59,7 @@
         let designatedId = $("#designatedId").val();
         let designatedName = $("#designatedName").val();
         let detectTime = $("#detectTime").val();
-        await parent.window['CustomerDetectRequestGrid'].doAssign('${detectRequest.id}', designatedId, designatedName, detectTime);
+        await parent.window['CustomerDetectRequestGrid'].doAssign('${registerBill.id}', designatedId, designatedName, detectTime);
     }
 
     /**

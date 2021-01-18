@@ -166,7 +166,11 @@ class CommissionDetectRequestGrid extends ListPage {
     }
     async openAssignPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/commissionDetectRequest/confirm.html?id=' + row.id);
+        if (_.isUndefined(row.billId) || row.billId == null) {
+            bs4pop.alert('请行进行预约检测', { type: 'error' });
+            return;
+        }
+        var url = this.toUrl('/commissionDetectRequest/confirm.html?billId=' + row.billId);
         var dia = bs4pop.dialog({
             title: '接单',
             content: url,

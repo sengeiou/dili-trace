@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -186,6 +187,7 @@ public class ClientRegisterBillApi {
             logger.info("获取登记单列表 操作用户:{}", userId);
             input.setUserId(userId);
             input.setMarketId(sessionData.getMarketId());
+            input.setBillTypes(Arrays.asList(BillTypeEnum.REGISTER_BILL.getCode()));
             BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
             return BaseOutput.success().setData(basePage);
         } catch (TraceBizException e) {

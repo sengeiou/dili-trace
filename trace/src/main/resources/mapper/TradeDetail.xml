@@ -27,12 +27,18 @@
       <if test="isDeleted != null">
         AND register_bill.is_deleted =#{isDeleted}
       </if>
-      <if test="verifyStatusList != null  and verifyStatusList.size()>0">
+      <if test="billTypes != null  and verifyStatusList.size()>0">
         AND register_bill.verify_status
         <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
           #{verifyStatus}
         </foreach>
       </if>
+    <if test="billTypes != null  and billTypes.size()>0">
+      AND register_bill.bill_type
+      <foreach collection="billTypes " open=" IN (" close=")" item="billType" separator=",">
+        #{billType}
+      </foreach>
+    </if>
       <if test="marketId != null">
         AND register_bill.market_id =#{marketId}
       </if>
@@ -68,6 +74,12 @@
       AND register_bill.verify_status
       <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
         #{verifyStatus}
+      </foreach>
+    </if>
+    <if test="billTypes != null  and billTypes.size()>0">
+      AND register_bill.bill_type
+      <foreach collection="billTypes " open=" IN (" close=")" item="billType" separator=",">
+        #{billType}
       </foreach>
     </if>
     <if test="marketId != null">

@@ -9,6 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.PurchaseIntentionRecordGrid = void 0;
     class PurchaseIntentionRecordGrid extends ListPage {
         constructor(grid, queryform, toolbar) {
             super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
@@ -40,7 +41,10 @@
         }
         async openEditPage() {
             var row = this.rows[0];
-            console.log(row);
+            if (undefined == row) {
+                await bs4pop.alert("请选择一条数据", { type: 'warning' });
+                return;
+            }
             var url = this.toUrl('/purchaseIntentionRecord/edit.html?id=' + row.id);
             var dia = bs4pop.dialog({
                 title: '买家报备单详情',
