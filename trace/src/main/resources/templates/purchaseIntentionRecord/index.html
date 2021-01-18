@@ -67,13 +67,23 @@
             <#resource code="purchaseIntentionRecord#detail">
                 <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
             </#resource>
+            <#resource code="purchaseIntentionRecord#add">
+                <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            </#resource>
+            <#resource code="purchaseIntentionRecord#edit">
+                <button id="edit-btn"   type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 修改</button>
+            </#resource>
+            <#resource code="purchaseIntentionRecord#undo">
+                <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-reply"></i>删除</button>
+            </#resource>
+
             <#resource code="purchaseIntentionRecord#export">
                 <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
             </#resource>
         </div>
         <table id="grid" data-toggle="table" data-title="买家报备列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
-               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="created" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
             <tr>

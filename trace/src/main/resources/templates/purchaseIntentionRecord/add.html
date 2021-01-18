@@ -1,0 +1,209 @@
+<#bodyOrigin>
+<div class="main-container" style="padding: 0">
+    <div class="form-box border">
+        <form id="updateForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>买家名称</label>
+                    <input type="text" name="buyerName" class="form-control input-sm"   required />
+                    <input type="hidden" name="buyerId">
+                </div>
+                <div class="form-group">
+                    <button id="addBuyer-btn" type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 新增买家</button>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品品类</label>
+                    <input type="text" name="productName" class="form-control input-sm"   required />
+                    <input type="hidden" name="productId">
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品重量</label>
+                    <input name="productWeight" type="text" class="form-control input-sm"  maxlength="6"  range="0 999999" value="0" required />
+                    <select name="weightUnit" class="input-sm" style="width: unset;border: 1px solid #ccc ">
+                        <option value="1">斤</option>
+                        <option value="2">公斤</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌</label>
+                    <input  class="form-control input-sm editableSelect isPlate" id = "plate" name="plate" data-options="['a','b']" required />
+                </div>
+                <br>
+            </div>
+        </form>
+
+        <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+        </div>
+    </div>
+</div>
+
+</div>
+</#bodyOrigin>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+
+<script>
+    $(function(){
+        let productNameEl=$('input[name="productName"]');
+        let buyerNameEl = $('input[name="buyerName"]');
+        initAutoComplete(productNameEl,'/toll/category');
+        //initUserInfo();
+        $("#addBuyer-btn").on("click",function(){
+            goAddBuyer();
+        });
+
+        jQuery.validator.addMethod("isPlate", function(value, element) {
+            return this.optional(element) || isLicensePlate(value.toUpperCase());
+        }, "请输入正确格式的车牌");
+    })
+
+    // 正则验证车牌,验证通过返回true,不通过返回false
+    function isLicensePlate(str) {
+        return /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳使领])$/.test(str);
+    }
+
+    function goAddBuyer(){
+
+        //parent.bs4pop.removeAll();
+        let url ='add_buyer.html';
+        //@ts-ignore
+        let addBuy_dia = parent.bs4pop.dialog({
+            title: '新增买家',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '68%',
+            height: '68%',
+            btns: []
+        });
+    }
+    function initUserInfo() {
+        $("[name='buyerName']").on("keyup",function(){
+            console.log($(this).val());
+            let q = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: '${contextPath}/user/listByCondition.action',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify({
+                    likeName: q
+                }),
+                success: function(result){
+                    if(result.success){
+                        console.log(result);
+                        $.map(result.data, function(item,index){
+                            return $.extend(item, {
+                                text: item.name+" "+item.cardNo
+                            });
+                        });
+                        success(result.data);
+                    }
+
+                },
+                error: function(){
+                    error.apply(this, arguments);
+                }
+            });
+        });
+    }
+
+    var resubmit = 0;
+function create(){
+    if(resubmit==0){
+        resubmit=1;
+    }else{
+        resubmit=0;
+        swal(
+            '错误',
+            '重复提交',
+            'error'
+        );
+        return;
+    }
+    if($('#updateForm').validate().form() != true){
+        resubmit = 0;
+        return;
+    }
+    var data=$('#updateForm').serializeJSON({useIntKeysAsArrayIndex:true});
+    $.ajax({
+        type: "POST",
+        url: "${contextPath}/purchaseIntentionRecord/doAdd.action",
+        data :  JSON.stringify(data),
+        dataType: "json",
+        async : true,
+        contentType: "application/json; charset=utf-8",
+        success: function (ret) {
+            if (ret.success) {
+                parent.window['purchaseInt'].removeAllAndLoadData()
+            } else {
+                resubmit=0;
+                swal(
+                    '错误',
+                    ret.result,
+                    'error'
+                );
+            }
+        },
+        error: function(){
+            resubmit=0;
+            swal(
+                '错误',
+                '远程访问失败',
+                'error'
+            );
+        }
+    });
+}
+
+    /**
+     * 初始化自动完成框
+     */
+    function initAutoComplete(selector,url){
+        $(selector).data('oldvalue','');
+        $(selector).on('change',function () {
+            var oldvalue=$(selector).data('oldvalue');
+            var val=$(this).val();
+            if(oldvalue!=val){
+                $(this).siblings('input').val('');
+            }
+        });
+        // 产地联系输入
+        $(selector).devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                $(selector).data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    }
+</script>

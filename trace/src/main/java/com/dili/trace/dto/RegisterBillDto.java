@@ -5,6 +5,7 @@ import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.util.DetectDescUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
@@ -643,9 +644,6 @@ public class RegisterBillDto extends RegisterBill {
 
     @Transient
     public String getDetectDesc() {
-        if (DetectTypeEnum.NEW.getCode().equals(this.detectType) && DetectResultEnum.NONE.getCode().equals(this.detectResult)){
-            return DetectResultEnum.name(this.detectResult);
-        }
-        return DetectTypeEnum.toName(this.detectType)+ DetectResultEnum.name(this.detectResult);
+        return DetectDescUtil.buildDetectDesc(this.detectType, this.detectResult);
     }
 }

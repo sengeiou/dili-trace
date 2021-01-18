@@ -132,7 +132,7 @@
             <#resource code="commissionDetectRequest#auto">
                 <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-car"></i> 主动送检</button>
             </#resource>
-            <#resource code="commissionDetectRequest#review">
+            <#resource code="commissionDetectRequest#review_hide">
                 <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-repeat"></i> 复检</button>
             </#resource>
             <#resource code="commissionDetectRequest#undo">
@@ -148,7 +148,7 @@
             <#resource code="commissionDetectRequest#appointment">
             <button id="appointment-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 预约检测</button>
             </#resource>
-            <#resource code="commissionDetectRequest#batchReviewCheck">
+            <#resource code="commissionDetectRequest#batchReviewCheck_hide">
             <button id="batchReview-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
             </#resource>
             <#resource code="commissionDetectRequest#createsheet">
@@ -158,7 +158,7 @@
         </div>
         <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
-               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="created" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
             <tr>
@@ -214,7 +214,7 @@
                 <th data-field="detectTime"  data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResult" data-sort-name="detect_result" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
+                <th data-field="detectDesc" data-sort-name="detect_result" data-sortable="true" data-align="center">
                     检测结果
                 </th>
                 <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">

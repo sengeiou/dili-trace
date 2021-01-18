@@ -132,6 +132,8 @@ public class CommissionDetectRequestController {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
         }
+        DetectRequest detectRequest = detectRequestService.get(item.getDetectRequestId());
+        modelMap.put("detectRequest", detectRequest);
         if (displayWeight == null) {
             displayWeight = false;
         }

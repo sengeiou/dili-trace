@@ -8,6 +8,8 @@ export class PurchaseIntentionRecordGrid extends ListPage {
         super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
+        window['purchaseInt'] = this;
+
         //
         let categoryController: CategoryController = new CategoryController();
         // let cityController:CityController=new CityController();
@@ -15,13 +17,40 @@ export class PurchaseIntentionRecordGrid extends ListPage {
             categoryController.lookupCategories(query, done)
         });
         $('#detail-btn').on('click',async ()=>await this.openDetailPage())
+        $("#btn_add").on('click',async ()=>await this.openAddPage())
+        $("#edit-btn").on('click',async ()=>await this.openEditPage())
+        $("#undo-btn").on('click',async ()=>await this.doDelete())
+
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
     }
 
-    private async  openDetailPage(){
-        var row=this.rows[0]
-        var url=this.toUrl('/purchaseIntentionRecord/view.html?id='+row.id);
+    private async doDelete() {
+        //@ts-ignore
+        bs4pop.removeAll();
+        let promise = new Promise((resolve, reject) => {
+            //@ts-ignore
+            bs4pop.confirm('是否确认接单？<br/>',
+                {type: 'warning',btns: [
+                        {label: '是', className: 'btn-primary',onClick(cb){  resolve("true");}},
+                        {label: '否', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
+                    ]});
+
+        });
+        let result = await promise;
+        if(result=='cancel'){
+            return;
+        }
+    }
+
+    private async openEditPage() {
+        var row = this.rows[0];
+        if(undefined==row){
+            //@ts-ignore
+            await bs4pop.alert("请选择一条数据", {type: 'warning'});
+            return;
+        }
+        var url = this.toUrl('/purchaseIntentionRecord/edit.html?id=' + row.id);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '买家报备单详情',
@@ -29,8 +58,39 @@ export class PurchaseIntentionRecordGrid extends ListPage {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '98%',
-            height: '98%',
+            width: '68%',
+            height: '68%',
+            btns: []
+        });
+    }
+
+    private async openAddPage() {
+        var url = this.toUrl('/purchaseIntentionRecord/add.html');
+        //@ts-ignore
+        var add_dia = bs4pop.dialog({
+            title: '新增买家报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '48%',
+            height: '58%',
+            btns: []
+        });
+    }
+
+    private async openDetailPage() {
+        var row = this.rows[0]
+        var url = this.toUrl('/purchaseIntentionRecord/view.html?id=' + row.id);
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '买家报备单详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '68%',
+            height: '58%',
             btns: []
         });
     }

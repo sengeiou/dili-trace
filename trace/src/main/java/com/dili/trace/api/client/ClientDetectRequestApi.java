@@ -70,6 +70,8 @@ public class ClientDetectRequestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     CommissionBillService commissionBillService;
+    @Autowired
+    BillVerifyHistoryService verifyHistoryService;
 //    /**
 //     * 用户创建场外委托单
 //     *
@@ -218,6 +220,10 @@ public class ClientDetectRequestApi {
             if (null != detail && StringUtils.isNotBlank(detail.getBillCode())) {
                 detail.setDetectRecordList(detectRecordService.findTop2AndLatest(detail.getBillCode()));
             }
+            this.verifyHistoryService.findVerifyHistoryByBillId(detail.getBillId()).ifPresent(vh -> {
+                detail.setVerifyDateTime(vh.getVerifyDateTime());
+                detail.setVerifyOperatorName(vh.getVerifyOperatorName());
+            });
             return BaseOutput.successData(detail);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -234,7 +240,7 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
-        public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
+    public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
@@ -246,8 +252,10 @@ public class ClientDetectRequestApi {
             return BaseOutput.failure("服务端出错");
         }
     }
+
     /**
      * 查询检测请求列表
+     *
      * @param detectRequestDto
      * @return
      */
@@ -281,10 +289,10 @@ public class ClientDetectRequestApi {
         }
         try {
             return BaseOutput.success().setData(detectRequestService.getDetectRequestDetail(detectRequestDto));
-        }catch (TraceBizException e){
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
-        }catch (Exception e){
-            logger.error(e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return BaseOutput.failure("查询出错");
         }
 
@@ -567,7 +575,7 @@ public class ClientDetectRequestApi {
             registerBillService.autoCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");
@@ -589,7 +597,7 @@ public class ClientDetectRequestApi {
             registerBillService.samplingCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");
@@ -611,7 +619,7 @@ public class ClientDetectRequestApi {
             registerBillService.spotCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
         }
         return BaseOutput.success("操作成功");

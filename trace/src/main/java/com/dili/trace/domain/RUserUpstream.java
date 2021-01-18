@@ -24,6 +24,14 @@ public class RUserUpstream extends BaseDomain {
     private Long userId;
 
     /**
+     * 用户(商户)名
+     */
+    @ApiModelProperty(value = "用户(商户)名")
+    @Column(name = "`user_name`")
+    private String userName;
+
+
+    /**
      * 上游信息ID
      */
     @ApiModelProperty(value = "上游信息ID")
@@ -102,5 +110,13 @@ public class RUserUpstream extends BaseDomain {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

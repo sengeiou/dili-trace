@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,6 +86,7 @@ public class ClientRegisterHeadApi {
             input.setSort("created");
             input.setOrder("desc");
             input.setUserId(userId);
+//            input.setMinRemainWeight(BigDecimal.ZERO);
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
 
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
@@ -162,7 +164,7 @@ public class ClientRegisterHeadApi {
             String userName = sessionContext.getUserName();
 
             List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
-                    .nonNull().map(dto->{
+                    .nonNull().map(dto -> {
                         dto.setUserId(userId);
                         return dto;
                     }).toList();
@@ -171,7 +173,7 @@ public class ClientRegisterHeadApi {
             }
             logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
             List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads,
-                     Optional.empty(), sessionContext.getSessionData().getMarketId());
+                    Optional.empty(), sessionContext.getSessionData().getMarketId());
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -197,7 +199,7 @@ public class ClientRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
             CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(sessionData.getUserId(), sessionData.getMarketId());
 
 
@@ -229,7 +231,7 @@ public class ClientRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
             logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
             this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
         } catch (TraceBizException e) {
@@ -251,7 +253,7 @@ public class ClientRegisterHeadApi {
     @RequestMapping(value = "/doUpdateActiveRegisterHead.api", method = RequestMethod.POST)
     public BaseOutput doUpdateActiveRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
         logger.info("启用/关闭进门主台账单:{}", JSON.toJSONString(dto));
-        if (dto == null || dto.getId() == null||dto.getActive()==null) {
+        if (dto == null || dto.getId() == null || dto.getActive() == null) {
             return BaseOutput.failure("参数错误");
         }
         try {
@@ -280,7 +282,7 @@ public class ClientRegisterHeadApi {
     public BaseOutput<RegisterHead> viewRegisterHead(@RequestBody BaseDomain baseDomain) {
         try {
             RegisterHead registerHead = registerHeadService.get(baseDomain.getId());
-            if(registerHead==null){
+            if (registerHead == null) {
                 return BaseOutput.failure("没有数据");
             }
 

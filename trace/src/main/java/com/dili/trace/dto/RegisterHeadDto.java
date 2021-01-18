@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,77 +15,77 @@ import java.util.List;
  * @author Lily
  */
 public class RegisterHeadDto extends RegisterHead {
-	/**
-	 * 查询开始时间
-	 */
-	@ApiModelProperty(value = "查询开始时间")
-	@Column(name = "`created`")
-	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String createdStart;
+    /**
+     * 查询开始时间
+     */
+    @ApiModelProperty(value = "查询开始时间")
+    @Column(name = "`created`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private String createdStart;
 
-	/**
-	 * 查询结束时间
-	 */
-	@ApiModelProperty(value = "查询结束时间")
-	@Column(name = "`created`")
-	@Operator(Operator.LITTLE_EQUAL_THAN)
-	private String createdEnd;
+    /**
+     * 查询结束时间
+     */
+    @ApiModelProperty(value = "查询结束时间")
+    @Column(name = "`created`")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
+    private String createdEnd;
 
-	/**
-	 * 查询关键字
-	 */
-	@Transient
-	private String keyword;
 
-	/**
-	 * 是否校验主台账剩余重量大于0（1：是 0：否）
-	 */
-	@Transient
-	private Integer verifyRemainWeight;
+    @Column(name = "`remain_weight`")
+    @Operator(Operator.GREAT_THAN)
+    private BigDecimal minRemainWeight;
+    /**
+     * 查询关键字
+     */
+    @Transient
+    private String keyword;
 
-	/**
-	 * 市场名称
-	 */
-	@Transient
-	private String marketName;
 
-	public String getCreatedStart() {
-		return createdStart;
-	}
+    /**
+     * 市场名称
+     */
+    @Transient
+    private String marketName;
 
-	public void setCreatedStart(String createdStart) {
-		this.createdStart = createdStart;
-	}
+    public String getCreatedStart() {
+        return createdStart;
+    }
 
-	public String getCreatedEnd() {
-		return createdEnd;
-	}
+    public void setCreatedStart(String createdStart) {
+        this.createdStart = createdStart;
+    }
 
-	public void setCreatedEnd(String createdEnd) {
-		this.createdEnd = createdEnd;
-	}
+    public String getCreatedEnd() {
+        return createdEnd;
+    }
 
-	public String getKeyword() {
-		return keyword;
-	}
+    public void setCreatedEnd(String createdEnd) {
+        this.createdEnd = createdEnd;
+    }
 
-	public void setKeyword(String keyword) {
-		this.keyword = keyword;
-	}
+    public String getKeyword() {
+        return keyword;
+    }
 
-	public Integer getVerifyRemainWeight() {
-		return verifyRemainWeight;
-	}
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
-	public void setVerifyRemainWeight(Integer verifyRemainWeight) {
-		this.verifyRemainWeight = verifyRemainWeight;
-	}
 
-	public String getMarketName() {
-		return marketName;
-	}
+    public String getMarketName() {
+        return marketName;
+    }
 
-	public void setMarketName(String marketName) {
-		this.marketName = marketName;
-	}
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
+
+    public BigDecimal getMinRemainWeight() {
+        return minRemainWeight;
+    }
+
+    public void setMinRemainWeight(BigDecimal minRemainWeight) {
+        this.minRemainWeight = minRemainWeight;
+    }
 }

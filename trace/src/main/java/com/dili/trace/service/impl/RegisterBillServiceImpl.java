@@ -92,6 +92,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     ProcessService processService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    BillVerifyHistoryService billVerifyHistoryService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -704,6 +706,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateSelective(bill);
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(billItem.getId());
+        this.billVerifyHistoryService.createVerifyHistory(fromVerifyState,bill.getBillId(),operatorUser);
 
         // 创建相关的tradeDetail及batchStock数据
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem -> {
@@ -904,9 +907,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         String sql = null;
         if (StringUtils.isNotBlank(query.getKeyword())) {
             String keyword = query.getKeyword().trim();
-            sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
-                    + keyword + "%' OR legal_person like '%" + keyword + "%' OR upper(tally_area_nos) like '%"
-                    + keyword.toUpperCase() + "%'))";
+            sql = "( product_name like '%" + keyword + "%'  OR name like '%"+ keyword + "%')";
         }
         return Optional.ofNullable(sql);
 

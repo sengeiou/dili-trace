@@ -598,7 +598,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
-            msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
+            if(!BillVerifyStatusEnum.NO_PASSED.equalsToCode(item.getVerifyStatus())){
+                msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
+            }
         }
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
@@ -617,14 +619,16 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.get(item.getDetectRequestId());
             if (detectRequest != null) {
-                // 检测不合格，可以复检
+                // 检测不合格
                 if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
-                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
+                    //初检不合格的委托单可以进行复检
+                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType()) && BillTypeEnum.COMMISSION_BILL.equalsToCode(item.getBillType())) {
                         msgStream.add(DetectRequestMessageEvent.review);
-                        msgStream.add(DetectRequestMessageEvent.batchReview);
-                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
+                    }
+                    //已检测，且复检不合格的报备单展示复检按钮
+                    if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
-                        if (item.getHasHandleResult() == 0) {
+                        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus()) && item.getHasHandleResult() == 0) {
                             msgStream.add(DetectRequestMessageEvent.review);
                             msgStream.add(DetectRequestMessageEvent.batchReview);
                         }
@@ -682,6 +686,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         // 初始【待预约】状态才可以预约申请
         if (!DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
+        }
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())){
+            throw new TraceBizException("操作失败，审核不通过不能进行预约");
         }
         if (registerBill.getDetectRequestId() == null) {
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");

@@ -4,6 +4,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.util.DetectDescUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -493,11 +494,9 @@ public class DetectRequestWithBillDto extends RegisterBill {
     public String getDetectTypeName() {
         return DetectTypeEnum.toName(this.detectType);
     }
+
     @Transient
     public String getDetectDesc() {
-        if (DetectTypeEnum.NEW.getCode().equals(this.detectType) && DetectResultEnum.NONE.getCode().equals(this.detectResult)){
-            return DetectResultEnum.name(this.detectResult);
-        }
-        return DetectTypeEnum.toName(this.detectType)+ DetectResultEnum.name(this.detectResult);
+        return DetectDescUtil.buildDetectDesc(this.detectType, this.detectResult);
     }
 }
