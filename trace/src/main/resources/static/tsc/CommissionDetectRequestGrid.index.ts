@@ -251,7 +251,7 @@ class CommissionDetectRequestGrid extends ListPage {
      * @param designatedId
      * @param designatedName
      */
-    public async doAssign(id:string, designatedId:string, designatedName:string, detectTime:string){
+    public async doAssign(billId:string, designatedId:string, designatedName:string, detectTime:string){
         //@ts-ignore
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
@@ -268,7 +268,7 @@ class CommissionDetectRequestGrid extends ListPage {
             return;
         }
 
-        let url= this.toUrl("/customerDetectRequest/doConfirm.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
+        let url= this.toUrl("/customerDetectRequest/doConfirm.action?billId="+billId+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
         try{
             var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
             if(!resp.success){

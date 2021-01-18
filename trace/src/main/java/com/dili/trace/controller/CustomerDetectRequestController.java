@@ -128,12 +128,12 @@ public class CustomerDetectRequestController {
      */
     @RequestMapping(value = "/doConfirm.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doAssign(@RequestParam(name = "id", required = true) Long id,
+    BaseOutput doAssign(@RequestParam(name = "billId", required = true) Long billId,
                         @RequestParam(name = "designatedId", required = false) Long designatedId,
                         @RequestParam(name = "designatedName", required = false) String designatedName,
                         @RequestParam(name = "detectTime", required = false) Date detectTime) {
         try {
-            this.detectRequestService.confirm(id, designatedId, designatedName, detectTime);
+            this.detectRequestService.confirm(billId, designatedId, designatedName, detectTime);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
