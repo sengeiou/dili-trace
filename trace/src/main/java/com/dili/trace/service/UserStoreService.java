@@ -77,6 +77,6 @@ public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
      */
     public List<UserStore> listUserStoreByKeyword(Long marketId, String keyword) {
 
-        return ((UserStoreMapper) this.getDao()).listUserStoreByKeyword(keyword, marketId);
+        return ((UserStoreMapper) this.getDao()).listUserStoreByKeyword("%"+keyword+"%", marketId);
     }
 }
