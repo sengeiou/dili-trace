@@ -229,6 +229,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+        detectRequest.setDetectReservationTime(new Date());
         // 维护检测编号
         detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
         this.detectRequestService.updateSelective(detectRequest);

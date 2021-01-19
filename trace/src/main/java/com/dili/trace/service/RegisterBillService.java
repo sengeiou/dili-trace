@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -150,12 +151,11 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
     /**
      * 查询详情
-     * @param billId
-     * @param tradeDetailId
+     * @param inputDto
      * @return
      */
 
-    public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId);
+    public RegisterBillOutputDto viewTradeDetailBill(RegisterBillApiInputDto inputDto);
 
     /**
      * 删除报备单
