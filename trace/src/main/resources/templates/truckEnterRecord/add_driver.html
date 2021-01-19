@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>组织类型</label>
-                    <select class="form-control input-sm" name="organizationType">
+                    <select class="form-control input-sm">
                         <option value="10">个人</option>
                         <option value="20">企业</option>
                     </select>
@@ -59,14 +59,14 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>手机号码</label>
-                    <input name="contactsPhone" id="contactsPhone" type="text" class="form-control input-sm" tabindex="-1" required />
+                        手机号码</label>
+                    <input name="contactsPhone" id="contactsPhone" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>所属市场</label>
-                    <select class="form-control input-sm" id="marketId" name="customerMarket.marketId" required>
+                    <select class="form-control input-sm" id="marketId" name="customerMarket.marketId"  required>
                         <option value="">请选择</option>
                         <% if( isNotEmpty(firmList) && firmList.~size>0)
                         for(firm in firmList){%>
@@ -90,60 +90,23 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                          业户单位名称</label>
-                    <input name="bizName" id="bizName" type="text" class="form-control input-sm" tabindex="-1"/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         开店数量</label>
                     <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                         销售类型</label>
+                         车牌</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                         车型</label>
                     <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                         租金</label>
-                    <input style="width: 180px" name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                    <span style="width: 20px">元</span>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         经营面积</label>
-                    <input style="width: 180px" name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                    <span style="width: 20px">㎡</span>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         上货品种</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                    <label class="label-title text-right">二三级品类</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                </div>
-
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         上线供应商</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        采购数量</label>
-                    <input style="width: 180px" name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                    <span style="width: 20px">/月</span>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         上货频次</label>
-                    <input  style="width: 158px" name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
-                    <span style="width: 34px">车/天</span>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                         下线零售商</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
+                         保有运输车辆</label>
+                    <input   name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"/>
                 </div>
             </div>
         </form>
@@ -189,14 +152,14 @@
         var data = $('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex: true});
         $.ajax({
             type: "POST",
-            url: "${contextPath}/purchaseIntentionRecord/doAddBuyer.action",
+            url: "doAddDriver.action",
             data: JSON.stringify(data),
             dataType: "json",
             async: true,
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if (ret.success) {
-                    parent.window['purchaseInt'].addBuy_dia.hide()
+                    parent.window['truckInt'].addBuy_dia.hide()
                 } else {
                     resubmit = 0;
                     swal(

@@ -1,25 +1,40 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.EnabledStateEnum;
+import com.dili.customer.sdk.domain.VehicleInfo;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
+import com.dili.customer.sdk.rpc.CustomerRpc;
+import com.dili.customer.sdk.rpc.VehicleRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.rpc.service.CarTypeRpcService;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.FirmDto;
+import com.dili.uap.sdk.rpc.FirmRpc;
 import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -44,6 +60,12 @@ public class TruckEnterRecordController {
     CarTypeRpcService carTypeRpcService;
     @Autowired
     UapRpcService uapRpcService;
+    @Resource
+    FirmRpc firmRpc;
+    @Resource
+    CustomerRpc customerRpc;
+    @Resource
+    VehicleRpc vehicleRpc;
 
     /**
      * 跳转到TruckEnterRecord页面
@@ -122,8 +144,11 @@ public class TruckEnterRecordController {
             if (null == userTicket) {
                 return BaseOutput.failure("未登录或登录过期");
             }
-            return null == truckEnterRecord.getId() ? truckEnterRecordService.addTruckEnterRecord(truckEnterRecord)
-                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            if (null == truckEnterRecord.getId()) {
+               return truckEnterRecordService.addTruckEnterRecord(truckEnterRecord);
+            } else {
+               return truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            }
         } catch (BusinessException e) {
             LOGGER.info("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
@@ -133,10 +158,60 @@ public class TruckEnterRecordController {
         }
     }
 
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput delete(Long id) {
         this.truckEnterRecordService.delete(id);
         return BaseOutput.success("删除成功");
+    }
+
+    /**
+     * 司机报备新增页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/add_driver.html", method = RequestMethod.GET)
+    public String addBuyer(ModelMap modelMap) throws Exception {
+        FirmDto firmDto = DTOUtils.newDTO(FirmDto.class);
+        firmDto.setDeleted(false);
+        firmDto.setFirmState(EnabledStateEnum.ENABLED.getCode());
+        BaseOutput<List<Firm>> baseOutput = firmRpc.listByExample(firmDto);
+        if (null != baseOutput) {
+            List<Firm> firmList = baseOutput.getData();
+            modelMap.put("firmList", firmList);
+        }
+        //BaseOutput<List<VehicleInfo>> baseOutput1 = vehicleRpc.listVehicle(null, MarketUtil.returnMarket());
+        /*if(null!=baseOutput1){
+            List<VehicleInfo> data = baseOutput1.getData();
+            if(CollectionUtils.isNotEmpty(data)){
+                modelMap.put("vehicleList", data);
+            }
+        }*/
+        return "truckEnterRecord/add_driver";
+    }
+
+    /**
+     * 新增司机报备
+     *
+     * @param customer
+     * @throws Exception
+     */
+    @RequestMapping(value = "/doAddDriver.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer) {
+        try {
+            BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer);
+            return baseOutput;
+        } catch (TraceBizException e) {
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        } catch (Exception e){
+            return BaseOutput.failure().setErrorData(e.getMessage());
+        }
     }
 }
