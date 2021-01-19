@@ -243,8 +243,6 @@ class CustomerDetectRequestGrid extends ListPage {
     /**
      * 退回
      * @param id
-     * @param designatedId
-     * @param designatedName
      */
     public async returnAssign(billId:string){
         //@ts-ignore
@@ -257,7 +255,6 @@ class CustomerDetectRequestGrid extends ListPage {
                 width: 500
 
             }, function(sure, value){
-
                 if(sure==true){
                     if($.trim(value)==''){
                         //@ts-ignore
@@ -276,8 +273,6 @@ class CustomerDetectRequestGrid extends ListPage {
         }catch (e) {
             return;
         }
-        debugger
-
         let url= this.toUrl("/customerDetectRequest/doReturn.action?billId="+billId);
         try{
             let resp=await jq.postJsonWithProcessing( url,data);

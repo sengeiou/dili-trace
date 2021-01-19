@@ -66,7 +66,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>检测结果</label>
-                    <select  class="form-control input-sm editableSelect " id="detectState" name="detectState" required>
+                    <select  class="form-control input-sm editableSelect " id="detectResult" name="detectResult" required>
                         <option value="1">合格</option>
                         <option value="2">不合格</option>
                     </select>
@@ -79,7 +79,7 @@
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
         <button class="btn-main2 btn-sm" onclick="doManualCheckConfirm()">提交</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()">取消</button>
     </div>
 </div>
 </#bodyOrigin>

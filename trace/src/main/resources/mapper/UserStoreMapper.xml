@@ -17,7 +17,7 @@
   <select id="listUserStoreByKeyword" resultType="com.dili.trace.domain.UserStore">
 
     select * from user_store where 1=1
-    <if test="queryCondition!=null and queryCondition!=''">
+    <if test="keyword!=null and keyword!=''">
       AND (user_name like #{keyword} or store_name like #{keyword})
     </if>
     <if test="marketId != null">

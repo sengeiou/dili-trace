@@ -32,8 +32,8 @@
                     <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>复检合格</option>
                     <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>复检不合格</option>
                 </select>
-                <input type="hidden" name="detectType">
-                <input type="hidden" name="detectResult">
+                <input type="hidden" name="detectType" class="form-control">
+                <input type="hidden" name="detectResult" class="form-control">
             </div>
             <div class="form-group col-auto">
                 <label for="latestDetectTimeTimeStart">检测时间</label>

@@ -65,6 +65,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     @Autowired
     MarketService marketService;
     @Autowired
+    DetectRecordService detectRecordService;
+    @Autowired
+    BillVerifyHistoryService verifyHistoryService;
+    @Autowired
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
 
     /**
@@ -427,6 +431,17 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (dto == null) {
             throw new TraceBizException("数据不存在");
         }
+        if(dto.getLatestDetectRecordId()!=null){
+            dto.setLatestDetectRecord(this.detectRecordService.get(dto.getLatestDetectRecordId()));
+        }
+        this.verifyHistoryService.findVerifyHistoryByBillId(dto.getBillId()).ifPresent(vh -> {
+            dto.setVerifyDateTime(vh.getVerifyDateTime());
+            dto.setVerifyOperatorName(vh.getVerifyOperatorName());
+        });
+        //设置最新检测记录
+        if (StringUtils.isNotBlank(dto.getBillCode())) {
+            dto.setDetectRecordList(detectRecordService.findTop2AndLatest(dto.getBillCode()));
+        }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
         dto.setImageCertList(imageCertList);
         return dto;
@@ -640,12 +655,18 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             if (detectRequest != null) {
                 // 检测不合格
                 if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
-                    //初检不合格的可以进行复检
+                    //初检不合格的，复检不合格且已检测可以进行复检
                     if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
                         msgStream.add(DetectRequestMessageEvent.review);
                         msgStream.add(DetectRequestMessageEvent.batchReview);
-                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
-                        msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
+                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
+                        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())){
+                            msgStream.add(DetectRequestMessageEvent.review);
+                            msgStream.add(DetectRequestMessageEvent.batchReview);
+                        }
+                        if (item.getHasHandleResult() == 0) {
+                            msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
+                        }
                     }
                 }
                 // 检测合格，生成检测报告。

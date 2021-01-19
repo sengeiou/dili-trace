@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.uap.sdk.domain.UserTicket;
 
 import java.util.List;
@@ -42,9 +43,9 @@ public interface DetectRecordService extends BaseService<DetectRecord, Long> {
 
 	/**
 	 * 手动填写检测结果
-	 * @param detectRecord
+	 * @param input
 	 * @param userTicket
 	 * @return
 	 */
-	public int saveDetectRecordManually(DetectRecord detectRecord, UserTicket userTicket);
+	public int saveDetectRecordManually(DetectRecordInputDto input, UserTicket userTicket);
 }
