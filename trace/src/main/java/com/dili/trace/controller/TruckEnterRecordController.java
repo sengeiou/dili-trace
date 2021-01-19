@@ -143,8 +143,11 @@ public class TruckEnterRecordController {
             if (null == userTicket) {
                 return BaseOutput.failure("未登录或登录过期");
             }
-            return null == truckEnterRecord.getId() ? truckEnterRecordService.addTruckEnterRecord(truckEnterRecord)
-                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            if (null == truckEnterRecord.getId()) {
+               return truckEnterRecordService.addTruckEnterRecord(truckEnterRecord);
+            } else {
+               return truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            }
         } catch (BusinessException e) {
             LOGGER.info("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
