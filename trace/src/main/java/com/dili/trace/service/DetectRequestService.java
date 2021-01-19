@@ -376,14 +376,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 检测请求-退回
      *
-     * @param billId             登记单ID
+     * @param registerBill             登记单ID
      */
     @Transactional(rollbackFor = Exception.class)
-    public void doReturn(Long billId) {
-        if (null == billId) {
+    public void doReturn(RegisterBill registerBill) {
+        if (null == registerBill||registerBill.getId()==null||StringUtils.isBlank(registerBill.getReturnReason())) {
             throw new RuntimeException("参数错误");
         }
-        RegisterBill bill = billService.get(billId);
+        RegisterBill bill = billService.get(registerBill.getId());
+        bill.setReturnReason(registerBill.getReturnReason());
         bill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
         billService.updateSelective(bill);
     }
@@ -732,7 +733,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param userTicket
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long billId, Boolean pass, UserTicket userTicket) {
+    public void manualCheck(Long billId, Boolean pass, UserTicket userTicket,Integer detectType,Integer detectState) {
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });

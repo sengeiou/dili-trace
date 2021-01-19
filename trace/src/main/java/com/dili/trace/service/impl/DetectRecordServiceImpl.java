@@ -86,7 +86,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         }
 
         this.detectRequestService.manualCheck(list.get(0).getId(),
-                DetectRecordStateEnum.QUALIFIED.equalsToCode(detectRecord.getDetectState()), userTicket);
+                DetectRecordStateEnum.QUALIFIED.equalsToCode(detectRecord.getDetectState()), userTicket,0,0);
 
         return 1;
     }
