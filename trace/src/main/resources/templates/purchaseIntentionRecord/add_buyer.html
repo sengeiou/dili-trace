@@ -196,7 +196,7 @@
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if (ret.success) {
-                    parent.window['purchaseInt'].removeAllAndLoadData()
+                    parent.window['purchaseInt'].addBuy_dia.hide()
                 } else {
                     resubmit = 0;
                     swal(

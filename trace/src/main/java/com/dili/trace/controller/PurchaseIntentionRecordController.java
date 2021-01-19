@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.EnabledStateEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
@@ -152,8 +153,8 @@ public class PurchaseIntentionRecordController {
     public @ResponseBody
     BaseOutput doAddBuyer(@RequestBody IndividualCustomerInput customer) {
         try {
-            customerRpc.registerIndividual(customer);
-            return BaseOutput.success();
+            BaseOutput<CustomerExtendDto> output = customerRpc.registerIndividual(customer);
+            return output;
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure().setErrorData(e.getMessage());

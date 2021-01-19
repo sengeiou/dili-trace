@@ -6,6 +6,7 @@ import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.customer.sdk.domain.VehicleInfo;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.customer.sdk.rpc.VehicleRpc;
@@ -205,8 +206,8 @@ public class TruckEnterRecordController {
     public @ResponseBody
     BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer) {
         try {
-            customerRpc.registerIndividual(customer);
-            return BaseOutput.success();
+            BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer);
+            return baseOutput;
         } catch (TraceBizException e) {
             return BaseOutput.failure().setErrorData(e.getMessage());
         } catch (Exception e){
