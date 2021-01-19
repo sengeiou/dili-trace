@@ -1,5 +1,6 @@
 package com.dili.trace.dto;
 
+import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 
 import java.util.List;
@@ -45,6 +46,16 @@ public class CustomerExtendOutPutDto {
      * 车辆信息
      */
     private List<VehicleInfoDto> vehicleInfoList;
+
+    private List<AttachmentGroupInfo> attachmentGroupInfoList;
+
+    public List<AttachmentGroupInfo> getAttachmentGroupInfoList() {
+        return attachmentGroupInfoList;
+    }
+
+    public void setAttachmentGroupInfoList(List<AttachmentGroupInfo> attachmentGroupInfoList) {
+        this.attachmentGroupInfoList = attachmentGroupInfoList;
+    }
 
     public Integer getClientType() {
         return clientType;
