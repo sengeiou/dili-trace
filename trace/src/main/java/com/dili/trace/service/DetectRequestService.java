@@ -729,11 +729,14 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * 人工直接检测通过或者退回
      *
      * @param billId
-     * @param pass
      * @param userTicket
+     * @param detectTypeEnum
+     * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long billId, Boolean pass, UserTicket userTicket,Integer detectType,Integer detectState) {
+    public void manualCheck(Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+
+
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
@@ -749,24 +752,22 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(registerBill, pass, userTicket);
+        manualCheckBill(registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
-        manualCheckDetectRequest(registerBill.getDetectRequestId(), pass);
+        manualCheckDetectRequest(registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum);
     }
 
     /**
      * 人工检测-报备单
      *
      * @param registerBill
-     * @param pass
      * @param userTicket
      */
-    private void manualCheckBill(RegisterBill registerBill, Boolean pass, UserTicket userTicket) {
+    private void manualCheckBill(RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
-        // TODO: 退回待定
-        updateBill.setDetectStatus(pass ? DetectStatusEnum.FINISH_DETECT.getCode() : DetectStatusEnum.RETURN_DETECT.getCode());
+        updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
@@ -778,7 +779,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequestId
      */
-    private void manualCheckDetectRequest(Long detectRequestId, Boolean pass) {
+    private void manualCheckDetectRequest(Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
         DetectRequest updateRequest = new DetectRequest();
         updateRequest.setId(detectRequestId);
         // 采样来源
@@ -788,9 +789,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         // 检测时间
         updateRequest.setDetectTime(new Date());
         // 检测结果
-        updateRequest.setDetectResult(pass ? DetectResultEnum.PASSED.getCode() : DetectResultEnum.FAILED.getCode());
+        updateRequest.setDetectResult(detectResultEnum.getCode());
         // 初检
-        updateRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
+        updateRequest.setDetectType(detectTypeEnum.getCode());
         updateRequest.setModified(new Date());
         this.updateSelective(updateRequest);
     }

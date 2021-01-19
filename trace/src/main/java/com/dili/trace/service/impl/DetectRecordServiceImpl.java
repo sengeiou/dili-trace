@@ -7,6 +7,8 @@ import com.dili.trace.dao.DetectRecordMapper;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.DetectRecordStateEnum;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
@@ -21,6 +23,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -80,13 +83,36 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
 
         RegisterBill query = new RegisterBill();
         query.setCode(detectRecord.getRegisterBillCode());
-        List<RegisterBill> list = billService.list(query);
-        if (CollectionUtils.isEmpty(list)) {
+        RegisterBill registerBill= StreamEx.of(billService.list(query)).findFirst().orElse(null);
+        if (registerBill==null) {
             throw new TraceBizException("上传检测任务结果失败登记单【"+detectRecord.getRegisterBillCode()+"】查询失败");
         }
 
-        this.detectRequestService.manualCheck(list.get(0).getId(),
-                DetectRecordStateEnum.QUALIFIED.equalsToCode(detectRecord.getDetectState()), userTicket,0,0);
+        DetectResultEnum detectResultEnum=StreamEx.ofNullable(detectRecord.getDetectState()).map(dt->{
+            if(Objects.equals(1,dt)){
+                return DetectResultEnum.PASSED;
+            }
+            if(Objects.equals(2,dt)){
+                return DetectResultEnum.FAILED;
+            }
+            return null;
+        }).nonNull().findFirst().orElseThrow(()->{
+            return  new TraceBizException("检测结果不正确");
+        });
+
+        DetectTypeEnum detectTypeEnum=StreamEx.ofNullable(detectRecord.getDetectType()).map(dt->{
+            if(Objects.equals(1,dt)){
+                return DetectTypeEnum.INITIAL_CHECK;
+            }
+            if(Objects.equals(2,dt)){
+                return DetectTypeEnum.RECHECK;
+            }
+            return null;
+        }).nonNull().findFirst().orElseThrow(()->{
+            return  new TraceBizException("检测类型不正确");
+        });
+
+        this.detectRequestService.manualCheck(registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum);
 
         return 1;
     }

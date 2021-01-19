@@ -453,4 +453,24 @@ public class ManagerDetectRquestApi {
             return BaseOutput.failure("服务端出错");
         }
     }
+
+    /**
+     * 退回
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doReturn.api", method = RequestMethod.POST)
+    public BaseOutput doReturn(@RequestBody RegisterBill input) {
+        try {
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            detectRequestService.doReturn(input);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
 }
