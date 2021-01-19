@@ -118,6 +118,7 @@
           b.brand_name,
           b.brand_id,
           b.spec_name,
+          b.latest_detect_record_id,
           up.name upStreamName,
           d.*
         FROM

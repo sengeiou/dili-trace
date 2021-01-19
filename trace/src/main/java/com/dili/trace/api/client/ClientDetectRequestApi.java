@@ -70,8 +70,7 @@ public class ClientDetectRequestApi {
     SgRegisterBillService registerBillService;
     @Autowired
     CommissionBillService commissionBillService;
-    @Autowired
-    BillVerifyHistoryService verifyHistoryService;
+
 //    /**
 //     * 用户创建场外委托单
 //     *
@@ -216,14 +215,7 @@ public class ClientDetectRequestApi {
             DetectRequestQueryDto detectRequest = new DetectRequestQueryDto();
             detectRequest.setId(id);
             DetectRequestOutDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
-            //设置最新检测记录
-            if (null != detail && StringUtils.isNotBlank(detail.getBillCode())) {
-                detail.setDetectRecordList(detectRecordService.findTop2AndLatest(detail.getBillCode()));
-            }
-            this.verifyHistoryService.findVerifyHistoryByBillId(detail.getBillId()).ifPresent(vh -> {
-                detail.setVerifyDateTime(vh.getVerifyDateTime());
-                detail.setVerifyOperatorName(vh.getVerifyOperatorName());
-            });
+
             return BaseOutput.successData(detail);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

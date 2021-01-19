@@ -156,6 +156,33 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private String verifyOperatorName;
 
+
+    /**
+     * 检测记录ID
+     */
+    private Long latestDetectRecordId;
+    /**
+     * 检测记录
+     */
+    @Transient
+    private DetectRecord latestDetectRecord;
+
+    public Long getLatestDetectRecordId() {
+        return latestDetectRecordId;
+    }
+
+    public void setLatestDetectRecordId(Long latestDetectRecordId) {
+        this.latestDetectRecordId = latestDetectRecordId;
+    }
+
+    public DetectRecord getLatestDetectRecord() {
+        return latestDetectRecord;
+    }
+
+    public void setLatestDetectRecord(DetectRecord latestDetectRecord) {
+        this.latestDetectRecord = latestDetectRecord;
+    }
+
     public Date getVerifyDateTime() {
         return verifyDateTime;
     }
