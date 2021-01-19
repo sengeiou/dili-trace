@@ -189,7 +189,7 @@
     </select>
 
   <select id="queryListBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceListOutputDto">
-      SELECT b.id billId,b.name,b.tally_area_no,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
+      SELECT b.id billId,b.name,b.source_name tally_area_no,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
       FROM detect_request r
       JOIN register_bill b ON (r.id = b.detect_request_id)
       WHERE 1=1
