@@ -314,6 +314,10 @@ public class ManagerDetectRquestApi {
     public BaseOutput<RegisterBill> getSampleSourceDetectDetail(@RequestParam(name = "id", required = true) Long id) {
         try {
             DetectRequest detectRequest = this.detectRequestService.get(id);
+            if (detectRequest == null) {
+                logger.error("检测单[{}]不存在，请联系管理员!", id);
+                return BaseOutput.failure("检测单["+ id +"]不存在，请联系管理员!");
+            }
             RegisterBill registerBill = this.billService.getAvaiableBill(detectRequest.getBillId()).orElse(null);
 
             return BaseOutput.success().setData(registerBill);

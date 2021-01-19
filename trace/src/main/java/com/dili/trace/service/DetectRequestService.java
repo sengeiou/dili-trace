@@ -14,6 +14,7 @@ import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
+import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -777,7 +778,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
 
 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
@@ -798,7 +799,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         manualCheckBill(registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
-        manualCheckDetectRequest(registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum);
+        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum);
     }
 
     /**
@@ -823,7 +824,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequestId
      */
-    private void manualCheckDetectRequest(Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+        DetectRecord detectRecord = detectRecordService.get(detectRecordId);
+        if (!Objects.nonNull(detectRecord)){
+            throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
+        }
         DetectRequest updateRequest = new DetectRequest();
         updateRequest.setId(detectRequestId);
         // 采样来源
@@ -837,6 +842,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         // 初检
         updateRequest.setDetectType(detectTypeEnum.getCode());
         updateRequest.setModified(new Date());
+        updateRequest.setDetectorName(detectRecord.getDetectOperator());
         this.updateSelective(updateRequest);
     }
 
