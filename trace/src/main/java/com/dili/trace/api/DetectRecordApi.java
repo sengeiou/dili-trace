@@ -42,50 +42,49 @@ public class DetectRecordApi {
     /**
      * 保存检查单
      *
-     * @param detectRecord
+     * @param detectRecordParam
      * @return
      */
     @ApiOperation("上传检测记录")
     @RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord) {
+    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecordParam) {
 
-        logger.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
-        if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
+        logger.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecordParam));
+        if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecordParam.getTag())) {
             logger.error("上传检测任务结果失败:签名出错");
             return BaseOutput.failure("签名出错");
         }
 
-        if (StringUtils.isBlank(detectRecord.getRegisterBillCode())) {
+        if (StringUtils.isBlank(detectRecordParam.getRegisterBillCode())) {
             logger.error("上传检测任务结果失败无编号");
             return BaseOutput.failure("没有对应的登记单");
         }
-        if (StringUtils.isBlank(detectRecord.getDetectOperator())) {
+        if (StringUtils.isBlank(detectRecordParam.getDetectOperator())) {
             logger.error("上传检测任务结果失败无检测人员");
             return BaseOutput.failure("没有对应的检测人员");
         }
 
         try {
-            DetectResultEnum detectResultEnum = DetectRecordUtil.getDetectResultEnum(detectRecord).orElseThrow(() -> {
+            DetectResultEnum detectResultEnum = DetectRecordUtil.getDetectResultEnum(detectRecordParam).orElseThrow(() -> {
                 return new TraceBizException("检测结果不正确");
             });
 
-            DetectTypeEnum detectTypeEnum = DetectRecordUtil.getDetectTypeEnum(detectRecord).orElseThrow(() -> {
+            DetectTypeEnum detectTypeEnum = DetectRecordUtil.getDetectTypeEnum(detectRecordParam).orElseThrow(() -> {
                 return new TraceBizException("检测类型不正确");
             });
 
 
-            detectRecord.setDetectState(detectResultEnum.getCode());
-            detectRecord.setDetectType(detectTypeEnum.getCode());
-            if (detectRecord.getDetectTime() == null) {
+            detectRecordParam.setDetectState(detectResultEnum.getCode());
+            detectRecordParam.setDetectType(detectTypeEnum.getCode());
+            if (detectRecordParam.getDetectTime() == null) {
                 logger.error("上传检测任务结果失败无检测时间");
                 return BaseOutput.failure("没有对应的检测时间");
             }
-            if (StringUtils.isBlank(detectRecord.getPdResult())) {
+            if (StringUtils.isBlank(detectRecordParam.getPdResult())) {
                 logger.error("上传检测任务结果失败无检测值");
                 return BaseOutput.failure("没有对应的检测值");
             }
 
-            DetectRecordParam detectRecordParam= DTOUtils.newDTO(DetectRecordParam.class);
             return this.detectTaskService.updateDetectTask(detectRecordParam);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

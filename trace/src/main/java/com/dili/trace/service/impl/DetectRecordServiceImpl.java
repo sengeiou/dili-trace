@@ -53,7 +53,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
 
     @Override
     public DetectRecord findByRegisterBillCode(String registerBillCode) {
-        DetectRecord detectRecord = DTOUtils.newDTO(DetectRecord.class);
+        DetectRecord detectRecord = new DetectRecord();
         detectRecord.setRegisterBillCode(registerBillCode);
         detectRecord.setSort("id");
         detectRecord.setOrder("desc");
