@@ -13,6 +13,8 @@ import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectRequestWithBillDto;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
@@ -121,7 +123,7 @@ public class CustomerDetectRequestController {
     /**
      * 接单
      *
-     * @param id             检测请求ID
+     * @param billId             检测请求ID
      * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
      * @return 指派结果
@@ -143,14 +145,14 @@ public class CustomerDetectRequestController {
     /**
      * 退回
      *
-     * @param billId          检测请求ID
+     * @param input
      * @return 指派结果
      */
-    @RequestMapping(value = "/doReturn.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doReturn.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput doReturn(@RequestParam(name = "billId", required = true) Long billId) {
+    BaseOutput doReturn(@RequestBody RegisterBill input) {
         try {
-            this.detectRequestService.doReturn(billId);
+            this.detectRequestService.doReturn(input);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

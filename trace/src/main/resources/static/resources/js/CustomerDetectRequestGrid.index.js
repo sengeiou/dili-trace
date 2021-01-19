@@ -95,6 +95,7 @@ class CustomerDetectRequestGrid extends ListPage {
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();
+        $("body").removeClass("modal-open");
         (async () => {
             await this.queryGridData();
         })();
@@ -147,18 +148,34 @@ class CustomerDetectRequestGrid extends ListPage {
     async returnAssign(billId) {
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
-            bs4pop.confirm('是否确认退回？<br/>', { type: 'warning', btns: [
-                    { label: '是', className: 'btn-primary', onClick(cb) { resolve("true"); } },
-                    { label: '否', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
-                ] });
+            bs4pop.prompt('请输入退回原因:', '', {
+                title: '是否确认退回？',
+                hideRemove: true,
+                width: 500
+            }, function (sure, value) {
+                if (sure == true) {
+                    if ($.trim(value) == '') {
+                        bs4pop.alert('请输入退回原因', { type: 'error' });
+                        return;
+                    }
+                    resolve(value);
+                }
+                else {
+                    reject(value);
+                }
+            });
         });
-        let result = await promise;
-        if (result == 'cancel') {
+        let data = { id: billId, returnReason: '' };
+        try {
+            data.returnReason = await promise;
+        }
+        catch (e) {
             return;
         }
+        debugger;
         let url = this.toUrl("/customerDetectRequest/doReturn.action?billId=" + billId);
         try {
-            var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
+            let resp = await jq.postJsonWithProcessing(url, data);
             if (!resp.success) {
                 bs4pop.alert(resp.message, { type: 'error' });
                 return;

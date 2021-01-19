@@ -19,6 +19,8 @@ class UpStreamIndex extends ListPage {
     public removeAllAndLoadData() {
         //@ts-ignore
         bs4pop.removeAll();
+        //@ts-ignore
+        $("body").removeClass("modal-open");
         (async () => {
             await this.queryGridData();
         })();
