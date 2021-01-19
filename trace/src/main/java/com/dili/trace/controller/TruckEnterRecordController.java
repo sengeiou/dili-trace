@@ -4,15 +4,12 @@ import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
-import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
-import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CarTypeRpcService;
-import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
@@ -31,7 +28,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -44,8 +40,6 @@ public class TruckEnterRecordController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TruckEnterRecordController.class);
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
-    @Autowired
-    UidRestfulRpcService uidRestfulRpcService;
     @Autowired
     CarTypeRpcService carTypeRpcService;
     @Autowired
@@ -128,14 +122,8 @@ public class TruckEnterRecordController {
             if (null == userTicket) {
                 return BaseOutput.failure("未登录或登录过期");
             }
-            if (null == truckEnterRecord.getId()) {
-                truckEnterRecord.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.TRUCK_ENTER_RECORD_CODE.getType()));
-                truckEnterRecord.setCreated(DateUtils.getCurrentDate());
-                return truckEnterRecordService.addTruckEnterRecord(truckEnterRecord);
-            } else{
-                truckEnterRecord.setModified(DateUtils.getCurrentDate());
-                return truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
-            }
+            return null == truckEnterRecord.getId() ? truckEnterRecordService.addTruckEnterRecord(truckEnterRecord)
+                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
         } catch (BusinessException e) {
             LOGGER.info("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());

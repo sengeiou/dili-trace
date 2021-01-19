@@ -9,17 +9,12 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.PurchaseIntentionRecordGrid = void 0;
     class PurchaseIntentionRecordGrid extends ListPage {
         constructor(grid, queryform, toolbar) {
             super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
             this.toolbar = toolbar;
             this.btns = this.toolbar.find('button');
             window['purchaseInt'] = this;
-            let categoryController = new CategoryController();
-            this.initAutoComplete($("[name='productName']"), function (query, done) {
-                categoryController.lookupCategories(query, done);
-            });
             $('#detail-btn').on('click', async () => await this.openDetailPage());
             $("#btn_add").on('click', async () => await this.openAddPage());
             $("#edit-btn").on('click', async () => await this.openEditPage());
@@ -27,9 +22,14 @@
             this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
         }
         async doDelete() {
+            var row = this.rows[0];
+            if (undefined == row) {
+                await bs4pop.alert("请选择一条数据", { type: 'warning' });
+                return;
+            }
             bs4pop.removeAll();
             let promise = new Promise((resolve, reject) => {
-                bs4pop.confirm('是否确认接单？<br/>', { type: 'warning', btns: [
+                bs4pop.confirm('是否确认删除？<br/>', { type: 'warning', btns: [
                         { label: '是', className: 'btn-primary', onClick(cb) { resolve("true"); } },
                         { label: '否', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
                     ] });
@@ -37,6 +37,21 @@
             let result = await promise;
             if (result == 'cancel') {
                 return;
+            }
+            let id = row.id;
+            let url = this.toUrl("/purchaseIntentionRecord/doDelete.action?id=" + id);
+            try {
+                var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
+                if (!resp.success) {
+                    bs4pop.alert(resp.message, { type: 'error' });
+                    return;
+                }
+                await this.queryGridData();
+                bs4pop.removeAll();
+                bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+            }
+            catch (e) {
+                bs4pop.alert('远程访问失败', { type: 'error' });
             }
         }
         async openEditPage() {
@@ -65,7 +80,7 @@
                 isIframe: true,
                 closeBtn: true,
                 backdrop: 'static',
-                width: '48%',
+                width: '68%',
                 height: '58%',
                 btns: []
             });

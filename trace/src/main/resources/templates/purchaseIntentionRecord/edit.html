@@ -4,7 +4,7 @@
         <form id="updateForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
-
+                    <input type="hidden" name="id" value="${purchaseIntentionRecord.id}">
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>报备时间</label>
                     <input class="form-control input-sm"
@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         企业名称</label>
-                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.corporateName!}" />
+                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.corporateName!}" readonly />
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -34,13 +34,16 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌</label>
-                    <input type="text" class="form-control input-sm" value="${purchaseIntentionRecord.plate!}"  readonly/>
+                    <input  class="form-control input-sm editableSelect isPlate" id = "plate" name="plate" data-options="['a','b']" value="${purchaseIntentionRecord.plate!}" required />
                 </div>
                 <br>
                 <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>采购商品</label>
-                    <input type="text" class="form-control input-sm"  value="${purchaseIntentionRecord.productName!}" required readonly/>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>商品品类</label>
+                        <input type="text" name="productName" class="form-control input-sm" value="${purchaseIntentionRecord.productName!}"  required />
+                        <input type="hidden" name="productId" value="${purchaseIntentionRecord.productId!}" />
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -50,8 +53,11 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>重量</label>
-                    <input type="text" class="form-control input-sm"
-                           value=" ${purchaseIntentionRecord.productWeight!} ${purchaseIntentionRecord.weightUnitName!}" required readonly/>
+                    <input name="productWeight" type="text" class="form-control input-sm"  maxlength="6"  range="0 999999"  value=" ${purchaseIntentionRecord.productWeight!}" required />
+                    <select name="weightUnit" class="input-sm" style="width: unset;border: 1px solid #ccc ">
+                        <option value="1" <%if(purchaseIntentionRecord.weightUnit==1){%>selected<%}%>>斤</option>
+                        <option value="2" <%if(purchaseIntentionRecord.weightUnit==2){%>selected<%}%>>公斤</option>
+                    </select>
                 </div>
                 <br>
                 <div class="form-group">
@@ -79,58 +85,120 @@
 
 </div>
 </#bodyOrigin>
+
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script>
 
-function duUpdate(){
+    $(function(){
+        let productNameEl=$('input[name="productName"]');
+        initAutoComplete(productNameEl,'/toll/category');
+        jQuery.validator.addMethod("isPlate", function(value, element) {
+            return this.optional(element) || isLicensePlate(value.toUpperCase());
+        }, "请输入正确格式的车牌");
 
-}
+    })
 
-var resubmit = 0;
-function create(){
-    if(resubmit==0){
-        resubmit=1;
-    }else{
-        resubmit=0;
-        swal(
-            '错误',
-            '重复提交',
-            'error'
-        );
-        return;
+    // 正则验证车牌,验证通过返回true,不通过返回false
+    function isLicensePlate(str) {
+        return /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳使领])$/.test(str);
     }
-    if($('#updateForm').validate().form() != true){
-        resubmit = 0;
-        return;
-    }
-    var data=$('#updateForm').serializeJSON({useIntKeysAsArrayIndex:true});
-    $.ajax({
-        type: "POST",
-        url: "${contextPath}/purchaseIntentionRecord/doUpdate.action",
-        data :  JSON.stringify(data),
-        dataType: "json",
-        async : true,
-        contentType: "application/json; charset=utf-8",
-        success: function (ret) {
-            if (ret.success) {
-                parent.window['RegisterBillGridObj'].removeAllAndLoadData()
-            } else {
-                resubmit=0;
-                swal(
-                    '错误',
-                    ret.result,
-                    'error'
-                );
-            }
-        },
-        error: function(){
+
+    var resubmit = 0;
+    function duUpdate(){
+        if(resubmit==0){
+            resubmit=1;
+        }else{
             resubmit=0;
             swal(
                 '错误',
-                '远程访问失败',
+                '重复提交',
                 'error'
             );
+            return;
         }
-    });
-}
+        if($('#updateForm').validate().form() != true){
+            resubmit = 0;
+            return;
+        }
+        let buyerId = $("[name='buyerId']").val();
+
+        let productId = $("[name='productId']").val();
+        if(null==productId||undefined==productId||""==productId){
+            parent.bs4pop.alert("请选择下拉框中的商品");
+            resubmit = 0;
+            return;
+        }
+        var data=$('#updateForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/purchaseIntentionRecord/doUpdate.action",
+            data :  JSON.stringify(data),
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if (ret.success) {
+                    parent.bs4pop.alert("登记成功", {type: 'success'}, function () {
+                        parent.window['purchaseInt'].removeAllAndLoadData()
+                    });
+
+                } else {
+                    resubmit=0;
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error: function(){
+                resubmit=0;
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+    }
+    /**
+     * 初始化自动完成框
+     */
+    function initAutoComplete(selector,url){
+        $(selector).data('oldvalue','');
+        $(selector).on('change',function () {
+            var oldvalue=$(selector).data('oldvalue');
+            var val=$(this).val();
+            if(oldvalue!=val){
+                $(this).siblings('input').val('');
+            }
+        });
+        // 产地联系输入
+        $(selector).devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                $(selector).data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    }
 </script>
