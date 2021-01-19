@@ -68,14 +68,7 @@ public class DetectRecordApi {
             DetectResultEnum detectResultEnum = DetectRecordUtil.getDetectResultEnum(detectRecordParam).orElseThrow(() -> {
                 return new TraceBizException("检测结果不正确");
             });
-
-            DetectTypeEnum detectTypeEnum = DetectRecordUtil.getDetectTypeEnum(detectRecordParam).orElseThrow(() -> {
-                return new TraceBizException("检测类型不正确");
-            });
-
-
             detectRecordParam.setDetectState(detectResultEnum.getCode());
-            detectRecordParam.setDetectType(detectTypeEnum.getCode());
             if (detectRecordParam.getDetectTime() == null) {
                 logger.error("上传检测任务结果失败无检测时间");
                 return BaseOutput.failure("没有对应的检测时间");
