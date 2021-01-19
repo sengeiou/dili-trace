@@ -52,7 +52,6 @@ class NewRegisterBillGrid extends ListPage {
 
         $('select[name="detectResultSelect"]').on('change',async (o,n)=>{
             var data=JSON.parse($('select[name="detectResultSelect"]').val().toString());
-            debugger
             $('input[name="detectType"]').val(data['detectType']);
             $('input[name="detectResult"]').val(data['detectResult']);
         });
