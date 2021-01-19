@@ -375,6 +375,7 @@ public class ClientTradeRequestApi {
                 dto.setId(us.getUserId());
                 dto.setMarketId(us.getMarketId());
                 dto.setMarketName(us.getMarketName());
+                dto.setAttachmentGroupInfoList(this.customerRpcService.findCustomerByIdOrEx(us.getUserId(),us.getMarketId()).getAttachmentGroupInfoList());
                 return dto;
             }).append(list).distinct(CustomerExtendOutPutDto::getId).toList();
             return BaseOutput.successData(data);
@@ -408,6 +409,7 @@ public class ClientTradeRequestApi {
                     customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
                     customerOutput.setId(c.getId());
                     customerOutput.setName(c.getName());
+                    customerOutput.setAttachmentGroupInfoList(c.getAttachmentGroupInfoList());
 
                     customerOutput.setPhone(c.getContactsPhone());
                     customerOutput.setClientType(clientTypeEnum.getCode());
