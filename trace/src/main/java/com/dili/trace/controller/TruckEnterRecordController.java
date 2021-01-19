@@ -6,6 +6,7 @@ import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.customer.sdk.domain.VehicleInfo;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.customer.sdk.rpc.VehicleRpc;
@@ -143,8 +144,11 @@ public class TruckEnterRecordController {
             if (null == userTicket) {
                 return BaseOutput.failure("未登录或登录过期");
             }
-            return null == truckEnterRecord.getId() ? truckEnterRecordService.addTruckEnterRecord(truckEnterRecord)
-                    : truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            if (null == truckEnterRecord.getId()) {
+               return truckEnterRecordService.addTruckEnterRecord(truckEnterRecord);
+            } else {
+               return truckEnterRecordService.updateTruckEnterRecord(truckEnterRecord);
+            }
         } catch (BusinessException e) {
             LOGGER.info("司机报备业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
@@ -202,8 +206,8 @@ public class TruckEnterRecordController {
     public @ResponseBody
     BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer) {
         try {
-            customerRpc.registerIndividual(customer);
-            return BaseOutput.success();
+            BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer);
+            return baseOutput;
         } catch (TraceBizException e) {
             return BaseOutput.failure().setErrorData(e.getMessage());
         } catch (Exception e){

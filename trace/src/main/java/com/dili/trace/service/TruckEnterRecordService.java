@@ -30,6 +30,7 @@ public class TruckEnterRecordService extends BaseServiceImpl<TruckEnterRecord, L
             truckEnterRecord.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.TRUCK_ENTER_RECORD_CODE.getType()));
             truckEnterRecord.setCreated(DateUtils.getCurrentDate());
             truckEnterRecordMapper.insertSelective(truckEnterRecord);
+
             return BaseOutput.success();
         } catch (Exception e){
             e.printStackTrace();
