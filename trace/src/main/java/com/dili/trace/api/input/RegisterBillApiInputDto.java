@@ -9,9 +9,18 @@ public class RegisterBillApiInputDto {
      * 交易单明细id
      */
 	private Long tradeDetailId;
-	
 
-	public Long getBillId() {
+	private Long marketId;
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public Long getBillId() {
 		return billId;
 	}
 

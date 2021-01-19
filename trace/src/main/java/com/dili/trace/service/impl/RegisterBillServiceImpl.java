@@ -13,6 +13,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
@@ -866,10 +867,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 
     @Override
-    public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId) {
+    public RegisterBillOutputDto viewTradeDetailBill(RegisterBillApiInputDto inputDto) {
+        Long billId=inputDto.getBillId();
+        Long tradeDetailId=inputDto.getTradeDetailId();
+        Long marketId=inputDto.getMarketId();
         if (billId == null && tradeDetailId == null) {
             throw new TraceBizException("参数错误");
         }
+//        if(marketId==null){
+//            throw new TraceBizException("参数错误");
+//        }
 
         TradeDetail tradeDetailItem = StreamEx.ofNullable(tradeDetailId).nonNull().map(tdId -> {
             return this.tradeDetailService.get(tdId);
@@ -887,17 +894,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         String upStreamName = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
             return this.upStreamService.get(upStreamId);
         }).nonNull().findAny().map(UpStream::getName).orElse("");
+        RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+        outputdto.setImageCertList(imageCertList);
+        outputdto.setUpStreamName(upStreamName);
+        outputdto.setTareWeight(registerBill.getTareWeight());
+        outputdto.setTruckTareWeight(registerBill.getTruckTareWeight());
 
         if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
-            RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
-            outputdto.setImageCertList(imageCertList);
-            outputdto.setUpStreamName(upStreamName);
             outputdto.setWeight(tradeDetailItem.getTotalWeight());
             return outputdto;
         } else if (registerBill.getId() != null) {
-            RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
-            outputdto.setUpStreamName(upStreamName);
-            outputdto.setImageCertList(imageCertList);
             outputdto.setWeight(registerBill.getWeight());
             return outputdto;
         } else {
