@@ -101,10 +101,10 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         });
 
         DetectTypeEnum detectTypeEnum=StreamEx.ofNullable(detectRecord.getDetectType()).map(dt->{
-            if(Objects.equals(1,dt)){
+            if(Objects.equals(20,dt)){
                 return DetectTypeEnum.INITIAL_CHECK;
             }
-            if(Objects.equals(2,dt)){
+            if(Objects.equals(30,dt)){
                 return DetectTypeEnum.RECHECK;
             }
             return null;
