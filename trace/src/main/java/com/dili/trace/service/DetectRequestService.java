@@ -70,7 +70,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     BillVerifyHistoryService verifyHistoryService;
     @Autowired
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
-
+    @Autowired
+    CodeGenerateService codeGenerateService;
     /**
      * 创建检测请求
      *
@@ -793,7 +794,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
-        updateBill.setSampleCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL_SAMPLE_CODE.getType()));
+        updateBill.setSampleCode(this.codeGenerateService.nextECommerceBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
 
