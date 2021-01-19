@@ -210,7 +210,7 @@ class CommissionBillGrid extends ListPage {
         //@ts-ignore
         bs4pop.removeAll();
         //@ts-ignore
-        $(this).closest("body").removeClass("modal-open");
+        $("body").removeClass("modal-open");
         (async () => {
             await super.queryGridData();
         })();
