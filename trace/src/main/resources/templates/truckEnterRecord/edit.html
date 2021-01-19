@@ -1,26 +1,183 @@
 <#bodyOrigin>
-<div class="main-container">
+<div class="main-container" style="padding: 0">
     <div class="form-box border">
-        <form  role="form" >
-            <div class="form-group col">
-                <label for="likeCode">搜索：</label>
-                <input type="text" class="form-control"  placeholder="司机姓名、手机号码" name="likeCode" id="likeCode"/>
-                <button type="button" value="查询"/>
-
-            </div>
-            <div class="form-group col">
-                <label for="likeCode">车牌号：</label>
-                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
-            </div>
-            <div class="form-group col">
-                <label for="likeCode">车型：</label>
-                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+        <form id="updateForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+                <input type="hidden" name="id" <%if(null!=truckEnterRecord) {%> value="${truckEnterRecord.id}" <%}%>>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>司机名称</label>
+                    <input style="width: 355px" type="text" name="driverName" class="form-control input-sm"
+                    <%if(null!=truckEnterRecord) {%> value="${truckEnterRecord.driverName}" <%}%>
+                           required />
+                    <input type="hidden"
+                           name="driverId"
+                    <%if(null!=truckEnterRecord) {%> value="${truckEnterRecord.driverId}" <%}%>
+                           />
+                </div>
+                <#resource code="truckEnterRecord#add_driver">
+                <%if(null==truckEnterRecord) {%>
+                <div class="form-group">
+                    <button id="addBuyer-btn" type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 新增司机</button>
+                </div>
+                <%}%>
+                </#resource>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌</label>
+                    <input  class="form-control input-sm editableSelect isPlate"
+                    <%if(null!=truckEnterRecord) {%> value="${truckEnterRecord.truckPlate}" <%}%>
+                            id = "truckPlate" name="truckPlate" data-options="['a','b']" required />
+                </div><br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车型</label>
+                    <select class="form-control input-sm" required>
+                        <option value="10" >整车</option>
+                        <option value="20">拼车</option>
+                    </select>
+                </div>
             </div>
         </form>
-        <div class="form-group col">
-            <input type="hidden" id="originId" name="originId"/>
-            <input id="originName" name="originName" class="form-control"   for="originId" />
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
         </div>
     </div>
 </div>
-</#bodyOrigin> 
+
+</div>
+
+</#bodyOrigin>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+
+<script>
+    $(function(){
+        let selector= $('input[name="driverName"]');
+        initUserInfo(selector);
+        $("#addBuyer-btn").on("click",function(){
+            goAddBuyer();
+        });
+
+        jQuery.validator.addMethod("isPlate", function(value, element) {
+            return this.optional(element) || isLicensePlate(value.toUpperCase());
+        }, "请输入正确格式的车牌");
+
+    })
+
+
+    // 正则验证车牌,验证通过返回true,不通过返回false
+    function isLicensePlate(str) {
+        return /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳使领])$/.test(str);
+    }
+
+    function goAddBuyer(){
+
+        //parent.bs4pop.removeAll();
+        let url ='add_driver.html';
+        //@ts-ignore
+        parent.window['truckInt'].addBuy_dia = parent.bs4pop.dialog({
+            title: '新增司机',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '68%',
+            height: '88%',
+            btns: []
+        });
+    }
+
+    function initUserInfo(selector) {
+        // 产地联系输入
+        let url = '${contextPath}/user/userQuery.action';
+        selector.devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            deferRequestBy:188,
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                let self = this;
+                let idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.userName.trim());
+                selector.data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    }
+
+    var resubmit = 0;
+    function create(){
+        if(resubmit==0){
+            resubmit=1;
+        }else{
+            resubmit=0;
+            swal(
+                '错误',
+                '重复提交',
+                'error'
+            );
+            return;
+        }
+        if($('#updateForm').validate().form() != true){
+            resubmit = 0;
+            return;
+        }
+        let driverId = $("[name='driverId']").val();
+
+        if(null==driverId||undefined==driverId||""==driverId){
+            parent.bs4pop.alert("请选择下拉框中的司机");
+            resubmit = 0;
+            return;
+        }
+        var data=$('#updateForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/truckEnterRecord/save.action",
+            data :  JSON.stringify(data),
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if (ret.success) {
+                    parent.bs4pop.alert("登记成功", {type: 'success'}, function () {
+                        parent.window['truckInt'].removeAllAndLoadData()
+                    });
+
+                } else {
+                    resubmit=0;
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error: function(){
+                resubmit=0;
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+    }
+
+</script>
