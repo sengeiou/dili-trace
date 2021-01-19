@@ -500,6 +500,20 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`checkin_status`")
     private Integer checkinStatus;
 
+    /**
+     * 检测退回原因
+     */
+    @Column(name = "`return_reason`")
+    private String returnReason;
+
+    public String getReturnReason() {
+        return returnReason;
+    }
+
+    public void setReturnReason(String returnReason) {
+        this.returnReason = returnReason;
+    }
+
     public Integer getCheckinStatus() {
         return checkinStatus;
     }

@@ -167,6 +167,8 @@ class CustomerDetectRequestGrid extends ListPage {
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
+        //@ts-ignore
+        $("body").removeClass("modal-open");
         (async ()=>{
             await this.queryGridData();
         })();
@@ -247,23 +249,38 @@ class CustomerDetectRequestGrid extends ListPage {
     public async returnAssign(billId:string){
         //@ts-ignore
         bs4pop.removeAll();
-        let promise = new Promise((resolve, reject) => {
+        let promise:Promise<string> = new Promise<string>((resolve, reject) => {
             //@ts-ignore
-            bs4pop.confirm('是否确认退回？<br/>',
-                {type: 'warning',btns: [
-                        {label: '是', className: 'btn-primary',onClick(cb){  resolve("true");}},
-                        {label: '否', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
-                    ]});
+            bs4pop.prompt('请输入退回原因:', '',{
+                title: '是否确认退回？',
+                hideRemove: true,
+                width: 500
 
+            }, function(sure, value){
+
+                if(sure==true){
+                    if($.trim(value)==''){
+                        //@ts-ignore
+                        bs4pop.alert('请输入退回原因', {type: 'error'});
+                        return
+                    }
+                    resolve(value);
+                }else{
+                    reject(value);
+                }
+            });
         });
-        let result = await promise;
-        if(result=='cancel'){
+        let data={id:billId,returnReason:''};
+        try{
+            data.returnReason = await promise;
+        }catch (e) {
             return;
         }
+        debugger
 
         let url= this.toUrl("/customerDetectRequest/doReturn.action?billId="+billId);
         try{
-            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            let resp=await jq.postJsonWithProcessing( url,data);
             if(!resp.success){
                 //@ts-ignore
                 bs4pop.alert(resp.message, {type: 'error'});

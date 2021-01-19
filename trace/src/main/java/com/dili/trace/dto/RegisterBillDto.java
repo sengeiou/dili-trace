@@ -182,6 +182,20 @@ public class RegisterBillDto extends RegisterBill {
     @Column(name = "code")
     @Like
     private String likeCode;
+
+    /**
+     * 手机号模糊查询条件
+     */
+    private String likePhone;
+
+    public String getLikePhone() {
+        return likePhone;
+    }
+
+    public void setLikePhone(String likePhone) {
+        this.likePhone = likePhone;
+    }
+
     /**
      * 关键字
      */

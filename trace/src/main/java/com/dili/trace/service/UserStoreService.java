@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * SB
+ */
 @Service
 @Transactional
 public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
@@ -27,6 +30,11 @@ public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
     @Autowired
     CustomerRpcService customerRpcService;
 
+    /**
+     * SB
+     * @param input
+     * @return
+     */
     public int insertOrUpdateStore(UserStore input) {
         if (input.getUserId() == null || StringUtils.isBlank(input.getUserName())) {
             throw new TraceBizException("用户信息错误");
