@@ -10,6 +10,7 @@ import java.util.Optional;
 import com.alibaba.fastjson.JSON;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CheckInApiInput;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
@@ -90,7 +91,7 @@ public class SgRegisterBillServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void viewTradeDetailBill() {
-        RegisterBillOutputDto dto=this.registerBillService.viewTradeDetailBill(16172L, null);
+        RegisterBillOutputDto dto=this.registerBillService.viewTradeDetailBill(new RegisterBillApiInputDto());
         System.out.println(dto);
     }
 

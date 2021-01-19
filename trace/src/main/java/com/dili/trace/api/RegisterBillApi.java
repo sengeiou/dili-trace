@@ -67,14 +67,13 @@ public class RegisterBillApi {
             return BaseOutput.failure("参数错误");
         }
 
-        logger.info("获取登记单详细信息->billId:{},tradeDetailId:{}", inputDto.getBillId(), inputDto.getTradeDetailId());
+        logger.info("获取登记单详细信息->marketId:{},billId:{},tradeDetailId:{}", inputDto.getMarketId(),inputDto.getBillId(), inputDto.getTradeDetailId());
         try {
             Long userId = this.sessionContext.getAccountId();
             if (userId == null) {
                 return BaseOutput.failure("你还未登录");
             }
-            RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto.getBillId(),
-                    inputDto.getTradeDetailId());
+            RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto);
             String data=JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
             return BaseOutput.success().setData(JSON.parse(data));
 

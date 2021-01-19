@@ -21,7 +21,7 @@
       AND (user_name like #{keyword} or store_name like #{keyword})
     </if>
     <if test="marketId != null">
-      AND u.market_id = #{marketId}
+      AND market_id = #{marketId}
     </if>
   </select>
 

@@ -11,6 +11,7 @@
       register_bill.is_checkin,
       register_bill.bill_type,
       register_bill.truck_type,
+      register_bill.regist_type,
       register_bill.is_deleted
       from trade_detail 
       left join register_bill on trade_detail.bill_id =register_bill.id 
@@ -52,6 +53,7 @@
       register_bill.is_checkin,
       register_bill.bill_type,
       register_bill.truck_type,
+      register_bill.regist_type,
       register_bill.is_deleted
       from register_bill
       where user_id=#{userId} and id not in(

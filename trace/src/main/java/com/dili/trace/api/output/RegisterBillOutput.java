@@ -6,10 +6,9 @@ import java.util.List;
 
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.TruckTypeEnum;
-import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.enums.*;
+
+import javax.persistence.Transient;
 
 public class RegisterBillOutput {
     private Long billId;
@@ -42,6 +41,9 @@ public class RegisterBillOutput {
     private String brandName;
     // 图片列表
     private List<ImageCert> imageCertList;
+    private Integer registType;
+
+
 
     // private Integer color;
 
@@ -72,6 +74,7 @@ public class RegisterBillOutput {
         out.setReason(bill.getReason());
         out.setIsCheckin(bill.getIsCheckin());
         out.setTallyAreaNo(bill.getTallyAreaNo());
+        out.setRegistType(bill.getRegistType());
         return out;
     }
 
@@ -398,6 +401,23 @@ public class RegisterBillOutput {
      */
     public void setIsCheckin(Integer isCheckin) {
         this.isCheckin = isCheckin;
+    }
+
+    public Integer getIsCheckin() {
+        return isCheckin;
+    }
+
+    public Integer getRegistType() {
+        return registType;
+    }
+
+    public void setRegistType(Integer registType) {
+        this.registType = registType;
+    }
+
+    @Transient
+    public String getRegistTypeName() {
+        return RegistTypeEnum.name(this.getRegistType());
     }
 
 }

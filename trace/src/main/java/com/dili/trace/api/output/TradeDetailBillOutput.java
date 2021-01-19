@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
+
+import javax.persistence.Transient;
 
 public class TradeDetailBillOutput {
 
@@ -21,6 +24,12 @@ public class TradeDetailBillOutput {
     private Integer isCheckin;
     private Integer truckType;
     private Integer billType;
+    private Integer registType;
+
+    @Transient
+    public String getRegistTypeName() {
+        return RegistTypeEnum.name(this.getRegistType());
+    }
 
     public String getBillTypeName() {
         return BillTypeEnum.fromCode(this.getBillType()).map(BillTypeEnum::getName).orElse("");
@@ -195,4 +204,11 @@ public class TradeDetailBillOutput {
         return billType;
     }
 
+    public Integer getRegistType() {
+        return registType;
+    }
+
+    public void setRegistType(Integer registType) {
+        this.registType = registType;
+    }
 }
