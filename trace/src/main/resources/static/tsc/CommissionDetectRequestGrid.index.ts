@@ -290,6 +290,58 @@ class CommissionDetectRequestGrid extends ListPage {
     }
 
     /**
+     * 退回
+     * @param id
+     */
+    public async returnAssign(billId:string){
+        //@ts-ignore
+        bs4pop.removeAll();
+        let promise:Promise<string> = new Promise<string>((resolve, reject) => {
+            //@ts-ignore
+            bs4pop.prompt('请输入退回原因:', '',{
+                title: '是否确认退回？',
+                hideRemove: true,
+                width: 500
+
+            }, function(sure, value){
+                if(sure==true){
+                    if($.trim(value)==''){
+                        //@ts-ignore
+                        bs4pop.alert('请输入退回原因', {type: 'error'});
+                        return
+                    }
+                    resolve(value);
+                }else{
+                    reject(value);
+                }
+            });
+        });
+        let data={id:billId,returnReason:''};
+        try{
+            data.returnReason = await promise;
+        }catch (e) {
+            return;
+        }
+        let url= this.toUrl("/customerDetectRequest/doReturn.action?billId="+billId);
+        try{
+            let resp=await jq.postJsonWithProcessing( url,data);
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+    }
+
+    /**
      * 采样检测
      */
     private async  doSamplingCheck() {

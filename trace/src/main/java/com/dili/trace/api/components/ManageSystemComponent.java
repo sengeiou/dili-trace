@@ -63,9 +63,6 @@ public class ManageSystemComponent {
         logger.warn(">>>>>>>>>>>>>>请注意配置host,以确保当前应用所在服务器能访问权限系统: {}", this.manageDomainPath);
         StreamEx.of(LoginIdentityTypeEnum.values()).map(LoginIdentityTypeEnum::getAuthUrl)
                 .filter(StringUtils::isNotBlank).forEach(auth -> {
-
-            //logger.warn(">>>>>>>>>>>>>>请注意配置登录访问权限: {}", auth);
-
         });
     }
 
@@ -101,9 +98,6 @@ public class ManageSystemComponent {
                     .body(encryptStr)
                     .execute()
                     .body();
-            // {"code":"200",
-            //  "data":{"loginPath":"/","sessionId":"d588eb00-3523-4baa-a741-4b3dfb2266d2","user":{"cellphone":"15088882222","created":"2020-08-13 09:35:56","departmentId":59,"email":"ceshishouguang@diligrp.com","firmCode":"sg","id":85,"locked":"2020-09-27 18:26:16","metadata":{},"modified":"2020-09-27 18:26:16","realName":"测试寿光","serialNumber":"000","state":1,"userName":"test_sg"}
-            // },"message":"登录成功","result":"登录成功","success":true}
             logger.info("loginRespBody={}", loginRespBody);
 
             Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();

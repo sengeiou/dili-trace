@@ -216,46 +216,6 @@ public class ClientRegisterFormBillApi {
 	}
 
 	/**
-	 * 查看进门登记单
-	 * @param baseDomain
-	 * @return
-	 */
-	/*@ApiOperation("查看进门登记单")
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
-	public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
-		try {
-			RegisterBill registerBill = registerBillService.get(baseDomain.getId());
-
-			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
-			registerBill.setImageCertList(imageCerts);
-
-			UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
-			registerBill.setUpStreamName(upStream.getName());
-
-			//获取主台账单的总重量与剩余总重量
-			if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
-				RegisterHead registerHead = new RegisterHead();
-				registerHead.setCode(registerBill.getRegisterHeadCode());
-				List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
-				if(CollectionUtils.isNotEmpty(registerHeadList)){
-					registerHead = registerHeadList.get(0);
-				} else {
-					return BaseOutput.failure("未找到主台账单");
-				}
-				registerBill.setHeadWeight(registerHead.getWeight());
-				registerBill.setRemainWeight(registerHead.getRemainWeight());
-			}
-			return BaseOutput.success().setData(registerBill);
-		} catch (TraceBizException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error("查询进门主台账单数据出错", e);
-			return BaseOutput.failure("查询进门主台账单数据出错");
-		}
-	}
-*/
-	/**
 	 * 不同审核状态数据统计
 	 */
 	@RequestMapping(value = "/countByVerifyStatus.api", method = { RequestMethod.POST })

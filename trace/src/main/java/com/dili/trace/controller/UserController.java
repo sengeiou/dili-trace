@@ -95,16 +95,10 @@ public class UserController {
     @ApiOperation("跳转到User页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
-        // Date now = new Date();
-        // modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        // modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
         LocalDateTime now = LocalDateTime.now();
-//		modelMap.put("createdStart", now.withYear(2019).withMonth(1).withDayOfMonth(1)
-//				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
         modelMap.put("createdStart", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
         modelMap.put("createdEnd", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
 
-        // modelMap.put("cities", this.queryCitys());
         modelMap.put("cities", usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.USER));
 
         return "user/index";
