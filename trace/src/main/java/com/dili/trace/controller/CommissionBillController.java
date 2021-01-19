@@ -75,24 +75,6 @@ public class CommissionBillController {
     @Autowired
     UapRpcService uapRpcService;
 
-    /**
-     * 跳转到CommissionBill页面
-     *
-     * @param modelMap
-     * @return
-     */
-//    @ApiOperation("跳转到CommissionBill页面")
-//    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-//    public String index(ModelMap modelMap) {
-//        Date now = new Date();
-//        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-//        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-//        // modelMap.put("state", RegisterBillStateEnum.WAIT_CHECK.getCode());
-//        UserTicket user = SessionContext.getSessionContext().getUserTicket();
-//        modelMap.put("user", user);
-//
-//        return "commissionBill/index";
-//    }
 
     /**
      * 跳转到CommissionBill页面
@@ -106,10 +88,8 @@ public class CommissionBillController {
         Date now = new Date();
         modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
         modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        // modelMap.put("state", RegisterBillStateEnum.WAIT_CHECK.getCode());
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
         modelMap.put("user", user);
-
         return "forward:/checkSheet/index.html?billType=" + BillTypeEnum.COMMISSION_BILL.getCode();
     }
 
@@ -134,23 +114,6 @@ public class CommissionBillController {
         }
 
     }
-
-    /**
-     * 分页查询CommissionBill
-     *
-     * @param input
-     * @return
-     * @throws Exception
-     */
-//    @ApiOperation(value = "分页查询CommissionBill", notes = "分页查询CommissionBill，返回easyui分页信息")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
-//    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-//    public @ResponseBody
-//    Object listPage(@RequestBody  RegisterBillDto input) throws Exception {
-//        return JSON.parse(this.commissionBillService.listPage(input));
-//
-//    }
 
     /**
      * 新增CommissionBill
@@ -184,8 +147,6 @@ public class CommissionBillController {
                     rb.setPlate(input.getPlate());
                     rb.setAddr(input.getAddr());
                     rb.setUserId(input.getUserId());
-//                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
-//                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
                     List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
                     rb.setImageCertList(imageList);
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
@@ -361,27 +322,6 @@ public class CommissionBillController {
         return "commissionBill/billQRDetail";
     }
 
-
-    /**
-     * 所有状态列表
-     *
-     * @param
-     * @return
-     */
-    /*@RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public List<Map<String, String>> listState() {
-
-        return Stream.of(RegisterBillStateEnum.values()).map(e -> {
-            Map<String, String> map = new HashMap<>();
-            map.put("id", e.getCode().toString());
-            map.put("name", e.getName());
-            map.put("parentId", "");
-            return map;
-
-        }).collect(Collectors.toList());
-
-    }*/
 
     /**
      * 批量复检
