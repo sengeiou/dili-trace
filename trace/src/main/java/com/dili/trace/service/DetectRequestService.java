@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -370,6 +371,21 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setModified(new Date());
         updateParam.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
         this.updateSelective(updateParam);
+    }
+
+    /**
+     * 检测请求-退回
+     *
+     * @param billId             登记单ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void doReturn(Long billId) {
+        if (null == billId) {
+            throw new RuntimeException("参数错误");
+        }
+        RegisterBill bill = billService.get(billId);
+        bill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
+        billService.updateSelective(bill);
     }
 
     /**

@@ -144,6 +144,33 @@ class CustomerDetectRequestGrid extends ListPage {
             bs4pop.alert('远程访问失败', { type: 'error' });
         }
     }
+    async returnAssign(billId) {
+        bs4pop.removeAll();
+        let promise = new Promise((resolve, reject) => {
+            bs4pop.confirm('是否确认退回？<br/>', { type: 'warning', btns: [
+                    { label: '是', className: 'btn-primary', onClick(cb) { resolve("true"); } },
+                    { label: '否', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
+                ] });
+        });
+        let result = await promise;
+        if (result == 'cancel') {
+            return;
+        }
+        let url = this.toUrl("/customerDetectRequest/doReturn.action?billId=" + billId);
+        try {
+            var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
+            if (!resp.success) {
+                bs4pop.alert(resp.message, { type: 'error' });
+                return;
+            }
+            await this.queryGridData();
+            bs4pop.removeAll();
+            bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+        }
+        catch (e) {
+            bs4pop.alert('远程访问失败', { type: 'error' });
+        }
+    }
     async doSamplingCheck() {
         var selected = this.rows[0];
         var url = this.toUrl("/newRegisterBill/doSamplingCheck.action?id=" + selected.billId);
