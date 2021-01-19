@@ -167,6 +167,8 @@ class CustomerDetectRequestGrid extends ListPage {
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
+        //@ts-ignore
+        $(this).closest("body").removeClass("modal-open");
         (async ()=>{
             await this.queryGridData();
         })();

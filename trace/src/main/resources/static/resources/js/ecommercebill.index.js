@@ -157,6 +157,7 @@ class EcommerceBillGrid extends ListPage {
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();
+        $(this).closest("body").removeClass("modal-open");
         (async () => {
             await this.queryGridData();
         })();
