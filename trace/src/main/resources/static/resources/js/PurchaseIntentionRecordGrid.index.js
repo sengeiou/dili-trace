@@ -15,18 +15,11 @@
             this.toolbar = toolbar;
             this.btns = this.toolbar.find('button');
             window['purchaseInt'] = this;
-            this.initAutoCompleteProduct($("[name='productName']"));
             $('#detail-btn').on('click', async () => await this.openDetailPage());
             $("#btn_add").on('click', async () => await this.openAddPage());
             $("#edit-btn").on('click', async () => await this.openEditPage());
             $("#undo-btn").on('click', async () => await this.doDelete());
             this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
-        }
-        async initAutoCompleteProduct(selector) {
-            let categoryController = new CategoryController();
-            super.initAutoComplete(selector, function (query, done) {
-                categoryController.lookupCategories(query, done);
-            });
         }
         async doDelete() {
             var row = this.rows[0];

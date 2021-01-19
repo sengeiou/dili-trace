@@ -152,7 +152,6 @@ public class PurchaseIntentionRecordController {
     public @ResponseBody
     BaseOutput doAddBuyer(@RequestBody IndividualCustomerInput customer) {
         try {
-            logger.info(JSON.toJSONString(customer));
             customerRpc.registerIndividual(customer);
             return BaseOutput.success();
         } catch (TraceBizException e) {
