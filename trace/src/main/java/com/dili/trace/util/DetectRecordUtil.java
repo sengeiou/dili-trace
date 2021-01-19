@@ -27,15 +27,5 @@ public class DetectRecordUtil {
 
 
     }
-    public static Optional<DetectTypeEnum> getDetectTypeEnum(DetectRecordParam input){
-         return StreamEx.ofNullable(input.getDetectType()).map(dt->{
-            if(Objects.equals(1,dt)){
-                return DetectTypeEnum.INITIAL_CHECK;
-            }
-            if(Objects.equals(2,dt)){
-                return DetectTypeEnum.RECHECK;
-            }
-            return null;
-        }).nonNull().findFirst();
-    }
+
 }
