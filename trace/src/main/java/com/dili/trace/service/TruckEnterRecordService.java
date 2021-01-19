@@ -18,6 +18,7 @@ public class TruckEnterRecordService extends BaseServiceImpl<TruckEnterRecord, L
     public BaseOutput addTruckEnterRecord(TruckEnterRecord truckEnterRecord) {
         try {
             truckEnterRecordMapper.insertSelective(truckEnterRecord);
+
             return BaseOutput.success();
         } catch (Exception e){
             e.printStackTrace();
