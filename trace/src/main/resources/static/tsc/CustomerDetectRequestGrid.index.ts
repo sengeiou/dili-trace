@@ -221,6 +221,7 @@ class CustomerDetectRequestGrid extends ListPage {
             return;
         }
 
+
         let url= this.toUrl("/customerDetectRequest/doConfirm.action?billId="+billId+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
         try{
             var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});

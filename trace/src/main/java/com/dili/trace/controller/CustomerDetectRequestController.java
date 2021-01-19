@@ -252,7 +252,7 @@ public class CustomerDetectRequestController {
     /**
      * 人工检测
      *
-     * @param detectRecord
+     * @param input
      * @return
      */
     @RequestMapping(value = "/doManualCheck.action")
