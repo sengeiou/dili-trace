@@ -684,10 +684,30 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 撤销检测请求
      *
-     * @param id
+     * @param billId
      */
-    public void undoDetectRequest(Long id) {
-        DetectRequest detectRequest = this.get(id);
+    @Transactional(rollbackFor = Exception.class)
+    public void undoDetectRequest(Long billId) {
+        //更新报备单未已删除
+        this.billService.getAvaiableBill(billId).ifPresent(rb->{
+            RegisterBill bill = new RegisterBill();
+            bill.setId(rb.getId());
+            bill.setIsDeleted(YesOrNoEnum.YES.getCode());
+            this.billService.updateSelective(bill);
+            if(rb.getDetectRequestId()!=null){
+                //更新检测请求
+                doUndoDetectRequest(rb.getDetectRequestId());
+            }
+        });
+
+    }
+
+    /**
+     * 更新检测请求
+     * @param detectRequestId
+     */
+    private void doUndoDetectRequest(Long detectRequestId) {
+        DetectRequest detectRequest = this.get(detectRequestId);
         if (Objects.isNull(detectRequest)) {
             throw new TraceBizException("检测请求不存在");
         }

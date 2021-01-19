@@ -96,7 +96,7 @@ public class CustomerDetectRequestController {
         billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
         billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
         detectRequestDto.setBillTypes(billTypes);
-        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
+        //detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();
     }
@@ -166,11 +166,7 @@ public class CustomerDetectRequestController {
     public @ResponseBody
     BaseOutput doUndo(@RequestParam(name = "billId", required = true) Long billId) {
         try {
-            this.billService.getAvaiableBill(billId).ifPresent(rb->{
-                if(rb.getDetectRequestId()!=null){
-                    this.detectRequestService.undoDetectRequest(rb.getDetectRequestId());
-                }
-            });
+            this.detectRequestService.undoDetectRequest(billId);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
