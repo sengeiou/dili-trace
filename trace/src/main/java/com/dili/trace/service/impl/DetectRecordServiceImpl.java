@@ -6,6 +6,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.DetectRecordMapper;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.trace.enums.DetectRecordStateEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -15,12 +16,14 @@ import com.dili.trace.service.DetectRequestService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -78,7 +81,24 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int saveDetectRecordManually(DetectRecord detectRecord, UserTicket userTicket) {
+    public int saveDetectRecordManually(DetectRecordInputDto input, UserTicket userTicket) {
+        DetectResultEnum detectResultEnum=DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
+            return  new TraceBizException("检测结果不正确");
+        });
+
+        DetectTypeEnum detectTypeEnum=DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
+            return  new TraceBizException("检测类型不正确");
+        });
+
+
+        DetectRecord detectRecord=new DetectRecord();
+        try {
+            BeanUtils.copyProperties(detectRecord,input);
+            detectRecord.setDetectState(input.getDetectResult());
+            detectRecord.setDetectType(input.getDetectType());
+        } catch (Exception e) {
+           throw new TraceBizException("程序错误");
+        }
         this.saveOrUpdate(detectRecord);
 
         RegisterBill query = new RegisterBill();
@@ -87,30 +107,6 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         if (registerBill==null) {
             throw new TraceBizException("上传检测任务结果失败登记单【"+detectRecord.getRegisterBillCode()+"】查询失败");
         }
-
-        DetectResultEnum detectResultEnum=StreamEx.ofNullable(detectRecord.getDetectState()).map(dt->{
-            if(Objects.equals(1,dt)){
-                return DetectResultEnum.PASSED;
-            }
-            if(Objects.equals(2,dt)){
-                return DetectResultEnum.FAILED;
-            }
-            return null;
-        }).nonNull().findFirst().orElseThrow(()->{
-            return  new TraceBizException("检测结果不正确");
-        });
-
-        DetectTypeEnum detectTypeEnum=StreamEx.ofNullable(detectRecord.getDetectType()).map(dt->{
-            if(Objects.equals(20,dt)){
-                return DetectTypeEnum.INITIAL_CHECK;
-            }
-            if(Objects.equals(30,dt)){
-                return DetectTypeEnum.RECHECK;
-            }
-            return null;
-        }).nonNull().findFirst().orElseThrow(()->{
-            return  new TraceBizException("检测类型不正确");
-        });
 
         this.detectRequestService.manualCheck(registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum);
 

@@ -20,6 +20,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.trace.dto.DetectRequestOutDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.DetectResultEnum;
@@ -27,6 +28,7 @@ import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.DetectRecordUtil;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import io.swagger.annotations.Api;
@@ -504,44 +506,45 @@ public class ClientDetectRequestApi {
      * 采样检测-手动填写检测结果
      */
     @RequestMapping(value = "/createDetectRecord.api", method = {RequestMethod.POST})
-    public BaseOutput<Long> createDetectRecord(@RequestBody DetectRecord detectRecord) {
+    public BaseOutput<Long> createDetectRecord(@RequestBody DetectRecordInputDto input) {
         try {
-            if (StringUtils.isBlank(detectRecord.getRegisterBillCode())) {
+            if (StringUtils.isBlank(input.getRegisterBillCode())) {
                 logger.error("上传检测任务结果失败无编号");
                 return BaseOutput.failure("没有对应的登记单");
             }
-            if (StringUtils.isBlank(detectRecord.getDetectOperator())) {
+            if (StringUtils.isBlank(input.getDetectOperator())) {
                 logger.error("上传检测任务结果失败无检测人员");
                 return BaseOutput.failure("没有对应的检测人员");
             }
-            if (detectRecord.getDetectState() == null) {
-                logger.error("上传检测任务结果失败无检测状态");
-                return BaseOutput.failure("没有对应的检测状态");
-            } else if (detectRecord.getDetectState() > 2 || detectRecord.getDetectState() < 1) {
-                logger.error("上传检测任务结果失败无,检测状态异常" + detectRecord.getDetectState());
-                return BaseOutput.failure("没有对应的检测状态");
-            }
-            if (detectRecord.getDetectTime() == null) {
+            DetectResultEnum detectResultEnum= DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
+                return  new TraceBizException("检测结果不正确");
+            });
+
+            DetectTypeEnum detectTypeEnum= DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
+                return  new TraceBizException("检测类型不正确");
+            });
+
+            if (input.getDetectTime() == null) {
                 logger.error("上传检测任务结果失败无检测时间");
                 return BaseOutput.failure("没有对应的检测时间");
             }
-            if (StringUtils.isBlank(detectRecord.getPdResult())) {
+            if (StringUtils.isBlank(input.getPdResult())) {
                 logger.error("上传检测任务结果失败无检测值");
                 return BaseOutput.failure("没有对应的检测值");
             }
-            if (detectRecord.getDetectRequestId() == null) {
+            if (input.getDetectRequestId() == null) {
                 logger.error("上传检测任务结果失败无检测任务");
                 return BaseOutput.failure("没有对应的检测检测任务");
             }
-            detectRecord.setCreated(new Date());
-            detectRecord.setModified(new Date());
+            input.setCreated(new Date());
+            input.setModified(new Date());
 
             // 检测记录插入后，进行后台自动人工检测完成
             UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
             userTicket.setId(this.sessionContext.getAccountId());
             userTicket.setUserName(this.sessionContext.getUserName());
 
-            int i = this.detectRecordService.saveDetectRecordManually(detectRecord, userTicket);
+            int i = this.detectRecordService.saveDetectRecordManually(input, userTicket);
             return BaseOutput.success().setData(i);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

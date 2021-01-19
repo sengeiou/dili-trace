@@ -1,27 +1,15 @@
-package com.dili.trace.domain;
+package com.dili.trace.dto;
 
-import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Date;
 
-/**
- * 由MyBatis Generator工具自动生成
- * <p>
- * This file was generated on 2019-07-26 09:20:35.
- */
-@Table(name = "`detect_record`")
-public class DetectRecord extends BaseDomain {
-
+public class DetectRecordInputDto {
     /**
      * 检测记录ID
      *
@@ -49,7 +37,7 @@ public class DetectRecord extends BaseDomain {
     @Column(name = "`detect_operator`")
     private String detectOperator;
     /**
-     * 检测类型-1.第一次送检 2：复检
+     * 检测类型
      *
      * @return
      */
@@ -57,12 +45,11 @@ public class DetectRecord extends BaseDomain {
     private Integer detectType;
 
     /**
-     * 检测状态 1.合格 2.不合格
+     * 检测结果
      *
      * @return
      */
-    @Column(name = "`detect_state`")
-    private Integer detectState;
+    private Integer detectResult;
 
     /**
      * 产品结果
@@ -132,12 +119,10 @@ public class DetectRecord extends BaseDomain {
     @Column(name = "`detect_request_id`")
     private Long detectRequestId;
 
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -166,13 +151,6 @@ public class DetectRecord extends BaseDomain {
         this.detectType = detectType;
     }
 
-    public Integer getDetectState() {
-        return detectState;
-    }
-
-    public void setDetectState(Integer detectState) {
-        this.detectState = detectState;
-    }
 
     public String getPdResult() {
         return pdResult;
@@ -237,4 +215,14 @@ public class DetectRecord extends BaseDomain {
     public void setDetectRequestId(Long detectRequestId) {
         this.detectRequestId = detectRequestId;
     }
+
+    public Integer getDetectResult() {
+        return detectResult;
+    }
+
+    public void setDetectResult(Integer detectResult) {
+        this.detectResult = detectResult;
+    }
+
+
 }

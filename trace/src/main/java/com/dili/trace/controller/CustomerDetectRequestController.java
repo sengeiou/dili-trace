@@ -11,10 +11,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.dto.DetectRecordParam;
-import com.dili.trace.dto.DetectRequestWithBillDto;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
@@ -260,12 +257,12 @@ public class CustomerDetectRequestController {
      */
     @RequestMapping(value = "/doManualCheck.action")
     public @ResponseBody
-    BaseOutput doManualCheck(@RequestBody DetectRecordParam detectRecord) {
+    BaseOutput doManualCheck(@RequestBody DetectRecordInputDto input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            detectRecord.setCreated(DateUtils.getCurrentDate());
-            detectRecord.setModified(DateUtils.getCurrentDate());
-            this.detectRecordService.saveDetectRecordManually(detectRecord, userTicket);
+            input.setCreated(DateUtils.getCurrentDate());
+            input.setModified(DateUtils.getCurrentDate());
+            this.detectRecordService.saveDetectRecordManually(input, userTicket);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
