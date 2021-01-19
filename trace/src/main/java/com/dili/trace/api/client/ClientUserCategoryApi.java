@@ -7,7 +7,6 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.api.CategoryApi;
 import com.dili.trace.domain.RUserCategory;
 import com.dili.trace.service.RUserCategoryService;
 import io.swagger.annotations.Api;
