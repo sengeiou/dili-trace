@@ -4,6 +4,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceAdaptor;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dao.UserStoreMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -42,8 +43,8 @@ public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
         query.setMarketId(input.getMarketId());
         query.setStoreName(input.getStoreName().trim());
         List<UserStore> userStoreList = this.listByExample(query);
-        boolean otherUserHasThisStoreName=StreamEx.of(userStoreList).map(UserStore::getUserId).anyMatch(uid->!uid.equals(input.getUserId()));
-        if(otherUserHasThisStoreName){
+        boolean otherUserHasThisStoreName = StreamEx.of(userStoreList).map(UserStore::getUserId).anyMatch(uid -> !uid.equals(input.getUserId()));
+        if (otherUserHasThisStoreName) {
             throw new TraceBizException("店铺已经存在");
         }
 
@@ -57,5 +58,17 @@ public class UserStoreService extends BaseServiceImpl<UserStore, Long> {
             input.setModified(new Date());
             return this.updateSelective(input);
         }
+    }
+
+    /**
+     * 查询店铺
+     *
+     * @param marketId
+     * @param keyword
+     * @return
+     */
+    public List<UserStore> listUserStoreByKeyword(Long marketId, String keyword) {
+
+        return ((UserStoreMapper) this.getDao()).listUserStoreByKeyword(keyword, marketId);
     }
 }

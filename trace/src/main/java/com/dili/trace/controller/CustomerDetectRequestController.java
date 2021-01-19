@@ -141,6 +141,23 @@ public class CustomerDetectRequestController {
     }
 
     /**
+     * 退回
+     *
+     * @param billId          检测请求ID
+     * @return 指派结果
+     */
+    @RequestMapping(value = "/doReturn.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doReturn(@RequestParam(name = "billId", required = true) Long billId) {
+        try {
+            this.detectRequestService.doReturn(billId);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
      * 撤销
      *
      * @param billId

@@ -1458,6 +1458,9 @@
     <if test="likeCode != null">
       AND b.code like '%${likeCode}%'
     </if>
+    <if test="likePhone != null">
+      AND b.phone like '%${likePhone}%'
+    </if>
     <if test="productName != null">
       AND b.product_name like '%${productName}%'
     </if>

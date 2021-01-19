@@ -239,6 +239,48 @@ class CustomerDetectRequestGrid extends ListPage {
     }
 
     /**
+     * 退回
+     * @param id
+     * @param designatedId
+     * @param designatedName
+     */
+    public async returnAssign(billId:string){
+        //@ts-ignore
+        bs4pop.removeAll();
+        let promise = new Promise((resolve, reject) => {
+            //@ts-ignore
+            bs4pop.confirm('是否确认退回？<br/>',
+                {type: 'warning',btns: [
+                        {label: '是', className: 'btn-primary',onClick(cb){  resolve("true");}},
+                        {label: '否', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
+                    ]});
+
+        });
+        let result = await promise;
+        if(result=='cancel'){
+            return;
+        }
+
+        let url= this.toUrl("/customerDetectRequest/doReturn.action?billId="+billId);
+        try{
+            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+    }
+
+    /**
      * 采样检测
      */
     private async  doSamplingCheck() {
