@@ -172,7 +172,6 @@ class CustomerDetectRequestGrid extends ListPage {
         catch (e) {
             return;
         }
-        debugger;
         let url = this.toUrl("/customerDetectRequest/doReturn.action?billId=" + billId);
         try {
             let resp = await jq.postJsonWithProcessing(url, data);
