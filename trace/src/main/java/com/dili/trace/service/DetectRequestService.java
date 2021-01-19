@@ -22,6 +22,7 @@ import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.uap.sdk.domain.Firm;
@@ -771,6 +772,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
+        updateBill.setSampleCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL_SAMPLE_CODE.getType()));
         this.billService.updateSelective(updateBill);
     }
 
