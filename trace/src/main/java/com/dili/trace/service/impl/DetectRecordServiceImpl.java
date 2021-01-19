@@ -99,7 +99,6 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         } catch (Exception e) {
            throw new TraceBizException("程序错误");
         }
-        this.saveOrUpdate(detectRecord);
 
         RegisterBill query = new RegisterBill();
         query.setCode(detectRecord.getRegisterBillCode());
@@ -107,8 +106,9 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         if (registerBill==null) {
             throw new TraceBizException("上传检测任务结果失败登记单【"+detectRecord.getRegisterBillCode()+"】查询失败");
         }
-
-        this.detectRequestService.manualCheck(registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum);
+        detectRecord.setDetectRequestId(registerBill.getDetectRequestId());
+        this.saveOrUpdate(detectRecord);
+        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum);
 
         return 1;
     }

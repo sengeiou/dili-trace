@@ -327,18 +327,20 @@ public class ECommerceBillService {
         //patch bill单上的requestId
         updateBillDetectRequestId(registerBill.getId(),item.getId());
 
-        BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r -> {
-            return !StringUtils.isAllBlank(r.getTallyAreaNo(), r.getSalesUserName(), r.getSalesPlate());
-        }).map(r -> {
-            if (r.getSalesWeight() == null || r.getSalesWeight().compareTo(BigDecimal.ZERO) < 0) {
-                throw new TraceBizException("分销重量不能小于零");
+        if(CollectionUtils.isNotEmpty(separateInputList)){
+            BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r -> {
+                return !StringUtils.isAllBlank(r.getTallyAreaNo(), r.getSalesUserName(), r.getSalesPlate());
+            }).map(r -> {
+                if (r.getSalesWeight() == null || r.getSalesWeight().compareTo(BigDecimal.ZERO) < 0) {
+                    throw new TraceBizException("分销重量不能小于零");
+                }
+                return r;
+            }).map(SeparateSalesRecord::getSalesWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (totalSalesWeight.compareTo(registerBill.getWeight()) > 0) {
+                throw new TraceBizException("分销重量不能超过总重量");
             }
-            return r;
-        }).map(SeparateSalesRecord::getSalesWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (totalSalesWeight.compareTo(registerBill.getWeight()) > 0) {
-            throw new TraceBizException("分销重量不能超过总重量");
+            this.createSeparateSalesRecord(registerBill.getCode(), separateInputList);
         }
-        this.createSeparateSalesRecord(registerBill.getCode(), separateInputList);
         return billId;
 
     }
