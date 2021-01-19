@@ -19,7 +19,7 @@
 
             <div class="form-group col">
                 <label for="likeProductName">商品</label>
-                <input type="hidden" id="productId" name="productId"/>
+                <input type="hidden" id="productId" name="productId"  class="form-control"/>
                 <input id="likeProductName" name="likeProductName" class="form-control" for="productId" />
             </div>
 
@@ -31,7 +31,7 @@
 
             <div class="form-group col">
                 <label for="originName">产地</label>
-                <input type="hidden" id="originId" name="originId"/>
+                <input type="hidden" id="originId" name="originId"  class="form-control"/>
                 <input id="originName" name="originName" class="form-control"   for="originId" />
             </div>
 
@@ -50,8 +50,8 @@
                     <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.PASSED.getCode()}"}'>复检合格</option>
                     <option  value='{"detectType":"${@com.dili.trace.enums.DetectTypeEnum.RECHECK.getCode()}","detectResult":"${@com.dili.trace.enums.DetectResultEnum.FAILED.getCode()}"}'>复检不合格</option>
                 </select>
-                <input type="hidden" name="detectType">
-                <input type="hidden" name="detectResult">
+                <input type="hidden" name="detectType"  class="form-control">
+                <input type="hidden" name="detectResult"  class="form-control">
             </div>
 
             <!--div class="form-group col">
