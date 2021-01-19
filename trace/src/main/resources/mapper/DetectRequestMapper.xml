@@ -119,6 +119,7 @@
           b.brand_id,
           b.spec_name,
           b.latest_detect_record_id,
+          b.sourceName tallyAreaNo,
           up.name upStreamName,
           d.*
         FROM
