@@ -106,7 +106,6 @@
           b.detect_status,
           b.product_name productName,
           b.name,
-          b.tally_area_no tallyAreaNo,
           b.weight,
           b.weight_unit weightUnit,
           b.origin_name originName,
@@ -119,6 +118,7 @@
           b.brand_id,
           b.spec_name,
           b.latest_detect_record_id,
+          b.source_name tallyAreaNo,
           up.name upStreamName,
           d.*
         FROM
