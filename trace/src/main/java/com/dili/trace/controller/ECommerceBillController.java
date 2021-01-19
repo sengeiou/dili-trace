@@ -146,9 +146,6 @@ public class ECommerceBillController {
 			List<SeparateSalesRecord> separateInputList=StreamEx.ofNullable(input.getSeparateSalesRecordList()).flatCollection(Function.identity()).nonNull().filter(r->{
 				return !StringUtils.isAllBlank(r.getTallyAreaNo(),r.getSalesUserName(),r.getSalesPlate());
 			}).toList();
-			if(separateInputList.isEmpty()){
-				return BaseOutput.failure("请填写分销信息");
-			}
 			this.eCommerceBillService.createECommerceBill(input.getBill(), separateInputList,
 					uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success("新增成功");
