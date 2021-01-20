@@ -11,13 +11,6 @@ import java.util.List;
  * @author asa.lee
  */
 public interface SyncRpcService {
-    /**
-     * 同步市场用户信息
-     *
-     * @param marketCode
-     * @return
-     */
-    void syncRpcUserByMarketId(String marketCode);
 
     /**
      * 同步用户信息
@@ -34,7 +27,7 @@ public interface SyncRpcService {
      * @param userIds
      * @return
      */
-    void syncRpcUserByUserIds(List<String> userIds);
+    void syncRpcUserByUserIds(List<Long> userIds);
 
     /**
      * 测试

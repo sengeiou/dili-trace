@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.dto.PushDataQueryDto;
@@ -17,19 +18,19 @@ import java.util.Map;
  */
 public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
-/*    *//**
+    /**
      * 杭果商品信息存储到溯源系统
      *
      * @param commodityList
-     *//*
-    void bachInsertCommodityList(List<Category> commodityList);
+     */
+    void bachInsertCommodityList(List<HangGuoCategory> commodityList);
 
-    *//**
+    /**
      * 杭果商品插入后更新parentId
      *
      * @param category
-     *//*
-    void updateHangGuoCommodityParent(Category category);*/
+     */
+    void updateHangGuoCommodityParent(HangGuoCategory category);
 
     /**
      * 根据第三方编码获取用户更新列表
@@ -46,15 +47,15 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      */
     void batchUpdateUserByThirdCode(List<User> updateUserList);
 
-/*    *//**
+    /**
      * 根据商品编码获取商品列表
      *
      * @param codeList
      * @return
-     *//*
-    List<Category> getCategoryListByThirdCode(List<String> codeList);
+     */
+    List<HangGuoCategory> getCategoryListByThirdCode(List<String> codeList);
 
-    *//**
+    /**
      * 根据第三方编码删除商品
      *
      * @param categoryList
@@ -87,8 +88,8 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
     /**
      * 更新超过金额标志位
      *
-     * @return
      * @param reportMaxAmountInt
+     * @return
      */
     void updateTradeReportListByBeyondAmount(Integer reportMaxAmountInt);
 
@@ -124,13 +125,15 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
     /**
      * 获取检测值
+     *
      * @param headList
      * @return
      */
     List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
 
     /**
-     *  获取检测主单
+     * 获取检测主单
+     *
      * @param checkOrder
      * @return
      */
@@ -138,6 +141,7 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
     /**
      * 不合格处置主单
+     *
      * @param dispose
      * @return
      */
@@ -145,6 +149,7 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
     /**
      * 获取来源缓存表数据
+     *
      * @param que
      * @return
      */
@@ -152,12 +157,14 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
     /**
      * 插入缓存表数据
+     *
      * @param addSource
      */
     void insertThirdPartySourceData(ThirdPartySourceData addSource);
 
     /**
      * 获取杭果交易数据
+     *
      * @param queryDto
      * @return
      */
@@ -165,33 +172,40 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
     /**
      * 更新上报标志位
+     *
      * @param inspectionDtoList
      */
     void updateCheckOrderReportFlag(List<ReportInspectionDto> inspectionDtoList);
 
     /**
      * 更新处置上报标志位
+     *
      * @param disposalDtos
      */
     void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
-/*
-    *//**
+    /*
+     */
+
+    /**
      * 获取不符合规范的断层商品列表
+     *
      * @param category
      * @return
-     *//*
-    List<Category> getCategoryFaultList(Category category);
+     */
+    List<HangGuoCategory> getCategoryFaultList(HangGuoCategory category);
 
-    *//**
+    /**
      * 获取商品详情
+     *
      * @param parentCode
      * @return
-     *//*
-    Category getCategoryByThirdCode(String parentCode);
+     */
+    HangGuoCategory getCategoryByThirdCode(String parentCode);
 
-    *//**
+    /**
      * 更新商品信息
+     *
      * @param categoryList
-     *//*
-    void batchUpdateCategoryByThirdCode(List<Category> categoryList);*/
+     */
+    void batchUpdateCategoryByThirdCode(List<HangGuoCategory> categoryList);
 }

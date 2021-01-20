@@ -67,11 +67,11 @@
                 <label for="likePlate">车牌号</label>
                 <input type="text" class="form-control" name="likePlate" id="likePlate"/>
             </div>
-            <div class="form-group col">
+            <!--div class="form-group col">
                 <label for="detectType">检测类型</label>
                 <select id="detectType" name="detectType" class="form-control"></select>
                 <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
-            </div>
+            </div-->
             <div class="form-group col">
                 <label for="detectResultSelect">检测结果</label>
                 <select id="detectResultSelect" name="detectResultSelect" class="form-control" data-value-type="skip">
@@ -207,7 +207,7 @@
                 <th data-field="detectStatusName" data-sort-name="detect_status" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
-                <th data-field="billTypeName" data-sort-name="bill_type" data-sortable="true" data-align="center">
+                <th data-field="registTypeName" data-sort-name="regist_type" data-sortable="true" data-align="center">
                     报备单类型
                 </th>
                 <th data-field="name" data-sortable="true" data-align="center">
@@ -251,9 +251,6 @@
                 </th>
                 <th data-field="detectTime"  data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
-                </th>
-                <th data-field="detectTypeName"  data-sort-name="detect_type" data-sortable="true" data-align="center">
-                    检测类型
                 </th>
                 <th data-field="detectDesc" data-sort-name="detect_result" data-sortable="true" data-align="center">
                     检测结果

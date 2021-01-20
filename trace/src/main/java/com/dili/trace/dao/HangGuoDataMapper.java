@@ -2,6 +2,7 @@ package com.dili.trace.dao;
 
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.dto.PushDataQueryDto;
@@ -17,20 +18,20 @@ import java.util.Map;
  * @author asa.lee
  */
 public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
-/*
-    *//**
+
+    /**
      * 插入商品数据到正式表
      *
      * @param commodityList
-     *//*
-    void bachInsertCommodityList(@Param("list") List<Category> commodityList);
+     */
+    void bachInsertCommodityList(@Param("list") List<HangGuoCategory> commodityList);
 
-    *//**
+    /**
      * 更新商品正式表杭果商品数据patentId
      *
      * @param category
-     *//*
-    void updateHangGuoCommodityParent(Category category);*/
+     */
+    void updateHangGuoCommodityParent(HangGuoCategory category);
 
     /**
      * 根据第三方编码获取更新列表
@@ -53,7 +54,7 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param tradeList
      * @return
      */
-//    List<Category> getCategoryListByThirdCode(@Param("list") List<String> tradeList);
+    List<HangGuoCategory> getCategoryListByThirdCode(@Param("list") List<String> tradeList);
 
     /**
      * 根据第三方编码刪除商品信息
@@ -176,18 +177,18 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param category
      * @return
      */
-//    List<Category> getCategoryFaultList(Category category);
+    List<HangGuoCategory> getCategoryFaultList(HangGuoCategory category);
 
     /**
      * 获取商品按code
      * @param parentCode
      * @return
      */
-//    Category getCategoryByThirdCode(@Param("code") String parentCode);
+    HangGuoCategory getCategoryByThirdCode(@Param("code") String parentCode);
 
     /**
      * 更新商品信息
      * @param categoryList
      */
-//    void batchUpdateCategoryByThirdCode(@Param("list") List<Category> categoryList);
+    void batchUpdateCategoryByThirdCode(@Param("list") List<HangGuoCategory> categoryList);
 }

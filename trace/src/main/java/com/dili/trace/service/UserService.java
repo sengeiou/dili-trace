@@ -21,26 +21,6 @@ import java.util.List;
  */
 public interface UserService extends BaseService<User, Long> {
 
-    /**注册（新增）用户
-     *
-     * @param user 用户信息
-     * @param originalPassword 原始密码
-     */
-//    void register(User user, UserTypeEnum userType, String originalPassword);
-
-    /**
-     * 注册 flag 是否有验证码
-     *
-     * @param user
-     */
-//    void register(User user, Boolean flag);
-
-    /**
-     * 修改用户信息
-     *
-     * @param user
-     */
-    void updateUser(User user);
 
     /**
      * 登录
@@ -51,27 +31,6 @@ public interface UserService extends BaseService<User, Long> {
      */
     User login(String phone, String encryptedPassword);
 
-    /**
-     * 重置密码
-     *
-     * @param user
-     */
-//    void resetPassword(User user);
-
-    /**
-     * 修改密码
-     *
-     * @param user
-     */
-//    void changePassword(User user);
-
-    /**
-     * 判断手机号是否存在
-     *
-     * @param phone
-     * @return
-     */
-    boolean existsAccount(String phone);
 
     /**
      * 根据手机号查询用户
@@ -81,14 +40,6 @@ public interface UserService extends BaseService<User, Long> {
      */
     List<User> getUserByExistsAccount(String phone);
 
-    /**
-     * 根据用户ID，操作启禁用
-     *
-     * @param id
-     * @param enable 是否启用(true-启用，false-禁用)
-     * @return
-     */
-//    BaseOutput updateEnable(Long id, Boolean enable);
 
     /**
      * @param dto
@@ -97,65 +48,12 @@ public interface UserService extends BaseService<User, Long> {
      */
     public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
 
-    /**
-     * 删除用户信息
-     *
-     * @param id
-     */
-//    BaseOutput deleteUser(Long id);
-
-    /**
-     * @param user
-     * @return
-     */
-    BaseOutput<List<UserOutput>> countGroupByValidateState(User user);
-
-    /**
-     * @param user
-     * @return
-     */
-    BasePage<UserOutput> pageUserByQuery(UserInput user);
-
-    /**
-     *
-     * @param input
-     * @param operatorUser
-     * @return
-     */
-//    BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 
     /**
      * @param keyword
      * @return
      */
     public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
-
-    /**
-     * 根据名字模糊查询
-     * @param likeName
-     * @return
-     */
-    public List<User> findUserBylikeName(String likeName);
-
-    /**
-     * @param userId
-     * @return
-     * @throws Exception
-     */
-    public UserQrOutput getUserQrCode(Long userId) throws Exception;
-
-    /**
-     * @param qrStatusList
-     * @return
-     */
-    public List<User> findUserByQrStatusList(List<Integer> qrStatusList);
-
-    /**
-     *
-     * @param user
-     * @param smscode
-     */
-//    public void renewPassword(User user, String smscode);
 
     /**
      * @param user
@@ -168,54 +66,6 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     User wxLogin(String openid);
-
-    /**
-     * 微信一键注册
-     *
-     * @return
-     * @throws JsonProcessingException
-     */
-    String wxRegister(User user) throws JsonProcessingException;
-
-    /**
-     * 微信绑定用户
-     *
-     * @param openid
-     * @param user_id
-     */
-    void userBindWeChat(String openid, Long user_id);
-
-    /**
-     * 确认今日不再弹出微信绑定提示
-     *
-     * @param user_id
-     */
-    void confirmBindWeChatTip(String user_id);
-
-    /**
-     * 根据店铺名查找user
-     *
-     * @param queryCondition
-     * @return
-     */
-    List<UserOutput> listUserByStoreName(Long userId, String queryCondition, Long marketId);
-
-    /**
-     * 根据店铺名查找user
-     *
-     * @param userId
-     * @return
-     */
-    UserOutput getUserByUserId(Long userId);
-
-    /**
-     * 生成带店铺名的二维码
-     *
-     * @param userId
-     * @return
-     * @throws Exception
-     */
-    UserQrOutput getUserQrCodeWithName(Long userId) throws Exception;
 
     /**
      * 根据用户id修改
@@ -231,13 +81,6 @@ public interface UserService extends BaseService<User, Long> {
     void updateUserActiveByTime();
 
     /**
-     * 通过姓名/手机号/经营户卡号关键字查询用户信息
-     *
-     * @param input
-     */
-    public BasePage<User> findUserByKeyword(UserListDto input);
-
-    /**
      * 查询用户
      *
      * @param tallyAreaNo
@@ -245,14 +88,6 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     User findByTallyAreaNo(String tallyAreaNo, Long marketId);
-
-    /**
-     * 通过理货区号查询用户及车牌信息
-     *
-     * @param likeTallyAreaNo
-     * @return
-     */
-    public List<DTO> queryByTallyAreaNo(String likeTallyAreaNo);
 
     /**
      * 获取无照片的经营户
