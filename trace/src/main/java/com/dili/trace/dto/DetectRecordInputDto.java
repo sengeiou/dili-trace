@@ -2,11 +2,9 @@ package com.dili.trace.dto;
 
 import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 public class DetectRecordInputDto {
@@ -50,6 +48,14 @@ public class DetectRecordInputDto {
      * @return
      */
     private Integer detectResult;
+
+    /**
+     * 检测结果的别称
+     *
+     * @return
+     */
+    @Transient
+    private Integer detectState;
 
     /**
      * 产品结果
@@ -99,6 +105,7 @@ public class DetectRecordInputDto {
      * @return
      */
     @Column(name = "`normal_result`")
+    @Length
     private String normalResult;
 
 
@@ -224,5 +231,11 @@ public class DetectRecordInputDto {
         this.detectResult = detectResult;
     }
 
+    public Integer getDetectState() {
+        return detectState;
+    }
 
+    public void setDetectState(Integer detectState) {
+        this.detectState = detectState;
+    }
 }
