@@ -813,7 +813,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
-        updateBill.setSampleCode(this.codeGenerateService.nextECommerceBillSampleCode());
+        updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
 
