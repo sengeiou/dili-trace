@@ -353,15 +353,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     public void confirm(Long billId, Long designatedId, String designatedName, Date detectTime) {
         RegisterBill registerBill=this.billService.getAvaiableBill(billId).orElse(null);
         if (registerBill == null) {
-            throw new RuntimeException("检测请求关联的报备单据不存在。");
+            throw new TraceBizException("检测请求关联的报备单据不存在。");
         }
         DetectRequest detectRequest = this.get(registerBill.getDetectRequestId());
         if (detectRequest == null) {
-            throw new RuntimeException("检测请求不存在。");
+            throw new TraceBizException("检测请求不存在。");
         }
 
         if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_SAMPLE.getCode()) {
-            throw new RuntimeException("检测请求已接单。");
+            throw new TraceBizException("检测请求已接单。");
         }
         // 更新报备单检测状态
         RegisterBill billParam = new RegisterBill();
