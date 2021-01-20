@@ -54,7 +54,7 @@
   </select>
 
     <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestOutDto">
-        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no,b.bill_type
+        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.source_name tallyAreaNo,b.bill_type
         ,b.weight,b.weight_unit weightUnit,d.*
         FROM detect_request d
         JOIN register_bill b ON d.id=b.detect_request_id
@@ -189,7 +189,7 @@
     </select>
 
   <select id="queryListBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceListOutputDto">
-      SELECT b.id billId,b.name,b.source_name tally_area_no,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
+      SELECT b.id billId,b.name,b.source_name,b.source_name tallyAreaNo,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
       FROM detect_request r
       JOIN register_bill b ON (r.id = b.detect_request_id)
       WHERE 1=1
@@ -349,7 +349,7 @@
           <![CDATA[ AND r.sample_time <= #{sampleTimeEnd} ]]>
       </if>
       <if test="registType != null">
-           AND r.regist_type = #{registType}
+           AND b.regist_type = #{registType}
       </if>
       <if test="billTypes != null">
           AND b.bill_type
