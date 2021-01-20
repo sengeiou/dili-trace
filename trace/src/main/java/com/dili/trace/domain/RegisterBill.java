@@ -148,9 +148,9 @@ public class RegisterBill extends BaseDomain {
     /**
      * 皮重
      */
-    @ApiModelProperty(value = "皮重")
-    @Column(name = "`tare_weight`")
-    private BigDecimal tareWeight;
+//    @ApiModelProperty(value = "皮重")
+//    @Column(name = "`tare_weight`")
+//    private BigDecimal tareWeight;
 
 
 
@@ -1559,11 +1559,11 @@ public class RegisterBill extends BaseDomain {
         this.creatorRole = creatorRole;
     }
 
-    public BigDecimal getTareWeight() {
-        return tareWeight;
-    }
-
-    public void setTareWeight(BigDecimal tareWeight) {
-        this.tareWeight = tareWeight;
-    }
+//    public BigDecimal getTareWeight() {
+//        return tareWeight;
+//    }
+//
+//    public void setTareWeight(BigDecimal tareWeight) {
+//        this.tareWeight = tareWeight;
+//    }
 }
