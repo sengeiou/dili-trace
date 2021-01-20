@@ -1410,8 +1410,7 @@
     FROM register_bill b
     left join detect_request r ON (r.id = b.detect_request_id)
     left join detect_record on detect_record.detect_request_id=r.id
-    left join trade_detail on b.id = trade_detail.bill_id
-    left join checkinout_record on checkinout_record.id = trade_detail.checkin_record_id
+    LEFT JOIN checkinout_record ON checkinout_record.bill_id =r.id and checkinout_record.`inout` =10 and checkinout_record.status =10
     WHERE 1 = 1
     <if test="createdStart != null">
       <![CDATA[ AND b.created >= #{createdStart} ]]>
@@ -1503,7 +1502,5 @@
         #{billType}
       </foreach>
     </if>
-    group by b.id
-    order by b.created desc
   </select>
 </mapper>

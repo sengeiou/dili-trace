@@ -433,15 +433,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (dto == null) {
             throw new TraceBizException("数据不存在");
         }
-        if(dto.getLatestDetectRecordId()!=null){
-            dto.setLatestDetectRecord(this.detectRecordService.get(dto.getLatestDetectRecordId()));
-        }
         this.verifyHistoryService.findVerifyHistoryByBillId(dto.getBillId()).ifPresent(vh -> {
             dto.setVerifyDateTime(vh.getVerifyDateTime());
             dto.setVerifyOperatorName(vh.getVerifyOperatorName());
         });
         //设置最新检测记录
         if (StringUtils.isNotBlank(dto.getBillCode())) {
+            this.detectRecordService.findByRegisterBillCode(dto.getBillCode());
             dto.setDetectRecordList(detectRecordService.findTop2AndLatest(dto.getBillCode()));
         }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
@@ -815,7 +813,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
-        updateBill.setSampleCode(this.codeGenerateService.nextECommerceBillSampleCode());
+        updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
 
