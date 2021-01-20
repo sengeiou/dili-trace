@@ -182,22 +182,4 @@ public class ECommerceBillApi {
 
     }
 
-    /**
-     * 查询电商登记单
-     *
-     * @param likeTallyAreaNo 摊位号
-     * @return 电商登记单
-     */
-    @RequestMapping(value = "/queryByTallyAreaNo.api", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput queryByTallyAreaNo(String likeTallyAreaNo) {
-        try {
-            List<DTO> data = this.userService.queryByTallyAreaNo(likeTallyAreaNo);
-            return BaseOutput.success().setData(data);
-        } catch (Exception e) {
-            logger.error("查询失败", e);
-            return BaseOutput.failure();
-        }
-
-    }
 }
