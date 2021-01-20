@@ -216,7 +216,11 @@ class CommissionDetectRequestGrid extends ListPage {
             bs4pop.prompt('请输入退回原因:', '', {
                 title: '是否确认退回？',
                 hideRemove: true,
-                width: 500
+                width: 500,
+                className: "max20",
+                onShowEnd: function () {
+                    $(".max20").find("input").attr("maxlength", 20);
+                },
             }, function (sure, value) {
                 if (sure == true) {
                     if ($.trim(value) == '') {
