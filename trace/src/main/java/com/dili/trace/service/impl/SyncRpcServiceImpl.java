@@ -4,21 +4,21 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.util.MD5Util;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.Customer;
 import com.dili.customer.sdk.domain.TallyingArea;
+import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
+import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
+import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.customer.sdk.rpc.TallyingAreaRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.TallyAreaNo;
-import com.dili.trace.enums.MarketEnum;
+import com.dili.trace.domain.User;
+import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.service.MarketService;
 import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UserService;
-import com.dili.uap.sdk.domain.Firm;
-import com.dili.uap.sdk.domain.User;
-import com.dili.uap.sdk.domain.dto.UserQuery;
-import com.dili.uap.sdk.rpc.UserRpc;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,38 +39,27 @@ import java.util.stream.Collectors;
 public class SyncRpcServiceImpl implements SyncRpcService {
 
     @Resource
-    private UserRpc userRpc;
+    private CustomerRpc customerRpc;
     @Resource
     private TallyingAreaRpc tallyingAreaRpc;
     @Autowired
     private UserService userService;
     @Autowired
-    private MarketService marketService;
-    @Autowired
     private DefaultConfiguration defaultConfiguration;
 
-    @Override
-    public void syncRpcUserByMarketId(String marketCode) {
-        //市场
-        Firm market = getMarketByCode(marketCode);
-        //rpc用户列表
-        BaseOutput<List<User>> resultData = getPpcUserList(marketCode);
-        if (null != resultData) {
-            List<User> userList = resultData.getData();
-            //查询当前市场的所有用户
-            List<com.dili.trace.domain.User> list = getUserByMarketId(market.getId());
-            updateUserByRpcUserList(userList, list);
-        }
-    }
+    private Integer userYNy = 1;
+    private Integer userYNn = -1;
 
     @Override
-    public void syncRpcUserByUserIds(List<String> userIds) {
+    public void syncRpcUserByUserIds(List<Long> userIds) {
         if (CollectionUtils.isEmpty(userIds)) {
             return;
         }
-        BaseOutput<List<User>> rpcUserByIds = userRpc.listUserByIds(userIds);
-        List<Long> idList = StreamEx.of(userIds).nonNull().map(u -> Long.valueOf(u)).collect(Collectors.toList());
-        List<com.dili.trace.domain.User> userList = userService.getUserListByUserIds(idList);
+        CustomerQueryInput customerQueryInput = new CustomerQueryInput();
+        Set<Long> userSet = new HashSet<>(userIds);
+        customerQueryInput.setIdSet(userSet);
+        BaseOutput<List<CustomerSimpleExtendDto>> rpcUserByIds = customerRpc.listSimple(customerQueryInput);
+        List<User> userList = userService.getUserListByUserIds(userIds);
         if (null == rpcUserByIds) {
             return;
         }
@@ -82,20 +71,20 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     @Transactional(rollbackFor = Exception.class)
     public void syncRpcUserByUserId(Long userId) {
         //rpc用户列表
-        BaseOutput<User> resultData = getRpcUserById(userId);
+        BaseOutput<Customer> resultData = getRpcUserById(userId);
         //未获取到rpc用户
         if (null == resultData) {
             return;
         }
-        User rpcUser = resultData.getData();
+        Customer rpcUser = resultData.getData();
         if (null != rpcUser) {
-            com.dili.trace.domain.User user = userService.get(userId);
+            User user = userService.get(userId);
             //取需要更新的用户信息updateList
             if (null != user) {
-                com.dili.trace.domain.User upUser = buildUpdateUser(rpcUser);
+                User upUser = buildUpdateUser(rpcUser);
                 updateUserInfo(upUser);
             } else {
-                com.dili.trace.domain.User addUser = buildAddUser(rpcUser);
+                User addUser = buildAddUser(rpcUser);
                 addUserInfoByRpc(addUser);
             }
         }
@@ -108,17 +97,17 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param userList
      * @param list
      */
-    private void updateUserByRpcUserList(List<User> userList, List<com.dili.trace.domain.User> list) {
-        Map<Long, com.dili.trace.domain.User> userMap = StreamEx.of(list).nonNull().collect(Collectors.toMap(com.dili.trace.domain.User::getId, Function.identity(), (a, b) -> a));
+    private void updateUserByRpcUserList(List<CustomerSimpleExtendDto> userList, List<User> list) {
+        Map<Long, User> userMap = StreamEx.of(list).nonNull().collect(Collectors.toMap(User::getId, Function.identity(), (a, b) -> a));
         //取需要更新的用户信息updateList
-        List<com.dili.trace.domain.User> updateList = new ArrayList<>();
-        List<com.dili.trace.domain.User> addList = new ArrayList<>();
+        List<User> updateList = new ArrayList<>();
+        List<User> addList = new ArrayList<>();
         StreamEx.of(userList).nonNull().forEach(rpcUser -> {
             if (userMap.containsKey(rpcUser.getId())) {
-                com.dili.trace.domain.User upUser = buildUpdateUser(rpcUser);
+                User upUser = buildUpdateUser(rpcUser);
                 updateList.add(upUser);
             } else {
-                com.dili.trace.domain.User addUser = buildAddUser(rpcUser);
+                User addUser = buildAddUser(rpcUser);
                 addList.add(addUser);
             }
         });
@@ -131,47 +120,11 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     }
 
     /**
-     * 远程用户列表
-     *
-     * @param marketCode
-     * @return
-     */
-    private BaseOutput<List<User>> getPpcUserList(String marketCode) {
-        User user = DTOUtils.newDTO(User.class);
-        user.setFirmCode(marketCode);
-        return userRpc.list(user);
-    }
-
-    /**
-     * 获取市场信息
-     *
-     * @param marketCode
-     * @return
-     */
-    private Firm getMarketByCode(String marketCode) {
-        return marketService.getMarketByCode(MarketEnum.valueOf(marketCode));
-    }
-
-    /**
-     * 按市场id获取用户列表
-     *
-     * @param marketId
-     * @return
-     */
-    private List<com.dili.trace.domain.User> getUserByMarketId(Long marketId) {
-        com.dili.trace.domain.User queUser = getNewUserPojo();
-        queUser.setMarketId(marketId);
-        queUser.setYn(YesOrNoEnum.YES.getCode());
-        return userService.list(queUser);
-    }
-
-
-    /**
      * 根据rpc用户信息新增用户
      *
      * @param addUser
      */
-    private void addUserInfoByRpc(com.dili.trace.domain.User addUser) {
+    private void addUserInfoByRpc(User addUser) {
         userService.insertSelective(addUser);
     }
 
@@ -180,7 +133,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      *
      * @param upUser
      */
-    private void updateUserInfo(com.dili.trace.domain.User upUser) {
+    private void updateUserInfo(User upUser) {
         userService.updateSelective(upUser);
     }
 
@@ -190,8 +143,8 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param userId
      * @return
      */
-    private BaseOutput<User> getRpcUserById(Long userId) {
-        return userRpc.findUserById(userId);
+    private BaseOutput<Customer> getRpcUserById(Long userId) {
+        return customerRpc.getById(userId);
     }
 
 
@@ -201,16 +154,10 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private com.dili.trace.domain.User buildAddUser(User rpcUser) {
+    private User buildAddUser(Customer rpcUser) {
         Integer version = 0;
-        com.dili.trace.domain.User addUser = getNewUserPojo();
-        addUser.setId(rpcUser.getId());
-        addUser.setName(rpcUser.getUserName());
-        addUser.setPhone(null == rpcUser.getCellphone() ? "''" : rpcUser.getCellphone());
-        addUser.setCardNo(null == rpcUser.getCardNumber() ? "''" : rpcUser.getCardNumber());
-        addUser.setState(EnabledStateEnum.ENABLED.getCode());
+        User addUser = buildUpdateUser(rpcUser);
         addUser.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
-        addUser.setYn(YesOrNoEnum.YES.getCode());
         addUser.setVersion(version);
         addUser.setCreated(DateUtils.getCurrentDate());
         addUser.setModified(DateUtils.getCurrentDate());
@@ -224,12 +171,23 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private com.dili.trace.domain.User buildUpdateUser(User rpcUser) {
-        com.dili.trace.domain.User upUser = getNewUserPojo();
+    private User buildUpdateUser(Customer rpcUser) {
+        User upUser = getNewUserPojo();
         upUser.setId(rpcUser.getId());
-        upUser.setName(rpcUser.getUserName());
-        upUser.setPhone(null == rpcUser.getCellphone() ? "''" : rpcUser.getCellphone());
-        upUser.setCardNo(null == rpcUser.getCardNumber() ? "''" : rpcUser.getCardNumber());
+        upUser.setName(rpcUser.getName());
+        upUser.setPhone(null == rpcUser.getContactsPhone() ? "''" : rpcUser.getContactsPhone());
+        upUser.setCardNo(null == rpcUser.getCertificateNumber() ? "''" : rpcUser.getCertificateNumber());
+        if (null != rpcUser.getIsDelete() && rpcUser.getIsDelete().equals(YesOrNoEnum.YES.getCode())) {
+            upUser.setYn(userYNn);
+        }
+        //YesOrNoEnum.YES
+        upUser.setIsDelete(rpcUser.getIsDelete().longValue());
+        //未激活
+        if (CustomerEnum.State.NORMAL.getCode().equals(rpcUser.getState())) {
+            upUser.setState(EnabledStateEnum.ENABLED.getCode());
+        } else {
+            upUser.setState(EnabledStateEnum.DISABLED.getCode());
+        }
         return upUser;
     }
 
@@ -246,8 +204,8 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     /**
      * @return
      */
-    private static com.dili.trace.domain.User getNewUserPojo() {
-        return DTOUtils.newDTO(com.dili.trace.domain.User.class);
+    private static User getNewUserPojo() {
+        return DTOUtils.newDTO(User.class);
     }
 
     /**
@@ -255,11 +213,11 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      *
      * @param userList
      */
-    private void syncUserArea(List<com.dili.trace.domain.User> userList) {
+    /*private void syncUserArea(List<User> userList) {
         if (CollectionUtils.isEmpty(userList)) {
             return;
         }
-        Set<Long> userIdSet = StreamEx.of(userList).nonNull().map(com.dili.trace.domain.User::getId).collect(Collectors.toSet());
+        Set<Long> userIdSet = StreamEx.of(userList).nonNull().map(User::getId).collect(Collectors.toSet());
         TallyingArea tallyingArea = new TallyingArea();
         tallyingArea.setCustomerIdSet(userIdSet);
         BaseOutput<List<TallyingArea>> listByExample = tallyingAreaRpc.listByExample(tallyingArea);
@@ -275,5 +233,5 @@ public class SyncRpcServiceImpl implements SyncRpcService {
             }).collect(Collectors.toList());
         }
 
-    }
+    }*/
 }

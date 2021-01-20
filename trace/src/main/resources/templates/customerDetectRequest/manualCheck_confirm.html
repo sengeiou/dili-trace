@@ -122,14 +122,31 @@
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if (ret.code == "200") {
-                    parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData();
+                    layer.alert('检测成功',{
+                            type:0,
+                            time : 1000,
+                            end :function(){
+                                parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+                            }
+                        },
+                        function () {
+                            parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+                        }
+                    );
                 } else {
-                    console.log("提交失败");
-                    console.log(ret);
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
                 }
             },
             error:function(e){
-                console.log(e);
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
             }
         });
     }

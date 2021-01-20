@@ -244,26 +244,6 @@ public class UserController {
     }
 
     /**
-     * 获得用户二维码信息
-     *
-     * @param id
-     * @return
-     */
-    @RequestMapping(value = "/getUserQrCode.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput getUserQrCode(Long id) {
-        try {
-            UserQrOutput userQrOutput = this.userService.getUserQrCodeWithName(id);
-            return BaseOutput.success().setData(userQrOutput);
-
-        } catch (Exception e) {
-            LOGGER.error("查询失败", e);
-            return BaseOutput.failure();
-        }
-
-    }
-
-    /**
      * 激活用户
      *
      * @param id

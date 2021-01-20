@@ -10,7 +10,17 @@
         </foreach>
     </insert>
 
+    <update id="updateHangGuoCommodityParent" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory">
 
+               UPDATE category c,category c2
+                SET c2.parent_id=c.id
+                WHERE c.code=c2.parent_code
+                AND c2.parent_code IS NOT NULL
+                AND c.market_id=#{marketId}
+                AND c2.market_id=#{marketId}
+                AND DATE(c2.created) = DATE(#{created})
+
+    </update>
 
     <select id="getUserListByThirdPartyCode" parameterType="java.util.List"
             resultType="com.dili.trace.domain.User">
@@ -32,11 +42,6 @@
         <foreach collection="list" item="user" index="index"
                  separator=" " open="case third_party_code" close="end">
             when #{user.thirdPartyCode} then #{user.cardNoFrontUrl}
-        </foreach>,
-        card_no_back_url =
-        <foreach collection="list" item="user" index="index"
-                 separator=" " open="case third_party_code" close="end">
-            when #{user.thirdPartyCode} then #{user.cardNoBackUrl}
         </foreach>
         WHERE third_party_code
         <foreach collection="list" open=" IN (" close=")" item="u" separator=",">
@@ -44,7 +49,29 @@
         </foreach>
     </update>
 
-
+    <select id="getCategoryListByThirdCode" parameterType="java.util.List"
+            resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+        select
+        id,
+        parent_id,
+        name,
+        full_name,
+        level,
+        created,
+        modified,
+        market_id,
+        code,
+        is_show,
+        type,
+        specification,
+        parent_code
+        from category
+        where
+        code
+        <foreach collection="list" open=" IN (" close=")" item="thirdCode" separator=",">
+            #{thirdCode}
+        </foreach>
+    </select>
 
     <delete id="deleteHangGuoCommodityByThirdCode" parameterType="java.util.List">
         delete from category
@@ -144,7 +171,6 @@
 
     <select id="selectTradeReportListByHandleFlag" parameterType="com.dili.trace.domain.hangguo.HangGuoTrade"
             resultType="com.dili.trace.domain.hangguo.HangGuoTrade">
-
                 select
                 id,order_date,supplier_no,supplier_name,batch_no,item_number,item_name,unit,origin_no,
                 origin_name,position_no,position_name,price,package_number,number,amount,weight,
@@ -154,7 +180,7 @@
                 where handle_flag=#{handleFlag}
                 <![CDATA[AND #{createdStart}<=create_time]]>
                 <![CDATA[AND create_time <=#{createdEnd}]]>
-                ORDER BY create_time ASC
+        ORDER BY create_time ASC
     </select>
 
     <update id="batchUpdateCacheTrade">
@@ -233,6 +259,7 @@
         c.check_time,
         c.check_type,
         c.checker,
+        c.checker_id,
         c.goods_name,
         c.goods_code,
         c.market_id,
@@ -342,6 +369,23 @@
             #{t.id}
         </foreach>
     </update>
+
+    <select id="getCategoryFaultList" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory"
+            resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+                SELECT
+                    c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
+                 FROM category c
+                 WHERE c.parent_id is null
+                 <![CDATA[ and c.level <> 1 ]]>
+                 and c.market_id=#{marketId}
+
+    </select>
+    <select id="getCategoryByThirdCode" resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+        SELECT
+            c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
+         FROM category c
+         WHERE c.code  = #{code}
+    </select>
 
     <update id="batchUpdateCategoryByThirdCode" parameterType="java.util.List">
         UPDATE category
