@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.List;
 public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoTraceabilityDataJob.class);
 
-    @Autowired
+    @Resource
     RegisterBillMapper registerBillMapper;
     @Autowired
     HangGuoDataUtil hangGuoDataUtil;
@@ -67,14 +68,24 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     //当前时间往前推6小时
     private Integer generalTimeInterval = -6;
-    //交易数据当前时间往前推1小时
+    /**
+     * 交易数据当前时间往前推1小时
+     */
     private Integer tradeInterval = -1;
     private String queDateFormatter = "yyyyMMddHH:mm:ss";
+    /**
+     * 定义一个杭果市场id用于区分上报数据表中数据
+     */
+    final public static Long HGMarketId = 2L;
 
     @Override
     public void run(String... args) throws Exception {
         //启动时初始化一次基础数据
-        getBaseData();
+        //getBaseData();
+        // 商品信息
+        //Date endTime = this.registerBillMapper.selectCurrentTime();
+        //getThirdGoodsData(endTime);
+        //getTradeData();
     }
 
 
@@ -93,7 +104,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
     //@Scheduled(cron = "0 */15 * * * ?")
-    @Scheduled(cron = "0 10 */6 * * ?")
+    //@Scheduled(cron = "0 10 */6 * * ?")
     public void getBaseData() {
         try {
             SysConfig dataSwitch = getCallDataSwitch();
@@ -126,7 +137,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 交易数据每小时调用一次
      */
     //@Scheduled(cron = "0 */10 * * * ?")
-    @Scheduled(cron = "0 10 */1 * * ?")
+    //@Scheduled(cron = "0 10 */1 * * ?")
     public void getTradeData() {
         try {
             SysConfig dataSwitch = getCallDataSwitch();
@@ -143,7 +154,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             // 商品信息
             List<HangGuoTrade> tradeList = this.getTradeList(endTime);
             if (!CollectionUtils.isEmpty(tradeList)) {
-//                hangGuoDataUtil.createTrade(tradeList, endTime);
+                hangGuoDataUtil.createTrade(tradeList, endTime);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -241,8 +252,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private void getThirdGoodsData(Date endTime) {
-        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), firm.getId());
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), HGMarketId);
         boolean isFirst = false;
         //由于updatetime为预留参数没有实际意义.因此获取了一次后不会再获取,否则又是全量数据
         if (null == pushData) {
@@ -251,16 +261,16 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getName());
             pushData.setPushTime(endTime);
-            pushData.setMarketId(firm.getId());
+            pushData.setMarketId(HGMarketId);
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(endTime, isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
-//                hangGuoDataUtil.createCommodity(categoryList, endTime);
+               hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
         } else {
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(pushData.getPushTime(), isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
-//                hangGuoDataUtil.createCommodity(categoryList, endTime);
+                hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
         }
@@ -386,14 +396,12 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         List<HangGuoCommodity> commodityList = new ArrayList<>();
         Date startdate = DateUtils.getCurrentDate();
         String resultStr = null;
-        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
 
         HangGuoResult result = getHangGuoGoodsResult(endTime, isFirst);
         if (null != result && StringUtils.isBlank(result.getRecode())) {
             resultStr = result.getData();
         }
         if (StringUtils.isNotBlank(resultStr)) {
-            Integer restrInt = resultStr.length();
             Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
             batchSize = batchSize * 80;
             Integer part = resultStr.length() / batchSize;
@@ -401,7 +409,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? resultStr.length() : (i + 1) * batchSize;
                 String partBills = resultStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                        endTime, firm.getId());
+                        endTime, HGMarketId);
             }
             commodityList = JSON.parseArray(resultStr, HangGuoCommodity.class);
         } else {
@@ -409,7 +417,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 resultStr = JSON.toJSONString(result);
             }
             addSource(resultStr, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                    endTime, firm.getId());
+                    endTime, HGMarketId);
         }
         logger.info("====>end getGoodsCategory time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return commodityList;

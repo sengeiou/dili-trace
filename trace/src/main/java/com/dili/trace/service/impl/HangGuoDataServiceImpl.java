@@ -4,6 +4,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.dto.PushDataQueryDto;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -31,23 +33,23 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     /**
      * patch 交易数据缓存标志位时间段 往前24小时
      */
-    private Integer lastDayHour= -24;
+    private Integer lastDayHour = -24;
     /**
      * 最大处理条数，超出的则在下一次执行job中再处理
      */
-    private Integer maxPageCountSize= 15000;
-    @Autowired
+    private Integer maxPageCountSize = 15000;
+    @Resource
     private HangGuoDataMapper hangGuoDataMapper;
 
-    /*@Override
-    public void bachInsertCommodityList(List<Category> commodityList) {
+    @Override
+    public void bachInsertCommodityList(List<HangGuoCategory> commodityList) {
         hangGuoDataMapper.bachInsertCommodityList(commodityList);
     }
 
     @Override
-    public void updateHangGuoCommodityParent(Category category) {
+    public void updateHangGuoCommodityParent(HangGuoCategory category) {
         hangGuoDataMapper.updateHangGuoCommodityParent(category);
-    }*/
+    }
 
     @Override
     public List<User> getUserListByThirdPartyCode(List<String> list) {
@@ -59,12 +61,12 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         hangGuoDataMapper.batchUpdateUserByThirdCode(updateUserList);
     }
 
-    /*@Override
-    public List<Category> getCategoryListByThirdCode(List<String> codeList) {
+    @Override
+    public List<HangGuoCategory> getCategoryListByThirdCode(List<String> codeList) {
         return hangGuoDataMapper.getCategoryListByThirdCode(codeList);
     }
 
-    @Override
+    /*@Override
     public void deleteHangGuoCommodityByThirdCode(List<Category> categoryList) {
         hangGuoDataMapper.deleteHangGuoCommodityByThirdCode(categoryList);
     }*/
@@ -91,10 +93,10 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
 
     @Override
     public List<HangGuoTrade> selectTradeReportListByHandleFlag(HangGuoTrade trade) {
-        trade.setCreatedStart(DateUtils.addHours(DateUtils.getCurrentDate(),lastDayHour));
+        trade.setCreatedStart(DateUtils.addHours(DateUtils.getCurrentDate(), lastDayHour));
         trade.setCreatedEnd(DateUtils.getCurrentDate());
         int firstPage = 1;
-        PageHelper.startPage(firstPage,maxPageCountSize);
+        PageHelper.startPage(firstPage, maxPageCountSize);
         return hangGuoDataMapper.selectTradeReportListByHandleFlag(trade);
     }
 
@@ -152,20 +154,20 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     public void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos) {
         hangGuoDataMapper.updateCheckOrderDisposeReportFlag(disposalDtos);
     }
-/*
+
     @Override
-    public List<Category> getCategoryFaultList(Category category) {
+    public List<HangGuoCategory> getCategoryFaultList(HangGuoCategory category) {
         return hangGuoDataMapper.getCategoryFaultList(category);
     }
 
     @Override
-    public Category getCategoryByThirdCode(String parentCode) {
+    public HangGuoCategory getCategoryByThirdCode(String parentCode) {
         return hangGuoDataMapper.getCategoryByThirdCode(parentCode);
     }
 
     @Override
-    public void batchUpdateCategoryByThirdCode(List<Category> categoryList) {
+    public void batchUpdateCategoryByThirdCode(List<HangGuoCategory> categoryList) {
         hangGuoDataMapper.batchUpdateCategoryByThirdCode(categoryList);
-    }*/
+    }
 
 }

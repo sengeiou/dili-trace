@@ -1,5 +1,7 @@
 package com.dili.trace.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.customer.sdk.domain.Attachment;
 import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -55,6 +57,7 @@ public class CustomerExtendOutPutDto {
     /**
      * 营业执照
      */
+    @JSONField(serialzeFeatures = {SerializerFeature.DisableCircularReferenceDetect})
     private Attachment businessLicenseAttachment;
 
     public Attachment getBusinessLicenseAttachment() {
