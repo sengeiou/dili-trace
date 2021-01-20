@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
@@ -86,13 +87,9 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 
     List<RegisterBill> findUnMatchedRegisterBill(MatchDetectParam matchDetectParam);
 
-    int taskByExeMachineNo(@Param("exeMachineNo") String exeMachineNo
+    List<DetectRequest> selectDetectingOrWaitDetectBillId(@Param("exeMachineNo") String exeMachineNo
             , @Param("taskCount") int taskCount
-            ,@Param("marketId") Long marketId);
-
-    int taskByExeMachineNoForRequest(@Param("exeMachineNo") String exeMachineNo
-            , @Param("taskCount") int taskCount
-            ,@Param("marketId") Long marketId);
+            , @Param("marketId") Long marketId);
 
     RegisterBillStaticsDto groupByState(RegisterBillDto dto);
 

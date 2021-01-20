@@ -58,6 +58,14 @@ public class DetectRequestQueryDto extends DetectRequest {
     @Like
     private String likeCreatorName;
 
+
+    /**
+     * 报备单ID
+     */
+    @Column(name = "`bill_id`")
+    @Operator(Operator.IN)
+    private List<Long> billIdList;
+
     /**
      * 指定检测员
      */
@@ -265,5 +273,13 @@ public class DetectRequestQueryDto extends DetectRequest {
 
     public void setLikeBillCode(String likeBillCode) {
         this.likeBillCode = likeBillCode;
+    }
+
+    public List<Long> getBillIdList() {
+        return billIdList;
+    }
+
+    public void setBillIdList(List<Long> billIdList) {
+        this.billIdList = billIdList;
     }
 }

@@ -730,34 +730,17 @@
     ORDER BY id DESC limit 1
   </select>
 
-  <update id="taskByExeMachineNo">
- update register_bill set `detect_status` =40, exe_machine_no=#{exeMachineNo}, modified =NOW()
- where id in (select t.id from
-    (
-      select register_bill.id from detect_request left join register_bill
+  <select id="selectDetectingOrWaitDetectBillId" resultType="com.dili.trace.domain.DetectRequest" >
+    select detect_request.* from detect_request left join register_bill
       on detect_request.id=register_bill.detect_request_id
-      where register_bill.market_id=#{marketId}
+      where register_bill.market_id=#{marketId} and bill_type in(1,6,7)
       and (
        (detect_request.designated_name=#{exeMachineNo} and register_bill.detect_status=40)
        or register_bill.detect_status=30
-      ) limit #{taskCount}
-   ) t
- )
-  </update>
-
-  <update id="taskByExeMachineNoForRequest">
- update detect_request set designated_name=#{exeMachineNo}
- where id in (select t.id from
-  (
-    select register_bill.id from detect_request left join register_bill
-    on detect_request.id=register_bill.detect_request_id
-    where register_bill.market_id=#{marketId}
-    and  designated_name=#{exeMachineNo}
-    and register_bill.detect_status=40
-    limit #{taskCount}
- ) t
- )
-  </update>
+      )
+      order by register_bill.bill_type desc,register_bill.id desc
+       limit #{taskCount}
+  </select>
 
   <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillStaticsDto">
     SELECT SUM( CASE WHEN r.`detect_result`=1 THEN 1 ELSE 0 END)AS 'passNum',
