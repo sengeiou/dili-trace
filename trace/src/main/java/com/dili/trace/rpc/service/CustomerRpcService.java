@@ -98,12 +98,16 @@ public class CustomerRpcService {
                     query.setId(userId);
                     query.setMarketId(marketId);
                     BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
+
                     if (out.isSuccess()) {
                         return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
                             SessionData sessionData = new SessionData();
                             sessionData.setUserId(c.getId());
                             sessionData.setUserName(c.getName());
                             sessionData.setMarketId(marketId);
+                            this.firmRpcService.getFirmById(marketId).ifPresent(m->{
+                                sessionData.setMarketName(m.getName());
+                            });
                             sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
                             return sessionData;
                         }).findFirst();
