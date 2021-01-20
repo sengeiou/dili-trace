@@ -538,8 +538,8 @@ public class NewRegisterBillController {
         if (null != registerBill.getPieceWeight()) {
             modelMap.put("pieceWeight", registerBill.getPieceWeight().setScale(0, BigDecimal.ROUND_DOWN));
         }
-        if (null != registerBill.getTareWeight()) {
-            modelMap.put("tareWeight", registerBill.getTareWeight().setScale(0, BigDecimal.ROUND_DOWN));
+        if (null != registerBill.getTruckTareWeight()) {
+            modelMap.put("truckTareWeight", registerBill.getTruckTareWeight().setScale(0, BigDecimal.ROUND_DOWN));
         }
         if (null != registerBill.getUpStreamId()) {
             UpStream upStream = upStreamService.get(registerBill.getUpStreamId());

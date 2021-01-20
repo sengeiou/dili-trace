@@ -234,8 +234,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill.getPreserveType()==null){
             registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
         }
-        if(registerBill.getTareWeight()==null){
-            registerBill.setTareWeight(BigDecimal.ZERO);
+        if(registerBill.getTruckTareWeight()==null){
+            registerBill.setTruckTareWeight(BigDecimal.ZERO);
         }
         if(registerBill.getUnitPrice()==null){
             registerBill.setUnitPrice(BigDecimal.ZERO);
@@ -897,7 +897,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
         outputdto.setImageCertList(imageCertList);
         outputdto.setUpStreamName(upStreamName);
-        outputdto.setTareWeight(registerBill.getTareWeight());
         outputdto.setTruckTareWeight(registerBill.getTruckTareWeight());
 
         if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
