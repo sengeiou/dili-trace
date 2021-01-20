@@ -55,6 +55,7 @@ import java.util.function.Function;
 @AppAccess(role = Role.Manager)
 public class ManagerDetectRquestApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerDetectRquestApi.class);
+    private static final Integer MAX_NORMAL_RESULT_LENGTH = 10;
     @Autowired
     DetectRequestService detectRequestService;
     @Autowired
@@ -343,6 +344,7 @@ public class ManagerDetectRquestApi {
                 logger.error("上传检测任务结果失败无检测人员");
                 return BaseOutput.failure("没有对应的检测人员");
             }
+            input.setDetectResult(input.getDetectState());
             DetectResultEnum detectResultEnum= DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
                 return  new TraceBizException("检测结果不正确");
             });
@@ -350,9 +352,10 @@ public class ManagerDetectRquestApi {
             DetectTypeEnum detectTypeEnum= DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
                 return  new TraceBizException("检测类型不正确");
             });
-
-
-
+            if (StringUtils.length(input.getNormalResult()) > MAX_NORMAL_RESULT_LENGTH){
+                logger.error("标准值长度大于10");
+                return BaseOutput.failure("标准值长度大于10");
+            }
             if (input.getDetectTime() == null) {
                 logger.error("上传检测任务结果失败无检测时间");
                 return BaseOutput.failure("没有对应的检测时间");
