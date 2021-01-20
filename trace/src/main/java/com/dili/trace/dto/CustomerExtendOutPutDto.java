@@ -1,8 +1,12 @@
 package com.dili.trace.dto;
 
+import com.dili.customer.sdk.domain.Attachment;
 import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
+import one.util.streamex.StreamEx;
 
+import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -48,6 +52,18 @@ public class CustomerExtendOutPutDto {
     private List<VehicleInfoDto> vehicleInfoList;
 
     private List<AttachmentGroupInfo> attachmentGroupInfoList;
+    /**
+     * 营业执照
+     */
+    private Attachment businessLicenseAttachment;
+
+    public Attachment getBusinessLicenseAttachment() {
+        return businessLicenseAttachment;
+    }
+
+    public void setBusinessLicenseAttachment(Attachment businessLicenseAttachment) {
+        this.businessLicenseAttachment = businessLicenseAttachment;
+    }
 
     public List<AttachmentGroupInfo> getAttachmentGroupInfoList() {
         return attachmentGroupInfoList;
@@ -55,6 +71,11 @@ public class CustomerExtendOutPutDto {
 
     public void setAttachmentGroupInfoList(List<AttachmentGroupInfo> attachmentGroupInfoList) {
         this.attachmentGroupInfoList = attachmentGroupInfoList;
+        if (attachmentGroupInfoList != null && attachmentGroupInfoList.size() > 0) {
+            this.businessLicenseAttachment = StreamEx.of(attachmentGroupInfoList).filterBy(AttachmentGroupInfo::getCode, CustomerEnum.AttachmentType.营业执照.getCode())
+                    .flatCollection(AttachmentGroupInfo::getAttachmentList).findFirst().orElse(null);
+
+        }
     }
 
     public Integer getClientType() {
@@ -122,5 +143,10 @@ public class CustomerExtendOutPutDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Transient
+    public String getUserName() {
+        return this.name;
     }
 }
