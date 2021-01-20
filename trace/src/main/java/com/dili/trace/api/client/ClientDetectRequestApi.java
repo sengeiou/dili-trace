@@ -305,6 +305,13 @@ public class ClientDetectRequestApi {
         }
         try {
             RegisterBill bill = getBillByDetectRequestId(id);
+            if (bill == null) {
+                return BaseOutput.failure("数据不存在");
+            }
+            if (!DetectStatusEnum.NONE.equalsToCode(bill.getDetectStatus())
+                    && !DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(bill.getDetectStatus())) {
+                return BaseOutput.failure("状态已变更,不能退回");
+            }
             RegisterBill upBill = new RegisterBill();
             upBill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
             upBill.setId(bill.getId());
@@ -516,12 +523,12 @@ public class ClientDetectRequestApi {
                 logger.error("上传检测任务结果失败无检测人员");
                 return BaseOutput.failure("没有对应的检测人员");
             }
-            DetectResultEnum detectResultEnum= DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
-                return  new TraceBizException("检测结果不正确");
+            DetectResultEnum detectResultEnum = DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(() -> {
+                return new TraceBizException("检测结果不正确");
             });
 
-            DetectTypeEnum detectTypeEnum= DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
-                return  new TraceBizException("检测类型不正确");
+            DetectTypeEnum detectTypeEnum = DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(() -> {
+                return new TraceBizException("检测类型不正确");
             });
 
             if (input.getDetectTime() == null) {
