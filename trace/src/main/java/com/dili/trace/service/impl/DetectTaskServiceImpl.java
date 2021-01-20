@@ -165,11 +165,11 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         });
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setId(detectRequestItem.getId());
-        if (registerBillItem.getLatestDetectRecordId() != null) {
+        if (DetectResultEnum.FAILED.equalsToCode(detectRequestItem.getDetectResult())) {
             // 复检
             /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
-        } else {
+        } else if(DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())){
             // 第一次检测
             detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         }
@@ -199,6 +199,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         detectRequest.setDetectResult(detectResultEnum.getCode());
         detectRequest.setDetectorName(detectRecord.getDetectOperator());
         detectRequest.setDetectTime(detectRecord.getDetectTime());
+        detectRequest.setDetectType(detectRecord.getDetectType());
 
         this.detectRequestService.updateSelective(detectRequest);
 

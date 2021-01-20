@@ -206,8 +206,7 @@ public class ECommerceBillService {
 				}
 				this.billService.updateHasImage(item.getId(),imageCertList);
 				this.billService.updateHasImage(item.getId(),imageCertList);*/
-            updatable.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-            updatable.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
+            updatable.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
             updatable.setLatestDetectOperator(operatorUser.getName());
             updatable.setLatestDetectTime(new Date());
             updatable.setLatestPdResult("100%");
