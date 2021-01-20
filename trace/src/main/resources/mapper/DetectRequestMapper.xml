@@ -349,7 +349,7 @@
           <![CDATA[ AND r.sample_time <= #{sampleTimeEnd} ]]>
       </if>
       <if test="registType != null">
-           AND r.regist_type = #{registType}
+           AND b.regist_type = #{registType}
       </if>
       <if test="billTypes != null">
           AND b.bill_type
