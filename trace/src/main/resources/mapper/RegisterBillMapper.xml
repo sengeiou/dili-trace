@@ -1405,6 +1405,7 @@
     detect_record.`normal_result` normalResult,
     detect_record.`pd_result` pdResult,
     b.`is_deleted`,
+    b.`is_checkin`,
     b.`source_name`,
     b.`source_id`
     FROM register_bill b
