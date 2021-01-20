@@ -86,6 +86,7 @@ public class ClientUserStoreApi {
             input.setUserName(sessionData.getUserName());
             input.setMarketId(sessionData.getMarketId());
             input.setMarketName(sessionData.getMarketName());
+            logger.debug("input={}",input);
             this.userStoreService.insertOrUpdateStore(input);
             return BaseOutput.success("success");
         } catch (TraceBizException e) {

@@ -35,11 +35,11 @@
                 <input id="originName" name="originName" class="form-control"   for="originId" />
             </div>
 
-            <div class="form-group col">
+            <!--div class="form-group col">
                 <label for="detectType">检测类型</label>
                 <select id="detectType" name="detectType" class="form-control"></select>
                 <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
-            </div>
+            </div-->
 
             <div class="form-group col">
                 <label for="detectResultSelect">检测结果</label>
@@ -250,12 +250,12 @@
         </div>
         <table id="registerBillGrid" data-toggle="table" data-title="进场报备列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
-               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="created" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="b.id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
             <tr>
                 <th data-checkbox="true"></th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="created" data-sortable="true"   data-sort-name="b.created" data-align="center" data-provider="datetimeProvider">
                     报备时间
                 </th>
                 <th data-field="code" data-sortable="true" data-align="center">

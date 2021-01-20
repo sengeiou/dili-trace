@@ -1,5 +1,7 @@
 package com.dili.trace.controller;
 
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -14,6 +16,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RUserUpstreamDto;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.RUserUpStreamService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.util.MarketUtil;
@@ -55,6 +58,8 @@ public class UpStreamController {
     private UpStreamService upStreamService;
     @Autowired
     private RUserUpStreamService rUserUpStreamService;
+    @Autowired
+    private CustomerRpc customerRpc;
 
     /**
      * 跳转到index页面
@@ -150,11 +155,18 @@ public class UpStreamController {
         List<RUserUpstream> upstreamsRefs = rUserUpStreamService.listByExample(rUserUpstreamDto);
         Map<Long, String> upUserMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(upstreamsRefs)) {
+            List<CustomerExtendDto> customerExtendDtoList = new ArrayList<>();
             //查询用户集合
-            List<User> userList = userRpc.listUserByIds(upstreamsRefs.stream().map(o -> String.valueOf(o.getUserId())).collect(Collectors.toList())).getData();
-            if (CollectionUtils.isNotEmpty(userList)) {
+            upstreamsRefs.forEach(u -> {
+                BaseOutput<CustomerExtendDto> customerExtendDtoBaseOutput = customerRpc.get(u.getUserId(), MarketUtil.returnMarket());
+                if (!customerExtendDtoBaseOutput.isSuccess()){
+                    throw new RuntimeException("查询客户失败");
+                }
+                customerExtendDtoList.add(customerExtendDtoBaseOutput.getData());
+            });
+            if (CollectionUtils.isNotEmpty(customerExtendDtoList)) {
                 //用户id，name组成用户map
-                Map<Long, String> userMap = userList.stream().collect(Collectors.toMap(User::getId, User::getUserName, (a, b) -> a));
+                Map<Long, String> userMap = customerExtendDtoList.stream().collect(Collectors.toMap(CustomerExtendDto::getId, CustomerExtendDto::getName, (a, b) -> a));
                 //根据上游企业id 分组 用户id，组成按上游企业id分组的用户集合
                 Map<Long, List<RUserUpstream>> upStreamUserMap = upstreamsRefs.stream().collect(Collectors.groupingBy(RUserUpstream::getUpstreamId));
                 //遍历上游企业集合，将用户map名称与上游企业用户集合关联

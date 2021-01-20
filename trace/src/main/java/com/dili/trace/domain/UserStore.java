@@ -119,4 +119,19 @@ public class UserStore extends BaseDomain {
     public void setMarketName(String marketName) {
         this.marketName = marketName;
     }
+
+
+    @Override
+    public String toString() {
+        return "UserStore{" +
+                "id=" + id +
+                ", storeName='" + storeName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", marketId=" + marketId +
+                ", marketName='" + marketName + '\'' +
+                ", userId=" + userId +
+                ", created=" + created +
+                ", modified=" + modified +
+                '}';
+    }
 }

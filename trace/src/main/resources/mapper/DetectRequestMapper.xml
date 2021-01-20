@@ -54,7 +54,7 @@
   </select>
 
     <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestOutDto">
-        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no,b.bill_type
+        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.source_name tallyAreaNo,b.bill_type
         ,b.weight,b.weight_unit weightUnit,d.*
         FROM detect_request d
         JOIN register_bill b ON d.id=b.detect_request_id
@@ -189,7 +189,7 @@
     </select>
 
   <select id="queryListBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceListOutputDto">
-      SELECT b.id billId,b.name,b.source_name tally_area_no,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
+      SELECT b.id billId,b.name,b.source_name,b.source_name tallyAreaNo,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
       FROM detect_request r
       JOIN register_bill b ON (r.id = b.detect_request_id)
       WHERE 1=1
@@ -255,14 +255,14 @@
   <select id="queryListByExample" parameterType="com.dili.trace.dto.DetectRequestWithBillDto" resultType="com.dili.trace.dto.DetectRequestWithBillDto">
       SELECT r.id, b.id billId, b.`created` billCreated, b.`code`, b.`verify_status`, b.`detect_status`,b.`bill_type`,b.`name`,b.`corporate_name`,
       b.`plate`, b.`product_id`,b.`product_name`,b.`product_alias_name`, b.`brand_id`, b.`brand_name`, b.`weight`, b.`weight_unit`, b.`origin_id`,
-      b.`origin_name`,b.`has_detect_report`, b.`has_origin_certifiy`,b.`register_source`,b.`source_name`,
+      b.`origin_name`,b.`has_detect_report`, b.`has_origin_certifiy`,b.`register_source`,b.`source_name`,b.regist_type,
       r.`created`, r.`confirm_time`, r.`sample_time`, b.`sample_code`, r.`detect_time`,r.`detect_type`, r.`detect_result`, r.`detector_id`,
       r.`detector_name`, b.`has_handle_result`, b.`is_deleted`, r.`detect_code`,
       b.check_sheet_id,b.is_print_checksheet,r.detect_reservation_time
       FROM register_bill b
       left JOIN detect_request r ON (r.id = b.detect_request_id)
-      left join trade_detail on b.id=trade_detail.bill_id
-      left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
+      LEFT JOIN detect_record ON detect_record.detect_request_id = r.id
+      LEFT JOIN checkinout_record ON checkinout_record.bill_id =r.id and checkinout_record.`inout` =10 and checkinout_record.status =10
       WHERE 1=1
       <if test="billCreatedStart != null">
           <![CDATA[ AND b.created >= #{billCreatedStart} ]]>
@@ -349,7 +349,7 @@
           <![CDATA[ AND r.sample_time <= #{sampleTimeEnd} ]]>
       </if>
       <if test="registType != null">
-           AND r.regist_type = #{registType}
+           AND b.regist_type = #{registType}
       </if>
       <if test="billTypes != null">
           AND b.bill_type
@@ -357,7 +357,5 @@
               #{billType}
           </foreach>
       </if>
-      group by b.id
-      order by  b.created desc
   </select>
 </mapper>
