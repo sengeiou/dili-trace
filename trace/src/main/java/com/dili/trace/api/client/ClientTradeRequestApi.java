@@ -377,7 +377,11 @@ public class ClientTradeRequestApi {
                 dto.setId(us.getUserId());
                 dto.setMarketId(us.getMarketId());
                 dto.setMarketName(us.getMarketName());
-                dto.setAttachmentGroupInfoList(this.customerRpcService.findCustomerByIdOrEx(us.getUserId(),us.getMarketId()).getAttachmentGroupInfoList());
+                CustomerExtendDto cusDto=this.customerRpcService.findCustomerByIdOrEx(us.getUserId(),us.getMarketId());
+                if(cusDto!=null){
+                    dto.setOrganizationType(cusDto.getOrganizationType());
+                    dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
+                }
                 return dto;
             }).append(list).distinct(CustomerExtendOutPutDto::getId).toList();
             return JSON.toJSONString(BaseOutput.successData(data), SerializerFeature.DisableCircularReferenceDetect);
@@ -411,8 +415,8 @@ public class ClientTradeRequestApi {
                     customerOutput.setMarketName(this.sessionContext.getSessionData().getMarketName());
                     customerOutput.setId(c.getId());
                     customerOutput.setName(c.getName());
+                    customerOutput.setOrganizationType(c.getOrganizationType());
                     customerOutput.setAttachmentGroupInfoList(c.getAttachmentGroupInfoList());
-
                     customerOutput.setPhone(c.getContactsPhone());
                     customerOutput.setClientType(clientTypeEnum.getCode());
 

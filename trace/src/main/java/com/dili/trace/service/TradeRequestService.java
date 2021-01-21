@@ -80,6 +80,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 返回真实mapper
+     *
      * @return
      */
     public TradeRequestMapper getActualDao() {
@@ -143,10 +144,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     //下单消息
                     String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.toName(request.getWeightUnit()) + "订单编号:" + request.getCode();
-                    addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName,request.getSellerMarketId());
+                    addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName, request.getSellerMarketId());
                     // 卖家下单
                     userQrHistoryService.createUserQrHistoryForOrder(request.getId(), buyerId);
-                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY, marketId,optUser);
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY, marketId, optUser);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
         StreamEx.of(list).forEach(td -> {
@@ -178,19 +179,19 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerUserIdList.size() != 1) {
             throw new TraceBizException("参数错误");
         }
-        Long sellerUserId=sellerUserIdList.get(0);
+        Long sellerUserId = sellerUserIdList.get(0);
 
-        logger.debug("buyerId={},sellerUserId={}",buyerId,sellerUserId);
+        logger.debug("buyerId={},sellerUserId={}", buyerId, sellerUserId);
         List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserId, null, buyerId, batchStockInputList, marketId))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL, marketId,optUser);
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL, marketId, optUser);
                 }).toList();
 
         //下单消息
         tradeRequests.stream().forEach(request ->
                 {
                     String productName = "商品名称:" + request.getProductName() + ",  重量:" + request.getTradeWeight() + "(" + WeightUnitEnum.toName(request.getWeightUnit()) + "),  订单编号:" + request.getCode();
-                    addMessage(buyerId, sellerUserIdList.get(0), request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), request.getCode(), productName,request.getSellerMarketId());
+                    addMessage(buyerId, sellerUserIdList.get(0), request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), request.getCode(), productName, request.getSellerMarketId());
                 }
         );
         return tradeRequests;
@@ -254,6 +255,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 查询下一个code
+     *
      * @return
      */
     private String getNextCode() {
@@ -358,7 +360,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         // 向UAP同步库存
         if (TradeOrderTypeEnum.BUY.equals(tradeOrderTypeEnum)) {
             // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
-            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, marketId,optUser);
+            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, marketId, optUser);
         }
 
         // BatchStock batchStock = new BatchStock();
@@ -643,6 +645,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 为用户增加上下游
+     *
      * @param user
      * @return
      */
@@ -667,6 +670,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 查询分页数据
+     *
      * @param dto
      * @param userId
      * @return
@@ -695,6 +699,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 增加查询条件
+     *
      * @param tradeRequest
      * @param userId
      * @return
@@ -708,6 +713,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 处理购买请求
+     *
      * @param handleDto
      */
     @Transactional(rollbackFor = Exception.class)
@@ -780,7 +786,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
             String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.toName(tradeRequest.getWeightUnit()) + "),  订单编号:" + tradeRequest.getCode();
-            addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName,tradeRequest.getSellerMarketId());
+            addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName, tradeRequest.getSellerMarketId());
             userQrHistoryService.createUserQrHistoryForOrder(tradeRequest.getId(), tradeRequest.getBuyerId());
         }
     }
@@ -792,7 +798,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param messageType
      * @param productNames
      */
-    private void addMessage(Long sendUserId, Long receiUserId, Long businessId, Integer businessType, Integer messageType, String tradeNo, String productNames,Long marketId) {
+    private void addMessage(Long sendUserId, Long receiUserId, Long businessId, Integer businessType, Integer messageType, String tradeNo, String productNames, Long marketId) {
         // 增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(sendUserId);
@@ -808,11 +814,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         sellmap.put("created", DateUtils.format(new Date(), "yyyy年MM月dd日 HH:mm:ss"));
         sellmap.put("tradeInfo", productNames);
         messageInputDto.setSmsContentParam(sellmap);
-        messageService.addMessage(messageInputDto,marketId);
+        messageService.addMessage(messageInputDto, marketId);
     }
 
     /**
      * 查询 历史数据
+     *
      * @param buyerId
      * @return
      */
@@ -827,12 +834,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
-            com.dili.customer.sdk.domain.Customer cust= this.customerRpcService.findCustByIdOrEx(td);
+
+            com.dili.customer.sdk.domain.Customer cust = this.customerRpcService.findCustByIdOrEx(td);
             if (cust != null) {
                 outPutDto.setUserId(td);
+                outPutDto.setUserName(cust.getName());
+                outPutDto.setOrganizationType(cust.getOrganizationType());
+
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);
-                outPutDto.setUserName(cust.getName());
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setUserName(userStoreExists.getStoreName());
