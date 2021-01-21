@@ -868,7 +868,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeRequest> tradeRequests = this.listByExample(request);
         List<Long> sellerIds = StreamEx.of(tradeRequests)
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
-        List<UserOutput> outPutDtoList = new ArrayList<>();
 
 
         return StreamEx.of(tradeRequests).nonNull().map(tr -> {
@@ -886,7 +885,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 });
 
                 UserStore userStore = new UserStore();
-                userStore.setUserId(sellerId);
+                userStore.setUserId(sellerId);:
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setUserName(userStoreExists.getStoreName());
@@ -894,7 +893,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 return outPutDto;
 
             }).orElse(null);
-        }).nonNull().toList();
+        }).nonNull().distinct(UserOutput::getUserId).toList();
     }
 
     /**
