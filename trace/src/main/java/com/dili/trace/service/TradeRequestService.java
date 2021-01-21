@@ -885,7 +885,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 });
 
                 UserStore userStore = new UserStore();
-                userStore.setUserId(sellerId);:
+                userStore.setUserId(sellerId);
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setUserName(userStoreExists.getStoreName());
