@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
@@ -359,7 +361,7 @@ public class ClientTradeRequestApi {
      * @return 卖家列表
      */
     @RequestMapping(value = "/listSeller.api", method = {RequestMethod.POST})
-    public BaseOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryInput query) {
+    public String listSeller(@RequestBody CustomerQueryInput query) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             query.setPage(1);
@@ -378,12 +380,12 @@ public class ClientTradeRequestApi {
                 dto.setAttachmentGroupInfoList(this.customerRpcService.findCustomerByIdOrEx(us.getUserId(),us.getMarketId()).getAttachmentGroupInfoList());
                 return dto;
             }).append(list).distinct(CustomerExtendOutPutDto::getId).toList();
-            return BaseOutput.successData(data);
+            return JSON.toJSONString(BaseOutput.successData(data), SerializerFeature.DisableCircularReferenceDetect);
         } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
+            return JSON.toJSONString(BaseOutput.failure(e.getMessage()), SerializerFeature.DisableCircularReferenceDetect);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
+            return JSON.toJSONString(BaseOutput.failure("操作失败：服务端出错"), SerializerFeature.DisableCircularReferenceDetect);
         }
     }
 
