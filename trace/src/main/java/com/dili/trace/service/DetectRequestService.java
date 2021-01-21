@@ -391,7 +391,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("参数错误");
         }
         RegisterBill billItem = billService.getAvaiableBill(registerBill.getId()).orElseThrow(()->{
-            return new TraceBizException("登记单不存在");
+            throw new TraceBizException("登记单不存在");
         });
         if(!DetectStatusEnum.NONE.equalsToCode(billItem.getDetectStatus())
         &&!DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(billItem.getDetectStatus())) {

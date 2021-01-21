@@ -738,7 +738,7 @@
        (detect_request.designated_name=#{exeMachineNo} and register_bill.detect_status=40)
        or register_bill.detect_status=30
       )
-      order by register_bill.bill_type DESC ,register_bill.id ASC
+      order by register_bill.bill_type desc,register_bill.id asc
        limit #{taskCount}
   </select>
 
