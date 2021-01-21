@@ -795,7 +795,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
         // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
         if (!DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            throw new TraceBizException("操作失败，审核状态已改变！");
+            throw new TraceBizException("操作失败，检测状态已改变！");
         }
         if (registerBill.getDetectRequestId() == null) {
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
