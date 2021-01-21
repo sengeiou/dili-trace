@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -17,6 +18,7 @@ import com.dili.trace.dto.RUserUpstreamDto;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.service.MarketService;
 import com.dili.trace.service.RUserUpStreamService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.util.MarketUtil;
@@ -194,14 +196,16 @@ public class UpStreamController {
      * @return
      */
     private Set<Long> buildUpstreamIdsByLikeName(String likeUserName) {
-        UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
-        userListDto.setLikeName(likeUserName);
-        UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
-        userQuery.setUserName(likeUserName);
-        BaseOutput<List<User>> baseOutput = userRpc.listByExample(userQuery);
+        CustomerQueryInput customerQueryInput = new CustomerQueryInput();
+        customerQueryInput.setName(likeUserName);
+        customerQueryInput.setMarketId(MarketUtil.returnMarket());
+        BaseOutput<List<CustomerExtendDto>> customerExtendDtoOutput = customerRpc.list(customerQueryInput);
+        if (!customerExtendDtoOutput.isSuccess()){
+            throw new RuntimeException("客户查询错误");
+        }
         List<Long> userIds = new ArrayList<>(16);
-        if (null != baseOutput && null != baseOutput.getData()) {
-            userIds = baseOutput.getData().stream().map(o -> o.getId()).collect(Collectors.toList());
+        if (null != customerExtendDtoOutput && null != customerExtendDtoOutput.getData()) {
+            userIds = customerExtendDtoOutput.getData().stream().map(o -> o.getId()).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(userIds)) {
             return null;
