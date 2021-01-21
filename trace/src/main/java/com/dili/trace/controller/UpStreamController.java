@@ -232,9 +232,12 @@ public class UpStreamController {
         List<String> userIds = rUserUpStreamService.list(rUserUpstream).stream().map(o -> String.valueOf(o.getUserId()))
                 .collect(Collectors.toList());
         if (!userIds.isEmpty()) {
-            UserQuery userQuery = DTOUtils.newInstance(UserQuery.class);
-            userQuery.setIds(userIds);
-            return BaseOutput.success().setData(userRpc.listByExample(userQuery).getData());
+            List<CustomerExtendDto> customerExtendDtoList = new ArrayList<>();
+            userIds.forEach(u ->{
+                CustomerExtendDto customerExtendDto = customerRpc.get(Long.valueOf(u), MarketUtil.returnMarket()).getData();
+                customerExtendDtoList.add(customerExtendDto);
+            });
+            return BaseOutput.success().setData(customerExtendDtoList);
         }
         return BaseOutput.success().setData(new ArrayList<>());
     }

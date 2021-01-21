@@ -1,9 +1,9 @@
 package com.dili.trace.dto;
 
-import java.util.List;
-
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.ImageCert;
+
+import java.util.List;
 
 public class CreateListBillParam {
     /**
@@ -18,10 +18,7 @@ public class CreateListBillParam {
      * 登记来源
      */
     private Integer registerSource;
-//    /**
-//     * 理货区编号
-//     */
-//    private String tallyAreaNo;
+
     /**
      * 交易类型id
      */
@@ -127,14 +124,6 @@ public class CreateListBillParam {
     public void setRegisterSource(Integer registerSource) {
         this.registerSource = registerSource;
     }
-
-//    public String getTallyAreaNo() {
-//        return tallyAreaNo;
-//    }
-//
-//    public void setTallyAreaNo(String tallyAreaNo) {
-//        this.tallyAreaNo = tallyAreaNo;
-//    }
 
     public String getSourceId() {
         return sourceId;

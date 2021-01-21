@@ -6,14 +6,13 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
-import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.input.CommissionBillInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -21,9 +20,9 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.CommissionBillService;
-import com.dili.trace.service.UserService;
 import com.dili.trace.util.BeanMapUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -57,6 +56,8 @@ public class ClientCommissionBillApi {
     BillService billService;
     @Autowired
     LoginSessionContext sessionContext;
+    @Autowired
+    CustomerRpcService customerRpcService;
 
     /**
      * 通过小程序接口，用户创建委托单
@@ -81,7 +82,8 @@ public class ClientCommissionBillApi {
             }
             List<RegisterBill> inputBillList = StreamEx.of(inputList).map(input -> {
                 logger.info("循环保存登记单:" + JSON.toJSONString(input));
-                RegisterBill registerBill = input.build(sessionData.getUserId(),sessionData.getUserName(),sessionData.getMarketId());
+                CustomerExtendDto customer = this.customerRpcService.findApprovedCustomerByIdOrEx(userId, sessionData.getMarketId());
+                RegisterBill registerBill = input.build(customer, sessionData.getMarketId());
                 if (registerBill.getRegisterSource() == null) {
                     // 小程序默认理货区
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
