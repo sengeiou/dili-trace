@@ -264,54 +264,6 @@ public class CreateRegisterBillInputDto {
      */
     private List<ImageCert> imageCertList;
 
-    public RegisterBill build(Long userId, String userName, Long marketId) {
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setId(this.getBillId());
-        registerBill.setRegistType(this.getRegistType());
-        // registerBill.setOperatorName(user.getName());
-        // registerBill.setOperatorId(user.getId());
-        registerBill.setUserId(userId);
-        registerBill.setName(userName);
-        registerBill.setMarketId(marketId);
-        registerBill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
-        registerBill.setHasDetectReport(YesOrNoEnum.NO.getCode());
-        registerBill.setHasHandleResult(YesOrNoEnum.NO.getCode());
-//        registerBill.setTallyAreaNo(user.getTallyAreaNos());
-//        registerBill.setAddr(user.getAddr());
-//        registerBill.setIdCardNo(user.getCardNo());
-//        registerBill.setPhone(user.getPhone());
-//        registerBill.setThirdPartyCode(user.getThirdPartyCode());
-        registerBill.setWeight(this.getWeight());
-        registerBill.setWeightUnit(this.getWeightUnit());
-        registerBill.setOriginId(this.getOriginId());
-        registerBill.setOriginName(this.getOriginName());
-        registerBill.setProductId(this.getProductId());
-        registerBill.setProductName(this.getProductName());
-        registerBill.setSpecName(StringUtils.trim(this.getSpecName()));
-        registerBill.setPreserveType(this.getPreserveType());
-        registerBill.setBillType(this.getBillType());
-        registerBill.setTruckType(this.getTruckType());
-        registerBill.setBrandId(this.getBrandId());
-        registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
-        registerBill.setPlate(this.getPlate());
-        registerBill.setUpStreamId(this.getUpStreamId());
-        registerBill.setRegisterHeadCode(this.getRegisterHeadCode());
-        registerBill.setMeasureType(this.getMeasureType());
-        registerBill.setPieceNum(this.getPieceNum());
-        registerBill.setPieceWeight(this.getPieceWeight());
-        registerBill.setArea(this.getArea());
-        registerBill.setPackaging(this.getPackaging());
-        registerBill.setRemark(this.getRemark());
-        registerBill.setVerifyStatus(this.getVerifyStatus());
-        registerBill.setReason(this.getReason());
-        registerBill.setIsPrintCheckSheet(this.getIsPrintCheckSheet());
-        registerBill.setTruckTareWeight(this.getTruckTareWeight());
-//        registerBill.setTareWeight(this.getTareWeight());
-        registerBill.setUnitPrice(this.getUnitPrice());
-//        registerBill.setOrderType(this.getOrderType());
-        return registerBill;
-    }
-
     public RegisterBill build(CustomerExtendDto user, Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
