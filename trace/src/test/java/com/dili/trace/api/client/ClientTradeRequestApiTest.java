@@ -32,7 +32,7 @@ public class ClientTradeRequestApiTest extends AutoWiredBaseTest {
     public void listSeller() {
         CustomerQueryInput input = new CustomerQueryInput();
         input.setKeyword("成都");
-        BaseOutput<List<CustomerExtendOutPutDto>> out = this.tradeRequestApi.listSeller(input);
+        String out = this.tradeRequestApi.listSeller(input);
         System.out.println(out);
 
     }
