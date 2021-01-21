@@ -75,8 +75,8 @@ public class CreateRegisterBillInputDto {
     /**
      * 皮重
      */
-//    @ApiModelProperty(value = "皮重")
-//    private BigDecimal tareWeight;
+    @ApiModelProperty(value = "皮重")
+    private BigDecimal truckTareWeight;
 
     /**
      * 单价
@@ -305,6 +305,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setVerifyStatus(this.getVerifyStatus());
         registerBill.setReason(this.getReason());
         registerBill.setIsPrintCheckSheet(this.getIsPrintCheckSheet());
+        registerBill.setTruckTareWeight(this.getTruckTareWeight());
 //        registerBill.setTareWeight(this.getTareWeight());
         registerBill.setUnitPrice(this.getUnitPrice());
 //        registerBill.setOrderType(this.getOrderType());
@@ -364,6 +365,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setVerifyStatus(this.getVerifyStatus());
         registerBill.setReason(this.getReason());
         registerBill.setIsPrintCheckSheet(this.getIsPrintCheckSheet());
+        registerBill.setTruckTareWeight(this.getTruckTareWeight());
 //        registerBill.setTareWeight(this.getTareWeight());
         registerBill.setUnitPrice(this.getUnitPrice());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
@@ -672,13 +674,13 @@ public class CreateRegisterBillInputDto {
         this.corporateName = corporateName;
     }
 
-//    public BigDecimal getTareWeight() {
-//        return tareWeight;
-//    }
-//
-//    public void setTareWeight(BigDecimal tareWeight) {
-//        this.tareWeight = tareWeight;
-//    }
+    public BigDecimal getTruckTareWeight() {
+        return truckTareWeight;
+    }
+
+    public void setTruckTareWeight(BigDecimal truckTareWeight) {
+        this.truckTareWeight = truckTareWeight;
+    }
 
     public BigDecimal getUnitPrice() {
         return unitPrice;
