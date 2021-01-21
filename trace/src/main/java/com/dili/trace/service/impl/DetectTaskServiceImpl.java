@@ -3,11 +3,14 @@ package com.dili.trace.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.redis.service.RedisDistributedLock;
+import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
@@ -17,6 +20,8 @@ import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.DetectTaskService;
+import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,28 +46,62 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     private DetectRecordService detectRecordService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    RedisDistributedLock redisDistributedLock;
 
-    private List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount,Long marketId) {
+    private List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount, Long marketId) {
         LOGGER.info(">>>获得检测数据-参数:findByExeMachineNo(exeMachineNo={},taskCount={})", exeMachineNo, taskCount);
-        this.registerBillMapper.taskByExeMachineNo(exeMachineNo, taskCount,marketId);
-        this.registerBillMapper.taskByExeMachineNoForRequest(exeMachineNo, taskCount,marketId);
-        RegisterBill domain = new RegisterBill();
-        domain.setExeMachineNo(exeMachineNo);
-        domain.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
-        domain.setMarketId(marketId);
-        domain.setPage(1);
-        domain.setRows(taskCount);
-        domain.setSort("bill_type,id");
-        domain.setOrder("DESC,ASC");
-        List<RegisterBill> list = this.billService.listPageByExample(domain).getDatas();
+        String lockKey = "lock_trace_getTask";
         try {
-            LOGGER.info(">>>获得检测数据-返回值:findByExeMachineNo({})", JSON.toJSONString(list));
+            redisDistributedLock.tryGetLockSync(lockKey, lockKey, 10);
+            List<DetectRequest> detectRequestList = this.registerBillMapper.selectDetectingOrWaitDetectBillId(exeMachineNo, taskCount, marketId);
+            if (!detectRequestList.isEmpty()) {
+                List<Long> billIdList = StreamEx.of(detectRequestList).map(DetectRequest::getBillId).toList();
+                List<Long> designateNameBlankBillIdList = StreamEx.of(detectRequestList).filter(dr->{
+                    return StringUtils.isBlank(dr.getDesignatedName());
+                }).map(DetectRequest::getBillId).toList();
+
+                RegisterBill billDomain = new RegisterBill();
+                billDomain.setExeMachineNo(exeMachineNo);
+                billDomain.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
+
+                RegisterBillDto billCondition = new RegisterBillDto();
+                billCondition.setIdList(billIdList);
+                billCondition.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+                this.billService.updateSelectiveByExample(billDomain, billCondition);
+
+
+
+                if(!designateNameBlankBillIdList.isEmpty()){
+                    DetectRequest rqDomain = new DetectRequest();
+                    rqDomain.setDesignatedName(exeMachineNo);
+
+                    DetectRequestQueryDto rqCondition = new DetectRequestQueryDto();
+                    rqCondition.setBillIdList(designateNameBlankBillIdList);
+                    this.detectRequestService.updateSelectiveByExample(rqDomain, rqCondition);
+                }
+
+
+
+                RegisterBillDto domain = new RegisterBillDto();
+                domain.setIdList(billIdList);
+                domain.setSort("bill_type,id");
+                domain.setOrder("DESC,ASC");
+                List<RegisterBill> list = this.billService.listByExample(domain);
+                try {
+                    LOGGER.info(">>>获得检测数据-返回值:findByExeMachineNo({})", JSON.toJSONString(list));
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+                return list;
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+        } finally {
+            redisDistributedLock.releaseLock(lockKey, lockKey);
         }
 
-        return list;
-
+        return Lists.newArrayList();
     }
 
     @Transactional
@@ -70,7 +109,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     public List<DetectTaskApiOutputDto> findByExeMachineNo(TaskGetParam taskGetParam) {
         String exeMachineNo = taskGetParam.getExeMachineNo();
         int taskCount = taskGetParam.getPageSize();
-        List<RegisterBill> billList = this.findByExeMachineNo(exeMachineNo, taskCount,taskGetParam.getMarketId());
+        List<RegisterBill> billList = this.findByExeMachineNo(exeMachineNo, taskCount, taskGetParam.getMarketId());
         return DetectTaskApiOutputDto.build(billList);
     }
 
@@ -124,19 +163,19 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             LOGGER.error("上传检测任务结果失败，检测请求不存在");
             return new TraceBizException("检测请求不存在");
         });
-        DetectRequest detectRequest=new DetectRequest();
+        DetectRequest detectRequest = new DetectRequest();
         detectRequest.setId(detectRequestItem.getId());
-        if (registerBillItem.getLatestDetectRecordId() != null) {
+        if (DetectResultEnum.FAILED.equalsToCode(detectRequestItem.getDetectResult())) {
             // 复检
             /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
-        } else {
+        } else if(DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())){
             // 第一次检测
             detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         }
-        if(DetectTypeEnum.NEW.equalsToCode(detectRequestItem.getDetectType())&&DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())){
+        if (DetectTypeEnum.NEW.equalsToCode(detectRequestItem.getDetectType()) && DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())) {
             detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
-        }else if(DetectResultEnum.FAILED.equalsToCode(detectRequestItem.getDetectResult())){
+        } else if (DetectResultEnum.FAILED.equalsToCode(detectRequestItem.getDetectResult())) {
             detectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
         }
 
@@ -146,7 +185,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         detectRecord.setModified(new Date());
         detectRecordService.saveDetectRecord(detectRecord);
 
-        RegisterBill registerBill=new RegisterBill();
+        RegisterBill registerBill = new RegisterBill();
         registerBill.setId(registerBillItem.getBillId());
         registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 //		registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
@@ -156,10 +195,11 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         registerBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 
-        DetectResultEnum detectResultEnum=  DetectResultEnum.fromCode(detectRecord.getDetectState()).orElse(null);
+        DetectResultEnum detectResultEnum = DetectResultEnum.fromCode(detectRecord.getDetectState()).orElse(null);
         detectRequest.setDetectResult(detectResultEnum.getCode());
         detectRequest.setDetectorName(detectRecord.getDetectOperator());
         detectRequest.setDetectTime(detectRecord.getDetectTime());
+        detectRequest.setDetectType(detectRecord.getDetectType());
 
         this.detectRequestService.updateSelective(detectRequest);
 
