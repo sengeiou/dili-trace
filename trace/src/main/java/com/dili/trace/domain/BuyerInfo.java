@@ -22,7 +22,7 @@ public class BuyerInfo{// extends BaseDomain {
 
     /**
      * 买家类型
-     * @link{BuyerTypeEnum}
+     * {@link com.dili.trace.enums.BuyerTypeEnum}
      */
     @Column(name = "`buyer_type`")
     private Integer buyerType;
