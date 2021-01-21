@@ -12,7 +12,8 @@
       register_bill.bill_type,
       register_bill.truck_type,
       register_bill.regist_type,
-      register_bill.is_deleted
+      register_bill.is_deleted,
+      register_bill.detect_status
       from trade_detail 
       left join register_bill on trade_detail.bill_id =register_bill.id 
       where buyer_id=#{userId}
@@ -54,7 +55,8 @@
       register_bill.bill_type,
       register_bill.truck_type,
       register_bill.regist_type,
-      register_bill.is_deleted
+      register_bill.is_deleted,
+      register_bill.detect_status
       from register_bill
       where user_id=#{userId} and id not in(
           select bill_id from trade_detail
