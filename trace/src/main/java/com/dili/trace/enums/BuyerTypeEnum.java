@@ -21,6 +21,11 @@ public enum BuyerTypeEnum {
      */
     DOWNSTREAM_BUYER(2, "下游买家"),
 
+    /**
+     * 其他买家
+     */
+    OTHERS(999, "其他买家"),
+
     ;;
 
     private String name;

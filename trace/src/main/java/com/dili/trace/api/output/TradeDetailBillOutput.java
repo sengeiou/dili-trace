@@ -25,6 +25,15 @@ public class TradeDetailBillOutput {
     private Integer truckType;
     private Integer billType;
     private Integer registType;
+    private Integer detectStatus;
+
+    public Integer getDetectStatus() {
+        return detectStatus;
+    }
+
+    public void setDetectStatus(Integer detectStatus) {
+        this.detectStatus = detectStatus;
+    }
 
     @Transient
     public String getRegistTypeName() {

@@ -3,7 +3,6 @@ package com.dili.trace.api.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import com.alibaba.fastjson.JSON;
@@ -21,20 +20,18 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.*;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.TradeDto;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.VehicleInfoDto;
-import com.dili.trace.dto.query.SellerQueryDto;
 import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
+import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
@@ -221,8 +218,56 @@ public class ClientTradeRequestApi {
             Long sellerId = sessionData.getUserId();
             Long marketId = sessionData.getMarketId();
             logger.info("seller id in session:{}", sellerId);
-            List<TradeRequest> list = this.tradeRequestService.createSellRequest(sellerId, inputDto.getBuyerId(),
-                    inputDto.getBatchStockList(), marketId, sessionData.getOptUser());
+
+            TradeDto tradeDto = new TradeDto();
+            tradeDto.setMarketId(marketId);
+            tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
+
+            tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
+            tradeDto.getSeller().setSellerId(inputDto.getSellerId());
+
+            List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
+                    inputDto.getBatchStockList(), sessionData.getOptUser());
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询数据出错");
+        }
+
+    }
+
+    /**
+     * 创建销售请求
+     *
+     * @param inputDto
+     * @return
+     */
+    @ApiOperation(value = "创建分销请求")
+    @RequestMapping(value = "/createSeperateProductRequest.api", method = RequestMethod.POST)
+    public BaseOutput<?> createSeperateProductRequest(@RequestBody TradeRequestListInput inputDto) {
+        if (inputDto == null || inputDto.getBuyerId() == null || inputDto.getBatchStockList() == null
+                || inputDto.getBatchStockList().isEmpty()) {
+            return BaseOutput.failure("参数错误");
+        }
+
+        try {
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long sellerId = sessionData.getUserId();
+            Long marketId = sessionData.getMarketId();
+            logger.info("seller id in session:{}", sellerId);
+
+            TradeDto tradeDto = new TradeDto();
+            tradeDto.setMarketId(marketId);
+            tradeDto.setTradeOrderType(TradeOrderTypeEnum.SEPREATE);
+
+            tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
+            tradeDto.getSeller().setSellerId(inputDto.getSellerId());
+
+            List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
+                    inputDto.getBatchStockList(), sessionData.getOptUser());
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -377,9 +422,9 @@ public class ClientTradeRequestApi {
                 dto.setId(us.getUserId());
                 dto.setMarketId(us.getMarketId());
                 dto.setMarketName(us.getMarketName());
-                this.customerRpcService.findCustomerById(us.getUserId(),us.getMarketId()).ifPresent(cusDto->{
-                        dto.setOrganizationType(cusDto.getOrganizationType());
-                        dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
+                this.customerRpcService.findCustomerById(us.getUserId(), us.getMarketId()).ifPresent(cusDto -> {
+                    dto.setOrganizationType(cusDto.getOrganizationType());
+                    dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
                 });
 
                 return dto;
@@ -420,7 +465,7 @@ public class ClientTradeRequestApi {
                     customerOutput.setPhone(c.getContactsPhone());
                     customerOutput.setClientType(clientTypeEnum.getCode());
 
-                   this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId).ifPresent(cardInfo -> {
+                    this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId).ifPresent(cardInfo -> {
                         customerOutput.setTradePrintingCard(cardInfo.getCardNo());
                     });
 
