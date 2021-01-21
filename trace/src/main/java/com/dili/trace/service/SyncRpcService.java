@@ -29,13 +29,5 @@ public interface SyncRpcService {
      */
     void syncRpcUserByUserIds(List<Long> userIds);
 
-    /**
-     * 测试
-     *
-     * @throws InterruptedException
-     */
-    @Async
-    void testAsync() throws InterruptedException;
-
 
 }

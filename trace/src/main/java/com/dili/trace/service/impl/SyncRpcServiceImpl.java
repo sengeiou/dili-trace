@@ -5,7 +5,7 @@ import com.dili.common.util.MD5Util;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.Customer;
-import com.dili.customer.sdk.domain.TallyingArea;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
@@ -15,7 +15,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.User;
-import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UserService;
@@ -47,7 +46,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     @Autowired
     private DefaultConfiguration defaultConfiguration;
 
-    private Integer userYNy = 1;
+    private Integer pushFlag = 1;
     private Integer userYNn = -1;
 
     @Override
@@ -58,7 +57,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
         CustomerQueryInput customerQueryInput = new CustomerQueryInput();
         Set<Long> userSet = new HashSet<>(userIds);
         customerQueryInput.setIdSet(userSet);
-        BaseOutput<List<CustomerSimpleExtendDto>> rpcUserByIds = customerRpc.listSimple(customerQueryInput);
+        BaseOutput<List<CustomerExtendDto>> rpcUserByIds = customerRpc.list(customerQueryInput);
         List<User> userList = userService.getUserListByUserIds(userIds);
         if (null == rpcUserByIds) {
             return;
@@ -71,22 +70,31 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     @Transactional(rollbackFor = Exception.class)
     public void syncRpcUserByUserId(Long userId) {
         //rpc用户列表
-        BaseOutput<Customer> resultData = getRpcUserById(userId);
+        BaseOutput<List<CustomerExtendDto>> resultData = getRpcUserById(userId);
         //未获取到rpc用户
         if (null == resultData) {
             return;
         }
-        Customer rpcUser = resultData.getData();
-        if (null != rpcUser) {
-            User user = userService.get(userId);
-            //取需要更新的用户信息updateList
-            if (null != user) {
-                User upUser = buildUpdateUser(rpcUser);
-                updateUserInfo(upUser);
-            } else {
-                User addUser = buildAddUser(rpcUser);
-                addUserInfoByRpc(addUser);
-            }
+        List<CustomerExtendDto> rpcUserList =   resultData.getData();
+        if (CollectionUtils.isNotEmpty(rpcUserList)) {
+            StreamEx.of(rpcUserList).nonNull().forEach(rpcUser->{
+                //用户没有id或者没有市场时不同步
+                if(Objects.isNull(rpcUser.getId())||Objects.isNull(rpcUser.getCustomerMarket())){
+                    return;
+                }
+                User user = getNewUserPojo();
+                user.setId(rpcUser.getId());
+                user.setMarketId(rpcUser.getCustomerMarket().getMarketId());
+                List<User> userList = userService.list(user);
+                if(CollectionUtils.isNotEmpty(userList)){
+                    User upUser = buildUpdateUser(rpcUser);
+                    updateUserInfo(upUser);
+                }else{
+                    User addUser = buildAddUser(rpcUser);
+                    addUserInfoByRpc(addUser);
+                }
+            });
+
         }
     }
 
@@ -97,7 +105,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param userList
      * @param list
      */
-    private void updateUserByRpcUserList(List<CustomerSimpleExtendDto> userList, List<User> list) {
+    private void updateUserByRpcUserList(List<CustomerExtendDto> userList, List<User> list) {
         Map<Long, User> userMap = StreamEx.of(list).nonNull().collect(Collectors.toMap(User::getId, Function.identity(), (a, b) -> a));
         //取需要更新的用户信息updateList
         List<User> updateList = new ArrayList<>();
@@ -143,8 +151,10 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param userId
      * @return
      */
-    private BaseOutput<Customer> getRpcUserById(Long userId) {
-        return customerRpc.getById(userId);
+    private BaseOutput<List<CustomerExtendDto>> getRpcUserById(Long userId) {
+        CustomerQueryInput customerQueryInput = new CustomerQueryInput();
+        customerQueryInput.setId(userId);
+        return customerRpc.list(customerQueryInput);
     }
 
 
@@ -154,7 +164,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private User buildAddUser(Customer rpcUser) {
+    private User buildAddUser(CustomerExtendDto rpcUser) {
         Integer version = 0;
         User addUser = buildUpdateUser(rpcUser);
         addUser.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
@@ -171,7 +181,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private User buildUpdateUser(Customer rpcUser) {
+    private User buildUpdateUser(CustomerExtendDto rpcUser) {
         User upUser = getNewUserPojo();
         upUser.setId(rpcUser.getId());
         upUser.setName(rpcUser.getName());
@@ -181,24 +191,20 @@ public class SyncRpcServiceImpl implements SyncRpcService {
             upUser.setYn(userYNn);
         }
         //YesOrNoEnum.YES
-        upUser.setIsDelete(rpcUser.getIsDelete().longValue());
+        if(Objects.nonNull(rpcUser.getIsDelete())){
+            upUser.setIsDelete(rpcUser.getIsDelete().longValue());
+        }
         //未激活
         if (CustomerEnum.State.NORMAL.getCode().equals(rpcUser.getState())) {
             upUser.setState(EnabledStateEnum.ENABLED.getCode());
         } else {
             upUser.setState(EnabledStateEnum.DISABLED.getCode());
         }
+        upUser.setIsPush(pushFlag);
+        if(Objects.nonNull(rpcUser.getCustomerMarket())){
+            upUser.setMarketId(rpcUser.getCustomerMarket().getMarketId());
+        }
         return upUser;
-    }
-
-
-    @Override
-    @Async
-    @Transactional(rollbackFor = Exception.class)
-    public void testAsync() throws InterruptedException {
-        System.out.print("===>>>service 异步 执行 开始");
-        TimeUnit.SECONDS.sleep(3);
-        System.out.print("===>>>service 异步 执行 结束");
     }
 
     /**
@@ -207,31 +213,4 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     private static User getNewUserPojo() {
         return DTOUtils.newDTO(User.class);
     }
-
-    /**
-     * 同步用户摊位号
-     *
-     * @param userList
-     */
-    /*private void syncUserArea(List<User> userList) {
-        if (CollectionUtils.isEmpty(userList)) {
-            return;
-        }
-        Set<Long> userIdSet = StreamEx.of(userList).nonNull().map(User::getId).collect(Collectors.toSet());
-        TallyingArea tallyingArea = new TallyingArea();
-        tallyingArea.setCustomerIdSet(userIdSet);
-        BaseOutput<List<TallyingArea>> listByExample = tallyingAreaRpc.listByExample(tallyingArea);
-        if (null != listByExample && CollectionUtils.isNotEmpty(listByExample.getData())) {
-            List<TallyingArea> rpcData = listByExample.getData();
-            Date currentDate = DateUtils.getCurrentDate();
-            StreamEx.of(rpcData).nonNull().map(rpcArea -> {
-                TallyAreaNo area = DTOUtils.newDTO(TallyAreaNo.class);
-                area.setArea(rpcArea.getAssetsName());
-                area.setCreated(currentDate);
-                area.setModified(currentDate);
-                return area;
-            }).collect(Collectors.toList());
-        }
-
-    }*/
 }
