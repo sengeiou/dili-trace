@@ -868,7 +868,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeRequest> tradeRequests = this.listByExample(request);
         List<Long> sellerIds = StreamEx.of(tradeRequests)
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
-        List<UserOutput> outPutDtoList = new ArrayList<>();
 
 
         return StreamEx.of(tradeRequests).nonNull().map(tr -> {
@@ -894,7 +893,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 return outPutDto;
 
             }).orElse(null);
-        }).nonNull().toList();
+        }).nonNull().distinct(UserOutput::getUserId).toList();
     }
 
     /**
