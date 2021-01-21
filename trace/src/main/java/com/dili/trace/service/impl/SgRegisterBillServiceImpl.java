@@ -361,7 +361,11 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+                registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
+                registerBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+            }
             // 更新检测请求的检测来源为【AUTO_CHECK 主动送检】
             this.autoCheckDetectRequest(registerBill.getDetectRequestId());
             return this.updateRegisterBillAsWaitCheck(registerBill);
