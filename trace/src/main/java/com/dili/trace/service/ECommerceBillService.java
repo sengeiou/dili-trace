@@ -212,8 +212,6 @@ public class ECommerceBillService {
             updatable.setLatestPdResult("100%");
 
             DetectRequest detectRequest = this.detectRequestService.createDefault(item.getId(), Optional.ofNullable(operatorUser));
-            detectRequest.setDetectType(DetectTypeEnum.OTHERS.getCode());
-            detectRequest.setDetectResult(DetectResultEnum.PASSED.getCode());
             // 维护检测编号
             detectRequest.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.getMarketName()));
             this.detectRequestService.updateSelective(detectRequest);
