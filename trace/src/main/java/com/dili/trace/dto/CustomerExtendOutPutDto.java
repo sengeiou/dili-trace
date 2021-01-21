@@ -30,6 +30,12 @@ public class CustomerExtendOutPutDto {
      * 名字
      */
     private String name;
+
+    /**
+     * 组织类型,个人/企业
+     * {@link com.dili.customer.sdk.enums.CustomerEnum.OrganizationType}
+     */
+    private String organizationType;
     /**
      * 市场主键
      */
@@ -146,6 +152,14 @@ public class CustomerExtendOutPutDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOrganizationType() {
+        return organizationType;
+    }
+
+    public void setOrganizationType(String organizationType) {
+        this.organizationType = organizationType;
     }
 
     @Transient

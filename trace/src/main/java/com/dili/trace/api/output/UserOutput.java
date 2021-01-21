@@ -62,6 +62,11 @@ public class UserOutput {
      */
     private Integer userType;
 
+    /**
+     * 组织类型,个人/企业
+     */
+    private String organizationType;
+
     public Integer getUserType() {
         return userType;
     }
@@ -165,4 +170,11 @@ public class UserOutput {
         this.cnt = cnt;
     }
 
+    public String getOrganizationType() {
+        return organizationType;
+    }
+
+    public void setOrganizationType(String organizationType) {
+        this.organizationType = organizationType;
+    }
 }
