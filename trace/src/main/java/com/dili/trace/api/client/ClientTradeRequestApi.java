@@ -377,11 +377,11 @@ public class ClientTradeRequestApi {
                 dto.setId(us.getUserId());
                 dto.setMarketId(us.getMarketId());
                 dto.setMarketName(us.getMarketName());
-                CustomerExtendDto cusDto=this.customerRpcService.findCustomerByIdOrEx(us.getUserId(),us.getMarketId());
-                if(cusDto!=null){
-                    dto.setOrganizationType(cusDto.getOrganizationType());
-                    dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
-                }
+                this.customerRpcService.findCustomerById(us.getUserId(),us.getMarketId()).ifPresent(cusDto->{
+                        dto.setOrganizationType(cusDto.getOrganizationType());
+                        dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
+                });
+
                 return dto;
             }).append(list).distinct(CustomerExtendOutPutDto::getId).toList();
             return JSON.toJSONString(BaseOutput.successData(data), SerializerFeature.DisableCircularReferenceDetect);
@@ -420,8 +420,7 @@ public class ClientTradeRequestApi {
                     customerOutput.setPhone(c.getContactsPhone());
                     customerOutput.setClientType(clientTypeEnum.getCode());
 
-                    Optional<CardResultDto> cardResultDto = this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId);
-                    cardResultDto.ifPresent(cardInfo -> {
+                   this.customerRpcService.queryCardInfoByCustomerCode(c.getCode(), null, marketId).ifPresent(cardInfo -> {
                         customerOutput.setTradePrintingCard(cardInfo.getCardNo());
                     });
 
