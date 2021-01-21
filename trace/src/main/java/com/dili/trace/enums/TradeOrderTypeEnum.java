@@ -19,7 +19,10 @@ public enum TradeOrderTypeEnum {
 	 * 销售
 	 */
 	SELL(20, "销售"),
-
+	/**
+	 * 分销
+	 */
+	SEPREATE(30, "分销"),
 	;
 
 	private String name;

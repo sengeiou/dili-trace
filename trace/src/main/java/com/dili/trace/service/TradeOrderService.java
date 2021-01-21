@@ -4,10 +4,11 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.domain.User;
+import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,76 +19,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
-
-    @Autowired
-    CustomerRpcService customerRpcService;
-
-    /**
-     * 创建 tradeOrder
-     * @param sellerId 卖家
-     * @param buyerId 买家
-     * @param orderType 交易类型（购买、销售）
-     * @param marketId 市场
-     * @return
-     */
-    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType, Long marketId) {
-
-        CustomerExtendDto seller = customerRpcService.findCustomerById(sellerId, marketId).orElseThrow(() -> {
-            return new TraceBizException("卖家不存在");
-        });
-
-        CustomerExtendDto buyer = customerRpcService.findCustomerById(buyerId, marketId).orElseThrow(() -> {
-            return new TraceBizException("买家不存在");
-        });
-
-        return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
-
-    }
-
-    /**
-     * 创建tradeOrder
-     * @param sellerId
-     * @param buyerId
-     * @param orderType
-     * @param tradeOrderStatusEnum
-     * @param marketId
-     * @return
-     */
-    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum,
-                                       Long marketId) {
-
-        CustomerExtendDto seller = customerRpcService.findCustomerById(sellerId, marketId).orElseThrow(() -> {
-            return new TraceBizException("卖家不存在");
-        });
-
-        CustomerExtendDto buyer = customerRpcService.findCustomerById(buyerId, marketId).orElseThrow(() -> {
-            return new TraceBizException("买家不存在");
-        });
-
-        return this.createTradeOrder(seller, buyer,orderType,tradeOrderStatusEnum);
-
-    }
-
     /**
      * 创建TradeOrder
-     * @param seller
-     * @param buyer
-     * @param orderType
      * @param tradeOrderStatusEnum
      * @return
      */
-    public TradeOrder createTradeOrder(CustomerExtendDto seller, CustomerExtendDto buyer,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
-
+    public TradeOrder createTradeOrder(TradeDto tradeDto, TradeOrderStatusEnum tradeOrderStatusEnum) {
         TradeOrder tradeOrder = new TradeOrder();
-        tradeOrder.setBuyerId(buyer.getId());
-        tradeOrder.setBuyerName(buyer.getName());
-        tradeOrder.setBuyerMarketId(buyer.getCustomerMarket().getMarketId());
+        tradeOrder.setBuyerId(tradeDto.getBuyer().getBuyerId());
+        tradeOrder.setBuyerName(tradeDto.getBuyer().getBuyerName());
+        tradeOrder.setBuyerMarketId(tradeDto.getMarketId());
 
-        tradeOrder.setSellerId(seller.getId());
-        tradeOrder.setSellerName(seller.getName());
-        tradeOrder.setSellerMarketId(seller.getCustomerMarket().getMarketId());
+        tradeOrder.setSellerId(tradeDto.getSeller().getSellerId());
+        tradeOrder.setSellerName(tradeDto.getSeller().getSellerName());
+        tradeOrder.setSellerMarketId(tradeDto.getMarketId());
         tradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
-        tradeOrder.setOrderType(orderType.getCode());
+        tradeOrder.setOrderType(tradeDto.getTradeOrderType().getCode());
         this.insertSelective(tradeOrder);
         return tradeOrder;
     }

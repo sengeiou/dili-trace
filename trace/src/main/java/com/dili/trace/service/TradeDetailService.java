@@ -18,6 +18,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.github.pagehelper.Page;
@@ -121,17 +122,16 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	/**
 	 * 通过交易行为创建批次，同时更新相应的库存信息
 	 */
-	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-										 Long sellerId, CustomerExtendDto buyer, TradeOrderTypeEnum tradeOrderTypeEnum) {
+	public Optional<TradeDetail> createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight, TradeDto tradeDto) {
 		if (tradeDetailItem == null) {
 			throw new TraceBizException("数据不存在");
 		}
 		RegisterBill billItem = this.registerBillService.get(tradeDetailItem.getBillId());
 
-		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}", sellerId, buyer.getId(),
+		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}", tradeDto.getSeller().getSellerId(), tradeDto.getBuyer().getBuyerId(),
 				tradeDetailItem.getId(), tradeDetailItem.getStockWeight(), tradeWeight);
 
-		if (!tradeDetailItem.getBuyerId().equals(sellerId)) {
+		if (!tradeDetailItem.getBuyerId().equals(tradeDto.getSeller().getSellerId())) {
 			throw new TraceBizException("没有权限销售");
 		}
 		if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetailItem.getSaleStatus())) {
@@ -171,10 +171,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		// buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
 		// buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
 		// this.updateSelective(buyerTradeDetail);
-		TradeDetail buyerTradeDetail = this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight, buyer,
-				tradeRequestId, tradeOrderTypeEnum);
+		return this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight,
+				tradeRequestId, tradeDto);
 
-		return buyerTradeDetail;
 	}
 
 	/**
@@ -215,53 +214,84 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * @param billItem
 	 * @param tradeDetailItem
 	 * @param tradeWeight
-	 * @param buyer
+	 * @param tradeDto
 	 * @param tradeRequestId
 	 * @return
 	 */
 
-	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-									   CustomerExtendDto buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
-		// 查询或新增买家总库存
-		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
-		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
-			return new TraceBizException("操作库存失败");
-		});
+	Optional<TradeDetail> updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
+									   Long tradeRequestId, TradeDto tradeDto) {
+
+
+
 
 		// 创建买家批次库存
-		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
+		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, tradeDto.getBuyer());
+
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		buyerTradeDetail.setId(buyerTradeDetailId);
-		// 卖家下单
-		ProductStock buyerBatchStock=new ProductStock();
-		buyerBatchStock.setId(buyerBatchStockItem.getId());
-		buyerBatchStock.setTotalWeight(buyerBatchStockItem.getTotalWeight().add(tradeWeight));
-		if(tradeOrderTypeEnum.getCode().equals(TradeOrderTypeEnum.BUY.getCode()))
-		{
-			buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
-			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
+
+		if(TradeOrderTypeEnum.SEPREATE==tradeDto.getTradeOrderType()){
 			buyerTradeDetail.setStockWeight(tradeWeight);
+			buyerTradeDetail.setTotalWeight(tradeWeight);
+			buyerTradeDetail.setTradeRequestId(tradeRequestId);
+//			buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
 			buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
+			this.updateSelective(buyerTradeDetail);
+			//更新买家二维码颜色
+			// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());
+
+			return Optional.ofNullable(this.get(buyerTradeDetailId));
+		}else{
+			Optional<ProductStock>productStockOpt=StreamEx.of(tradeDto).filter(td->{
+				return TradeOrderTypeEnum.SEPREATE!=td.getTradeOrderType();
+			}).map(td->{
+				return this.batchStockService.findOrCreateBatchStock(tradeDto.getBuyer().getBuyerId(), billItem).getId();
+			}).nonNull().map(buyerBatchStockId->{
+				return this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElse(null);
+			}).nonNull().findFirst();
+			// 查询或新增买家总库存
+			ProductStock buyerBatchStockItem = productStockOpt.orElseThrow(() -> {
+				return new TraceBizException("操作库存失败");
+			});
+			// 卖家下单
+			ProductStock buyerBatchStock=new ProductStock();
+			buyerBatchStock.setId(buyerBatchStockItem.getId());
+			buyerBatchStock.setTotalWeight(buyerBatchStockItem.getTotalWeight().add(tradeWeight));
+			if(TradeOrderTypeEnum.BUY==tradeDto.getTradeOrderType())
+			{
+				buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
+				buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
+				buyerTradeDetail.setStockWeight(tradeWeight);
+				buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
+			}
+			else
+			{
+				buyerTradeDetail.setSoftWeight(tradeWeight);
+				buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
+				buyerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+				buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
+			}
+
+
+			buyerTradeDetail.setTotalWeight(tradeWeight);
+			buyerTradeDetail.setTradeRequestId(tradeRequestId);
+			buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
+			buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
+
+			this.batchStockService.updateSelective(buyerBatchStock);
+			this.updateSelective(buyerTradeDetail);
+			//更新买家二维码颜色
+			// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());
+
+			return Optional.ofNullable(this.get(buyerTradeDetailId));
+
 		}
-		else
-		{
-			buyerTradeDetail.setSoftWeight(tradeWeight);
-			buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
-			buyerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-			buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
-		}
 
-		buyerTradeDetail.setTotalWeight(tradeWeight);
-		buyerTradeDetail.setTradeRequestId(tradeRequestId);
-		buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
-		buyerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
 
-		this.batchStockService.updateSelective(buyerBatchStock);
-		this.updateSelective(buyerTradeDetail);
-		//更新买家二维码颜色
-		// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());
 
-		return this.get(buyerTradeDetailId);
+
+
 
 	}
 
@@ -272,7 +302,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * @param buyer
 	 * @return
 	 */
-	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, CustomerExtendDto buyer) {
+	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, TradeDto.Buyer buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		Date now=new Date();
 
@@ -283,8 +313,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
 
-		buyerTradeDetail.setBuyerId(buyer.getId());
-		buyerTradeDetail.setBuyerName(buyer.getName());
+		buyerTradeDetail.setBuyerId(buyer.getBuyerId());
+		buyerTradeDetail.setBuyerName(buyer.getBuyerName());
+		buyerTradeDetail.setBuyerType(buyer.getBuyerType().getCode());
 
 		buyerTradeDetail.setSellerId(tradeDetailItem.getBuyerId());
 		buyerTradeDetail.setSellerName(tradeDetailItem.getBuyerName());
