@@ -264,7 +264,7 @@
                 success:function (result) {
                     if(result.success){
                         $.each(result.data, function(index,item){
-                            selectedTags[item.id] =item.realName+" "+(undefined==item.cardNumber?"(无身份证号)":item.cardNumber);
+                            selectedTags[item.id] =item.name+" "+(undefined==item.certificateNumber?"(无证件号)":item.certificateNumber);
 
                         });
                         $('#userIds').tagbox('setValues',Object.keys(selectedTags));
