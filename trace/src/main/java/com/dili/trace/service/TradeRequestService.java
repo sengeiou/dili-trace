@@ -2,7 +2,10 @@ package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.Attachment;
+import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -832,29 +835,32 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<Long> sellerIds = StreamEx.of(tradeRequests)
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
         List<UserOutput> outPutDtoList = new ArrayList<>();
-        StreamEx.of(sellerIds).nonNull().forEach(td -> {
-            UserOutput outPutDto = new UserOutput();
 
-            com.dili.customer.sdk.domain.Customer cust = this.customerRpcService.findCustByIdOrEx(td);
-            if (cust != null) {
-                outPutDto.setUserId(td);
+
+        return StreamEx.of(tradeRequests).nonNull().map(tr -> {
+
+            Long sellerId = tr.getSellerId();
+            return this.customerRpcService.findCustomerById(sellerId, tr.getSellerMarketId()).map(cust -> {
+                UserOutput outPutDto = new UserOutput();
+                outPutDto.setUserId(sellerId);
                 outPutDto.setUserName(cust.getName());
                 outPutDto.setOrganizationType(cust.getOrganizationType());
+                StreamEx.of(cust.getAttachmentGroupInfoList()).filterBy(AttachmentGroupInfo::getCode, CustomerEnum.AttachmentType.营业执照.getCode())
+                        .flatCollection(AttachmentGroupInfo::getAttachmentList).findFirst().ifPresent(businessLicenseAttachment -> {
+                    outPutDto.setBusinessLicenseAttachment(businessLicenseAttachment);
+
+                });
 
                 UserStore userStore = new UserStore();
-                userStore.setUserId(td);
+                userStore.setUserId(sellerId);
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
                 if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setUserName(userStoreExists.getStoreName());
                 }
-//                outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
-//                outPutDto.setTallyAreaNos(user.getTallyAreaNos());
-//                outPutDto.setMarketName(user.getMarketName());
-//                outPutDto.setUserType(user.getUserType());
-                outPutDtoList.add(outPutDto);
-            }
-        });
-        return outPutDtoList;
+                return outPutDto;
+
+            }).orElse(null);
+        }).nonNull().toList();
     }
 
     /**
