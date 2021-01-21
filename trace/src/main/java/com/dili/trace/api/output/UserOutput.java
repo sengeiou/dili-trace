@@ -1,5 +1,9 @@
 package com.dili.trace.api.output;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.dili.customer.sdk.domain.Attachment;
+
 /**
  * 业户输出实体
  */
@@ -66,6 +70,19 @@ public class UserOutput {
      * 组织类型,个人/企业
      */
     private String organizationType;
+
+    /**
+     * 营业执照
+     */
+    private Attachment businessLicenseAttachment;
+
+    public Attachment getBusinessLicenseAttachment() {
+        return businessLicenseAttachment;
+    }
+
+    public void setBusinessLicenseAttachment(Attachment businessLicenseAttachment) {
+        this.businessLicenseAttachment = businessLicenseAttachment;
+    }
 
     public Integer getUserType() {
         return userType;
