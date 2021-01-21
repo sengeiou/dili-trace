@@ -362,8 +362,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.error("商品重量必须为整数");
             throw new TraceBizException("商品重量必须为整数");
         }
-
-        if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getTruckTareWeight()) < 0) {
+        if (registerBill.getTruckTareWeight()!=null&&NumUtils.MAX_WEIGHT.compareTo(registerBill.getTruckTareWeight()) < 0) {
             logger.error("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
