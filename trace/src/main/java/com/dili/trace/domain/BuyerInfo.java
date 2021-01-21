@@ -26,8 +26,14 @@ public class BuyerInfo{// extends BaseDomain {
      */
     @Column(name = "`buyer_type`")
     private Integer buyerType;
-//    @Column(name = "`user_type`")
-//    private Integer userType;
+
+
+    /**
+     * 组织类型,个人/企业
+     * {@link com.dili.customer.sdk.enums.CustomerEnum.OrganizationType}
+     */
+    @Column(name = "`organization_type`")
+    private String organizationType;
 
 
 //    @Override
