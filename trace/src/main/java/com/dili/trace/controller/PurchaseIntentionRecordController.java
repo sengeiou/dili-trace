@@ -157,9 +157,10 @@ public class PurchaseIntentionRecordController {
             return output;
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
-            return BaseOutput.failure().setErrorData(e.getMessage());
-        } catch (Exception e){
-            return BaseOutput.failure().setErrorData(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure("服务端出错");
         }
     }
 
@@ -181,7 +182,10 @@ public class PurchaseIntentionRecordController {
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
-            return BaseOutput.failure().setErrorData(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure("服务端出错");
         }
     }
 
@@ -203,10 +207,10 @@ public class PurchaseIntentionRecordController {
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
-            return BaseOutput.failure(e.getMessage()).setErrorData(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return BaseOutput.failure().setErrorData(e.getMessage());
+            return BaseOutput.failure("服务端出错");
         }
     }
 
@@ -226,7 +230,10 @@ public class PurchaseIntentionRecordController {
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
-            return BaseOutput.failure().setErrorData(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure("服务端出错");
         }
     }
 
