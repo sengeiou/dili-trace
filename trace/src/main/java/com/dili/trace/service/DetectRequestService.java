@@ -760,9 +760,22 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (!DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())){
-            throw new TraceBizException("操作失败，审核不通过不能进行预约");
+        // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
+        if(DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())){
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())
+                    || BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())
+                    || BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
+                //donothing
+            }else{
+                throw new TraceBizException("操作失败，当前状态不能进行预约");
+            }
+        }else{
+            throw new TraceBizException("操作失败，当前状态不能进行预约");
         }
+//
+//        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())){
+//            throw new TraceBizException("操作失败，审核不通过不能进行预约");
+//        }
         if (registerBill.getDetectRequestId() == null) {
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
         }
