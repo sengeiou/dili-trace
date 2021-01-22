@@ -61,7 +61,7 @@
                     <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${upstream.legalPerson!}" readonly data-options="label:'法人:', validType:['isWord','length[0,20]']" />
                 </div>
                 <div>
-                    <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${upstream.license!}" readonly data-options="label:'信用代码*:', validType:['isWord','length[0,20]']" />
+                    <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${upstream.license!}" readonly data-options="label:'信用代码:', validType:['isWord','length[0,20]']" />
                 </div>
             </div>
             <div style="margin-bottom:5px">
@@ -180,8 +180,6 @@
                     $('#corporateInfo').hide();
                     $('#legalPerson').textbox('disableValidation');
                     $('#license').textbox('disableValidation');
-                    $('#legalPerson').textbox('readonly',true);
-                    $('#license').textbox('readonly',true);
 
                 }else{
                     $('#corporate').show();
@@ -189,8 +187,6 @@
                     $('#corporateInfo').show();
                     $('#legalPerson').textbox('enableValidation');
                     $('#license').textbox('enableValidation');
-                    $('#legalPerson').textbox('readonly',false);
-                    $('#license').textbox('readonly',false);
                 }
             }
         });
