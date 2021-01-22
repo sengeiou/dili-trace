@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.uap.sdk.domain.User;
 import org.springframework.scheduling.annotation.Async;
 
@@ -29,5 +30,10 @@ public interface SyncRpcService {
      */
     void syncRpcUserByUserIds(List<Long> userIds);
 
-
+    /**
+     * 上传杭果商品到Rpc
+     * @param categoryId
+     */
+    @Async
+    void syncGoodsToRpcCategory(Long categoryId);
 }
