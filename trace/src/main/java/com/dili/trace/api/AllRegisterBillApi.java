@@ -88,7 +88,7 @@ public class AllRegisterBillApi {
 		condition.setSort(input.getSort());
 		condition.setOrder(input.getOrder());
 		condition.setStateList(input.getStateList());
-		condition.setDetectStateList(input.getDetectStateList());
+		condition.setDetectStatusList(input.getDetectStatusList());
 		condition.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
 		BasePage<RegisterBill> list = this.billService.listPageByExample(condition);
 

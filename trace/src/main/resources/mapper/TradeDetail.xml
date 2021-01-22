@@ -35,6 +35,13 @@
           #{verifyStatus}
         </foreach>
       </if>
+    <if test="detectStatusList != null  and detectStatusList.size()>0">
+      AND register_bill.detect_status
+      <foreach collection="detectStatusList " open=" IN (" close=")" item="detectStatus" separator=",">
+        #{detectStatus}
+      </foreach>
+    </if>
+
     <if test="billTypes != null  and billTypes.size()>0">
       AND register_bill.bill_type
       <foreach collection="billTypes " open=" IN (" close=")" item="billType" separator=",">
@@ -78,6 +85,12 @@
       AND register_bill.verify_status
       <foreach collection="verifyStatusList " open=" IN (" close=")" item="verifyStatus" separator=",">
         #{verifyStatus}
+      </foreach>
+    </if>
+    <if test="detectStatusList != null  and detectStatusList.size()>0">
+      AND register_bill.detect_status
+      <foreach collection="detectStatusList " open=" IN (" close=")" item="detectStatus" separator=",">
+        #{detectStatus}
       </foreach>
     </if>
     <if test="billTypes != null  and billTypes.size()>0">
