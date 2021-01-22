@@ -66,7 +66,7 @@ public class UidRestfulRpcService {
         } else {
             logger.error("生成检测编号出错：获取市场失败");
         }
-
+        logger.debug("生成的检测编号为:{}",returnCode.toString());
         return returnCode.toString();
     }
 
