@@ -17,6 +17,8 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		implements CodeGenerateService, CommandLineRunner {
+	private static final Logger logger= LoggerFactory.getLogger(CodeGenerateServiceImpl.class);
 	private static final String TRADE_REQUEST_CODE_TYPE = "TRADE_REQUEST_CODE";
 	private CodeGenerateMapper getMapper() {
 		return (CodeGenerateMapper) this.getDao();
@@ -302,9 +305,12 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 		this.updateSelective(codeGenerate);
 
-		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
+		String code= StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
 				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), codeGenerateEnum.getLen(), "0"));
 
+
+		logger.debug("生成的{}的code为{}",codeGenerateEnum.getName(),code);
+		return code;
 	}
 
 	@Override
