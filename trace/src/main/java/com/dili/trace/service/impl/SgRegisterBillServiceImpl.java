@@ -1294,7 +1294,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 , RegisterBillMessageEvent.DETAIL
                 , RegisterBillMessageEvent.upload_origincertifiy
                 , RegisterBillMessageEvent.upload_handleresult
-                , RegisterBillMessageEvent.updateImage);
+                );
 
 
         if(DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())){
@@ -1302,6 +1302,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                     || BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus())) {
                 msgStream.add( RegisterBillMessageEvent.edit);
+                msgStream.add( RegisterBillMessageEvent.updateImage);
             }
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 msgStream.add( RegisterBillMessageEvent.undo);
@@ -1326,9 +1327,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (RegisterSourceEnum.TALLY_AREA.equalsToCode(item.getRegisterSource()) && item.getHasOriginCertifiy() > 0) {
             msgStream.add(RegisterBillMessageEvent.audit_withoutDetect);
         }
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
-            msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo));
-        }
+//        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
+//            msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo));
+//        }
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.detectRequestService.get(item.getDetectRequestId());
             if (detectRequest != null) {
