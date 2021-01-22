@@ -120,9 +120,9 @@ public class RegisterBillDto extends RegisterBill {
     /**
      * 检测状态
      */
-    @Column(name = "`detect_state`")
+    @Column(name = "`detect_status`")
     @Operator(Operator.IN)
-    private List<Integer> detectStateList;
+    private List<Integer> detectStatusList;
     /**
      * 车牌
      */
@@ -427,12 +427,22 @@ public class RegisterBillDto extends RegisterBill {
         this.stateList = stateList;
     }
 
-    public List<Integer> getDetectStateList() {
-        return detectStateList;
+    public List<Integer> getDetectStatusList() {
+        return detectStatusList;
     }
 
-    public void setDetectStateList(List<Integer> detectStateList) {
-        this.detectStateList = detectStateList;
+    public void setDetectStatusList(List<Integer> detectStatusList) {
+        this.detectStatusList = detectStatusList;
+    }
+
+    @Override
+    public Integer getCheckinStatus() {
+        return checkinStatus;
+    }
+
+    @Override
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
     }
 
     public String getLikeTallyAreaNo() {
