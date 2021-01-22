@@ -81,7 +81,7 @@
                             <span class="fileimg-plus-icon">+</span>
                             <span class="fileimg-des">上传身份证正面照</span>
                             <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
-                            <img class="magnifying" src="${upstream.cardNoFrontUrl!}">
+                            <img class="magnifying" src="${imageViewPathPrefix}/${upstream.cardNoFrontUrl!}">
                             <input type="hidden" name="cardNoFrontUrl" value="${upstream.cardNoFrontUrl!}">
                             <div class="fileimg-cover" style="${isEmpty(upstream.cardNoFrontUrl)?'display: none;':''}"></div>
                             <div class="fileimg-edit" style="${isEmpty(upstream.cardNoFrontUrl)?'display: none;':''}">
@@ -94,7 +94,7 @@
                             <span class="fileimg-plus-icon">+</span>
                             <span class="fileimg-des">上传身份证反面照</span>
                             <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
-                            <img class="magnifying" src="${upstream.cardNoBackUrl!}">
+                            <img class="magnifying" src="${imageViewPathPrefix}/${upstream.cardNoBackUrl!}">
                             <input type="hidden" name="cardNoBackUrl" value="${upstream.cardNoBackUrl!}">
                             <div class="fileimg-cover" style="${isEmpty(upstream.cardNoBackUrl)?'display: none;':''}"></div>
                             <div class="fileimg-edit" style="${isEmpty(upstream.cardNoBackUrl)?'display: none;':''}">
@@ -108,7 +108,7 @@
                             <span class="fileimg-plus-icon">+</span>
                             <span class="fileimg-des">上传营业执照</span>
                             <input type="file" name="file" id="businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                            <img class="magnifying" src="${upstream.businessLicenseUrl!}">
+                            <img class="magnifying" src="${imageViewPathPrefix}/${upstream.businessLicenseUrl!}">
                             <input type="hidden" name="businessLicenseUrl" value="${upstream.businessLicenseUrl!}">
                             <div class="fileimg-cover" style="${isEmpty(upstream.businessLicenseUrl)?'display: none;':''}"></div>
                             <div class="fileimg-edit" style="${isEmpty(upstream.businessLicenseUrl)?'display: none;':''}">
@@ -121,7 +121,7 @@
                             <span class="fileimg-plus-icon">+</span>
                             <span class="fileimg-des">上传经营许可证</span>
                             <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                            <img class="magnifying" src="${upstream.operationLicenseUrl!}">
+                            <img class="magnifying" src="${imageViewPathPrefix}/${upstream.operationLicenseUrl!}">
                             <input type="hidden" name="operationLicenseUrl" value="${upstream.operationLicenseUrl!}">
                             <div class="fileimg-cover" style="${isEmpty(upstream.operationLicenseUrl)?'display: none;':''}"></div>
                             <div class="fileimg-edit" style="${isEmpty(upstream.operationLicenseUrl)?'display: none;':''}">
@@ -134,7 +134,7 @@
                             <span class="fileimg-plus-icon">+</span>
                             <span class="fileimg-des">上传生产许可证</span>
                             <input type="file" name="file" id="manufacturingLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                            <img class="magnifying" src="${upstream.manufacturingLicenseUrl!}">
+                            <img class="magnifying" src="${imageViewPathPrefix}/${upstream.manufacturingLicenseUrl!}">
                             <input type="hidden" name="manufacturingLicenseUrl" value="${upstream.manufacturingLicenseUrl!}">
                             <div class="fileimg-cover" style="${isEmpty(upstream.manufacturingLicenseUrl)?'display: none;':''}"></div>
                             <div class="fileimg-edit" style="${isEmpty(upstream.manufacturingLicenseUrl)?'display: none;':''}">
@@ -279,9 +279,6 @@
 
     $('.fileimg-view').on('click', function () {
         let url = $(this).parent().siblings(".magnifying").attr('src');
-        let pFix = '${imageViewPathPrefix}';
-        console.info("url"+url);
-        console.info("pFix"+pFix);
         if(url){
             layer.open({
                 title:'图片',
@@ -303,7 +300,7 @@
                 if (res.result.code == 200) {
                     var url = res.result.data;
                     $(this).siblings(".magnifying").attr('src', pFix+"/"+url).show();
-                    $(this).siblings("input:hidden").val( pFix+"/"+url);
+                    $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
                 }
             },

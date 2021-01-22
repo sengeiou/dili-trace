@@ -339,36 +339,39 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int autoCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
         UserTicket userTicket = getOptUser();
-        return autoCheckRegisterBill(registerBill, userTicket);
+        return autoCheckRegisterBill(registerBillItem, userTicket);
     }
 
     @Transactional
     @Override
     public int autoCheckRegisterBillFromApp(Long id, SessionData sessionData) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
         UserTicket userTicket = getOptUserFromApp(sessionData);
-        return autoCheckRegisterBill(registerBill, userTicket);
+        return autoCheckRegisterBill(registerBillItem, userTicket);
     }
 
-    private int autoCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+    private int autoCheckRegisterBill(RegisterBill registerBillItem, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())){
             throw new TraceBizException("当前登记单不能进行接单");
         }
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            registerBill.setOperatorName(userTicket.getRealName());
-            registerBill.setOperatorId(userTicket.getId());
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
+
+            updatableBill.setOperatorName(userTicket.getRealName());
+            updatableBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
-            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
-                registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
-                registerBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
             }
             // 更新检测请求的检测来源为【AUTO_CHECK 主动送检】
-            this.autoCheckDetectRequest(registerBill.getDetectRequestId());
-            return this.updateRegisterBillAsWaitCheck(registerBill);
+            this.autoCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
 
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
@@ -387,16 +390,16 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public BaseOutput doBatchAutoCheck(List<Long> idList) {
         BatchResultDto<String> dto = new BatchResultDto<>();
         for (Long id : idList) {
-            RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-            if (registerBill == null) {
+            RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
+            if (registerBillItem == null) {
                 continue;
             }
             try {
                 UserTicket userTicket = getOptUser();
-                this.autoCheckRegisterBill(registerBill, userTicket);
-                dto.getSuccessList().add(registerBill.getCode());
+                this.autoCheckRegisterBill(registerBillItem, userTicket);
+                dto.getSuccessList().add(registerBillItem.getCode());
             } catch (Exception e) {
-                dto.getFailureList().add(registerBill.getCode());
+                dto.getFailureList().add(registerBillItem.getCode());
             }
         }
 
@@ -520,23 +523,25 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return samplingCheckRegisterBill(registerBill, userTicket);
     }
 
-    private int samplingCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+    private int samplingCheckRegisterBill(RegisterBill registerBillItem, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())){
             throw new TraceBizException("当前登记单不能进行接单");
         }
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            registerBill.setOperatorName(userTicket.getRealName());
-            registerBill.setOperatorId(userTicket.getId());
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
+            updatableBill.setOperatorName(userTicket.getRealName());
+            updatableBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
-                registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
-                registerBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
             }
 
-            this.samplingCheckDetectRequest(registerBill.getDetectRequestId());
-            return this.updateRegisterBillAsWaitCheck(registerBill);
+            this.samplingCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
@@ -561,26 +566,29 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int spotCheckRegisterBillFromApp(Long id, SessionData sessionData) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-        if(registerBill==null){
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
+        if(registerBillItem==null){
             throw new TraceBizException("数据不存在");
         }
 
         UserTicket userTicket = getOptUserFromApp(sessionData);
-        return spotCheckRegisterBill(registerBill, userTicket);
+        return spotCheckRegisterBill(registerBillItem, userTicket);
     }
 
-    private int spotCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+    private int spotCheckRegisterBill(RegisterBill registerBillItem, UserTicket userTicket) {
+        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())){
             throw new TraceBizException("当前登记单不能进行接单");
         }
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            registerBill.setOperatorName(userTicket.getRealName());
-            registerBill.setOperatorId(userTicket.getId());
-            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
 
-            this.spotCheckDetectRequest(registerBill.getDetectRequestId());
-            return this.updateRegisterBillAsWaitCheck(registerBill);
+            updatableBill.setOperatorName(userTicket.getRealName());
+            updatableBill.setOperatorId(userTicket.getId());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+
+            this.spotCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
@@ -642,11 +650,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         }
     }
 
-    private int updateRegisterBillAsWaitCheck(RegisterBill registerBill) {
+    private int updateRegisterBillAsWaitCheck(RegisterBill updatableBill) {
 
 //        registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-        registerBill.setModified(new Date());
-        return this.billService.update(registerBill);
+        updatableBill.setModified(new Date());
+        return this.billService.updateSelective(updatableBill);
+//        return this.billService.update(updatableBill);
     }
 
     UserTicket getOptUser() {

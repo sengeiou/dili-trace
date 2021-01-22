@@ -317,13 +317,6 @@ public class RegisterBill extends BaseDomain {
     private Long brandId;
 
     /**
-     * 是否进门
-     */
-    @ApiModelProperty(value = "是否进门")
-    @Column(name = "`is_checkin`")
-    private Integer isCheckin;
-
-    /**
      * 原因
      */
     @ApiModelProperty(value = "原因")
@@ -1220,20 +1213,6 @@ public class RegisterBill extends BaseDomain {
 
 
     /**
-     * @return Integer return the isCheckin
-     */
-    public Integer getIsCheckin() {
-        return isCheckin;
-    }
-
-    /**
-     * @param isCheckin the isCheckin to set
-     */
-    public void setIsCheckin(Integer isCheckin) {
-        this.isCheckin = isCheckin;
-    }
-
-    /**
      * @return String return the isDeleted
      */
     @Transient
@@ -1241,10 +1220,6 @@ public class RegisterBill extends BaseDomain {
         return YesOrNoEnum.YES.getCode().equals(this.getIsDeleted()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
     }
 
-    @Transient
-    public String getIsCheckInName() {
-        return YesOrNoEnum.YES.getCode().equals(this.getIsCheckin()) ? YesOrNoEnum.YES.getName() : YesOrNoEnum.NO.getName();
-    }
 
     /**
      * @return String return the isDeleted
@@ -1566,4 +1541,8 @@ public class RegisterBill extends BaseDomain {
 //    public void setTareWeight(BigDecimal tareWeight) {
 //        this.tareWeight = tareWeight;
 //    }
+    @Transient
+    public String getCheckInStatusName(){
+        return CheckinStatusEnum.ALLOWED.equalsToCode(this.getCheckinStatus())?"是":"否";
+    }
 }

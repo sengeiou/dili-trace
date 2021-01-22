@@ -667,7 +667,7 @@
     SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count,
     round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),3) as weight
     FROM register_bill r, checkinout_record c
-    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = c.bill_id and r.market_id = c.market_id
+    WHERE r.checkin_status=10 AND r.is_deleted=0 and r.id = c.bill_id and r.market_id = c.market_id
     <if test="startDate != null">
       <![CDATA[AND c.`created`>=#{startDate}]]>
     </if>
@@ -692,7 +692,7 @@
     SELECT r.`origin_name` as origion_name, r.product_name as product_name,
     round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),3) as weight
     FROM register_bill r, checkinout_record ch
-    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = ch.bill_id and r.market_id = ch.market_id
+    WHERE r.checkin_status=10 AND r.is_deleted=0 and r.id = ch.bill_id and r.market_id = ch.market_id
     <if test="startDate != null">
       <![CDATA[AND ch.`created`>=#{startDate}]]>
     </if>
@@ -1388,7 +1388,7 @@
     detect_record.`normal_result` normalResult,
     detect_record.`pd_result` pdResult,
     b.`is_deleted`,
-    b.`is_checkin`,
+    b.`checkin_status`,
     b.`source_name`,
     b.`source_id`
     FROM register_bill b

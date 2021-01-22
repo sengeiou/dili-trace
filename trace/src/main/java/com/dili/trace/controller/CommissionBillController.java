@@ -158,7 +158,8 @@ public class CommissionBillController {
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());
-                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+//                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+                    rb.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     // 理货类型为交易区时才保存交易区号和id

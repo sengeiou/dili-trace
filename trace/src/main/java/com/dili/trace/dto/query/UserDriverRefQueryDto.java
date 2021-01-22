@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 public class UserDriverRefQueryDto extends UserDriverRef {
 
     @Transient
-    private Integer isCheckIn;
+    private Integer checkinStatus;
     @Transient
     private Integer billType;
 
@@ -37,12 +37,12 @@ public class UserDriverRefQueryDto extends UserDriverRef {
         this.verifyStatus = verifyStatus;
     }
 
-    public Integer getIsCheckIn() {
-        return isCheckIn;
+    public Integer getCheckinStatus() {
+        return checkinStatus;
     }
 
-    public void setIsCheckIn(Integer isCheckIn) {
-        this.isCheckIn = isCheckIn;
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
     }
 
     public Integer getBillType() {

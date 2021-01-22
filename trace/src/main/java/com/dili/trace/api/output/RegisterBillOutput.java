@@ -28,8 +28,7 @@ public class RegisterBillOutput {
     private String specName;
     private Date created;
     private String reason;
-    private Integer isCheckin;
-
+    private Integer checkinStatus;
     private String userName;
     private String tallyAreaNo;
     private String originName;
@@ -72,13 +71,20 @@ public class RegisterBillOutput {
         out.setSpecName(bill.getSpecName());
         out.setVerifyType(bill.getVerifyType());
         out.setReason(bill.getReason());
-        out.setIsCheckin(bill.getIsCheckin());
+        out.setCheckinStatus(bill.getCheckinStatus());
         out.setTallyAreaNo(bill.getTallyAreaNo());
         out.setRegistType(bill.getRegistType());
         return out;
     }
 
 
+    public Integer getCheckinStatus() {
+        return checkinStatus;
+    }
+
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
+    }
 
     public String getProductName() {
         return productName;
@@ -395,17 +401,6 @@ public class RegisterBillOutput {
         this.specName = specName;
     }
 
-
-    /**
-     * @param isCheckin the isCheckin to set
-     */
-    public void setIsCheckin(Integer isCheckin) {
-        this.isCheckin = isCheckin;
-    }
-
-    public Integer getIsCheckin() {
-        return isCheckin;
-    }
 
     public Integer getRegistType() {
         return registType;

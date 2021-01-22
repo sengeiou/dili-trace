@@ -21,11 +21,19 @@ public class TradeDetailBillOutput {
     private Integer tradeType;
     private Date created;
     private String productName;
-    private Integer isCheckin;
     private Integer truckType;
     private Integer billType;
     private Integer registType;
     private Integer detectStatus;
+    private Integer checkinStatus;
+
+    public Integer getCheckinStatus() {
+        return checkinStatus;
+    }
+
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
+    }
 
     public Integer getDetectStatus() {
         return detectStatus;
@@ -46,14 +54,6 @@ public class TradeDetailBillOutput {
 
     public String getTruckTypeName() {
         return TruckTypeEnum.fromCode(this.getTruckType()).map(TruckTypeEnum::getName).orElse("");
-    }
-
-    public Integer getIsCheckin() {
-        return isCheckin;
-    }
-
-    public void setIsCheckin(Integer isCheckin) {
-        this.isCheckin = isCheckin;
     }
 
     /**
@@ -181,8 +181,6 @@ public class TradeDetailBillOutput {
     public void setTotalWeight(BigDecimal totalWeight) {
         this.totalWeight = totalWeight;
     }
-
-
 
 
     /**
