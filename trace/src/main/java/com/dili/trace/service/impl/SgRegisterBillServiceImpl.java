@@ -30,6 +30,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -635,16 +636,19 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             updatableBill.setOperatorId(userTicket.getId());
 
 
-            DetectRequest detectRequestItem = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
-
-            DetectRequest updatableDetectRequest = new DetectRequest();
-            updatableDetectRequest.setId(detectRequestItem.getId());
-
-            updatableDetectRequest.setDetectSource(detectRequest.getDetectSource());
-            updatableDetectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-            updatableDetectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
-
-            this.detectRequestService.updateSelective(detectRequest);
+            try{
+                DetectRequest newDetectRequest = new DetectRequest();
+                BeanUtils.copyProperties(newDetectRequest,detectRequest);
+                newDetectRequest.setId(null);
+                newDetectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+                newDetectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
+                newDetectRequest.setDesignatedName(null);
+                newDetectRequest.setDesignatedId(null);
+                this.detectRequestService.insertSelective(newDetectRequest);
+                updatableBill.setDetectRequestId(newDetectRequest.getId());
+            }catch (Exception e){
+                throw new TraceBizException("处理失败");
+            }
 
             updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
             return this.billService.updateSelective(updatableBill);
