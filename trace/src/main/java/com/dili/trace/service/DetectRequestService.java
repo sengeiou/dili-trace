@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.annotation.DetectRequestMessageEvent;
+import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
@@ -644,11 +645,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.undo));
         }
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
-        if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
-            if(!BillVerifyStatusEnum.NO_PASSED.equalsToCode(item.getVerifyStatus())){
-                msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking));
+        if(DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())){
+
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
+                    || BillVerifyStatusEnum.PASSED.equalsToCode(item.getVerifyStatus())
+                    || BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus())) {
+                msgStream.add( DetectRequestMessageEvent.booking);
             }
         }
+
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));

@@ -1295,10 +1295,26 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 , RegisterBillMessageEvent.upload_origincertifiy
                 , RegisterBillMessageEvent.upload_handleresult
                 , RegisterBillMessageEvent.updateImage);
+
+
+        if(DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())){
+
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
+                    || BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus())) {
+                msgStream.add( RegisterBillMessageEvent.edit);
+            }
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+                msgStream.add( RegisterBillMessageEvent.undo);
+            }
+
+        }
+
+
+
+
+
         if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
-            msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo
-                    , RegisterBillMessageEvent.edit
-                    , RegisterBillMessageEvent.upload_detectreport));
+            msgStream.add(RegisterBillMessageEvent.upload_detectreport);
             // 补单PC端不审核
             if (!RegistTypeEnum.SUPPLEMENT.equalsToCode(item.getRegistType())) {
                 msgStream.add(RegisterBillMessageEvent.audit);
