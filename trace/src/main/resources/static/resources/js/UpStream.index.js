@@ -6,6 +6,7 @@ class UpStreamIndex extends ListPage {
         window['UpStreamIndexObj'] = this;
         $('#btn_add').on('click', async () => this.openAddPage());
         $('#edit-btn').on('click', async () => this.openEditPage());
+        $('#view-btn').on('click', async () => this.openViewPage());
     }
     async editSuccess() {
         super.removeAllDialog();
@@ -50,6 +51,24 @@ class UpStreamIndex extends ListPage {
             btns: []
         });
     }
+    async openViewPage() {
+        if (this.rows.length == 0) {
+            bs4pop.alert('请选择要查看的数据', { type: 'error' });
+            return;
+        }
+        var select = this.rows[0];
+        let url = this.toUrl("/upStream/view.html?id=" + select.id);
+        window.dia = bs4pop.dialog({
+            title: '上游企业查看',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '70%',
+            height: '700',
+            btns: []
+        });
+    }
     async rowClick() {
         this.resetButtons();
         if (this.rows.length == 0) {
@@ -57,12 +76,14 @@ class UpStreamIndex extends ListPage {
         }
         if (this.rows.length == 1) {
             $('#edit-btn').show();
+            $('#view-btn').show();
             $('#delete-btn').show();
         }
         $('#export').show();
     }
     async resetButtons() {
         $('#edit-btn').hide();
+        $('#view-btn').hide();
         $('#delete-btn').hide();
         $('#export').hide();
     }

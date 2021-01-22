@@ -57,12 +57,15 @@
              <#resource code="upStream/index.html#add_hide">
                 <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
              </#resource>
-             <#resource code="upStream/index.html#update">
+             <#resource code="upStream/index.html#update_hide">
                 <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> 修改</button>
+             </#resource>
+             <#resource code="upStream/index.html#view">
+                <button id="view-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
              </#resource>
          </div>
  <table id="upstreamGrid" data-toggle="table" data-title="上游企业管理列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
-        data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="false"
+        data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="true"
         data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
         data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
      <thead>

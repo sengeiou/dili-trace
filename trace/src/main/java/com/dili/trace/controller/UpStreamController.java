@@ -98,6 +98,26 @@ public class UpStreamController {
     }
 
     /**
+     * 跳转到查看详情页面
+     * @param modelMap
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/view.html", method = RequestMethod.GET)
+    public String view(ModelMap modelMap, Long id, Long userId) {
+        if (null != id) {
+            modelMap.put("upstream", upStreamService.get(id));
+        }
+        if (userId != null) {
+            User userItem = this.userRpc.get(userId).getData();
+            modelMap.put("userItem", userItem);
+        } else {
+            modelMap.put("userItem", null);
+        }
+        return "upStream/view";
+    }
+
+    /**
      * 查询数据
      *
      * @param upStreamDto
