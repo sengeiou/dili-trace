@@ -66,6 +66,8 @@ public class TruckEnterRecordController {
     CustomerRpc customerRpc;
     @Resource
     VehicleRpc vehicleRpc;
+    @Autowired
+    HttpServletRequest request;
 
     /**
      * 跳转到TruckEnterRecord页面
@@ -206,7 +208,7 @@ public class TruckEnterRecordController {
     public @ResponseBody
     BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer) {
         try {
-            BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer);
+            BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer,request.getHeader("UAP_SessionId"));
             return baseOutput;
         } catch (TraceBizException e) {
             return BaseOutput.failure().setErrorData(e.getMessage());
