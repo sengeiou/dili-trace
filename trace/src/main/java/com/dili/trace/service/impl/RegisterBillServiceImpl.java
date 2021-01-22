@@ -470,7 +470,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //            input.setIsCheckin(YesOrNoEnum.NO.getCode());
             input.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         }
-
+        input.setCreated(new Date());
         this.updateSelective(input);
         this.registerBillHistoryService.createHistory(billItem.getBillId());
 
