@@ -640,8 +640,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 DetectRequest newDetectRequest = new DetectRequest();
                 BeanUtils.copyProperties(newDetectRequest,detectRequest);
                 newDetectRequest.setId(null);
-                newDetectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-                newDetectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
+//                newDetectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+//                newDetectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
                 newDetectRequest.setDesignatedName(null);
                 newDetectRequest.setDesignatedId(null);
                 this.detectRequestService.insertSelective(newDetectRequest);
