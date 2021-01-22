@@ -10,7 +10,10 @@ import one.util.streamex.StreamEx;
  * @author wangguofeng
  */
 public enum TradeOrderTypeEnum {
-
+	/**
+	 * 自有
+	 */
+	NONE(0, "自有"),
 	/**
 	 * 购买
 	 */
