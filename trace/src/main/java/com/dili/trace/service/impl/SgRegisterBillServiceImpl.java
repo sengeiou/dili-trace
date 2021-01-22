@@ -626,25 +626,28 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         };
 
         boolean updateState = Optional.of(detectRequest).stream().anyMatch(pred);
-
+        UserTicket userTicket = getOptUser();
         if (updateState) {
-            UserTicket userTicket = getOptUser();
-            registerBill.setOperatorName(userTicket.getRealName());
-            registerBill.setOperatorId(userTicket.getId());
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(registerBill.getId());
+
+            updatableBill.setOperatorName(userTicket.getRealName());
+            updatableBill.setOperatorId(userTicket.getId());
 
 
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
+            DetectRequest detectRequestItem = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
 
-            DetectRequest updatable = new DetectRequest();
-            updatable.setId(item.getId());
+            DetectRequest updatableDetectRequest = new DetectRequest();
+            updatableDetectRequest.setId(detectRequestItem.getId());
 
-            updatable.setDetectSource(detectRequest.getDetectSource());
-            updatable.setDetectResult(DetectResultEnum.NONE.getCode());
-            updatable.setDetectType(DetectTypeEnum.RECHECK.getCode());
+            updatableDetectRequest.setDetectSource(detectRequest.getDetectSource());
+            updatableDetectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+            updatableDetectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
+
             this.detectRequestService.updateSelective(detectRequest);
 
-            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            return this.billService.update(registerBill);
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+            return this.billService.updateSelective(updatableBill);
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
