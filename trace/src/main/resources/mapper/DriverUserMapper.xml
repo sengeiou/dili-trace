@@ -5,7 +5,7 @@
       SELECT ref.`id`,ref.`driver_id`,ref.`driver_name`,ref.`seller_id`,ref.`seller_name`,ref.`tally_area_nos`,ref.`share_time` FROM   user_driver_ref ref
       JOIN `register_bill` b ON ref.`seller_id`=b.`user_id`
       WHERE b.`verify_status`=#{verifyStatus}
-      AND b.is_checkin=#{isCheckIn}
+      AND b.checkin_status=#{checkinStatus}
       AND b.`is_deleted`=#{isDelete}
       AND b.`bill_type`=#{billType}
       <if test="driverId != null">

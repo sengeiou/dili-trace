@@ -11,7 +11,7 @@
         FROM
         register_bill b
         JOIN `checkinout_record` c ON b.id=c.`bill_id` and b.market_id = c.market_id
-        WHERE b.is_checkin=1
+        WHERE b.checkin_status=10
         AND b.is_deleted=0
         <if test="likeVarietyName!=null and likeVarietyName!='' ">
             AND b.product_name like concat('%',#{likeVarietyName},'%')
@@ -40,7 +40,7 @@
         register_bill b
         JOIN `checkinout_record` c ON b.id=c.`bill_id` AND b.market_id = c.market_id
         JOIN user u ON b.user_id=u.id AND b.market_id = u.market_id
-        WHERE b.is_checkin = 1
+        WHERE b.checkin_status=10
         AND b.is_deleted = 0
         <if test="userName!=null and userName!='' ">
             AND b.name like concat('%',#{userName},'%')
@@ -71,7 +71,7 @@
             register_bill b
             JOIN `checkinout_record` c ON b.id=c.`bill_id` AND b.market_id = c.market_id
             JOIN `user` u ON b.user_id = u.id AND b.market_id = u.market_id
-            WHERE b.is_checkin = 1
+            WHERE b.checkin_status=10
             AND b.is_deleted = 0
             <if test="userName!=null and userName!='' ">
                 AND b.name like concat('%',#{userName},'%')

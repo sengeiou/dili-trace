@@ -808,7 +808,8 @@ public class NewRegisterBillController {
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());
-                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+//                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+                    rb.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     rb.setRegistType(RegistTypeEnum.NONE.getCode());

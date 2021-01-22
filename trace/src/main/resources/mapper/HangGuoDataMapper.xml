@@ -201,7 +201,7 @@
         operator_name,sample_source,detect_state,latest_detect_record_id,latest_detect_operator,
         latest_detect_time,latest_pd_result,version,created,modified,upstream_id,complete,verify_status,
         weight_unit,preserve_type,verify_type,spec_name,bill_type,brand_id,brand_name,truck_type,tally_area_no,
-        reason,is_checkin,checkin_status,checkout_status,is_deleted,operation_time,market_id,register_head_code,
+        reason,checkin_status,checkout_status,is_deleted,operation_time,market_id,register_head_code,
         third_party_code,area,measure_type,piece_num,piece_weight,remark,create_user,delete_user,delete_time,
         packaging,order_type
         from register_bill

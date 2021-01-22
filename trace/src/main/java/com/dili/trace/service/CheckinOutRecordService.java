@@ -235,9 +235,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			RegisterBill bill = new RegisterBill();
 			bill.setId(billItem.getId());
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-				bill.setIsCheckin(YesOrNoEnum.YES.getCode());
+//				bill.setIsCheckin(YesOrNoEnum.YES.getCode());
+				bill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
 			} else {
-				bill.setIsCheckin(YesOrNoEnum.NO.getCode());
+//				bill.setIsCheckin(YesOrNoEnum.NO.getCode());
+				bill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 			}
 			this.registerBillService.updateSelective(bill);
 

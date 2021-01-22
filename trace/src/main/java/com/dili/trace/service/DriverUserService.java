@@ -12,6 +12,7 @@ import com.dili.trace.domain.UserDriverRef;
 import com.dili.trace.dto.query.UserDriverRefQueryDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.util.BasePageUtil;
 import one.util.streamex.StreamEx;
@@ -92,7 +93,7 @@ public class DriverUserService extends TraceBaseService<UserDriverRef, Long> {
      * @return
      */
     public BasePage<UserDriverRef> getDriverUserList(UserDriverRefQueryDto user) {
-        user.setIsCheckIn(YesOrNoEnum.NO.getCode());
+        user.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         user.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
         user.setIsDelete(YesOrNoEnum.NO.getCode());
         user.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());

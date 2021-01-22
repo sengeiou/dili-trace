@@ -5,6 +5,7 @@ import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.CheckinStatusEnum;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -320,7 +321,8 @@ public class CreateRegisterBillInputDto {
         registerBill.setTruckTareWeight(this.getTruckTareWeight());
 //        registerBill.setTareWeight(this.getTareWeight());
         registerBill.setUnitPrice(this.getUnitPrice());
-        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
+//        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
+        registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 //        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }

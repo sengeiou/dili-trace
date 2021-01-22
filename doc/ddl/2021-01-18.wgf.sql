@@ -5,5 +5,6 @@ ALTER TABLE dili_trace.register_bill ADD return_reason varchar(100) NULL COMMENT
 ALTER TABLE dili_trace.trade_detail ADD buyer_type INT DEFAULT 1 NOT NULL COMMENT '买家类型';
 ALTER TABLE dili_trace.trade_request MODIFY COLUMN buyer_id bigint NULL COMMENT '买家ID';
 ALTER TABLE dili_trace.trade_order MODIFY COLUMN buyer_id bigint NULL COMMENT '买家ID';
+ALTER TABLE dili_trace.register_bill_history ADD checkin_status INT NULL;
 
 

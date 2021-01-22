@@ -305,12 +305,12 @@ public class RegisterBillHistory extends BaseDomain {
     @Column(name = "`brand_id`")
     private Long brandId;
 
+
     /**
      * 是否进门
      */
-    @ApiModelProperty(value = "是否进门")
-    @Column(name = "`is_checkin`")
-    private Integer isCheckin;
+    @Column(name = "`checkin_status`")
+    private Integer checkinStatus;
 
 
     /**
@@ -319,8 +319,6 @@ public class RegisterBillHistory extends BaseDomain {
     @ApiModelProperty(value = "原因")
     @Column(name = "`reason`")
     private String reason;
-
-
 
 
     /**
@@ -737,20 +735,13 @@ public class RegisterBillHistory extends BaseDomain {
         return billId;
     }
 
-    /**
-     * @return Integer return the isCheckin
-     */
-    public Integer getIsCheckin() {
-        return isCheckin;
+    public Integer getCheckinStatus() {
+        return checkinStatus;
     }
 
-    /**
-     * @param isCheckin the isCheckin to set
-     */
-    public void setIsCheckin(Integer isCheckin) {
-        this.isCheckin = isCheckin;
+    public void setCheckinStatus(Integer checkinStatus) {
+        this.checkinStatus = checkinStatus;
     }
-
 
     /**
      * @return Date return the operationTime
@@ -775,7 +766,7 @@ public class RegisterBillHistory extends BaseDomain {
     }
 
     @Transient
-    public String getVerifyStatusName(){
+    public String getVerifyStatusName() {
         return BillVerifyStatusEnum.fromCode(this.verifyStatus).map(BillVerifyStatusEnum::getName).orElse("");
     }
 }

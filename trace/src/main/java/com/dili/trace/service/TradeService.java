@@ -46,7 +46,8 @@ public class TradeService {
     Optional<OperatorUser> operatorUser) {
         RegisterBill billItem = this.registerBillService.get(billId);
         BigDecimal weight=billItem.getWeight();
-        if (!YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())) {
+//      if (!YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())) {
+        if (!CheckinStatusEnum.ALLOWED.equalsToCode(billItem.getCheckinStatus())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作
             return billId;
         }
