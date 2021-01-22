@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.annotation.DetectRequestMessageEvent;
+import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
@@ -644,11 +645,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.undo));
         }
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
-        if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
-            if(!BillVerifyStatusEnum.NO_PASSED.equalsToCode(item.getVerifyStatus())){
-                msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking));
+        if(DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())){
+
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
+                    || BillVerifyStatusEnum.PASSED.equalsToCode(item.getVerifyStatus())
+                    || BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus())) {
+                msgStream.add( DetectRequestMessageEvent.booking);
             }
         }
+
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
@@ -755,9 +760,22 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (!DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())){
-            throw new TraceBizException("操作失败，审核不通过不能进行预约");
+        // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
+        if(DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())){
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())
+                    || BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())
+                    || BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
+                //donothing
+            }else{
+                throw new TraceBizException("操作失败，当前状态不能进行预约");
+            }
+        }else{
+            throw new TraceBizException("操作失败，当前状态不能进行预约");
         }
+//
+//        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())){
+//            throw new TraceBizException("操作失败，审核不通过不能进行预约");
+//        }
         if (registerBill.getDetectRequestId() == null) {
             throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
         }

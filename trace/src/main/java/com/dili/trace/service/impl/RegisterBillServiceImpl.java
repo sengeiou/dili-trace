@@ -431,7 +431,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 || BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
             // 待审核，或者已退回状态可以进行数据修改
         } else {
-            throw new TraceBizException("当前状态不能修改数据");
+            throw new TraceBizException("当前审核状态不能修改数据");
+        }
+        if(!DetectStatusEnum.NONE.equalsToCode(billItem.getDetectStatus())){
+            throw new TraceBizException("当前检测状态不能修改数据");
         }
 
         TradeDetail tradeDetailItem = this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId())
@@ -470,7 +473,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //            input.setIsCheckin(YesOrNoEnum.NO.getCode());
             input.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         }
-
+        input.setCreated(new Date());
         this.updateSelective(input);
         this.registerBillHistoryService.createHistory(billItem.getBillId());
 
@@ -510,8 +513,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (CheckinStatusEnum.ALLOWED.equalsToCode(billItem.getCheckinStatus())){//YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())) {
             throw new TraceBizException("不能删除已进门数据");
         }
-        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
-            throw new TraceBizException("不能删除审核未通过数据");
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())&&DetectStatusEnum.NONE.equalsToCode(billItem.getDetectStatus())) {
+            //dothing
+        }else{
+            throw new TraceBizException("不能删除当前状态数据");
         }
         if(billItem.getDetectRequestId()!=null){
             throw new TraceBizException("不能删除已发起检测的登记单");
