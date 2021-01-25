@@ -220,6 +220,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeDto.setTradeOrderType(TradeOrderTypeEnum.BUY);
 
         tradeDto.getBuyer().setBuyerId(buyerId);
+        tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
         tradeDto.getSeller().setSellerId(sellerUserId);
 
 
