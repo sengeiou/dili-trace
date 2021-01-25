@@ -1,5 +1,10 @@
 package com.dili.trace.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.dili.assets.sdk.dto.CategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
+import com.dili.assets.sdk.dto.SubjectQuery;
+import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.util.MD5Util;
 import com.dili.commons.glossary.EnabledStateEnum;
@@ -15,11 +20,15 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.service.CategoryService;
 import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UserService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -37,12 +46,16 @@ import java.util.stream.Collectors;
 @Service
 public class SyncRpcServiceImpl implements SyncRpcService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SyncRpcServiceImpl.class);
+
     @Resource
     private CustomerRpc customerRpc;
     @Resource
-    private TallyingAreaRpc tallyingAreaRpc;
+    private AssetsRpc assetsRpc;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryService categoryService;
     @Autowired
     private DefaultConfiguration defaultConfiguration;
 
@@ -65,6 +78,51 @@ public class SyncRpcServiceImpl implements SyncRpcService {
         updateUserByRpcUserList(rpcUserByIds.getData(), userList);
     }
 
+    @Override
+    @Async
+    @Transactional(rollbackFor = Exception.class)
+    public void syncGoodsToRpcCategory(Long categoryId) {
+        BaseOutput<CategoryDTO> baseOutput = assetsRpc.get(categoryId);
+
+        if(Objects.nonNull(baseOutput)){
+            CategoryDTO dto = baseOutput.getData();
+            HangGuoCategory category = categoryService.get(categoryId);
+            if(Objects.isNull(category)){
+                HangGuoCategory syCategory=buildCreatCategory(dto);
+                categoryService.insertSelective(syCategory);
+            }else{
+                HangGuoCategory syCategory=buildUpdateCategory(dto);
+                categoryService.updateSelective(syCategory);
+            }
+        }
+    }
+
+    /**
+     * 通过rpc构建新增商品
+     * @param dto
+     * @return
+     */
+    private HangGuoCategory buildCreatCategory(CategoryDTO dto) {
+        HangGuoCategory category = buildUpdateCategory(dto);
+        category.setCreated(DateUtils.getCurrentDate());
+        return category;
+    }
+
+    /**
+     * 通过rpc更新商品
+     * @param dto
+     * @return
+     */
+    private HangGuoCategory buildUpdateCategory(CategoryDTO dto) {
+        HangGuoCategory category = new HangGuoCategory();
+        category.setId(dto.getId());
+        category.setMarketId(dto.getMarketId());
+        category.setName(dto.getName());
+        category.setParentId(dto.getParent());
+        category.setFullName(dto.getCusName());
+        category.setModified(DateUtils.getCurrentDate());
+        return category;
+    }
     @Override
     @Async
     @Transactional(rollbackFor = Exception.class)
