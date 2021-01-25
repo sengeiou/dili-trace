@@ -224,7 +224,7 @@ public class ClientTradeRequestApi {
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
 
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
-            tradeDto.getSeller().setSellerId(inputDto.getSellerId());
+            tradeDto.getSeller().setSellerId(sellerId);
 
             List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
                     inputDto.getBatchStockList(), sessionData.getOptUser());

@@ -708,14 +708,18 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     public void undoDetectRequest(Long billId) {
         //更新报备单未已删除
         this.billService.getAvaiableBill(billId).ifPresent(rb->{
+            // 校验待审核并且待预约才能撤销
+            if (!(DetectStatusEnum.NONE.equalsToCode(rb.getDetectStatus()) && BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(rb.getVerifyStatus()))) {
+                throw new TraceBizException("操作失败，数据状态已改变");
+            }
             RegisterBill bill = new RegisterBill();
             bill.setId(rb.getId());
             bill.setIsDeleted(YesOrNoEnum.YES.getCode());
             this.billService.updateSelective(bill);
-            if(rb.getDetectRequestId()!=null){
-                //更新检测请求
-                doUndoDetectRequest(rb.getDetectRequestId());
-            }
+//            if(rb.getDetectRequestId()!=null){
+//                //更新检测请求
+//                doUndoDetectRequest(rb.getDetectRequestId());
+//            }
         });
 
     }
