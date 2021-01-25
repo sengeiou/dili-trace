@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  * 进门主台账单接口实现
@@ -238,6 +237,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("重量单位错误");
             return new TraceBizException("重量单位错误");
         });
+        if(registerHead.getPlate()!=null){
+            if(!RegUtils.isPlate(registerHead.getPlate())){
+                throw new TraceBizException("车牌格式错误");
+            }
+        }
 
         String specName=registerHead.getSpecName();
         if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
@@ -269,6 +273,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         // 车牌转大写
         String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
                 .findFirst().orElse(null);
+        if(plate!=null){
+            if(!RegUtils.isPlate(plate)){
+                throw new TraceBizException("车牌格式错误");
+            }
+        }
         input.setPlate(plate);
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
