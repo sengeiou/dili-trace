@@ -261,7 +261,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         RegisterBill rbq=new RegisterBill();
         rbq.setRegisterHeadCode(headItem.getCode());
         rbq.setIsDeleted(YesOrNoEnum.NO.getCode());
-        boolean hasBill=this.billService.selectByExample(rbq).size()>0;
+        boolean hasBill=this.billService.listByExample(rbq).size()>0;
         if(hasBill){
             throw new TraceBizException("已有相关报备单，不能修改");
         }
