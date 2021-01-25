@@ -34,10 +34,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 检测请求业务类
@@ -64,6 +61,8 @@ public class CustomerDetectRequestController {
     DetectRecordService detectRecordService;
     @Autowired
     SgRegisterBillService registerBillService;
+    @Autowired
+    UpStreamService upStreamService;
 
     /**
      * 跳转到DetectRequest页面
@@ -301,6 +300,11 @@ public class CustomerDetectRequestController {
         List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
+        if (null != item.getUpStreamId()) {
+            UpStream upStream = upStreamService.get(item.getUpStreamId());
+            String upStreamName = Optional.ofNullable(upStream).orElse(new UpStream()).getName();
+            modelMap.put("upStreamName", upStreamName);
+        }
 
 //        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
 //        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
