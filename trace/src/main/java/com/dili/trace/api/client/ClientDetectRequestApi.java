@@ -1,5 +1,7 @@
 package com.dili.trace.api.client;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -212,19 +214,21 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping(value = "/getDetectRequestDetail.api", method = RequestMethod.GET)
-    public BaseOutput<DetectRequestOutDto> getDetectRequestDetail(Long id) {
+    public String getDetectRequestDetail(Long id) {
+        BaseOutput<DetectRequestOutDto>output=null;
         try {
             DetectRequestQueryDto detectRequest = new DetectRequestQueryDto();
             detectRequest.setId(id);
             DetectRequestOutDto detail = detectRequestService.getDetectRequestDetail(detectRequest);
 
-            return BaseOutput.successData(detail);
+            output= BaseOutput.successData(detail);
         } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
+            output= BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
+            output= BaseOutput.failure("服务端出错");
         }
+        return JSONObject.toJSONString(output, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     /**

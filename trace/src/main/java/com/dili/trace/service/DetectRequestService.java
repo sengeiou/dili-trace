@@ -448,8 +448,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         });
         //设置最新检测记录
         if (StringUtils.isNotBlank(dto.getBillCode())) {
-            this.detectRecordService.findByRegisterBillCode(dto.getBillCode());
-            dto.setDetectRecordList(detectRecordService.findTop2AndLatest(dto.getBillCode()));
+            List<DetectRecord> detectRecordList=detectRecordService.findTop2AndLatest(dto.getBillCode());
+            dto.setDetectRecordList(detectRecordList);
+            StreamEx.ofNullable(detectRecordList).flatCollection(Function.identity()).nonNull().sortedBy(DetectRecord::getId).unordered().findFirst().ifPresent(dr->{
+                dto.setLatestDetectRecord(dr);
+            });
         }
         List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
         dto.setImageCertList(imageCertList);
