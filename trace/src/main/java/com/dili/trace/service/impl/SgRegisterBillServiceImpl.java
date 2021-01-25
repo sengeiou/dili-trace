@@ -282,7 +282,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int auditRegisterBill(Long id, BillVerifyStatusEnum verifyStatusEnum) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         return auditRegisterBill(verifyStatusEnum, registerBill);
     }
 
@@ -340,7 +342,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int autoCheckRegisterBill(Long id) {
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         UserTicket userTicket = getOptUser();
         return autoCheckRegisterBill(registerBillItem, userTicket);
     }
@@ -348,7 +352,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int autoCheckRegisterBillFromApp(Long id, SessionData sessionData) {
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         UserTicket userTicket = getOptUserFromApp(sessionData);
         return autoCheckRegisterBill(registerBillItem, userTicket);
     }
@@ -511,7 +517,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int samplingCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         UserTicket userTicket = getOptUser();
         return samplingCheckRegisterBill(registerBill, userTicket);
     }
@@ -519,7 +527,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int samplingCheckRegisterBillFromApp(Long id, SessionData sessionData) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         UserTicket userTicket = getOptUserFromApp(sessionData);
         return samplingCheckRegisterBill(registerBill, userTicket);
     }
@@ -559,7 +569,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int spotCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         UserTicket userTicket = getOptUser();
         return spotCheckRegisterBill(registerBill, userTicket);
     }
@@ -567,10 +579,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int spotCheckRegisterBillFromApp(Long id, SessionData sessionData) {
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
-        if(registerBillItem==null){
-            throw new TraceBizException("数据不存在");
-        }
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
 
         UserTicket userTicket = getOptUserFromApp(sessionData);
         return spotCheckRegisterBill(registerBillItem, userTicket);
@@ -605,7 +616,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int reviewCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         if (!DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
@@ -799,10 +812,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input.getHandleResult().trim().length() > 1000) {
             throw new TraceBizException("处理结果不能超过1000");
         }
-        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElse(null);
-        if (item == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
 
         List<ImageCert> imageCerts =
                 StreamEx.of(this.findImageCertListByBillId(item.getBillId())).filter(img -> {
@@ -847,10 +859,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        RegisterBill registerBill = this.billService.getAvaiableBill(input.getId()).orElse(null);
-        if (registerBill == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill registerBill = this.billService.getAvaiableBill(input.getId()).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         if (registerBill.getImageCertList() == null || registerBill.getImageCertList().isEmpty()) {
             throw new TraceBizException("请上传产地证明");
         }
@@ -923,10 +934,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         // TODO:流程引擎内容？
         // RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
-        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElse(null);
-        if (item == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("状态错误,不能上传检测报告");
         }
@@ -956,10 +966,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             throw new TraceBizException("请上传报告");
         }
 
-        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElse(null);
-        if (item == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         List<ImageCert> imageCerts =
                 StreamEx.of(this.findImageCertListByBillId(item.getBillId())).filter(img -> {
                     Integer cerType = img.getCertType();
@@ -971,10 +980,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType) {
-        RegisterBill item = this.billService.getAvaiableBill(id).orElse(null);
-        if (item == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill item = this.billService.getAvaiableBill(id).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
         }
@@ -1007,10 +1015,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public BaseOutput doRemoveReportAndCertifiyNew(ReportAndCertifiyRemoveDto removeDto) {
-        RegisterBill item = this.billService.getAvaiableBill(removeDto.getId()).orElse(null);
-        if (item == null) {
-            throw new TraceBizException("数据错误");
-        }
+        RegisterBill item = this.billService.getAvaiableBill(removeDto.getId()).orElseThrow(()->{
+            return new TraceBizException("数据不存在或已删除");
+        });
         if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
         }
