@@ -10,6 +10,13 @@ public class TradeDto {
         this.seller = new Seller();
     }
 
+    public TradeDto(TradeOrderTypeEnum tradeOrderType, Long marketId, Long sellerId) {
+        this.buyer = new Buyer();
+        this.seller = new Seller();
+        this.marketId = marketId;
+        this.tradeOrderType = tradeOrderType;
+    }
+
     private Long marketId;
     private Seller seller;
     private Buyer buyer;
