@@ -122,12 +122,11 @@ public class DetectTaskServiceImpl implements DetectTaskService {
             LOGGER.error(e.getMessage(), e);
         }
 
-        // 对code,samplecode进行互换(检测客户端程序那边他们懒得改,不要动这行代码.具体看findByExeMachineNo里面的代码及注释)
-        String samplecode = detectRecord.getRegisterBillCode();
-        RegisterBill detectTask = this.billService.findBySampleCode(samplecode);
-        if (detectTask == null) {
-            return BaseOutput.failure("找不到检测任务");
-        }
+
+//        RegisterBill billItem = this.billService.findBySampleCode(samplecode);
+//        if (billItem == null) {
+//            return BaseOutput.failure("找不到检测任务");
+//        }
         try {
             this.updateRegisterBill(detectRecord);
         } catch (TraceBizException e) {
@@ -142,6 +141,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     }
 
     private void updateRegisterBill(DetectRecordParam detectRecord) {
+        // 对code,samplecode进行互换(检测客户端程序那边他们懒得改,不要动这行代码.具体看findByExeMachineNo里面的代码及注释)
         String samplecode = detectRecord.getRegisterBillCode();
         RegisterBill registerBillItem = billService.findBySampleCode(samplecode);
 
@@ -153,6 +153,10 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         if (DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBillItem.getDetectStatus())) {
             LOGGER.error("上传检测任务结果失败,该单号已完成检测");
             throw new TraceBizException("已完成检测");
+        }
+        if(!DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())){
+            LOGGER.error("上传检测任务结果失败,当前状态不能进行检测");
+            throw new TraceBizException("当前状态错误");
         }
         if (StringUtils.isNoneBlank(registerBillItem.getExeMachineNo())
                 && !registerBillItem.getExeMachineNo().equals(detectRecord.getExeMachineNo())) {

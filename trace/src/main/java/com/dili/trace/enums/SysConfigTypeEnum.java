@@ -24,6 +24,9 @@ public enum SysConfigTypeEnum {
     CATEGORY_BILL("bill","报备"),
     CALL_DATA_SWITCH("call_data_switch","远程调用数据开关大类"),
     CALL_DATA_HANG_GUO("source_hang_guo","远程调用数据开关_杭果"),
+    PUSH_DATA_SUBJECT("push_switch","上报数据开关_大类"),
+    PUSH_DATA_CATEGORY("push_data_switch","上报数据开关"),
+    SWITCH_OPEN_VAL("Y","默认标准_开启_值")
     ;
 
     private String name;

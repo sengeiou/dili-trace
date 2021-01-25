@@ -629,11 +629,10 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         boolean updateState = Optional.of(detectRequest).stream().anyMatch(pred);
         UserTicket userTicket = getOptUser();
         if (updateState) {
-            RegisterBill updatableBill=new RegisterBill();
-            updatableBill.setId(registerBill.getId());
+            registerBill.setId(registerBill.getId());
 
-            updatableBill.setOperatorName(userTicket.getRealName());
-            updatableBill.setOperatorId(userTicket.getId());
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
 
 
             try{
@@ -645,13 +644,14 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 newDetectRequest.setDesignatedName(null);
                 newDetectRequest.setDesignatedId(null);
                 this.detectRequestService.insertSelective(newDetectRequest);
-                updatableBill.setDetectRequestId(newDetectRequest.getId());
+                registerBill.setDetectRequestId(newDetectRequest.getId());
             }catch (Exception e){
                 throw new TraceBizException("处理失败");
             }
 
-            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            return this.billService.updateSelective(updatableBill);
+            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+            registerBill.setExeMachineNo(null);
+            return this.billService.update(registerBill);
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
