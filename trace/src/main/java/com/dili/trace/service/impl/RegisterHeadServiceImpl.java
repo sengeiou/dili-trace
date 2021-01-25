@@ -12,6 +12,7 @@ import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.dao.RegisterHeadMapper;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterHeadDto;
@@ -66,6 +67,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     UpStreamService upStreamService;
     @Autowired
     CustomerRpcService clientRpcService;
+    @Autowired
+    BillService billService;
 
 
     public RegisterHeadMapper getActualDao() {
@@ -270,6 +273,17 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         input.setRemainWeight(input.getWeight());
 
         this.updateSelective(input);
+
+        if(input.getOriginId()!=null&&StringUtils.isNotBlank(input.getOriginName())){
+            RegisterBill rbq=new RegisterBill();
+            rbq.setRegisterHeadCode(headItem.getCode());
+            RegisterBill updatableDomain=new RegisterBill();
+            updatableDomain.setOriginId(input.getOriginId());
+            updatableDomain.setOriginName(input.getOriginName());
+            this.billService.updateSelectiveByExample(updatableDomain,rbq);
+        }
+
+
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
 //        if (imageCertList.isEmpty()) {
