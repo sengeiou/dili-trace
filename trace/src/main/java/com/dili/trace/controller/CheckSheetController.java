@@ -93,6 +93,11 @@ public class CheckSheetController {
         } else {
             modelMap.put("billType", billType);
         }
+        if(billType.equalsIgnoreCase(BillTypeEnum.REGISTER_BILL.getCode().toString())){
+            modelMap.put("gridTitle", "进场检测报告");
+        }else{
+            modelMap.put("gridTitle", "委托检测报告");
+        }
 
         return "checkSheet/index";
     }

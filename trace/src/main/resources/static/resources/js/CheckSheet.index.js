@@ -7,6 +7,13 @@ class CheckSheetIndex extends ListPage {
         $('#detail-btn').on('click', async () => await this.doDetail());
         $('#reprint-btn').on('click', async () => await this.doPrint());
     }
+    removeAllAndLoadData() {
+        bs4pop.removeAll();
+        $("body").removeClass("modal-open");
+        (async () => {
+            await this.queryGridData();
+        })();
+    }
     doDetail() {
         let row = this.grid.bootstrapTable("getSelections");
         if (row.length == 0) {
