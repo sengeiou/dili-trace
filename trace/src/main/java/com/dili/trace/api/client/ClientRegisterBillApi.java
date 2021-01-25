@@ -1,6 +1,7 @@
 package com.dili.trace.api.client;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -13,6 +14,7 @@ import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -242,5 +244,60 @@ public class ClientRegisterBillApi {
             logger.error("查询进门主台账单数据出错", e);
             return BaseOutput.failure("查询进门主台账单数据出错");
         }
+    }
+
+    /**
+     * 通过登记单ID获取登记单详细信息
+     * @param inputDto
+     * @return
+     */
+    @ApiOperation(value = "通过登记单ID获取登记单详细信息")
+    @RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
+    public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
+        if (inputDto == null || (inputDto.getBillId() == null && inputDto.getTradeDetailId() == null)) {
+            return BaseOutput.failure("参数错误");
+        }
+
+        logger.info("获取登记单详细信息->marketId:{},billId:{},tradeDetailId:{}", inputDto.getMarketId(),inputDto.getBillId(), inputDto.getTradeDetailId());
+        try {
+            Long userId = this.sessionContext.getAccountId();
+            if (userId == null) {
+                return BaseOutput.failure("你还未登录");
+            }
+            RegisterBillOutputDto registerBill = this.registerBillService.viewTradeDetailBill(inputDto);
+
+
+            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(inputDto.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
+            registerBill.setImageCertList(imageCertList);
+
+            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+            if(upStream!=null){
+                registerBill.setUpStreamName(upStream.getName());
+            }
+
+            //获取主台账单的总重量与剩余总重量
+            if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
+                RegisterHead registerHead = new RegisterHead();
+                registerHead.setCode(registerBill.getRegisterHeadCode());
+                List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+                if(CollectionUtils.isNotEmpty(registerHeadList)){
+                    registerHead = registerHeadList.get(0);
+                } else {
+                    return BaseOutput.failure("未找到主台账单");
+                }
+                registerBill.setHeadWeight(registerHead.getWeight());
+                registerBill.setRemainWeight(registerHead.getRemainWeight());
+            }
+
+            String data=JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.success().setData(JSON.parse(data));
+
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询数据出错");
+        }
+
     }
 }
