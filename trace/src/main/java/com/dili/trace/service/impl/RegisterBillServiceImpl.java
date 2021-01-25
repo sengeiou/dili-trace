@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -137,7 +136,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, dto.getMarketId());
             RegisterBill registerBill = dto.build(user,dto.getMarketId());
             if(StringUtils.isNotBlank(registerBill.getPlate())){
-                if(!RegUtils.isCarNo(registerBill.getPlate().trim())){
+                if(!RegUtils.isPlate(registerBill.getPlate().trim())){
                     throw new TraceBizException("车牌格式错误");
                 }
             }
