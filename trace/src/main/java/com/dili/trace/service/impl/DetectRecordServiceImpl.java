@@ -13,6 +13,7 @@ import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
+import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
@@ -89,7 +90,21 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         DetectTypeEnum detectTypeEnum=DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
             return  new TraceBizException("检测类型不正确");
         });
-
+        if(!RegUtils.isValidInput(input.getDetectBatchNo())){
+            throw  new TraceBizException("检测批号不能有特殊字符");
+        }
+        if(!RegUtils.isValidInput(input.getPdResult())){
+            throw  new TraceBizException("检测值不能有特殊字符");
+        }
+        if(!RegUtils.isValidInput(input.getNormalResult())){
+            throw  new TraceBizException("检测标准值不能有特殊字符");
+        }
+        if(!RegUtils.isValidInput(input.getDetectOperator())){
+            throw  new TraceBizException("检测人不能有特殊字符");
+        }
+        if(!RegUtils.isValidInput(input.getDetectCompany())){
+            throw  new TraceBizException("检测机构不能有特殊字符");
+        }
 
         DetectRecord detectRecord=new DetectRecord();
         try {

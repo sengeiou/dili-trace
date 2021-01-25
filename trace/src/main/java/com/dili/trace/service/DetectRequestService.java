@@ -639,9 +639,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
-        // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
+        // 只有待审核且待预约状态的报备单才可以撤销
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())
-                &&BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())){
+                && BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.undo));
         }
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
@@ -660,9 +660,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (canApp) {
             msgStream.add(DetectRequestMessageEvent.appointment);
         }
-        // 待接单：可以接单和撤销
+        // 待接单：可以接单
         if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
-            msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.assign, DetectRequestMessageEvent.undo));
+            msgStream.add(DetectRequestMessageEvent.assign);
             // 待采样：可以采样检测、主动送检、人工检测
         } else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.auto, DetectRequestMessageEvent.sampling));
