@@ -6,5 +6,7 @@ ALTER TABLE dili_trace.trade_detail ADD buyer_type INT DEFAULT 1 NOT NULL COMMEN
 ALTER TABLE dili_trace.trade_request MODIFY COLUMN buyer_id bigint NULL COMMENT '买家ID';
 ALTER TABLE dili_trace.trade_order MODIFY COLUMN buyer_id bigint NULL COMMENT '买家ID';
 ALTER TABLE dili_trace.register_bill_history ADD checkin_status INT NULL;
+ALTER TABLE dili_trace.detect_request ADD scheduled_detect_time DATETIME NULL COMMENT '检测指定时间';
+
 
 

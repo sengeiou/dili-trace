@@ -99,6 +99,13 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`detect_reservation_time`")
     private Date detectReservationTime;
 
+
+    /**
+     * 检测指定时间
+     */
+    @Column(name = "`scheduled_detect_time`")
+    private Date scheduledDetectTime;
+
     /**
      * 检测时间
      */
@@ -297,5 +304,13 @@ public class DetectRequest extends BaseDomain {
 
     public void setDetectCode(String detectCode) {
         this.detectCode = detectCode;
+    }
+
+    public Date getScheduledDetectTime() {
+        return scheduledDetectTime;
+    }
+
+    public void setScheduledDetectTime(Date scheduledDetectTime) {
+        this.scheduledDetectTime = scheduledDetectTime;
     }
 }

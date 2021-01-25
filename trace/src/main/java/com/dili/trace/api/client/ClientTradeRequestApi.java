@@ -56,7 +56,7 @@ import io.swagger.annotations.ApiOperation;
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 @RequestMapping(value = "/api/client/clientTradeRequestApi")
 public class ClientTradeRequestApi {
-    private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientTradeRequestApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired
@@ -264,7 +264,7 @@ public class ClientTradeRequestApi {
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SEPREATE);
 
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
-            tradeDto.getSeller().setSellerId(inputDto.getSellerId());
+            tradeDto.getSeller().setSellerId(sellerId);
 
             List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
                     inputDto.getBatchStockList(), sessionData.getOptUser());
