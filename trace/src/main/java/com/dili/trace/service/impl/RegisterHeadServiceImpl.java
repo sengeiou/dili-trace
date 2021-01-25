@@ -258,6 +258,14 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         }
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
+        RegisterBill rbq=new RegisterBill();
+        rbq.setRegisterHeadCode(headItem.getCode());
+        rbq.setIsDeleted(YesOrNoEnum.NO.getCode());
+        boolean hasBill=this.billService.selectByExample(rbq).size()>0;
+        if(hasBill){
+            throw new TraceBizException("已有相关报备单，不能修改");
+        }
+
         // 车牌转大写
         String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
                 .findFirst().orElse(null);
@@ -274,14 +282,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         this.updateSelective(input);
 
-        if(input.getOriginId()!=null&&StringUtils.isNotBlank(input.getOriginName())){
-            RegisterBill rbq=new RegisterBill();
-            rbq.setRegisterHeadCode(headItem.getCode());
-            RegisterBill updatableDomain=new RegisterBill();
-            updatableDomain.setOriginId(input.getOriginId());
-            updatableDomain.setOriginName(input.getOriginName());
-            this.billService.updateSelectiveByExample(updatableDomain,rbq);
-        }
 
 
 
