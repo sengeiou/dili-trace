@@ -375,7 +375,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateParam.setDesignatedId(designatedId);
         updateParam.setDesignatedName(designatedName);
         updateParam.setConfirmTime(new Date());
-        updateParam.setDetectTime(detectTime);
+        updateParam.setScheduledDetectTime(detectTime);
         updateParam.setModified(new Date());
         updateParam.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
         this.updateSelective(updateParam);
