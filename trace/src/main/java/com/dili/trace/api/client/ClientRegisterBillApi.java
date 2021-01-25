@@ -264,8 +264,32 @@ public class ClientRegisterBillApi {
             if (userId == null) {
                 return BaseOutput.failure("你还未登录");
             }
-            RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto);
-            String data=JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
+            RegisterBillOutputDto registerBill = this.registerBillService.viewTradeDetailBill(inputDto);
+
+
+            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(inputDto.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
+            registerBill.setImageCertList(imageCertList);
+
+            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+            if(upStream!=null){
+                registerBill.setUpStreamName(upStream.getName());
+            }
+
+            //获取主台账单的总重量与剩余总重量
+            if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
+                RegisterHead registerHead = new RegisterHead();
+                registerHead.setCode(registerBill.getRegisterHeadCode());
+                List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+                if(CollectionUtils.isNotEmpty(registerHeadList)){
+                    registerHead = registerHeadList.get(0);
+                } else {
+                    return BaseOutput.failure("未找到主台账单");
+                }
+                registerBill.setHeadWeight(registerHead.getWeight());
+                registerBill.setRemainWeight(registerHead.getRemainWeight());
+            }
+
+            String data=JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
             return BaseOutput.success().setData(JSON.parse(data));
 
         } catch (TraceBizException e) {
