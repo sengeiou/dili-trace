@@ -142,6 +142,11 @@ public class CreateRegisterHeadInputDto {
 	 * 单价
 	 */
 	private BigDecimal unitPrice;
+
+	/**
+	 * 拼车类型
+	 */
+	private Integer truckType;
 	/**
 	 * 备注
 	 */
@@ -179,7 +184,16 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setRemark(this.getRemark());
 		registerHead.setActive(this.getActive());
 		registerHead.setUnitPrice(this.getUnitPrice());
+		registerHead.setTruckType(this.getTruckType());
 		return registerHead;
+	}
+
+	public Integer getTruckType() {
+		return truckType;
+	}
+
+	public void setTruckType(Integer truckType) {
+		this.truckType = truckType;
 	}
 
 	public BigDecimal getUnitPrice() {
