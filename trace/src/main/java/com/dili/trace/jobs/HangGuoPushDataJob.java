@@ -119,6 +119,12 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushHangGuoTradeData() {
+        if(isCallDataSwitch()){
+            if(logger.isInfoEnabled()){
+                logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
+            }
+            return;
+        }
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             List<Market> marketList = marketService.listFromUap();
