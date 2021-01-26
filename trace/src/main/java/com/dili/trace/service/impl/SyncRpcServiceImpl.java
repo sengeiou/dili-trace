@@ -88,8 +88,8 @@ public class SyncRpcServiceImpl implements SyncRpcService {
                 return;
             }
             updateUserByRpcUserList(rpcUserByIds.getData(), userList);
-        }catch (Exception e){
-            if(logger.isErrorEnabled()){
+        } catch (Exception e) {
+            if (logger.isErrorEnabled()) {
                 logger.error(e.getMessage());
             }
         }
@@ -99,9 +99,9 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     @Async
     @Transactional(rollbackFor = Exception.class)
     public void syncGoodsToRpcCategory(Long categoryId) {
-            //向上同步三级
-            Integer syncLevel = syncLevelGoods;
-            syncGoodsFromRpcCategory(categoryId, syncLevel);
+        //向上同步三级
+        Integer syncLevel = syncLevelGoods;
+        syncGoodsFromRpcCategory(categoryId, syncLevel);
     }
 
     /**
@@ -114,8 +114,14 @@ public class SyncRpcServiceImpl implements SyncRpcService {
         BaseOutput<CategoryDTO> baseOutput = assetsRpc.get(categoryId);
         if (Objects.nonNull(baseOutput)) {
             CategoryDTO dto = baseOutput.getData();
+            if (Objects.isNull(dto)) {
+                if (logger.isErrorEnabled()) {
+                    logger.error("同步商品id：" + categoryId + "失败，此商品查询失败");
+                }
+                return;
+            }
             //上级为空且同步级别大于0则新增其他类型商品类型作为上级商品
-            if (Objects.isNull(dto) || Objects.isNull(dto.getParent()) || topParentId.equals(dto.getParent())) {
+            if (Objects.isNull(dto.getParent()) || topParentId.equals(dto.getParent())) {
                 syncDefaultCategory(dto, syncLevel);
             } else {
                 //新增商品上级
@@ -143,19 +149,19 @@ public class SyncRpcServiceImpl implements SyncRpcService {
                         syncLevel--;
                         if (Objects.nonNull(topClass)) {
                             //三级分类为空新增其他分类
-                            boolean isTopNull=Objects.isNull(topClass.getData());
-                            if(isTopNull){
+                            boolean isTopNull = Objects.isNull(topClass.getData());
+                            if (isTopNull) {
                                 CategoryDTO other = new CategoryDTO();
                                 other.setMarketId(dto.getMarketId());
                                 syncLevel++;
-                                topParentId= addDefaultCategory(other,syncLevel);
-                            }else{
+                                topParentId = addDefaultCategory(other, syncLevel);
+                            } else {
                                 if (isNotTopCategory(topClass.getData(), syncLevel)) {
                                     if (logger.isInfoEnabled()) {
                                         logger.info("商品不是最顶级极点，查询上级商品同步");
                                     }
-                                        topUapParentId = getTopCategoryFromRpcCategory(topClass.getData().getParent(), syncLevel,classData.getMarketId());
-                                }else{
+                                    topUapParentId = getTopCategoryFromRpcCategory(topClass.getData().getParent(), syncLevel, classData.getMarketId());
+                                } else {
                                     addOrUpdateHangGuoCategory(topClass.getData(), syncLevelTop, topUapParentId, topParentId);
                                 }
                             }
@@ -283,7 +289,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     private HangGuoCategory buildNullParentCategory(CategoryDTO dto, Integer level) {
         HangGuoCategory parentCategory = new HangGuoCategory();
         parentCategory.setLevel(level);
-        if(Objects.nonNull(dto.getMarketId())){
+        if (Objects.nonNull(dto) && Objects.nonNull(dto.getMarketId())) {
             parentCategory.setMarketId(dto.getMarketId());
         }
         parentCategory.setName(syncGoodsDefaultNames);

@@ -81,7 +81,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         if(isCallDataSwitch()){
             if(logger.isInfoEnabled()){
@@ -117,7 +117,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushHangGuoTradeData() {
         if(isCallDataSwitch()){
             if(logger.isInfoEnabled()){
