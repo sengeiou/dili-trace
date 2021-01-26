@@ -18,7 +18,7 @@ import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;

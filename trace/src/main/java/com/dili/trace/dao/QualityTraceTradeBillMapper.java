@@ -2,7 +2,7 @@ package com.dili.trace.dao;
 
 import com.dili.trace.api.output.QualityTraceTradeBillOutput;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 import org.apache.ibatis.annotations.Param;
 

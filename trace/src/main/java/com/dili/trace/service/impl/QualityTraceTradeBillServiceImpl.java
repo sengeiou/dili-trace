@@ -3,7 +3,7 @@ package com.dili.trace.service.impl;
 import com.dili.trace.api.output.QualityTraceTradeBillOutput;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.QualityTraceTradeBillMapper;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import org.springframework.stereotype.Service;
