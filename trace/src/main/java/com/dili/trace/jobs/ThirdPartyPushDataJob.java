@@ -86,7 +86,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     AssetsRpc assetsRpc;
     @Override
     public void run(String... args) throws Exception {
-        //pushData();
+        pushData();
     }
     private boolean isCallDataSwitch() {
         return sysConfigService.isCallDataSwitch(SysConfigTypeEnum.PUSH_DATA_SUBJECT.getCode(),SysConfigTypeEnum.PUSH_DATA_CATEGORY.getCode());
@@ -94,7 +94,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    //@Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         if(isCallDataSwitch()){
             if(logger.isInfoEnabled()){
@@ -125,11 +125,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                     // 水产等市场商品推送逻辑
                     else  {
                         // 商品大类新增/修改
-                        this.pushBigCategory(optUser, market);
+                        //this.pushBigCategory(optUser, market);
+                        this.pushFruitsBigCategory(optUser, market);
                         // 商品二级类目新增/修改
-                        this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime, market);
+                        this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 2, optUser, endTime, market);
                         // 商品新增/修改
-                        this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime, market);
+                        this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
                     }
                     // 上游新增编辑
                     this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser, endTime, market);
@@ -162,7 +163,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
-//    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushRegisterBillData() {
         if(isCallDataSwitch()){
             if(logger.isInfoEnabled()){
@@ -237,30 +238,33 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
-        if (thirdPartyPushData == null) {
             HangGuoCategory category = new HangGuoCategory();
             category.setLevel(fruitsBigCategory);
             category.setMarketId(marketId);
-            List<HangGuoCategory> categories = categoryService.listByExample(category);
-
-            List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
-                CategoryDto categoryDto = new CategoryDto();
-                categoryDto.setThirdBigClassName(c.getName());
-                categoryDto.setThirdBigClassId(String.valueOf(c.getId()));
-                categoryDto.setMarketId(String.valueOf(platformMarketId));
-                return categoryDto;
-            }).collect(Collectors.toList());
-            BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
-            if (baseOutput.isSuccess()) {
-                ThirdPartyPushData pushData = new ThirdPartyPushData();
-                pushData.setTableName(tableName);
-                pushData.setInterfaceName(interfaceName);
-                pushData.setMarketId(marketId);
-                this.thirdPartyPushDataService.updatePushTime(pushData);
-            } else {
-                logger.error("上报:杭果商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
+            if(Objects.nonNull(thirdPartyPushData)){
+                Date pushTime = thirdPartyPushData.getPushTime();
+                category.setMetadata(IDTO.AND_CONDITION_EXPR," modified > '" + DateUtils.format(pushTime)+"'");
             }
-        }
+            List<HangGuoCategory> categories = categoryService.listByExample(category);
+            if(CollectionUtils.isNotEmpty(categories)){
+                List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
+                    CategoryDto categoryDto = new CategoryDto();
+                    categoryDto.setThirdBigClassName(c.getName());
+                    categoryDto.setThirdBigClassId(String.valueOf(c.getId()));
+                    categoryDto.setMarketId(String.valueOf(platformMarketId));
+                    return categoryDto;
+                }).collect(Collectors.toList());
+                BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
+                if (baseOutput.isSuccess()) {
+                    ThirdPartyPushData pushData = new ThirdPartyPushData();
+                    pushData.setTableName(tableName);
+                    pushData.setInterfaceName(interfaceName);
+                    pushData.setMarketId(marketId);
+                    this.thirdPartyPushDataService.updatePushTime(pushData);
+                } else {
+                    logger.error("上报:杭果商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
+                }
+            }
     }
 
     /**
@@ -280,6 +284,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //TODO
         category.setLevel(level);
         category.setMarketId(marketId);
+        if(Objects.nonNull(thirdPartyPushData)){
+            Date pushTime = thirdPartyPushData.getPushTime();
+            category.setMetadata(IDTO.AND_CONDITION_EXPR," modified > '" + DateUtils.format(pushTime)+"'");
+        }
         List<HangGuoCategory> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
@@ -288,24 +296,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-            int i = 1;
-            PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
-            for (PreserveTypeEnum type : preserveTypeEnums) {
-                for (HangGuoCategory td : categories) {
-                    boolean needPush = true;
-                   /* boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                            && td.getModified().compareTo(endTime) <= 0);*/
-                    if (needPush) {
-                        CategorySecondDto categoryDto = new CategorySecondDto();
-                        categoryDto.setThirdSmallClassId(td.getId().toString());
-                        categoryDto.setSmallClassName(td.getName());
-                        categoryDto.setThirdBigClassId(String.valueOf(i));
-                        categoryDto.setMarketId(String.valueOf(platformMarketId));
-                        categoryDtos.add(categoryDto);
-                    }
-                }
-                ;
-                i++;
+            for (HangGuoCategory td : categories) {
+                    CategorySecondDto categoryDto = new CategorySecondDto();
+                    categoryDto.setThirdSmallClassId(td.getId().toString());
+                    categoryDto.setSmallClassName(td.getName());
+                    categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
+                    categoryDto.setMarketId(String.valueOf(platformMarketId));
+                    categoryDtos.add(categoryDto);
             }
             if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser, market);
@@ -318,17 +315,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                boolean needPush =true;
- /*               boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);*/
-                if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
-//                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
                     categoryDto.setMarketId(String.valueOf(platformMarketId));
                     categoryDtos.add(categoryDto);
-                }
             });
             if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser, market);
