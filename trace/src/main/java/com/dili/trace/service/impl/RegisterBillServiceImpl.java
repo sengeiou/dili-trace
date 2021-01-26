@@ -942,7 +942,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         String sql = null;
         if (StringUtils.isNotBlank(query.getKeyword())) {
             String keyword = query.getKeyword().trim();
-            sql = "( product_name like '%" + keyword + "%'  OR name like '%"+ keyword + "%')";
+            sql = "( product_name like '%" + keyword + "%'  OR name like '%"+ keyword + "%'  OR (register_source="+RegisterSourceEnum.TALLY_AREA.getCode()+" and source_name like '%"+ keyword + "%') )";
         }
         return Optional.ofNullable(sql);
 
