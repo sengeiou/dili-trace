@@ -16,6 +16,12 @@ public class RegUtils {
     }
 
     public static boolean isValidInput(String input) {
+
+        Pattern emoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\ud83e\udd00-\ud83e\udfff]|[\u2600-\u27ff]", Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        Matcher emojiMatcher = emoji.matcher(input);
+        if (emojiMatcher.find()) {
+            return false;
+        }
         //String str = "abcDD_-34中";
         String regex = "^(\\w|[\\u4e00-\\u9fa5]|-)+$";
         return Pattern.matches(regex, input);
