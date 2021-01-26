@@ -396,7 +396,7 @@ class EcommerceBillGrid extends ListPage {
         let url = this.toUrl('/ecommerceBill/view/' + selected_id);
         //@ts-ignore
         var dia = bs4pop.dialog({
-            title: '查看委托单',
+            title: '查看电商登记单',
             content: url,
             isIframe: true,
             closeBtn: true,
