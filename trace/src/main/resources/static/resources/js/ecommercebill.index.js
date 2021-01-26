@@ -1,11 +1,13 @@
 class EcommerceBillGrid extends ListPage {
-    constructor(grid, queryform) {
+    constructor(grid, queryform, toolbar) {
         super(grid, queryform, queryform.find('#query'), "/ecommerceBill/listPage.action");
         this.grid = grid;
         this.queryform = queryform;
+        this.toolbar = toolbar;
         let categoryController = new CategoryController();
         let cityController = new CityController();
         window['ECommerceBillGrid'] = this;
+        this.btns = this.toolbar.find('button');
         $('#add-btn').on('click', async () => await this.openCreatePage());
         $('#audit-btn').on('click', async () => await this.openAudit());
         $('#delete-btn').on('click', async () => await this.openDelete());
@@ -18,6 +20,25 @@ class EcommerceBillGrid extends ListPage {
         this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done);
         });
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+    }
+    async resetButtons() {
+        var btnArray = this.btns;
+        _.chain(btnArray).each((btn) => {
+            $(btn).hide();
+        });
+        await this.queryEventAndSetBtn();
+    }
+    async queryEventAndSetBtn() {
+        var rows = this.rows;
+        try {
+            var billIdList = _.chain(rows).map(v => v.id).value();
+            var resp = await jq.postJson(this.toUrl('/ecommerceBill/queryEvents.action'), billIdList);
+            resp.forEach(btnid => { $('#' + btnid).show(); });
+        }
+        catch (e) {
+            console.error(e);
+        }
     }
     async openAudit() {
         var rows = this.grid.bootstrapTable("getSelections");

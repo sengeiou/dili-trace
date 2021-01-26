@@ -2,15 +2,18 @@ class EcommerceBillGrid extends ListPage {
     grid: any;
     queryform: any;
     highLightBill: any;
+    btns:any[];
+    toolbar:any;
 
-    constructor(grid: any, queryform: any) {
+    constructor(grid: any, queryform: any, toolbar: any) {
         super(grid,queryform,queryform.find('#query'),"/ecommerceBill/listPage.action");
         this.grid = grid;
         this.queryform = queryform;
+        this.toolbar=toolbar;
         let categoryController: CategoryController = new CategoryController();
         let cityController: CityController = new CityController();
         window['ECommerceBillGrid'] = this;
-
+        this.btns=this.toolbar.find('button');
         $('#add-btn').on('click', async () => await this.openCreatePage());
         $('#audit-btn').on('click', async () => await this.openAudit());
         $('#delete-btn').on('click', async () => await this.openDelete());
@@ -24,12 +27,34 @@ class EcommerceBillGrid extends ListPage {
         this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done)
         });
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
         /*this.queryform.find('#query').click(async () => await this.queryGridData());
         //load data
         (async () => {
             await this.queryGridData();
         })();*/
+    }
+    protected async resetButtons() {
+        var btnArray=this.btns;
+        _.chain(btnArray).each((btn)=> {
+            $(btn).hide();
+        });
+        await this.queryEventAndSetBtn();
+
+    }
+    private async queryEventAndSetBtn(){
+        var rows=this.rows;
+        try{
+            //@ts-ignore
+            var billIdList=_.chain(rows).map(v=>v.id).value();
+            var resp=await jq.postJson(this.toUrl('/ecommerceBill/queryEvents.action'),billIdList);
+            // console.info(resp)
+            resp.forEach(btnid=>{ $('#'+btnid).show();})
+        }catch (e){
+            console.error(e);
+        }
+
     }
     private async openAudit() {
         var rows = this.grid.bootstrapTable("getSelections");
