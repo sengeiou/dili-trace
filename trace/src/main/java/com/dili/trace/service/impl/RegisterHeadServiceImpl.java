@@ -237,8 +237,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("重量单位错误");
             return new TraceBizException("重量单位错误");
         });
-        if(registerHead.getPlate()!=null){
-            if(!RegUtils.isPlate(registerHead.getPlate())){
+        if(StringUtils.isNotBlank(registerHead.getPlate())){
+            if(!RegUtils.isPlate(registerHead.getPlate().trim())){
                 throw new TraceBizException("车牌格式错误");
             }
         }
