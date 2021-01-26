@@ -815,7 +815,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum,Date detectTime) {
 
 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
@@ -836,7 +836,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         manualCheckBill(registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
-        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum);
+        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum,detectTime);
     }
 
     /**
@@ -861,7 +861,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequestId
      */
-    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum,Date detectTime) {
         DetectRecord detectRecord = detectRecordService.get(detectRecordId);
         if (!Objects.nonNull(detectRecord)){
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
@@ -873,7 +873,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         // 采样时间
         updateRequest.setSampleTime(new Date());
         // 检测时间
-        updateRequest.setDetectTime(new Date());
+        updateRequest.setDetectTime(detectTime);
         // 检测结果
         updateRequest.setDetectResult(detectResultEnum.getCode());
         // 初检
