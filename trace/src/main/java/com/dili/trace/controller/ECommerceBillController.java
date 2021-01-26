@@ -199,6 +199,9 @@ public class ECommerceBillController {
 		List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
 		modelMap.put("separateSalesRecords", records);
 
+		List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(bill.getBillId());
+		bill.setImageCertList(imageCerts);
+
 		modelMap.put("item", bill);
 		return "ecommerceBill/view";
 	}

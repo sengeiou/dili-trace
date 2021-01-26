@@ -110,8 +110,8 @@
 							                <a href="javascript:;" class="a-upload" tabindex="-1">
 							                    <input type="file" id="originCertifiyUrl" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
 							                    <span>上传</span>
-							                    <input type="hidden" name="bill.imageCertList[0].uid">
-                                                <input type="hidden" name="bill.imageCertList[0].certType" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+							                    <input type="hidden" name="bill[imageCertList][0][uid]">
+                                                <input type="hidden" name="bill[imageCertList][0][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
 							                </a>
 							            </div>
 							            <div class="view-div" style="display: none;">
@@ -127,8 +127,8 @@
 							                <a href="javascript:;" class="a-upload" tabindex="-1">
 							                    <input type="file" id="detectReportUrl" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
 							                    <span>上传</span>
-                                                <input type="hidden" name="bill.imageCertList[1].uid">
-                                                <input type="hidden" name="bill.imageCertList[1].certType" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                                                <input type="hidden" name="bill[imageCertList][1][uid]">
+                                                <input type="hidden" name="bill[imageCertList][1][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
 							                </a>
 							            </div>
 							            <div class="view-div" style="display: none;">
@@ -184,7 +184,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script id="seperateItem" type="text/html">
     <tr>
         <td>
@@ -546,6 +546,7 @@
 
     $( document ).on( "click", ".img-view-a",function () {
         var url =  $(this).parent().siblings('.upload-div').find('input[type="hidden"]').val()
+        url = "${imageViewPathPrefix}/" + url;
     debugger
         if(url){
             layer.open({
