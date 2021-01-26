@@ -8,7 +8,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.enums.*;

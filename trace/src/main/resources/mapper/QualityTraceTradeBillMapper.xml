@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.sg.trace.dao.QualityTraceTradeBillMapper">
-  <resultMap id="BaseResultMap" type="com.dili.trace.domain.sg.QualityTraceTradeBill">
+<mapper namespace="com.dili.trace.dao.QualityTraceTradeBillMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.QualityTraceTradeBill">
     <!--
       WARNING - @mbg.generated
     -->
@@ -55,7 +55,7 @@
 select count(1) as ct,order_id from quality_trace_trade_bill group by order_id having count(1)>1
   </select>
   
-  <update id="updateBy" parameterType="com.dili.trace.domain.sg.QualityTraceTradeBill">
+  <update id="updateBy" parameterType="com.dili.trace.domain.QualityTraceTradeBill">
     <!--
       WARNING - @mbg.generated
     -->
@@ -137,8 +137,8 @@ select count(1) as ct,order_id from quality_trace_trade_bill group by order_id h
     where order_id = #{orderId}
   </select>
   
-  
-    <select id="findQualityTraceTradeBillByTradeBillIdList"   resultType="com.dili.trace.api.output.QualityTraceTradeBillOutput">
+
+  <select id="findQualityTraceTradeBillByTradeBillIdList"   resultType="com.dili.trace.api.output.QualityTraceTradeBillOutput">
     SELECT
     quality_trace_trade_bill.bill_id,
     register_bill.latest_detect_time,
@@ -146,17 +146,16 @@ select count(1) as ct,order_id from quality_trace_trade_bill group by order_id h
     register_bill.latest_pd_result,
     register_bill.detect_state
     from quality_trace_trade_bill left join register_bill on quality_trace_trade_bill.register_bill_code =register_bill.code
-   where 1=0
+    where 1=0
     <if test="tradeBillIdList != null and tradeBillIdList.size()>0">
-			or quality_trace_trade_bill.bill_id IN
-			<foreach collection="tradeBillIdList" open="(" separator=","
-				close=")" item="billId">
-				#{billId}
-			</foreach>
-	</if>
-    
+      or quality_trace_trade_bill.bill_id IN
+      <foreach collection="tradeBillIdList" open="(" separator=","
+               close=")" item="billId">
+        #{billId}
+      </foreach>
+    </if>
+
   </select>
-  
   
   
 </mapper>

@@ -5,7 +5,7 @@ import java.util.List;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 
 public interface QualityTraceTradeBillOutDto extends IBaseDomain {
 

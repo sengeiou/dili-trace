@@ -1,7 +1,7 @@
 package com.dili.trace.dto;
 
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.sg.QualityTraceTradeBillSyncPoint;
+import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
 
 import javax.persistence.Column;
 
