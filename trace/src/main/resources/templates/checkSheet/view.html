@@ -3,7 +3,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">打印报告详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['checkSheetIndex'].removeAllAndLoadData()">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="closeCurrentWindow()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -67,6 +67,10 @@
 </#bodyOrigin>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 <script type="text/javascript">
-
+function closeCurrentWindow(){
+    if(window.top!=window){
+        $(parent.window.document).find('#checksheet_view_win').remove()
+    }
+}
 </script>
 
