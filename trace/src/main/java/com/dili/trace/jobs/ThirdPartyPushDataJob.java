@@ -4,6 +4,8 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
+import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.CategoryRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -12,12 +14,16 @@ import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.Firm;
+import com.dili.uap.sdk.domain.dto.FirmDto;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +35,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
@@ -44,12 +51,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyPushDataJob.class);
     @Autowired
     DataReportService dataReportService;
-    @Autowired
+    @Resource
     RegisterBillMapper registerBillMapper;
-    @Autowired
+    @Resource
     TradeRequestMapper tradeRequestMapper;
     @Autowired
-    private AssetsRpcService categoryService;
+    private CategoryService categoryService;
     @Autowired
     private ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
@@ -62,31 +69,39 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private ThirdDataReportService thirdDataReportService;
     @Autowired
     private UpStreamService upStreamService;
-
     @Autowired
     private MarketService marketService;
+    @Autowired
+    private SysConfigService sysConfigService;
 
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
     private Integer pushBatchSize;
-    @Autowired
+    @Resource
     CheckinOutRecordMapper checkinOutRecordMapper;
-
-    //private String marketId = "330110800";
-
-    /**
-     * marketId统一使用330110800
-     */
+    @Resource
+    FirmRpcService FirmRpcService;
+    @Resource
+    AssetsRpc assetsRpc;
     @Override
     public void run(String... args) throws Exception {
+        //pushData();
     }
-
+    private boolean isCallDataSwitch() {
+        return sysConfigService.isCallDataSwitch(SysConfigTypeEnum.PUSH_DATA_SUBJECT.getCode(),SysConfigTypeEnum.PUSH_DATA_CATEGORY.getCode());
+    }
     /**
      * 每五分钟提交一次数据
      */
-//    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
+        if(isCallDataSwitch()){
+            if(logger.isInfoEnabled()){
+                logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
+            }
+            return;
+        }
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             List<Market> marketList = marketService.listFromUap();
@@ -98,22 +113,23 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 String marketCode = market.getCode();
                 if (appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)) {
                     Date endTime = this.registerBillMapper.selectCurrentTime();
-                    // 水产市场商品推送逻辑
-                    if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSC.getCode()))) {
+                    // 水果市场商品推送逻辑***！！！后续杭果需要标识位确定位杭果商品！！！***
+                    if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))) {
+                        // 杭果-商品大类新增/修改
+                        //this.pushFruitsBigCategory(optUser, market);
+                        // 杭果-商品二级类目新增/修改
+                        // 杭果-商品新增/修改
+                        //this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 2, optUser, endTime, market);
+                        //this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
+                    }
+                    // 水产等市场商品推送逻辑
+                    else  {
                         // 商品大类新增/修改
                         this.pushBigCategory(optUser, market);
                         // 商品二级类目新增/修改
-                        // 商品新增/修改
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime, market);
+                        // 商品新增/修改
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime, market);
-                    // 水果市场商品推送逻辑
-                    } else if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))) {
-                        // 杭果-商品大类新增/修改
-                        this.pushFruitsBigCategory(optUser, market);
-                        // 杭果-商品二级类目新增/修改
-                        // 杭果-商品新增/修改
-                        this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 2, optUser, endTime, market);
-                        this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
                     }
                     // 上游新增编辑
                     this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser, endTime, market);
@@ -148,6 +164,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
 //    @Scheduled(cron = "0 */5 * * * ?")
     public void pushRegisterBillData() {
+        if(isCallDataSwitch()){
+            if(logger.isInfoEnabled()){
+                logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
+            }
+            return;
+        }
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             List<Market> marketList = marketService.listFromUap();
@@ -216,11 +238,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
         if (thirdPartyPushData == null) {
-            CusCategoryDTO category = new CusCategoryDTO();
-//TODO
-            //            category.setLevel(fruitsBigCategory);
+            HangGuoCategory category = new HangGuoCategory();
+            category.setLevel(fruitsBigCategory);
             category.setMarketId(marketId);
-            List<CusCategoryDTO> categories = categoryService.listCusCategory(null,null);
+            List<HangGuoCategory> categories = categoryService.listByExample(category);
 
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -255,11 +276,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        CusCategoryQuery category = new CusCategoryQuery();
+        HangGuoCategory category = new HangGuoCategory();
         //TODO
-//        category.setLevel(level);
+        category.setLevel(level);
         category.setMarketId(marketId);
-        List<CusCategoryDTO> categories = categoryService.listCusCategory(category,null);
+        List<HangGuoCategory> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -270,7 +291,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             int i = 1;
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             for (PreserveTypeEnum type : preserveTypeEnums) {
-                for (CusCategoryDTO td : categories) {
+                for (HangGuoCategory td : categories) {
                     boolean needPush = true;
                    /* boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
                             && td.getModified().compareTo(endTime) <= 0);*/
@@ -333,11 +354,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        CusCategoryQuery category = new CusCategoryQuery();
+        HangGuoCategory category = new HangGuoCategory();
         //TODO
-//        category.setLevel(level);
+        category.setLevel(level);
         category.setMarketId(marketId);
-        List<CusCategoryDTO> categories = categoryService.listCusCategory(category,null);
+        List<HangGuoCategory> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -345,7 +366,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-            for (CusCategoryDTO td : categories) {
+            for (HangGuoCategory td : categories) {
                 //TODO
                 boolean needPush =true;
 /*                boolean needPush = thirdPartyPushData == null

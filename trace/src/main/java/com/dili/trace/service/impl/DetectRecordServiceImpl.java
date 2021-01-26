@@ -7,6 +7,7 @@ import com.dili.trace.dao.DetectRecordMapper;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordInputDto;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.enums.DetectRecordStateEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -142,5 +143,10 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum,input.getDetectTime());
 
         return 1;
+    }
+
+    @Override
+    public List<DetectRecordParam> listBillByRecord(DetectRecordParam detectRecord) {
+        return getActualDao().listBillByRecord(detectRecord);
     }
 }

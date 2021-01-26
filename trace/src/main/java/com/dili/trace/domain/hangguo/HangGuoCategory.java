@@ -59,8 +59,48 @@ public class HangGuoCategory extends BaseDomain {
 	@Column(name = "`parent_code`")
 	private String parentCode;
 
+	@ApiModelProperty(value = "调用uap获取商品id")
+	@Column(name = "`uap_id`")
+	private Long uapId;
+
+	@ApiModelProperty(value = "商品parentid")
+	@Column(name = "`uap_parent_id`")
+	private Long uapParentId;
+
+	@ApiModelProperty(value = "调用uap获取商品parentid")
+	@Column(name = "`old_uap_parent_id`")
+	private Long oldUapParentId;
+
 	@Transient
 	private String marketCode;
+
+	public Long getOldUapParentId() {
+		return oldUapParentId;
+	}
+
+	public void setOldUapParentId(Long oldUapParentId) {
+		this.oldUapParentId = oldUapParentId;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public Long getUapId() {
+		return uapId;
+	}
+
+	public void setUapId(Long uapId) {
+		this.uapId = uapId;
+	}
+
+	public Long getUapParentId() {
+		return uapParentId;
+	}
+
+	public void setUapParentId(Long uapParentId) {
+		this.uapParentId = uapParentId;
+	}
 
 	public void setMarketId(Long marketId) {
 		this.marketId = marketId;

@@ -94,6 +94,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     DetectRequestService detectRequestService;
     @Autowired
     BillVerifyHistoryService billVerifyHistoryService;
+    @Autowired
+    SyncRpcService syncRpcService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -297,6 +299,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             businessType = MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
         addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),registerBill.getMarketId());
+        //同步uap商品、经营户
+        if(Objects.nonNull(registerBill.getProductId())){
+            syncRpcService.syncGoodsToRpcCategory(registerBill.getProductId());
+        }
+        if(Objects.nonNull(registerBill.getUserId())){
+            syncRpcService.syncRpcUserByUserId(registerBill.getUserId());
+        }
         return registerBill.getId();
     }
 
