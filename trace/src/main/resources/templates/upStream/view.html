@@ -83,7 +83,9 @@
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">身份证正面照</span>
+                        <%if (upstream.cardNoFrontUrl != null && upstream.cardNoFrontUrl != "") {%>
                         <img class="magnifying" src="${imageViewPathPrefix}/${upstream.cardNoFrontUrl!}">
+                        <%}%>
                         <input type="hidden" name="cardNoFrontUrl" value="${upstream.cardNoFrontUrl!}">
                         <div class="fileimg-cover" style="${isEmpty(upstream.cardNoFrontUrl)?'display: none;':''}"></div>
                         <div class="fileimg-edit" style="${isEmpty(upstream.cardNoFrontUrl)?'display: none;':''}">
@@ -91,11 +93,14 @@
                         </div>
                     </div>
                 </div>
+
                 <div style="margin-bottom:5px;display: inline-block;">
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">身份证反面照</span>
+                        <%if (upstream.cardNoBackUrl != null && upstream.cardNoBackUrl != "") {%>
                         <img class="magnifying" src="${imageViewPathPrefix}/${upstream.cardNoBackUrl!}">
+                        <%}%>
                         <input type="hidden" name="cardNoBackUrl" value="${upstream.cardNoBackUrl!}">
                         <div class="fileimg-cover" style="${isEmpty(upstream.cardNoBackUrl)?'display: none;':''}"></div>
                         <div class="fileimg-edit" style="${isEmpty(upstream.cardNoBackUrl)?'display: none;':''}">
@@ -108,7 +113,9 @@
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">营业执照</span>
+                        <%if (upstream.businessLicenseUrl != null && upstream.businessLicenseUrl != "") {%>
                         <img class="magnifying" src="${imageViewPathPrefix}/${upstream.businessLicenseUrl!}">
+                        <%}%>
                         <input type="hidden" name="businessLicenseUrl" value="${upstream.businessLicenseUrl!}">
                         <div class="fileimg-cover" style="${isEmpty(upstream.businessLicenseUrl)?'display: none;':''}"></div>
                         <div class="fileimg-edit" style="${isEmpty(upstream.businessLicenseUrl)?'display: none;':''}">
@@ -120,7 +127,9 @@
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">经营许可证</span>
+                        <%if (upstream.operationLicenseUrl != null && upstream.operationLicenseUrl != "") {%>
                         <img class="magnifying" src="${imageViewPathPrefix}/${upstream.operationLicenseUrl!}">
+                        <%}%>
                         <input type="hidden" name="operationLicenseUrl" value="${upstream.operationLicenseUrl!}">
                         <div class="fileimg-cover" style="${isEmpty(upstream.operationLicenseUrl)?'display: none;':''}"></div>
                         <div class="fileimg-edit" style="${isEmpty(upstream.operationLicenseUrl)?'display: none;':''}">
@@ -132,7 +141,9 @@
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">生产许可证</span>
+                        <%if (upstream.manufacturingLicenseUrl != null && upstream.manufacturingLicenseUrl != "") {%>
                         <img class="magnifying" src="${imageViewPathPrefix}/${upstream.manufacturingLicenseUrl!}">
+                        <%}%>
                         <input type="hidden" name="manufacturingLicenseUrl" value="${upstream.manufacturingLicenseUrl!}">
                         <div class="fileimg-cover" style="${isEmpty(upstream.manufacturingLicenseUrl)?'display: none;':''}"></div>
                         <div class="fileimg-edit" style="${isEmpty(upstream.manufacturingLicenseUrl)?'display: none;':''}">
