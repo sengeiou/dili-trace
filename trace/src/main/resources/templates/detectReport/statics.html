@@ -158,11 +158,15 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-list"></i>查看</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <#resource code="detectReport/statics.html#detail">
+                <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-list"></i>查看</button>
+            </#resource>
+            <#resource code="detectReport#export">
+                <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('staticsGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            </#resource>
         </div>
         <table id="staticsGrid" data-toggle="table" data-title="检测统计" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
-               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="code" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>

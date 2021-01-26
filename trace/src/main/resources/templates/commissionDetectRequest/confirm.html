@@ -59,7 +59,7 @@
     async function callDoAssign() {
         let designatedId = $("#designatedId").val();
         let designatedName = $("#designatedName").val();
-        let detectTime = $("#detectTime").val();
+        let detectTime = $("#scheduledDetectTime").val();
         await parent.window['CommissionDetectRequestGridObj'].doAssign('${registerBill.id}', designatedId, designatedName, detectTime);
     }
     async function returnAssign() {
