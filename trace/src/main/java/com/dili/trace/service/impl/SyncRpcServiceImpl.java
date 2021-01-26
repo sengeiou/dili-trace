@@ -78,24 +78,30 @@ public class SyncRpcServiceImpl implements SyncRpcService {
         if (CollectionUtils.isEmpty(userIds)) {
             return;
         }
-        CustomerQueryInput customerQueryInput = new CustomerQueryInput();
-        Set<Long> userSet = new HashSet<>(userIds);
-        customerQueryInput.setIdSet(userSet);
-        BaseOutput<List<CustomerExtendDto>> rpcUserByIds = customerRpc.list(customerQueryInput);
-        List<User> userList = userService.getUserListByUserIds(userIds);
-        if (null == rpcUserByIds) {
-            return;
+        try {
+            CustomerQueryInput customerQueryInput = new CustomerQueryInput();
+            Set<Long> userSet = new HashSet<>(userIds);
+            customerQueryInput.setIdSet(userSet);
+            BaseOutput<List<CustomerExtendDto>> rpcUserByIds = customerRpc.list(customerQueryInput);
+            List<User> userList = userService.getUserListByUserIds(userIds);
+            if (null == rpcUserByIds) {
+                return;
+            }
+            updateUserByRpcUserList(rpcUserByIds.getData(), userList);
+        }catch (Exception e){
+            if(logger.isErrorEnabled()){
+                logger.error(e.getMessage());
+            }
         }
-        updateUserByRpcUserList(rpcUserByIds.getData(), userList);
     }
 
     @Override
     @Async
     @Transactional(rollbackFor = Exception.class)
     public void syncGoodsToRpcCategory(Long categoryId) {
-        //向上同步一级
-        Integer syncLevel = syncLevelGoods;
-        syncGoodsFromRpcCategory(categoryId, syncLevel);
+            //向上同步三级
+            Integer syncLevel = syncLevelGoods;
+            syncGoodsFromRpcCategory(categoryId, syncLevel);
     }
 
     /**
@@ -104,7 +110,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param categoryId
      * @param syncLevel
      */
-    private void syncGoodsFromRpcCategory(Long categoryId, Integer syncLevel) {
+    public void syncGoodsFromRpcCategory(Long categoryId, Integer syncLevel) {
         BaseOutput<CategoryDTO> baseOutput = assetsRpc.get(categoryId);
         if (Objects.nonNull(baseOutput)) {
             CategoryDTO dto = baseOutput.getData();

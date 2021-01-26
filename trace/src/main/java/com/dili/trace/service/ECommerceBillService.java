@@ -20,6 +20,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.util.MarketUtil;
 import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
@@ -37,10 +38,7 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -65,7 +63,9 @@ public class ECommerceBillService {
     @Resource
     RegisterBillMapper billMapper;
     @Autowired
-    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
+    UidRestfulRpcService uidRestfulRpcService;
+    @Autowired
+    SyncRpcService syncRpcService;
 
 
     /**
@@ -458,6 +458,13 @@ public class ECommerceBillService {
         bill.setMarketId(MarketUtil.returnMarket());
         this.billService.insertSelective(bill);
         this.billService.updateHasImage(bill.getBillId(),bill.getImageCertList());
+        //同步uap商品、经营户
+        if(Objects.nonNull(bill.getProductId())){
+            syncRpcService.syncGoodsToRpcCategory(bill.getProductId());
+        }
+        if(Objects.nonNull(bill.getUserId())){
+            syncRpcService.syncRpcUserByUserId(bill.getUserId());
+        }
         return bill.getId();
     }
 

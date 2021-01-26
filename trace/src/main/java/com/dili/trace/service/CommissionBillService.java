@@ -19,6 +19,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.util.MarketUtil;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,8 +47,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
     @Resource
     RegisterBillMapper billMapper;
     @Autowired
-    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
-
+    UidRestfulRpcService uidRestfulRpcService;
     /**
      * 分页查询委托单
      *
@@ -55,6 +55,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @return
      * @throws Exception
      */
+    @Autowired
+    SyncRpcService syncRpcService;
 //    public String listPage(RegisterBillDto query) throws Exception {
 //        RegisterBillDto dto = this.preBuildDTO(query);
 //        dto.setBillType(this.supportedBillType().getCode());
@@ -209,19 +211,9 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
-        bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
-
-        bill.setBillType(this.supportedBillType().getCode());
-        bill.setCreated(new Date());
-        bill.setModified(new Date());
-
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());
-        bill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
-        bill.setPlate("");
-
-        bill.setMarketId(MarketUtil.returnMarket());
-        this.billService.insertSelective(bill);
+        createCommissionBill(bill);
         DetectRequest item = this.detectRequestService.createDefault(bill.getBillId(), Optional.ofNullable(operatorUser));
 
         DetectRequest detectRequest = new DetectRequest();
@@ -268,17 +260,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
-        bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
-//		bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-//        bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
-        bill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
-        bill.setBillType(this.supportedBillType().getCode());
-        bill.setCreated(new Date());
-        bill.setModified(new Date());
-        bill.setMarketId(bill.getMarketId());
-//		bill.setPlate("");
-        this.billService.insertSelective(bill);
+        createCommissionBill(bill);
         DetectRequest detectRequest=this.detectRequestService.createDefault(bill.getBillId(),Optional.empty());
 
         DetectRequest updateDetectRequest = new DetectRequest();
@@ -297,6 +280,29 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         return bill;
     }
 
+    /**
+     * 创建登记单
+     * @param bill
+     * @return
+     */
+    private  RegisterBill createCommissionBill(RegisterBill bill){
+        bill.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.COMMISSION_BILL_CODE.getType()));
+        bill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        bill.setBillType(this.supportedBillType().getCode());
+        bill.setCreated(new Date());
+        bill.setModified(new Date());
+        bill.setMarketId(bill.getMarketId());
+        bill.setPlate("");
+        //同步uap商品、经营户
+        if(Objects.nonNull(bill.getProductId())){
+            syncRpcService.syncGoodsToRpcCategory(bill.getProductId());
+        }
+        if(Objects.nonNull(bill.getUserId())){
+            syncRpcService.syncRpcUserByUserId(bill.getUserId());
+        }
+        this.billService.insertSelective(bill);
+    return bill;
+    }
 
     /**
      * 用户自己创建登记单
