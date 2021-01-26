@@ -419,6 +419,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @return
      */
     Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestListForBuy(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
+        this.checkInput(tradeDto,batchStockInputList);
         Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
                 .mapToEntry(input -> {
 
