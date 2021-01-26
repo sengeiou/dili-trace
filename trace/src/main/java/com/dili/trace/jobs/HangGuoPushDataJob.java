@@ -9,6 +9,8 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoCategory;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.thirdparty.report.*;
@@ -27,6 +29,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,14 +43,14 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoPushDataJob.class);
     @Autowired
     DataReportService dataReportService;
-    @Autowired
+    @Resource
     RegisterBillMapper registerBillMapper;
     @Autowired
     private MarketService marketService;
     @Autowired
     private ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
-    private AssetsRpcService categoryService;
+    private CategoryService categoryService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -56,7 +59,10 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     private ImageCertService imageCertService;
     @Autowired
     TradeRequestService tradeRequestService;
-
+    @Autowired
+    DetectRecordService detectRecordService;
+    @Autowired
+    SysConfigService sysConfigService;
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -68,11 +74,21 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         // pushData();
     }
 
+    private boolean isCallDataSwitch() {
+        return sysConfigService.isCallDataSwitch(SysConfigTypeEnum.PUSH_DATA_SUBJECT.getCode(),SysConfigTypeEnum.PUSH_DATA_CATEGORY.getCode());
+    }
+
     /**
      * 每五分钟提交一次数据
      */
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
+        if(isCallDataSwitch()){
+            if(logger.isInfoEnabled()){
+                logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
+            }
+            return;
+        }
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             List<Market> marketList = marketService.listFromUap();
@@ -93,7 +109,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
                     //检测数据上报
                     this.pushFruitsInspectionData(optUser, endTime, market);
                     //不合格检测上报
-                    this.pushFruitsUnqualifiedInspectionData(optUser, endTime, market);
+                    //this.pushFruitsUnqualifiedInspectionData(optUser, endTime, market);
                 }
             }
         } catch (Exception e) {
@@ -103,6 +119,12 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushHangGuoTradeData() {
+        if(isCallDataSwitch()){
+            if(logger.isInfoEnabled()){
+                logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
+            }
+            return;
+        }
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             List<Market> marketList = marketService.listFromUap();
@@ -199,9 +221,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     }
 
 
-    private BaseOutput pushFruitsUnqualifiedInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
+    /*private BaseOutput pushFruitsUnqualifiedInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
-        boolean newPushFlag = true;
         Long marketId = market.getId();
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_DISPOSE.getCode(), marketId);
@@ -215,9 +236,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             pushData.setMarketId(marketId);
         } else {
             updateTime = pushData.getPushTime();
-            newPushFlag = false;
         }
-        List<ReportUnqualifiedDisposalDto> disposalDtos = getReportDisposeList(platformMarketId);
+        List<ReportUnqualifiedDisposalDto> disposalDtos = getReportDisposeList(platformMarketId,updateTime);
         logger.info("Report Hangguo Unqualified Disposal Dto ： " + JSON.toJSONString(disposalDtos));
         if (CollectionUtils.isEmpty(disposalDtos)) {
             logger.info("Report Hangguo Unqualified Disposal IS NULL");
@@ -242,11 +262,11 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_DISPOSE.getName(), baseOutput.getMessage());
         }
         return baseOutput;
-    }
+    }*/
 
-    private List<ReportUnqualifiedDisposalDto> getReportDisposeList(Long platformMarketId) {
+    /*private List<ReportUnqualifiedDisposalDto> getReportDisposeList(Long platformMarketId,Date endTime) {
 
-        List<CheckOrderDispose> disposeList = getReportCheckOrderDisposeList();
+        List<DetectRecordParam> disposeList = getReportCheckOrderList(platformMarketId,DetectRecordStateEnum.UNQUALIFIED.getCode(),endTime);;
         if (CollectionUtils.isEmpty(disposeList)) {
             return null;
         }
@@ -255,23 +275,11 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ImageCertBillTypeEnum.DISPOSE_TYPE.getCode(), ids);
 
         StreamEx.of(reportList).nonNull().forEach(h -> {
-            List<ImageCert> imgList = imageCertMap.get(h.getId());
-            List<ReportInspectionImgDto> reportImgList = new ArrayList<>();
-            List<ReportInspectionItemDto> itemDtoList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(imgList)) {
-                reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
-                    ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
-                    reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
-                    if (StringUtils.isNotBlank(m.getUid())) {
-                        reportImg.setPicUrl(baseWebPath + m.getUid());
-                    }
-                    return reportImg;
-                }).collect(Collectors.toList());
-                h.setCheckFailImgList(reportImgList);
-            }
+            List<ReportInspectionImgDto> imgList = buildReportImgList(h.getId(),imageCertMap);
+            h.setCheckFailImgList(imgList);
         });
         return reportList;
-    }
+    }*/
 
     private String getCheckDisposeIds(List<CheckOrderDispose> disposeList) {
         List<String> idList = StreamEx.of(disposeList).nonNull().map(h -> String.valueOf(h.getId())).collect(Collectors.toList());
@@ -281,13 +289,13 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         return null;
     }
 
-    private List<ReportUnqualifiedDisposalDto> transformationDisposeExample(List<CheckOrderDispose> disposeList, Long platformMarketId) {
+    /*private List<ReportUnqualifiedDisposalDto> transformationDisposeExample(List<DetectRecordParam> disposeList, Long platformMarketId) {
         return StreamEx.of(disposeList).nonNull().map(m -> {
             ReportUnqualifiedDisposalDto r = new ReportUnqualifiedDisposalDto();
             r.setId(m.getId());
             r.setMarketId(platformMarketId);
             r.setChuZhiType(m.getDisposeType());
-            r.setCheckNo(m.getCheckNo());
+            r.setCheckNo(m.getDetectBatchNo());
             r.setChuZhiDate(m.getDisposeDate());
             r.setChuZhiDesc(m.getDisposeDesc());
             r.setChuZhier(m.getDisposer());
@@ -295,17 +303,10 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             r.setChuZhiResult(m.getDisposeResult());
             return r;
         }).collect(Collectors.toList());
-    }
-
-    private List<CheckOrderDispose> getReportCheckOrderDisposeList() {
-        CheckOrderDispose dispose = new CheckOrderDispose();
-        dispose.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
-        return hangGuoDataService.getReportCheckOrderDisposeList(dispose);
-    }
+    }*/
 
     private BaseOutput pushFruitsInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
-        boolean newPushFlag = true;
         Long marketId = market.getId();
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_INSPECTION.getCode(), marketId);
@@ -319,16 +320,14 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             pushData.setMarketId(marketId);
         } else {
             updateTime = pushData.getPushTime();
-            newPushFlag = false;
         }
 
-        List<ReportInspectionDto> inspectionDtoList = getReportInspectionList(platformMarketId);
-        logger.info("Report Hangguo checkOrder Dto ： " + JSON.toJSONString(inspectionDtoList));
+        List<ReportInspectionDto> inspectionDtoList = getReportInspectionList(platformMarketId,updateTime);
+        logger.info("Report HangGuo checkOrder Dto ： " + JSON.toJSONString(inspectionDtoList));
         if (CollectionUtils.isEmpty(inspectionDtoList)) {
             logger.info("report checkOrder is null");
             return BaseOutput.success("report checkOrder is null");
         }
-        //BaseOutput baseOutput = this.dataReportService.reportFruitsInspection(inspectionDtoList, optUser, market);
 
         BaseOutput baseOutput = new BaseOutput();
         // 分批上报
@@ -350,8 +349,14 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private List<ReportInspectionDto> getReportInspectionList(Long platformMarketId) {
-        List<CheckOrder> checkOrderList = getReportCheckOrderList();
+    /**
+     * 获取检测数据
+     * @param platformMarketId
+     * @param endTime
+     * @return
+     */
+    private List<ReportInspectionDto> getReportInspectionList(Long platformMarketId, Date endTime) {
+        List<DetectRecordParam> checkOrderList = getReportCheckOrderList(platformMarketId,DetectRecordStateEnum.QUALIFIED.getCode(),endTime);
         if (CollectionUtils.isEmpty(checkOrderList)) {
             return null;
         }
@@ -359,73 +364,70 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         String ids = getCheckIds(headList);
         Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode(), ids);
 
-        Map<Long, List<CheckOrderData>> valueMap = getCheckOrderDataMap(checkOrderList);
         StreamEx.of(headList).nonNull().forEach(h -> {
-            List<ImageCert> imgList = imageCertMap.get(h.getId());
-            List<CheckOrderData> dataList = valueMap.get(h.getId());
-            List<ReportInspectionImgDto> reportImgList = new ArrayList<>();
-            List<ReportInspectionItemDto> itemDtoList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(imgList)) {
-                reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
-                    ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
-                    reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
-                    if (StringUtils.isNotBlank(m.getUid())) {
-                        reportImg.setPicUrl(baseWebPath + m.getUid());
-                    }
-                    return reportImg;
-                }).collect(Collectors.toList());
-                h.setCheckImgList(reportImgList);
-            }
-            if (CollectionUtils.isNotEmpty(dataList)) {
-                itemDtoList = StreamEx.of(dataList).nonNull().map(m -> {
-                    ReportInspectionItemDto reportvalue = new ReportInspectionItemDto();
-                    reportvalue.setNormalValue(m.getNormalValue());
-                    reportvalue.setProject(m.getProject());
-                    reportvalue.setResult(m.getResult());
-                    reportvalue.setValue(m.getValue());
-                    return reportvalue;
-                }).collect(Collectors.toList());
-                h.setCheckItem(itemDtoList);
-            }
+            List<ReportInspectionImgDto> imgList = buildReportImgList(h.getId(),imageCertMap);
+            h.setCheckImgList(imgList);
         });
         return headList;
     }
 
-    private List<ReportInspectionDto> transformationExample(List<CheckOrder> checkOrderList, Long platformMarketId) {
+    private List<ReportInspectionImgDto> buildReportImgList(Long id, Map<Long, List<ImageCert>> imageCertMap) {
+        List<ImageCert> imgList = imageCertMap.get(id);
+        if (CollectionUtils.isNotEmpty(imgList)) {
+            return StreamEx.of(imgList).nonNull().map(m -> {
+                ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
+                reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
+                if (StringUtils.isNotBlank(m.getUid())) {
+                    reportImg.setPicUrl(baseWebPath + m.getUid());
+                }
+                return reportImg;
+            }).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    private List<ReportInspectionDto> transformationExample(List<DetectRecordParam> checkOrderList, Long platformMarketId) {
         return StreamEx.of(checkOrderList).nonNull().map(c -> {
             ReportInspectionDto re = new ReportInspectionDto();
             re.setId(c.getId());
-            re.setIdCard(c.getIdCard());
-            re.setChecker(c.getChecker());
-            re.setCheckImgList(c.getCheckImgList());
-            re.setCheckItem(c.getCheckItem());
-            re.setCheckNo(c.getCheckNo());
-            re.setCheckOrgName(c.getCheckOrgName());
-            re.setCheckResult(c.getCheckResult());
-            re.setCheckTime(c.getCheckTime());
-            re.setCheckType(c.getCheckType());
-            re.setGoodsName(c.getGoodsName());
+            re.setIdCard(c.getIdCardNo());
+            re.setChecker(c.getDetectOperator());
+            re.setCheckNo(c.getDetectBatchNo());
+            re.setCheckOrgName(c.getDetectCompany());
+            if(DetectRecordStateEnum.QUALIFIED.getCode().equals(c.getDetectState())){
+                re.setCheckResult("0");
+            }else{
+                re.setCheckResult("1");
+            }
+            re.setCheckTime(c.getDetectTime());
+            //默认为定量
+            re.setCheckType(CheckTypeEnum.QUANTITATIVE.getCode().toString());
+            re.setGoodsName(c.getProductName());
             re.setGoodsCode(c.getGoodsCode());
-            re.setAccountName(c.getUserName());
-            re.setBoothNo(c.getTallyAreaNos());
             re.setMarketId(platformMarketId);
+            ReportInspectionItemDto itemDto = new ReportInspectionItemDto();
+            itemDto.setNormalValue(c.getNormalResult());
+            itemDto.setValue(c.getPdResult());
+            itemDto.setResult(DetectRecordStateEnum.name(c.getDetectState()));
+            itemDto.setProject(DetectTypeEnum.name(c.getDetectType()));
+            re.setCheckItem(Arrays.asList(itemDto));
             return re;
         }).collect(Collectors.toList());
     }
 
-    private List<CheckOrder> getReportCheckOrderList() {
-        CheckOrder checkOrder = new CheckOrder();
-        checkOrder.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
-        return hangGuoDataService.getReportCheckOrderList(checkOrder);
-    }
-
-    private Map<Long, List<CheckOrderData>> getCheckOrderDataMap(List<CheckOrder> headList) {
-        CheckOrderData da = new CheckOrderData();
-        if (CollectionUtils.isEmpty(headList)) {
-            return null;
-        }
-        List<CheckOrderData> dataList = hangGuoDataService.getCheckOrderDataList(headList);
-        return StreamEx.of(dataList).nonNull().collect(Collectors.groupingBy(CheckOrderData::getCheckId));
+    /**
+     * 查询合格检测信息
+     *
+     * @param platformMarketId
+     * @param endTime
+     * @return
+     */
+    private List<DetectRecordParam> getReportCheckOrderList(Long platformMarketId,Integer state, Date endTime) {
+        DetectRecordParam detectRecord = new DetectRecordParam();
+        detectRecord.setDetectState(state);
+        detectRecord.setDetectTimeStart(endTime);
+        detectRecord.setMarketId(platformMarketId);
+        return detectRecordService.listBillByRecord(detectRecord);
     }
 
     private Map<Long, List<ImageCert>> getCheckOrderImgMap(Integer billType, String ids) {
@@ -542,7 +544,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
      * @return
      */
     private BaseOutput pushFruitsCategory(Optional<OperatorUser> optUser, Date endTime, Market market) {
-        /*Date updateTime = null;
+        Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
         Long platformMarketId = market.getPlatformMarketId();
@@ -560,13 +562,13 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             newPushFlag = false;
         }
 
-        Category category = new Category();
+        HangGuoCategory category = new HangGuoCategory();
         category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
         if (!newPushFlag) {
             category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "'");
         }
-        List<Category> allQrHistories = categoryService.listByExample(category);
+        List<HangGuoCategory> allQrHistories = categoryService.listByExample(category);
         List<GoodsDto> categoryDtos = new ArrayList<>();
         StreamEx.of(allQrHistories).nonNull().forEach(c -> {
             GoodsDto categoryDto = new GoodsDto();
@@ -598,8 +600,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_GOODS.getName(), baseOutput.getMessage());
         }
-        return baseOutput;*/
-        return  BaseOutput.success();
+        return baseOutput;
     }
 
 

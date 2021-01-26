@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.dto.DetectRecordInputDto;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.uap.sdk.domain.UserTicket;
 
 import java.util.List;
@@ -48,4 +49,10 @@ public interface DetectRecordService extends BaseService<DetectRecord, Long> {
 	 * @return
 	 */
 	public int saveDetectRecordManually(DetectRecordInputDto input, UserTicket userTicket);
+
+	/**
+	 * 获取上报检测数据
+	 * @param detectRecord
+	 */
+	List<DetectRecordParam> listBillByRecord(DetectRecordParam detectRecord);
 }

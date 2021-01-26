@@ -52,22 +52,20 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Autowired
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
-
     @Autowired
     UserPlateService userPlateService;
-
     @Autowired
     ImageCertService imageCertService;
-
     @Autowired
     BrandService brandService;
-
     @Autowired
     UpStreamService upStreamService;
     @Autowired
     CustomerRpcService clientRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    SyncRpcService syncRpcService;
 
 
     public RegisterHeadMapper getActualDao() {
@@ -152,6 +150,15 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
                     bill.setId(registerHead.getId());
                     this.updateSelective(bill);
                 });
+
+        //同步uap商品、经营户
+        if(Objects.nonNull(registerHead.getProductId())){
+            syncRpcService.syncGoodsToRpcCategory(registerHead.getProductId());
+        }
+        if(Objects.nonNull(registerHead.getUserId())){
+            syncRpcService.syncRpcUserByUserId(registerHead.getUserId());
+        }
+
         return registerHead.getId();
     }
 

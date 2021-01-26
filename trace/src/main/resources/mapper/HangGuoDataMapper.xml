@@ -399,4 +399,14 @@
             #{u.code}
         </foreach>
     </update>
+
+
+    <update id="updateParentByUapId" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory">
+       UPDATE category ca_1,category ca_2
+        SET ca_1.parent_id = ca_2.id
+        WHERE ca_1.uap_parent_id = ca_2.uap_id
+        AND ca_1.uap_parent_id IS NOT NULL
+        AND DATE(ca_1.modified)=DATE(#{modified})
+    </update>
+
 </mapper>

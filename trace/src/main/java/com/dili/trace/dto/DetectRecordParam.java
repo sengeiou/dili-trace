@@ -7,6 +7,7 @@ import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  * Created by laikui on 2019/8/15.
@@ -35,6 +36,117 @@ public class DetectRecordParam extends DetectRecord {
      */
     @Transient
     private String sampleCode;
+    /**
+     * 检测时间查询开始（上报）
+     *
+     * @return
+     */
+    @Transient
+    private Date detectTimeStart;
+
+    /**
+     * 身份证号（上报）
+     *
+     * @return
+     */
+    @Transient
+    private String idCardNo;
+
+    /**
+     * 市场id（上报）
+     *
+     * @return
+     */
+    @Transient
+    private Long marketId;
+    /**
+     * 商品名称（上报）
+     *
+     * @return
+     */
+    @Transient
+    private String productName;
+    /**
+     * 商品id（上报）
+     *
+     * @return
+     */
+    @Transient
+    private Long productId;
+    /**
+     * 检测类型（上报）
+     *
+     * @return
+     */
+    @Transient
+    private Integer detectType;
+
+
+    /**
+     * 商品码（上报）
+     *
+     * @return
+     */
+    @Transient
+    private  String goodsCode;
+
+    public Date getDetectTimeStart() {
+        return detectTimeStart;
+    }
+
+    public void setDetectTimeStart(Date detectTimeStart) {
+        this.detectTimeStart = detectTimeStart;
+    }
+
+    public String getIdCardNo() {
+        return idCardNo;
+    }
+
+    public void setIdCardNo(String idCardNo) {
+        this.idCardNo = idCardNo;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    @Override
+    public Integer getDetectType() {
+        return detectType;
+    }
+
+    @Override
+    public void setDetectType(Integer detectType) {
+        this.detectType = detectType;
+    }
+
+    public String getGoodsCode() {
+        return goodsCode;
+    }
+
+    public void setGoodsCode(String goodsCode) {
+        this.goodsCode = goodsCode;
+    }
 
     public String getExeMachineNo() {
         return exeMachineNo;

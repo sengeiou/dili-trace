@@ -91,4 +91,31 @@ select * from
 ) tmp
 order by id desc
   </select>
+
+  <select id="listBillByRecord" parameterType="com.dili.trace.dto.DetectRecordParam" resultType="com.dili.trace.dto.DetectRecordParam">
+    SELECT
+    rec.*,
+    rb.id_card_no idCardNo,
+    rb.market_id marketId,
+    rb.product_name productName,
+    rb.product_id productId,
+    req.detect_type detectType,
+    c.code goodsCode
+    FROM
+    detect_record rec
+    JOIN
+    detect_request req ON rec.detect_request_id=req.id
+    JOIN register_bill rb ON rb.id = req.bill_id
+    JOIN category c  ON c.id = rb.product_id
+    where 1=1
+    <if test="detectTimeStart != null">
+      <![CDATA[ AND rec.detect_time >= #{detectTimeStart} ]]>
+    </if>
+    <if test="detectState != null">
+      <![CDATA[ AND rec.detect_state = #{detectState} ]]>
+    </if>
+    <if test="marketId != null">
+      <![CDATA[ AND rec.detect_state = #{marketId} ]]>
+    </if>
+  </select>
 </mapper>

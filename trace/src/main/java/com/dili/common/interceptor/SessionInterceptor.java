@@ -151,13 +151,13 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 //            return Optional.empty();
 //        }
         SessionData sessionData = SessionData.fromUserTicket(ut);
-        asyncRpcUser(Optional.ofNullable(sessionData));
+        //asyncRpcUser(Optional.ofNullable(sessionData));
         return Optional.ofNullable(sessionData);
     }
 
     private Optional<SessionData> loginAsClient(HttpServletRequest req) {
         Optional<SessionData> data = this.customerRpcService.getCurrentCustomer();
-        asyncRpcUser(data);
+        //asyncRpcUser(data);
         return data;
     }
 

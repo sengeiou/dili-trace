@@ -7,6 +7,7 @@ import com.dili.trace.dao.DetectRecordMapper;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordInputDto;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.enums.DetectRecordStateEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -19,6 +20,7 @@ import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,19 +92,34 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         DetectTypeEnum detectTypeEnum=DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
             return  new TraceBizException("检测类型不正确");
         });
-        if(!RegUtils.isValidInput(input.getDetectBatchNo())){
+        if(StringUtils.isNotBlank(input.getDetectBatchNo())&& !RegUtils.isValidInput(input.getDetectBatchNo().trim())){
             throw  new TraceBizException("检测批号不能有特殊字符");
+        }
+        if(StringUtils.isNotBlank(input.getNormalResult())&&!RegUtils.isValidInput(input.getNormalResult().trim())){
+            throw  new TraceBizException("检测标准值不能有特殊字符");
+        }
+
+        if(StringUtils.isBlank(input.getPdResult())){
+            throw  new TraceBizException("检测值不能为空");
         }
         if(!RegUtils.isValidInput(input.getPdResult())){
             throw  new TraceBizException("检测值不能有特殊字符");
         }
-        if(!RegUtils.isValidInput(input.getNormalResult())){
-            throw  new TraceBizException("检测标准值不能有特殊字符");
+
+        if(StringUtils.isBlank(input.getDetectOperator())){
+            throw  new TraceBizException("检测人不能为空");
         }
         if(!RegUtils.isValidInput(input.getDetectOperator())){
             throw  new TraceBizException("检测人不能有特殊字符");
         }
-        if(!RegUtils.isValidInput(input.getDetectCompany())){
+
+
+        if(input.getDetectTime()==null){
+            throw  new TraceBizException("检测时间不能为空");
+        }
+
+
+        if(StringUtils.isNotBlank(input.getDetectCompany())&&!RegUtils.isValidInput(input.getDetectCompany())){
             throw  new TraceBizException("检测机构不能有特殊字符");
         }
 
@@ -123,8 +140,13 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         }
         detectRecord.setDetectRequestId(registerBill.getDetectRequestId());
         this.saveOrUpdate(detectRecord);
-        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum);
+        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum,input.getDetectTime());
 
         return 1;
+    }
+
+    @Override
+    public List<DetectRecordParam> listBillByRecord(DetectRecordParam detectRecord) {
+        return getActualDao().listBillByRecord(detectRecord);
     }
 }
