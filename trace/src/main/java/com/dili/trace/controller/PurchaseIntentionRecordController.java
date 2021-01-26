@@ -52,8 +52,7 @@ public class PurchaseIntentionRecordController {
     MarketService marketService;
     @Resource
     FirmRpc firmRpc;
-    @Autowired
-    HttpServletRequest request;
+
 
     /**
      * 跳转到PurchaseIntentionRecord页面
@@ -153,7 +152,7 @@ public class PurchaseIntentionRecordController {
      */
     @RequestMapping(value = "/doAddBuyer.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput doAddBuyer(@RequestBody IndividualCustomerInput customer) {
+    BaseOutput doAddBuyer(@RequestBody IndividualCustomerInput customer,HttpServletRequest request) {
         try {
             BaseOutput<CustomerExtendDto> output = customerRpc.registerIndividual(customer,request.getHeader("UAP_SessionId"));
             return output;

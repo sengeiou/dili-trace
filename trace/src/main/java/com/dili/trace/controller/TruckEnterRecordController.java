@@ -66,8 +66,7 @@ public class TruckEnterRecordController {
     CustomerRpc customerRpc;
     @Resource
     VehicleRpc vehicleRpc;
-    @Autowired
-    HttpServletRequest request;
+
 
     /**
      * 跳转到TruckEnterRecord页面
@@ -206,7 +205,7 @@ public class TruckEnterRecordController {
      */
     @RequestMapping(value = "/doAddDriver.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer) {
+    BaseOutput doAddDriver(@RequestBody IndividualCustomerInput customer,HttpServletRequest request) {
         try {
             BaseOutput<CustomerExtendDto> baseOutput = customerRpc.registerIndividual(customer,request.getHeader("UAP_SessionId"));
             return baseOutput;
