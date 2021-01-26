@@ -1150,6 +1150,11 @@ public class NewRegisterBillController {
      * @return
      */
     private List<RegisterBillMessageEvent> queryBatchEvents(List<Long> idList) {
+
+        boolean allEcBill = StreamEx.of(this.billService.findByIdList(idList)).map(RegisterBill::getBillType).allMatch(bt -> BillTypeEnum.E_COMMERCE_BILL.equalsToCode(bt));
+        if (allEcBill) {
+            return Lists.newArrayList();
+        }
         Map<RegisterBillMessageEvent, Boolean> eventCount = StreamEx.ofNullable(idList).flatCollection(Function.identity()).nonNull().flatMap(bid -> {
             return StreamEx.of(this.registerBillService.queryEvents(bid));
         }).distinct().mapToEntry(v -> v, v -> v).collapseKeys().mapValues(v -> v.size() > 0).toMap();

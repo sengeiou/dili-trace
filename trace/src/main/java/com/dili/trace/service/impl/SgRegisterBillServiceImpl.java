@@ -1300,6 +1300,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (item == null) {
             return Lists.newArrayList();
         }
+//        if(BillTypeEnum.E_COMMERCE_BILL.equalsToCode(item.getBillType())){
+//            return Lists.newArrayList();
+//        }
         List<RegisterBillMessageEvent> msgStream = Lists.newArrayList(
                 RegisterBillMessageEvent.COPY
                 , RegisterBillMessageEvent.DETAIL

@@ -660,7 +660,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
-        if (canApp) {
+        if (canApp&&!BillTypeEnum.COMMISSION_BILL.equalsToCode(item.getBillType())) {
             msgStream.add(DetectRequestMessageEvent.appointment);
         }
         // 待接单：可以接单

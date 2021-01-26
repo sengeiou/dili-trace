@@ -32,19 +32,7 @@ class CheckSheetIndex extends ListPage {
         }
         let selected_id = row[0].id;
         let url = this.toUrl('/checkSheet/view.html?id=' + selected_id);
-        //@ts-ignore
-        bs4pop.dialog({
-            title: '查看检测报告',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '78%',
-            height: '78%',
-            btns: [],
-            onShowEnd: function () {
-            }
-        });
+        $(window.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
     }
 
     private doPrint(){
