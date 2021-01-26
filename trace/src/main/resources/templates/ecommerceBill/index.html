@@ -87,19 +87,19 @@
                 <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
             </#resource>
             <#resource code="ecommerceBill#audit">
-                <button id="audit-btn" type="button" class="btn btn-primary"><i class="fa fa-user"></i> 审核</button>
+                <button id="audit-btn" type="button" class="btn btn-primary" style="display: none"><i class="fa fa-user"></i> 审核</button>
             </#resource>
             <#resource code="ecommerceBill#delete">
-                <button id="delete-btn" type="button" class="btn btn-primary"><i class="fa fa-undo"></i> 撤销</button>
+                <button id="delete-btn" type="button" class="btn btn-primary" style="display: none"><i class="fa fa-undo"></i> 撤销</button>
             </#resource>
             <#resource code="ecommerceBill#print">
-                <button id="print-btn" type="button" class="btn btn-primary"><i class="fa fa-print"></i> 打印不干胶</button>
+                <button id="print-btn" type="button" class="btn btn-primary" style="display: none"><i class="fa fa-print"></i> 打印不干胶</button>
             </#resource>
             <#resource code="ecommerceBill#printSeperatePrintReport">
-                <button id="printSeperatePrintReport-btn" type="button" class="btn btn-primary"><i class="fa fa-print"></i> 打印分销报告</button>
+                <button id="printSeperatePrintReport-btn" type="button" class="btn btn-primary" style="display: none"><i class="fa fa-print"></i> 打印分销报告</button>
             </#resource>
             <#resource code="ecommerceBill#detail">
-                <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
+                <button id="detail-btn" type="button" class="btn btn-primary" style="display: none"><i class="fa fa-eye"></i> 查看</button>
             </#resource>
             <#resource code="ecommerceBill#export">
                 <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('ecommerceBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
@@ -175,7 +175,7 @@
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CityController.js"></script>
 <script src="${contextPath!}/resources/js/CategoryController.js"></script>
-<script src="${contextPath!}/resources/js/ecommercebill.index.js"></script>
+<script src="${contextPath!}/resources/js/ecommercebill.index.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 
@@ -197,6 +197,6 @@
         type: 'datetime'
     });
     $(function () {
-        var ecommerceBillGrid=new EcommerceBillGrid($('#ecommerceBillGrid'),$('#queryForm'));
+        var ecommerceBillGrid=new EcommerceBillGrid($('#ecommerceBillGrid'),$('#queryForm'),$('#toolbar'));
     });
 </script>
