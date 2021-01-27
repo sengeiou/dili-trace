@@ -273,6 +273,7 @@ public class CreateRegisterBillInputDto {
         // registerBill.setOperatorId(user.getId());
         registerBill.setUserId(user.getId());
         registerBill.setName(user.getName());
+        registerBill.setCorporateName(this.getCorporateName());
         registerBill.setMarketId(marketId);
         registerBill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
         registerBill.setHasDetectReport(YesOrNoEnum.NO.getCode());

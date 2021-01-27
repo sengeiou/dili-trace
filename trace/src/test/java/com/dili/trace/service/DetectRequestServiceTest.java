@@ -45,12 +45,7 @@ public class DetectRequestServiceTest extends AutoWiredBaseTest {
     @Autowired
     DetectRequestService detectRequestService;
 
-    @Test
-    @Transactional
-    public void selectRequestForDetect() {
-        List<DetectRequest> list = this.detectRequestService.selectRequestForDetect("wangguofeng", 10, 8L);
-        Assertions.assertNotNull(list);
-    }
+
 
     @Test
     public void listPageByUserCategory() {

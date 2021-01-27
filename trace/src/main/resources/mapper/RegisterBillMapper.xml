@@ -735,7 +735,7 @@
       on detect_request.id=register_bill.detect_request_id
       where register_bill.market_id=#{marketId} and bill_type in(1,6,7)
       and (
-       (detect_request.designated_name=#{exeMachineNo} and register_bill.detect_status=40)
+       (register_bill.exe_machine_no=#{exeMachineNo} and register_bill.detect_status=40)
        or register_bill.detect_status=30
       )
       order by   register_bill.detect_status DESC

@@ -268,35 +268,6 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         return StreamEx.of(this.detectRequestMapper.selectByExample(example)).toMap(DetectRequest::getId, Function.identity());
     }
 
-    /**
-     * 获得检测任务
-     *
-     * @param detectorName
-     * @param maxCount
-     * @param marketId
-     */
-    public List<DetectRequest> selectRequestForDetect(String detectorName, Integer maxCount, Long marketId) {
-        //查询并锁定没有被当前dectorName领取的检测任务
-        List<DetectRequest> detectRequestList = this.detectRequestMapper.selectRequestForDetect(marketId, detectorName, maxCount);
-
-        //更新数据的状态
-        StreamEx.of(detectRequestList).forEach(req -> {
-            DetectRequest detectRequest = new DetectRequest();
-            detectRequest.setId(req.getId());
-            detectRequest.setDesignatedName(detectorName);
-
-            RegisterBill registerBill = new RegisterBill();
-            registerBill.setId(req.getBillId());
-            registerBill.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
-
-            this.updateSelective(detectRequest);
-            this.billService.updateSelective(registerBill);
-        });
-
-        //查询所有当前当前dectorName领取的检测任务
-        return this.detectRequestMapper.selectDetectRequest(marketId, detectorName, DetectStatusEnum.DETECTING);
-
-    }
 
     /**
      * 分页查询数据
@@ -843,7 +814,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(detectRecordId, registerBill, userTicket,detectTypeEnum,detectResultEnum);
+        manualCheckBill(detectRecordId,registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
         manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum,detectTime);
@@ -856,17 +827,20 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param userTicket
      */
     private void manualCheckBill(Long detectRecordId,RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
-        DetectRecord detectRecord=this.detectRecordService.get(detectRecordId);
-
+        DetectRecord detectRecord = detectRecordService.get(detectRecordId);
+        if (!Objects.nonNull(detectRecord)){
+            throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
+        }
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
         updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
-        updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         updateBill.setLatestDetectTime(detectRecord.getDetectTime());
         updateBill.setLatestPdResult(detectRecord.getPdResult());
+        updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
+        updateBill.setLatestDetectRecordId(detectRecordId);
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }

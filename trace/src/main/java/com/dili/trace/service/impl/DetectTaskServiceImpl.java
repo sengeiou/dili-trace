@@ -71,16 +71,14 @@ public class DetectTaskServiceImpl implements DetectTaskService {
                 this.billService.updateSelectiveByExample(billDomain, billCondition);
 
 
-
-                if(!designateNameBlankBillIdList.isEmpty()){
-                    DetectRequest rqDomain = new DetectRequest();
-                    rqDomain.setDesignatedName(exeMachineNo);
-
-                    DetectRequestQueryDto rqCondition = new DetectRequestQueryDto();
-                    rqCondition.setBillIdList(designateNameBlankBillIdList);
-                    this.detectRequestService.updateSelectiveByExample(rqDomain, rqCondition);
-                }
-
+//                if(!designateNameBlankBillIdList.isEmpty()){
+//                    DetectRequest rqDomain = new DetectRequest();
+//                    rqDomain.setDesignatedName(exeMachineNo);
+//
+//                    DetectRequestQueryDto rqCondition = new DetectRequestQueryDto();
+//                    rqCondition.setBillIdList(designateNameBlankBillIdList);
+//                    this.detectRequestService.updateSelectiveByExample(rqDomain, rqCondition);
+//                }
 
 
                 RegisterBillDto domain = new RegisterBillDto();

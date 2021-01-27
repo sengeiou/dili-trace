@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EnableDiscoveryClient
-//@Commit
+@Commit
 public class TradeOrderServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeOrderService tradeOrderService;
@@ -53,7 +53,7 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     }
 
     @Test
-    public void createTradeRequest() {
+    public void createBuyTrade() {
         TradeDto tradeDto = new TradeDto();
         tradeDto.setMarketId(8L);
         tradeDto.setTradeOrderType(TradeOrderTypeEnum.BUY);
@@ -69,12 +69,15 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
         TradeOrder tradeOrderItem = new TradeOrder();
         tradeOrderItem.setId(10L);
 
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setId(100L);
-        registerBill.setProductName("茄子");
-        registerBill.setOriginName("成都");
-//        TradeRequest tradeRequest = this.tradeOrderService.createTradeRequest(tradeDto, tradeOrderItem,registerBill, 200L, BigDecimal.valueOf(111));
-//        Assertions.assertNotNull(tradeRequest);
+
+        List<ProductStockInput> batchStockInputList = new ArrayList<>();
+        ProductStockInput input = new ProductStockInput();
+        input.setProductStockId(1L);
+        input.setTradeWeight(BigDecimal.ONE);
+        batchStockInputList.add(input);
+
+        TradeOrder tradeOrder =   this.tradeOrderService.createBuyTrade(tradeDto,batchStockInputList);
+        Assertions.assertNotNull(tradeOrder);
 
 
     }
