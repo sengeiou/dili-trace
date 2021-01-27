@@ -516,6 +516,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeDetailQuery.setTradeRequestId(tradeRequestId);
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         StreamEx.of(tradeDetailList).forEach(td -> {
+            logger.debug("tradeDetail Id={},totalWeight={},stockWeight={}",td.getId(),td.getTotalWeight(),td.getStockWeight());
             boolean changed = td.getTotalWeight().compareTo(td.getStockWeight()) != 0;
             if (changed) {
                 throw new TraceBizException("不能对已销售的商品申请退货");
