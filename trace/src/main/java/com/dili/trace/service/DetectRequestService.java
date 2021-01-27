@@ -839,6 +839,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setLatestPdResult(detectRecord.getPdResult());
         updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         updateBill.setLatestDetectRecordId(detectRecordId);
+        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+        }
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
