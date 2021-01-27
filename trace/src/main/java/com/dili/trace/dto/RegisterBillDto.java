@@ -279,7 +279,11 @@ public class RegisterBillDto extends RegisterBill {
     /**
      * 单据类型集合
      */
-    @Transient
+    /**
+     * 状态
+     */
+    @Column(name = "`bill_type`")
+    @Operator(Operator.IN)
     private List<Integer> billTypes;
 
     /**
