@@ -438,6 +438,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     @Transactional(rollbackFor = Exception.class)
     public void receiveDetectRequest(Long billId, DetectRequest detectRequestDto) {
         detectRequestDto.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
+        detectRequestDto.setConfirmTime(new Date());
         this.updateSelective(detectRequestDto);
         RegisterBill upBill = new RegisterBill();
         upBill.setId(billId);
@@ -841,6 +842,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setLatestPdResult(detectRecord.getPdResult());
         updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         updateBill.setLatestDetectRecordId(detectRecordId);
+        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+        }
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }

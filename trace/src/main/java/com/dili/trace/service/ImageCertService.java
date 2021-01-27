@@ -84,6 +84,7 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
         }
         ImageCert queryCondition = new ImageCert();
         queryCondition.setBillId(billId);
+        queryCondition.setBillType(ImageCertBillTypeEnum.BILL_TYPE.getCode());
         return this.listByExample(queryCondition);
     }
 
