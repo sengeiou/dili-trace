@@ -438,6 +438,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     @Transactional(rollbackFor = Exception.class)
     public void receiveDetectRequest(Long billId, DetectRequest detectRequestDto) {
         detectRequestDto.setDetectSource(SampleSourceEnum.WAIT_HANDLE.getCode());
+        detectRequestDto.setConfirmTime(new Date());
         this.updateSelective(detectRequestDto);
         RegisterBill upBill = new RegisterBill();
         upBill.setId(billId);
