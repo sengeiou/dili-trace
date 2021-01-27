@@ -105,7 +105,7 @@ public class CustomerRpcService {
                             sessionData.setUserId(c.getId());
                             sessionData.setUserName(c.getName());
                             sessionData.setMarketId(marketId);
-                            this.firmRpcService.getFirmById(marketId).ifPresent(m->{
+                            this.firmRpcService.getFirmById(marketId).ifPresent(m -> {
                                 sessionData.setMarketName(m.getName());
                             });
                             sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
@@ -218,11 +218,14 @@ public class CustomerRpcService {
      * @return
      */
     public Optional<CustomerExtendDto> findCustomerById(Long customerId, Long marketId) {
-        logger.debug("findCustomerById: customerId={},marketId={}",customerId,marketId);
-        BaseOutput<CustomerExtendDto> out = this.customerRpc.get(customerId, marketId);
-
-        if (out.isSuccess()) {
-            return Optional.ofNullable(out.getData());
+        logger.debug("findCustomerById: customerId={},marketId={}", customerId, marketId);
+        try {
+            BaseOutput<CustomerExtendDto> out = this.customerRpc.get(customerId, marketId);
+            if (out.isSuccess()) {
+                return Optional.ofNullable(out.getData());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
         return Optional.empty();
     }
@@ -292,7 +295,7 @@ public class CustomerRpcService {
         buyer.setCharacterType(CustomerEnum.CharacterType.买家.getCode());
         queryInput.setCharacterType(buyer);
         queryInput.setMarketId(marketId);
-        logger.debug("listBuyer:marketId={},queryInput={}",marketId, JSON.toJSONString(queryInput));
+        logger.debug("listBuyer:marketId={},queryInput={}", marketId, JSON.toJSONString(queryInput));
         PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
         return pageOutput;
     }
