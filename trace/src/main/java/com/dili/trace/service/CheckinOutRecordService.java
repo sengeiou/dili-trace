@@ -183,32 +183,31 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		// 	return checkinOutRecordItem;
 		// }
 		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-			TradeDetail tradeDetailItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId).map(td->{
-				TradeDetail item = new TradeDetail();
-				item.setId(td.getId());
-				item.setCheckinStatus(checkinStatusEnum.getCode());
-				item.setStockWeight(billItem.getWeight());
-				item.setTotalWeight(billItem.getWeight());
-				item.setWeightUnit(billItem.getWeightUnit());
-				item.setProductName(billItem.getProductName());
-				item.setModified(new Date());
-				this.tradeDetailService.updateSelective(item); 
-				return this.tradeDetailService.get(item.getId());
-			}).orElseGet(()->{
-			 	return this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
-			});
+//			TradeDetail tradeDetailItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId).map(td->{
+//				TradeDetail item = new TradeDetail();
+//				item.setId(td.getId());
+//				item.setCheckinStatus(checkinStatusEnum.getCode());
+//				item.setStockWeight(billItem.getWeight());
+//				item.setTotalWeight(billItem.getWeight());
+//				item.setWeightUnit(billItem.getWeightUnit());
+//				item.setProductName(billItem.getProductName());
+//				item.setModified(new Date());
+//				this.tradeDetailService.updateSelective(item);
+//				return this.tradeDetailService.get(item.getId());
+//			}).orElseGet(()->{
+//			 	return this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
+//			});
 
-			CheckinOutRecord checkinRecordItem =Optional.ofNullable(tradeDetailItem.getCheckinRecordId()).map(cinId->{
-				return this.get(cinId);
-			}).map(cin->{
+//			CheckinOutRecord checkinRecordItem =Optional.ofNullable(tradeDetailItem.getCheckinRecordId()).map(cinId->{
+//				return this.get(cinId);
+//			}).map(cin->{
 				CheckinOutRecord item=new CheckinOutRecord();
-				item.setId(cin.getId());
+//				item.setId(cin.getId());
 				item.setStatus(checkinStatusEnum.getCode());
 				operateUser.ifPresent(op -> {
 					// item.setOperatorId(op.getId());
 					// item.setOperatorName(op.getName());
 				});
-		
 				item.setModified(new Date());
 				item.setProductName(billItem.getProductName());
 				item.setInoutWeight(billItem.getWeight());
@@ -218,19 +217,20 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				item.setBillType(billItem.getBillType());
 				// item.setVerifyStatus(billItem.getVerifyStatus());
 				item.setBillId(billItem.getBillId());
-				item.setTradeDetailId(tradeDetailItem.getId());
-				this.updateSelective(item);
-				return this.get(item.getId());
-			}).orElseGet(()->{
-				 return this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
-			});
+//				item.setTradeDetailId(tradeDetailItem.getId());
+//				this.updateSelective(item);
+//				return this.get(item.getId());
+				this.insertSelective(item);
+//			}).orElseGet(()->{
+//				 return this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
+//			});
 			
 
-			TradeDetail tradeDetail = new TradeDetail();
-			tradeDetail.setId(tradeDetailItem.getId());
-			tradeDetail.setCheckinStatus(checkinStatusEnum.getCode());
-			tradeDetail.setCheckinRecordId(checkinRecordItem.getId());
-			this.tradeDetailService.updateSelective(tradeDetail);
+//			TradeDetail tradeDetail = new TradeDetail();
+//			tradeDetail.setId(tradeDetailItem.getId());
+//			tradeDetail.setCheckinStatus(checkinStatusEnum.getCode());
+//			tradeDetail.setCheckinRecordId(checkinRecordItem.getId());
+//			this.tradeDetailService.updateSelective(tradeDetail);
 			// 更新报备单进门状态
 			RegisterBill bill = new RegisterBill();
 			bill.setId(billItem.getId());
@@ -243,13 +243,13 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			this.registerBillService.updateSelective(bill);
 
-			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),
 					operateUser);
 
 			// 本地库存处理完成后。同步库存到UAP
 			processService.afterCheckIn(billItem.getId(), billItem.getMarketId(),operateUser);
 
-			return checkinRecordItem;
+			return item;
 		}
 		return null;
 

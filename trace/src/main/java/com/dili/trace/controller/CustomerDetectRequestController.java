@@ -354,10 +354,9 @@ public class CustomerDetectRequestController {
      * @return
      */
     @RequestMapping(value = "/spotCheck.html", method = RequestMethod.GET)
-    public @ResponseBody
-    String soptCheck(ModelMap modelMap,@RequestParam(name = "billId", required = true) Long billId) {
+    public String soptCheck(ModelMap modelMap,@RequestParam(name = "billId", required = true) Long billId) {
         try {
-            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            modelMap.put("registerBill",billService.get(billId));
         } catch (TraceBizException e) {
             if(logger.isErrorEnabled()){
                 logger.error(e.getMessage());

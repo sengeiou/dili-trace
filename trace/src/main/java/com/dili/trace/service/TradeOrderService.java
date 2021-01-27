@@ -52,6 +52,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     BillService billService;
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
+
     /**
      * 检查参数是否正确
      *
@@ -60,7 +61,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      */
     private void checkInput(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
 
-        if(TradeOrderTypeEnum.NONE!=tradeDto.getTradeOrderType()){
+        if (TradeOrderTypeEnum.NONE != tradeDto.getTradeOrderType()) {
             CustomerExtendDto seller = customerRpcService.findCustomerById(tradeDto.getSeller().getSellerId(), tradeDto.getMarketId()).orElseThrow(() -> {
                 return new TraceBizException("卖家不存在");
             });
@@ -75,7 +76,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
         } else {
             if (tradeDto.getBuyer().getBuyerId() != null) {
-                UpStream upStream=Optional.ofNullable(this.upStreamService.get(tradeDto.getBuyer().getBuyerId())).orElseThrow(()->{
+                UpStream upStream = Optional.ofNullable(this.upStreamService.get(tradeDto.getBuyer().getBuyerId())).orElseThrow(() -> {
                     return new TraceBizException("下游不存在");
                 });
                 tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.DOWNSTREAM_BUYER);
@@ -117,6 +118,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                 throw new TraceBizException("参数不匹配:有批次不属于当前卖家");
             }
         }
+        LOGGER.debug("sellerId={},batchStockIdList={}", sellerId, batchStockIdList);
         // 判断是否全部是卖家的库存信息
         boolean notSellerOwnedBatchBlock = StreamEx.of(this.productStockService.findByIdList(batchStockIdList))
                 .map(ProductStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
@@ -125,6 +127,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         }
 
     }
+
     /**
      * 创建TradeOrder
      *
@@ -189,7 +192,6 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
 
 
-
         ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName());
         ProductStock updatablePS = new ProductStock();
         updatablePS.setId(productStock.getId());
@@ -209,7 +211,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetailInputDto.setTradeWeight(registerBill.getWeight());
         tradeDetailInputList.add(tradeDetailInputDto);
 
-        this.checkInput(tradeDto,Arrays.asList(psInput));
+        this.checkInput(tradeDto, Arrays.asList(psInput));
 
         TradeOrder tradeOrder = this.createTradeOrder(tradeDto);
 
@@ -225,6 +227,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return tradeOrder;
 
     }
+
     /**
      * create trade
      *
@@ -237,7 +240,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         if (productStockInputList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
-        this.checkInput(tradeDto,batchStockInputList);
+        this.checkInput(tradeDto, batchStockInputList);
         TradeOrder tradeOrder = this.createTradeOrder(tradeDto);
 
         List<TradeRequest> tradeRequestList = StreamEx.of(productStockInputList).map(productStockInput -> {
@@ -245,9 +248,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             List<TradeRequestDetail> tradeRequestDetailList = this.createTradeRequestDetailForInput(productStockInput.getTradeDetailInputList(), tradeRequest);
             return tradeRequest;
         }).toList();
-        this.dealTradeOrder(tradeOrder.getTradeOrderId(),  TradeOrderStatusEnum.FINISHED);
+        this.dealTradeOrder(tradeOrder.getTradeOrderId(), TradeOrderStatusEnum.FINISHED);
         return tradeOrder;
     }
+
     /**
      * create trade
      *
@@ -255,7 +259,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      * @param batchStockInputList
      */
     public TradeOrder createSellTrade(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
-        this.checkInput(tradeDto,batchStockInputList);
+        this.checkInput(tradeDto, batchStockInputList);
         List<ProductStockInput> productStockInputList = StreamEx.ofNullable(batchStockInputList).flatCollection(Function.identity())
                 .nonNull().toList();
         if (productStockInputList.isEmpty()) {
@@ -271,6 +275,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         this.dealTradeOrder(tradeOrder.getTradeOrderId(), TradeOrderStatusEnum.FINISHED);
         return tradeOrder;
     }
+
     /**
      * create trade
      *
@@ -283,12 +288,12 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         if (productStockInputList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
-        List<Long>productStockIdList=StreamEx.of(productStockInputList).map(ProductStockInput::getProductStockId).distinct().toList();
-        if(productStockIdList.isEmpty()||productStockIdList.size()!=1){
+        List<Long> productStockIdList = StreamEx.of(productStockInputList).map(ProductStockInput::getProductStockId).distinct().toList();
+        if (productStockIdList.isEmpty() || productStockIdList.size() != 1) {
             throw new TraceBizException("参数错误");
         }
-        Long productStockId=productStockIdList.get(0);
-        ProductStock productStock=productStockService.get(productStockId);
+        Long productStockId = productStockIdList.get(0);
+        ProductStock productStock = productStockService.get(productStockId);
 
         tradeDto.getSeller().setSellerId(productStock.getUserId());
         tradeDto.getSeller().setSellerName(productStock.getUserName());
@@ -341,6 +346,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
     /**
      * 处理
+     *
      * @param tradeRequest
      * @param tradeOrderStatusEnum
      * @param tradeOrderTypeEnum
@@ -444,7 +450,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     /**
      * @param tradeDetailInputList
      */
-    public List<TradeRequestDetail> createTradeRequestDetailForInput(List<TradeDetailInputDto> tradeDetailInputList, TradeRequest tradeRequest) {
+    private List<TradeRequestDetail> createTradeRequestDetailForInput(List<TradeDetailInputDto> tradeDetailInputList, TradeRequest tradeRequest) {
         List<TradeDetailInputDto> detailInputList = StreamEx.ofNullable(tradeDetailInputList).flatCollection(Function.identity())
                 .nonNull().toList();
 
@@ -636,6 +642,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         });
         return batchStockItem;
     }
+
     /**
      * 查询下一个code
      *
@@ -644,6 +651,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     private String getNextCode() {
         return this.uidRestfulRpcService.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
     }
+
     /**
      * 创建TradeRequest
      *
