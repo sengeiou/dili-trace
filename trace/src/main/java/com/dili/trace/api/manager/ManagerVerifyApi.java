@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,7 @@ public class ManagerVerifyApi {
             query.setSort("created");
             query.setOrder("desc");
             query.setMarketId(this.sessionContext.getSessionData().getMarketId());
+            query.setBillTypes(Arrays.asList(BillTypeEnum.REGISTER_BILL.getCode()));
             BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(query),
                     rb -> {
                         RegisterBillOutput dto = RegisterBillOutput.build(rb);
