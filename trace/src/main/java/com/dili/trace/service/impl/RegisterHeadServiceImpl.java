@@ -269,6 +269,14 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
+        String specName=input.getSpecName();
+        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+            throw new TraceBizException("规格名称包含非法字符");
+        }
+        String remark=input.getRemark();
+        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+            throw new TraceBizException("备注包含非法字符");
+        }
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
         RegisterBill rbq=new RegisterBill();
