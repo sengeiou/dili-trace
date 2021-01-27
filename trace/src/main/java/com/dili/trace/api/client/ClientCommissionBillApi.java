@@ -84,6 +84,9 @@ public class ClientCommissionBillApi {
                 logger.info("循环保存登记单:" + JSON.toJSONString(input));
                 CustomerExtendDto customer = this.customerRpcService.findApprovedCustomerByIdOrEx(userId, sessionData.getMarketId());
                 RegisterBill registerBill = input.build(customer, sessionData.getMarketId());
+                registerBill.setName(input.getName());
+                registerBill.setCorporateName(input.getCorporateName());
+
                 if (registerBill.getRegisterSource() == null) {
                     // 小程序默认理货区
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
@@ -93,13 +96,7 @@ public class ClientCommissionBillApi {
 //                    registerBill.setSourceName(user.getTallyAreaNos());
                 }
                 registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-                if(StringUtils.isNotBlank(createListBillParam.getName())&&StringUtils.isBlank(registerBill.getName())){
-                    registerBill.setName(createListBillParam.getName());
-                }
 
-                if(StringUtils.isNotBlank(createListBillParam.getCorporateName())&&StringUtils.isBlank(registerBill.getCorporateName())){
-                    registerBill.setCorporateName(createListBillParam.getCorporateName());
-                }
                 return registerBill;
             }).toList();
 
