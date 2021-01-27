@@ -84,12 +84,10 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
             bill.setId(id);
             bill.setCheckSheetId(checkSheet.getId());
             bill.setIsPrintCheckSheet(YesOrNoEnum.YES.getCode());
+            this.billService.updateSelective(bill);
             return bill;
 
         }).collect(Collectors.toList());
-        if (!registerBillList.isEmpty()) {
-            this.billService.batchUpdateSelective(registerBillList);
-        }
 
         this.checkSheetDetailService.batchInsert(checkSheetDetailList);
         // 更新登记单信息

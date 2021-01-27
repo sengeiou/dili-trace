@@ -1386,6 +1386,7 @@
     b.trade_account,
     b.trade_type_id,
     b.trade_type_name,
+    b.is_print_checksheet,
     checkinout_record.`created` checkinCreated,
     detect_record.`normal_result` normalResult,
     detect_record.`pd_result` pdResult,
