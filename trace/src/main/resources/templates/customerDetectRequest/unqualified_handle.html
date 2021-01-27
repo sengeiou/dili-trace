@@ -1,7 +1,10 @@
 <#bodyOrigin>
 <style>
     .input-sm{
-        width:300px !important;
+        width:368px !important;
+    }
+    .form-inline .form-item-group {
+        margin-top: 0px !important;
     }
 </style>
 <div class="main-container" style="margin: 0;padding: 0;">
@@ -10,15 +13,15 @@
         <form id="modifyRegisterBillForm" class="form-inline" role="form">
             <input type="hidden" name="id" value="${registerBill.id}"/>
             <div class="form-item-group">
-                <div class="form-group">
+                <div class="form-group" id="handleTypeDiv">
                     <label class="label-title text-right"><span class="red">&lowast;</span>类型:</label>
-                    <input type="radio" name="detectType" id="typeRadio2"><label for="typeRadio2">接单检测不合格</label>
-                    <input type="radio" name="detectType" id="typeRadio3"><label for="typeRadio3">抽检不合格</label>
+                    <input type="radio" name="detectType" id="typeRadio2"  value="0"><label for="typeRadio2">接单检测不合格</label>
+                    <input type="radio" name="detectType" id="typeRadio3"  value="40"><label for="typeRadio3">抽检不合格</label>
                 </div>
                 <br>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果</label>
-                    <textarea class="form-control input-sm" ></textarea>
+                    <label class="label-title text-right">处理结果</label>
+                    <textarea class="form-control input-sm" name="handleResult"></textarea>
                 </div>
             </div>
             <%
@@ -70,15 +73,24 @@
         ,"realName":"${user.realName!}"
         ,"userName":"${user.userName!}"
         ,"departmentName":"${department.name!}"};
+    $("input[name='detectType']").click(function(){
+        $("#handleTypeDiv").find("#detectType-error").remove();
+    });
     function doModifyRegisterBill(){
         if($('#modifyRegisterBillForm').validate().form() != true){
             return;
         }
-        var formData=$('#modifyRegisterBillForm').serializeJSON({useIntKeysAsArrayIndex:true});
-
+        let formData=$('#modifyRegisterBillForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        if(undefined==formData.detectType||null==formData.detectType){
+            let errHtml='<label id="detectType-error" class="error" for="typeRadio3">必填</label>';
+            $("#handleTypeDiv").find("#detectType-error").remove();
+            $("#handleTypeDiv").append(errHtml);
+            return;
+        }
+        console.log(formData);
         $.ajax({
             type: "POST",
-            url: "${contextPath}/newRegisterBill/doUploadHandleResult.action",
+            url: "${contextPath}/customerDetectRequest/uploadUnqualifiedHandle.action",
             data : JSON.stringify(formData),
             dataType: "json",
             async : true,

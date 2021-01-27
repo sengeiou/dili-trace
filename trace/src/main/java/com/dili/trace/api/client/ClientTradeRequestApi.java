@@ -184,10 +184,16 @@ public class ClientTradeRequestApi {
         }
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
-
             Long buyerId = sessionData.getUserId();
             Long marketId = sessionData.getMarketId();
-            List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto, marketId, sessionData.getOptUser());
+            logger.info("buyerId id in session:{}", buyerId);
+
+            TradeDto tradeDto = new TradeDto();
+            tradeDto.setMarketId(marketId);
+            tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
+
+            tradeDto.getBuyer().setBuyerId(buyerId);
+            TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, inputDto);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -225,9 +231,8 @@ public class ClientTradeRequestApi {
 
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
             tradeDto.getSeller().setSellerId(sellerId);
-
-            List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
-                    inputDto.getBatchStockList(), sessionData.getOptUser());
+            TradeOrder tradeOrder=   this.tradeOrderService.createSeperateTrade(tradeDto,
+                    inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -266,8 +271,8 @@ public class ClientTradeRequestApi {
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
             tradeDto.getSeller().setSellerId(sellerId);
 
-            List<TradeRequest> list = this.tradeRequestService.createSellRequest(tradeDto,
-                    inputDto.getBatchStockList(), sessionData.getOptUser());
+            TradeOrder tradeOrder=   this.tradeOrderService.createSellTrade(tradeDto,
+                    inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -370,7 +375,7 @@ public class ClientTradeRequestApi {
     @RequestMapping(value = "/handleBuyerRquest.api", method = {RequestMethod.POST})
     public BaseOutput handleBuyRequest(@RequestBody TradeRequestHandleDto inputDto) {
         try {
-            this.tradeRequestService.handleBuyerRequest(inputDto);
+            this.tradeOrderService.handleBuyerRequest(inputDto);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

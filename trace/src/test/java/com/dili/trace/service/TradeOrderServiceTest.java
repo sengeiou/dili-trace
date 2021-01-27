@@ -80,11 +80,11 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     }
 
     @Test
-    public void createTrade() {
+    public void createSellTrade() {
 
         TradeDto tradeDto = new TradeDto();
         tradeDto.setMarketId(8L);
-        tradeDto.setTradeOrderType(TradeOrderTypeEnum.BUY);
+        tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
 
         tradeDto.getSeller().setSellerId(31L);
         tradeDto.getSeller().setSellerName("zhangsan");
@@ -95,12 +95,18 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
 
 
         List<ProductStockInput> batchStockInputList = new ArrayList<>();
-        ProductStockInput input=new ProductStockInput();
+        ProductStockInput input = new ProductStockInput();
         input.setProductStockId(1L);
         input.setTradeWeight(BigDecimal.ONE);
         batchStockInputList.add(input);
-        TradeOrder tradeOrder=  this.tradeOrderService.createTrade(tradeDto, batchStockInputList, TradeOrderStatusEnum.FINISHED);
+        TradeOrder tradeOrder = this.tradeOrderService.createSellTrade(tradeDto, batchStockInputList);
         Assertions.assertNotNull(tradeOrder);
 
+    }
+
+    @Test
+    public void createTradeFromRegisterBill() {
+        TradeOrder tradeOrder = this.tradeOrderService.createTradeFromRegisterBill(this.registerBillService.get(4L));
+        Assertions.assertNotNull(tradeOrder);
     }
 }

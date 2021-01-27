@@ -19,10 +19,7 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRequestOutDto;
-import com.dili.trace.dto.DetectRequestWithBillDto;
-import com.dili.trace.dto.IdNameDto;
-import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.SampleSourceEnum;
@@ -965,19 +962,6 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     }
 
     /**
-     * 抽检上传结果
-     * @param input
-     * @return
-     */
-    public Long doUploadSpotCheckHandleResult(RegisterBill input) {
-        //上传检测结果图片
-        //sgRegisterBillService.doUploadHandleResult(input);
-        //库存处理
-        handleStock(input.getBillId());
-        return input.getBillId();
-    }
-
-    /**
      * 处理库存
      * @param billId
      */
@@ -1023,5 +1007,45 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             upBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
         }
         return upBill;
+    }
+
+    /**
+     * 上传处理结果
+     * @param bill
+     * @param userTicket
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void uploadUnqualifiedHandle(RegisterBillOutputDto bill, UserTicket userTicket) {
+        if(Objects.isNull(bill)){
+            throw new TraceBizException("上传处理结果为空");
+        }
+        //上传处理图片
+        List<ImageCert> imageCerts = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(bill.getImageCertList())){
+             imageCerts = StreamEx.of(bill.getImageCertList()).nonNull().filter(img -> {
+                // 只取uid不为空，并且类型为处理结果的照片
+                return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.Handle_Result.equalsToCode(img.getCertType());
+            }).toList();
+        }
+        if (CollectionUtils.isEmpty(imageCerts)) {
+            throw new TraceBizException("请上传报告");
+        }
+        imageCertService.insertImageCert(imageCerts,bill.getId());
+        if (bill.getHandleResult().trim().length() > 1000) {
+            throw new TraceBizException("处理结果不能超过1000");
+        }
+        RegisterBill item = this.billService.getAvaiableBill(bill.getId()).orElseThrow(()->{
+            throw new TraceBizException("数据不存在或已删除");
+        });
+        RegisterBill example = new RegisterBill();
+        example.setId(item.getId());
+        example.setHandleResult(bill.getHandleResult());
+        this.billService.updateSelective(example);
+        this.billService.updateHasImage(item.getBillId(), imageCerts);
+
+        //抽检类型处置销毁库存
+        if(DetectTypeEnum.SPOT_CHECK.equalsToCode(bill.getDetectType())){
+            //
+        }
     }
 }
