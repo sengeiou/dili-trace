@@ -30,7 +30,7 @@ import java.util.function.Function;
 public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     @Autowired(required = false)
-    OrderServiceRpc rpc;
+    OrderServiceRpc orderRpc;
     @Autowired
     TradeTypeService tradeTypeService;
 
@@ -44,7 +44,7 @@ public class OrderService {
     public List<QualityTraceTradeBill> fetchOrderData(Long startId, Integer limit) {
         try {
             Map<String, TradeType> tradeTypeMap = this.tradeTypeService.queryTradeTypeMap();
-            return StreamEx.ofNullable(this.rpc.sourceSync(startId, limit)).nonNull()
+            return StreamEx.ofNullable(this.orderRpc.sourceSync(startId, limit)).nonNull()
                     .filter(BaseOutput::isSuccess).map(BaseOutput::getData).nonNull()
                     .flatCollection(Function.identity()).nonNull().map(this::build).map(bill -> {
                         if (StringUtils.isBlank(bill.getTradetypeName())) {

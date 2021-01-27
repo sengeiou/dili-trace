@@ -29,7 +29,7 @@ public class TradeDetailQueryDto extends TradeDetail {
 
 
     @Column(name = "`stock_weight`")
-    @Operator(Operator.GREAT_EQUAL_THAN)
+    @Operator(Operator.GREAT_THAN)
     private BigDecimal minStockWeight;
 
 

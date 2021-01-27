@@ -142,6 +142,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 //        }
         imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
+        //更新报备单上图片标志位
+        this.billService.updateHasImage(registerHead.getId(), imageCertList);
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId(), registerHead.getMarketId())
                 .ifPresent(brandId -> {
@@ -266,6 +268,14 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     public Long doEdit(RegisterHead input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
+        }
+        String specName=input.getSpecName();
+        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+            throw new TraceBizException("规格名称包含非法字符");
+        }
+        String remark=input.getRemark();
+        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+            throw new TraceBizException("备注包含非法字符");
         }
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));

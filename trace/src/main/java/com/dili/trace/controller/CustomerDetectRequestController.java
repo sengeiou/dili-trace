@@ -274,7 +274,7 @@ public class CustomerDetectRequestController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "billId") Long billId
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.getAvaiableBill(billId).orElse(null);
+        RegisterBill item = billService.get(billId);
         if (item == null) {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
@@ -407,16 +407,16 @@ public class CustomerDetectRequestController {
     }
 
     /**
-     * 上传抽检结果
-     * @param billId
+     * 不合格处置
+     * @param bill
      * @return
      */
-    @RequestMapping(value = "/uploadUnqualifiedHandle.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/uploadUnqualifiedHandle.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput uploadUnqualifiedHandle(@RequestParam(name = "billId", required = true) Long billId) {
+    BaseOutput uploadUnqualifiedHandle(RegisterBillOutputDto bill) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            this.detectRequestService.spotCheckBill(billId, userTicket);
+            this.detectRequestService.uploadUnqualifiedHandle(bill, userTicket);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

@@ -4,10 +4,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.redis.service.RedisDistributedLock;
+import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.domain.DetectRequest;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.sg.trace.glossary.CodeGenerateEnum;
+import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.service.BillService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -16,6 +23,7 @@ import com.dili.trace.domain.CodeGenerate;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
 
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +38,9 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		implements CodeGenerateService, CommandLineRunner {
 	private static final Logger logger= LoggerFactory.getLogger(CodeGenerateServiceImpl.class);
 	private static final String TRADE_REQUEST_CODE_TYPE = "TRADE_REQUEST_CODE";
+	@Autowired
+	RedisDistributedLock redisDistributedLock;
+
 	private CodeGenerateMapper getMapper() {
 		return (CodeGenerateMapper) this.getDao();
 	}
@@ -230,8 +241,16 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public String nextRegisterBillSampleCode() {
+		String lockKey = "lock_trace_registerbill_samplecode";
+		try {
+			redisDistributedLock.tryGetLockSync(lockKey, lockKey, 10);
+			return this.nextCode(CodeGenerateEnum.REGISTER_BILL_SAMPLECODE);
+		} catch (Exception e) {
+			throw new TraceBizException("生成编号错误");
+		} finally {
+			redisDistributedLock.releaseLock(lockKey, lockKey);
+		}
 
-		return this.nextCode(CodeGenerateEnum.REGISTER_BILL_SAMPLECODE);
 	}
 
 
