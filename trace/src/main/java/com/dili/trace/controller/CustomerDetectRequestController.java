@@ -307,8 +307,16 @@ public class CustomerDetectRequestController {
             modelMap.put("upStreamName", upStreamName);
         }
 
-        RegisterBillOutputDto registerBill = buildRegisterBill(billId);
-        modelMap.put("registerBill", registerBill);
+//        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+//        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        item.setImageCertList(imageCerts);
+
+        RegisterBillOutputDto bill = new RegisterBillOutputDto();
+        BeanUtils.copyProperties(item,bill);
+        modelMap.put("registerBill", bill);
+
         return "customerDetectRequest/view";
     }
 
@@ -346,10 +354,10 @@ public class CustomerDetectRequestController {
      * @return
      */
     @RequestMapping(value = "/spotCheck.html", method = RequestMethod.GET)
-    public String soptCheck(ModelMap modelMap,@RequestParam(name = "billId", required = true) Long billId) {
+    public @ResponseBody
+    String soptCheck(ModelMap modelMap,@RequestParam(name = "billId", required = true) Long billId) {
         try {
-            RegisterBillOutputDto registerBill = buildRegisterBill(billId);
-            modelMap.put("registerBill", registerBill);
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         } catch (TraceBizException e) {
             if(logger.isErrorEnabled()){
                 logger.error(e.getMessage());
@@ -357,8 +365,6 @@ public class CustomerDetectRequestController {
         }
         return "customerDetectRequest/spotCheck";
     }
-
-
 
     /**
      * 抽检
@@ -388,7 +394,11 @@ public class CustomerDetectRequestController {
     @RequestMapping(value = "/unqualifiedHandle.html", method = RequestMethod.GET)
     public String unqualifiedHandle(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
         try {
-            RegisterBillOutputDto registerBill = buildRegisterBill(id);
+            RegisterBill item = billService.get(id);
+            RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+            BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+            List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+            registerBill.setImageCertList(imageCerts);
             modelMap.put("registerBill", registerBill);
         }catch (Exception e){
             if(logger.isErrorEnabled()){
@@ -405,7 +415,7 @@ public class CustomerDetectRequestController {
      */
     @RequestMapping(value = "/uploadUnqualifiedHandle.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput uploadUnqualifiedHandle(@RequestBody  RegisterBillOutputDto bill) {
+    BaseOutput uploadUnqualifiedHandle(RegisterBillOutputDto bill) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             this.detectRequestService.uploadUnqualifiedHandle(bill, userTicket);
@@ -416,27 +426,13 @@ public class CustomerDetectRequestController {
     }
 
     /**
-     * 构建报备信息
-     * @param billId
-     * @return
-     */
-    private RegisterBillOutputDto buildRegisterBill(Long billId) {
-        RegisterBill item = billService.get(billId);
-        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
-        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
-        registerBill.setImageCertList(imageCerts);
-        return registerBill;
-    }
-
-    /**
      * 权限判断并保护敏感信息
      *
      * @param dto
      * @return
      */
     private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
-        if (Objects.isNull(dto)) {
+        if (dto == null) {
             return dto;
         }
         if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {

@@ -841,7 +841,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(detectRecordId, registerBill, userTicket,detectTypeEnum,detectResultEnum);
+        manualCheckBill(registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
         manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum,detectTime);
@@ -853,18 +853,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param registerBill
      * @param userTicket
      */
-    private void manualCheckBill(Long detectRecordId,RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
-        DetectRecord detectRecord=this.detectRecordService.get(detectRecordId);
-
+    private void manualCheckBill(RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
         updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
-        updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
-        updateBill.setLatestDetectTime(detectRecord.getDetectTime());
-        updateBill.setLatestPdResult(detectRecord.getPdResult());
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
