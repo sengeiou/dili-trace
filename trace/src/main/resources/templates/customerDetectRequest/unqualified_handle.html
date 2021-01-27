@@ -1,0 +1,226 @@
+<#bodyOrigin>
+<style>
+    .input-sm{
+        width:300px !important;
+    }
+</style>
+<div class="main-container" style="margin: 0;padding: 0;">
+
+    <div class="form-box border">
+        <form id="modifyRegisterBillForm" class="form-inline" role="form">
+            <input type="hidden" name="id" value="${registerBill.id}"/>
+            <div class="form-item-group">
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>类型:</label>
+                    <input type="radio" name="detectType" id="typeRadio2"><label for="typeRadio2">接单检测不合格</label>
+                    <input type="radio" name="detectType" id="typeRadio3"><label for="typeRadio3">抽检不合格</label>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果</label>
+                    <textarea class="form-control input-sm" ></textarea>
+                </div>
+            </div>
+            <%
+            var imageCount = 0;
+            %>
+            <div id="handleResultContainer">
+                <div class="form-item-group" id="handleResultDiv">
+                    <label class="label-title text-right"> <h4 class="form-item-title">处理结果图片</h4></label>
+                    <br>
+                    <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete" style="display: none">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%}%>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30" style="width: 50%">
+        <button class="btn-main2 btn-sm" onclick="doModifyRegisterBill()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+
+<script>
+    var currentUser={"depId":"${user.departmentId!}"
+        ,"id":"${user.id!}"
+        ,"realName":"${user.realName!}"
+        ,"userName":"${user.userName!}"
+        ,"departmentName":"${department.name!}"};
+    function doModifyRegisterBill(){
+        if($('#modifyRegisterBillForm').validate().form() != true){
+            return;
+        }
+        var formData=$('#modifyRegisterBillForm').serializeJSON({useIntKeysAsArrayIndex:true});
+
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/newRegisterBill/doUploadHandleResult.action",
+            data : JSON.stringify(formData),
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.success){
+                    parent.bs4pop.removeAll();
+                }else{
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error: function(){
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+
+
+    }
+
+    let imageItemCount = '${registerBill.imageCertList.~size!0}';
+    function getDetectReportCount(selector){
+        var count=$(selector).find('.fileimg-box').length;
+        return count;
+    }
+    function initImageBtns(selector){
+        var tempHtml=$(selector)
+        var deleteImg=tempHtml.find('.fileimg-delete');
+        var viewImg=tempHtml.find('.fileimg-view');
+        deleteImg.on('click', function () {
+            $(this).parents('.fileimg-box').remove();
+            if(getDetectReportCount(selector)==0){
+                createDetectReportAndAppendTemplate(selector);
+            }
+        });
+        viewImg.on('click',function () {
+            var url = $(this).parent().siblings(".magnifying").attr('src');
+            if(url){
+                layer.open({
+                    title:'图片',
+                    type: 1,
+                    skin: 'layui-layer-rim',
+                    closeBtn: 2,
+                    area: ['90%', '90%'], // 宽高
+                    content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                });
+            }
+        });
+    }
+
+    function createDetectReportAndAppendTemplate(selector){
+        if(getDetectReportCount(selector)==10){
+            return;
+        }
+        var tempHtml=$(template('imageCertItem', {index: imageItemCount++}));
+        $(selector).append(tempHtml);
+        var fileEl=tempHtml.find('input[type="file"]');
+        initFileUpload(fileEl,function(){createDetectReportAndAppendTemplate(selector);});
+        initImageBtns(tempHtml);
+
+    }
+    // 文件上传组件初始化
+    function initFileUpload(selecter,success) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var uid= res.result.data;
+                    $(this).siblings("input:hidden:first").val(uid);
+
+                    var url = "${imageViewPathPrefix}/" + uid;
+                    debugger
+                    $(this).siblings('.magnifying').attr('src', url).show();
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    success();
+                }
+            },
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+                // /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+    $(function () {
+        initImageBtns($(document.body));
+        $('#handleResultContainer').show();
+        createDetectReportAndAppendTemplate($('#handleResultContainer').find('#handleResultDiv'));
+    });
+
+
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
+        layer.open({
+            type: 2,
+            area: ['820px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/sg/registerBill/tradeBillSsRecord.html?id='+tradeId], //iframe的url
+            yes: function (index, layero) {
+            }
+        });
+    });
+
+    function returnBack(){
+        history.go(-1);
+    }
+</script>
+
+<script id="imageCertItem" type="text/html">
+    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+        <span class="fileimg-plus-icon">+</span>
+        <span class="fileimg-des">点击上传</span>
+        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+        <input type="hidden" name="imageCertList[{{index}}][uid]">
+        <input type="hidden" name="imageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+        <img class="magnifying">
+        <div class="fileimg-cover" style="display: none;"></div>
+        <div class="fileimg-edit" style="display: none;">
+            <span class="fileimg-view">查看</span>
+            <span class="fileimg-delete">删除</span>
+        </div>
+    </div>
+</script>

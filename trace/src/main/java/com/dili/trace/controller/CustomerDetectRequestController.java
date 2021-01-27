@@ -11,9 +11,11 @@ import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -26,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -339,5 +342,104 @@ public class CustomerDetectRequestController {
             logger.error(e.getMessage());
         }
         return "customerDetectRequest/manualCheck_confirm";
+    }
+
+
+    /**
+     * 抽检页面
+     *
+     * @param billId
+     * @return
+     */
+    @RequestMapping(value = "/spotCheck.html", method = RequestMethod.GET)
+    public @ResponseBody
+    String soptCheck(ModelMap modelMap,@RequestParam(name = "billId", required = true) Long billId) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        } catch (TraceBizException e) {
+            if(logger.isErrorEnabled()){
+                logger.error(e.getMessage());
+            }
+        }
+        return "customerDetectRequest/spotCheck";
+    }
+
+    /**
+     * 抽检
+     *
+     * @param billId
+     * @return
+     */
+    @RequestMapping(value = "/doSpotCheck.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doSpotCheck(@RequestParam(name = "billId", required = true) Long billId) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            this.detectRequestService.spotCheckBill(billId, userTicket);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+
+    /**
+     * 上传抽检结果页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/unqualifiedHandle.html", method = RequestMethod.GET)
+    public String unqualifiedHandle(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id) {
+        try {
+            RegisterBill item = billService.get(id);
+            RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+            BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+            List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+            registerBill.setImageCertList(imageCerts);
+            modelMap.put("registerBill", registerBill);
+        }catch (Exception e){
+            if(logger.isErrorEnabled()){
+                logger.error(e.getMessage());
+            }
+        }
+        return "customerDetectRequest/unqualified_handle";
+    }
+
+    /**
+     * 上传抽检结果
+     * @param billId
+     * @return
+     */
+    @RequestMapping(value = "/uploadUnqualifiedHandle.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput uploadUnqualifiedHandle(@RequestParam(name = "billId", required = true) Long billId) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            this.detectRequestService.spotCheckBill(billId, userTicket);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 权限判断并保护敏感信息
+     *
+     * @param dto
+     * @return
+     */
+    private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
+        if (dto == null) {
+            return dto;
+        }
+        if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
+            return dto;
+        } else {
+            dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));
+            dto.setAddr(MaskUserInfo.maskAddr(dto.getAddr()));
+            return dto;
+        }
+
     }
 }

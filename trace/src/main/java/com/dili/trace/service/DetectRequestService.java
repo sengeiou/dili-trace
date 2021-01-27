@@ -45,6 +45,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 检测请求service
@@ -642,6 +643,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
+        //已通过审核、未预约检测
+        boolean canSpot = BillVerifyStatusEnum.PASSED.equalsToCode(item.getVerifyStatus())
+                && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
+        if(canSpot){
+            msgStream.add( DetectRequestMessageEvent.spotCheck);
+        }
         // 只有待审核且待预约状态的报备单才可以撤销
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())
                 && BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
@@ -689,6 +696,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                         if (item.getHasHandleResult() == 0) {
                             msgStream.add(DetectRequestMessageEvent.uploadHandleResult);
                         }
+                    }
+                    //初检、复检不合格可以不合格处置
+                    if(DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())){
+                        msgStream.add(DetectRequestMessageEvent.unqualifiedHandle);
                     }
                 }
                 // 检测合格，生成检测报告。
@@ -930,5 +941,87 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         registerBill.setId(billId);
         registerBill.setDetectStatus(code);
         billService.updateSelective(registerBill);
+    }
+
+    /**
+     * 抽检
+     * @param billId
+     * @param userTicket
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void spotCheckBill(Long billId, UserTicket userTicket) {
+        if (null == billId) {
+            throw new TraceBizException("预约检测单据Id为空");
+        }
+        //更新报备单检测状态
+        RegisterBill registerBill = billService.get(billId);
+        updateBillDetectStatus(DetectStatusEnum.SAMPLING.getCode(),registerBill,userTicket);
+        // 更新检测请求
+        DetectRequest updateParam = new DetectRequest();
+        updateParam.setId(registerBill.getDetectRequestId());
+        updateParam.setDetectSource(SampleSourceEnum.SPOT_CHECK.getCode());
+        updateParam.setSampleTime(new Date());
+        this.updateSelective(updateParam);
+    }
+
+    /**
+     * 抽检上传结果
+     * @param input
+     * @return
+     */
+    public Long doUploadSpotCheckHandleResult(RegisterBill input) {
+        //上传检测结果图片
+        //sgRegisterBillService.doUploadHandleResult(input);
+        //库存处理
+        handleStock(input.getBillId());
+        return input.getBillId();
+    }
+
+    /**
+     * 处理库存
+     * @param billId
+     */
+    private void handleStock(Long billId) {
+        if(Objects.isNull(billId)){
+            throw new TraceBizException("处理库存参数异常");
+        }
+        RegisterBill bill = billService.get(billId);
+        DetectRecord record = new DetectRecord();
+        record.setDetectRequestId(bill.getDetectRequestId());
+        List<DetectRecord> detectRecords = detectRecordService.listByExample(record);
+        List<DetectRecord> records = StreamEx.of(detectRecords).nonNull().filter(dr ->
+                DetectTypeEnum.SPOT_CHECK.equalsToCode(dr.getDetectType())).sorted(Comparator.comparing(DetectRecord::getDetectTime).reversed()).collect(Collectors.toList());
+        if(CollectionUtils.isNotEmpty(records)){
+            DetectRecord detectRecord = records.get(0);
+            if(Objects.isNull(detectRecord.getDetectState())){
+                throw new TraceBizException("检测记录结果为空");
+            }
+            //不合格
+            if(DetectRecordStateEnum.UNQUALIFIED.equalsToCode(detectRecord.getDetectState())){
+                //销毁库存
+            }else{
+                //释放库存
+            }
+        }
+    }
+
+    /**
+     * 更新报备单为待检测，并生成采样编号
+     * @param registerBillItem
+     * @param userTicket
+     * @return
+     */
+    private RegisterBill updateBillDetectStatus(Integer opt,RegisterBill registerBillItem, UserTicket userTicket) {
+        RegisterBill upBill=new RegisterBill();
+        upBill.setId(registerBillItem.getId());
+        upBill.setOperatorName(userTicket.getRealName());
+        upBill.setOperatorId(userTicket.getId());
+        upBill.setDetectStatus(opt);
+        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+            upBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+            upBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+        }
+        return upBill;
     }
 }
