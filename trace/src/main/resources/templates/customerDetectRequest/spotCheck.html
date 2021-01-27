@@ -1,0 +1,191 @@
+<#bodyOrigin>
+<style>
+    .form-inline .table-showlist table .input-sm {
+        width: 200px;
+    }
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-container {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+    .spot-label {
+        padding: 40px;
+    }
+</style>
+<div class="main-container" style="margin: 0;padding: 0;">
+    <div>
+        <form id="spotCheckForm" class="form-inline form-container" role="form">
+            <div id="spotCheckTypeRadio">
+                <label class="radio-inline">
+                    <input type="radio" name="spotCheckType" id="doSpotCheck" value="1" checked> 抽检检测
+                </label>
+                <label class="radio-inline" style="margin-left: 50px;">
+                    <input type="radio" name="spotCheckType" id="doManualSpotCheck"  value="2"> 人工抽检结果
+                </label>
+            </div>
+
+            <div id="spotCheckInfo" class="form-item-group form-box border" style="display: none;">
+<!--                <h4 class="form-item-title">基础信息</h4>-->
+                <input type="hidden" name="billId"  value="${registerBill.billId}">
+                <input type="hidden" name="registerBillCode"  value="${registerBill.code}">
+                <div class="form-group">
+                    <label class="label-title text-right">检测批号</label>
+                    <input type="text" class="form-control input-sm" name="detectBatchNo" id="detectBatchNo" tabindex="-1" maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">标准值</label>
+                    <input type="text" class="form-control input-sm" name="normalResult" id="normalResult" tabindex="-1" maxlength="10" />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>实际值</label>
+                    <input type="text" class="form-control input-sm" name="pdResult" id="pdResult" tabindex="-1" maxlength="10" required />
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人</label>
+                    <input type="text" class="form-control input-sm" name="detectOperator" id="detectOperator" tabindex="-1" maxlength="50" required />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
+                    <div class="input-group " style="width: 200px;">
+                        <input type="text" style="width: 100%;" name="detectTime" id="detectTime" class="form-control laydatetime laystart" required/>
+                        <div class="input-group-append">
+                            <label for="detectTime" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>检测类型</label>
+                    <select  class="form-control input-sm editableSelect " id="detectType" name="detectType" required>
+                        <option value="">全部</option>
+                        <option value="20">初检</option>
+                        <option value="30">复检</option>
+                    </select>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        检测机构</label>
+                    <input type="text" class="form-control input-sm" name="detectCompany" id="detectCompany" tabindex="-1" maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>检测结果</label>
+                    <select  class="form-control input-sm editableSelect " id="detectResult" name="detectResult" required>
+                        <option value="">全部</option>
+                        <option value="1">合格</option>
+                        <option value="2">不合格</option>
+                    </select>
+                </div>
+                <br>
+            </div>
+
+            <div id="spotCheckText" class="spot-label">
+                创建检测任务，进行采样检测
+            </div>
+        </form>
+
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="doSpotCheckConfirm()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/postmsg.js"></script>
+
+<script type="text/javascript">
+    lay('.laydatetime').each(function() {
+        laydate.render({
+            elem: this
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+    });
+
+    $('[name=spotCheckType]').change(function() {
+        if (this.value == '1') {
+            $("#spotCheckInfo").hide();
+            $("#spotCheckText").show();
+        } else if (this.value == '2') {
+            $("#spotCheckInfo").show();
+            $("#spotCheckText").hide();
+        }
+    });
+
+    /**
+     * 提交
+     */
+    function doSpotCheckConfirm() {
+        if ($('#spotCheckForm').validate().form() != true) {
+            return;
+        }
+
+        let spotCheckType = $('spotCheckType').val();
+        let data=$('#spotCheckForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        console.log("data===>",data);
+        // $.ajax({
+        //     type: 'post',
+        //     url: '/customerDetectRequest/doManualCheck.action',
+        //     data :  JSON.stringify(data),
+        //     dataType: 'json',
+        //     async: false,
+        //     contentType: "application/json; charset=utf-8",
+        //     success: function (ret) {
+        //         if (ret.code == "200") {
+        //             layer.alert('检测成功',{
+        //                     type:0,
+        //                     time : 1000,
+        //                     end :function(){
+        //                         parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+        //                     }
+        //                 },
+        //                 function () {
+        //                     parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+        //                 }
+        //             );
+        //         } else {
+        //             swal(
+        //                 '错误',
+        //                 ret.result,
+        //                 'error'
+        //             );
+        //         }
+        //     },
+        //     error:function(e){
+        //         swal(
+        //             '错误',
+        //             '远程访问失败',
+        //             'error'
+        //         );
+        //     }
+        // });
+
+    }
+</script>

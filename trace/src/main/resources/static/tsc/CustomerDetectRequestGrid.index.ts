@@ -67,8 +67,8 @@ class CustomerDetectRequestGrid extends ListPage {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '98%',
-            height: '98%',
+            width: '60%',
+            height: '60%',
             btns: []
         });
     }
