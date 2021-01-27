@@ -11,13 +11,16 @@ import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.DetectRequestWithBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
@@ -27,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -157,17 +162,43 @@ public class CommissionDetectRequestController {
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
 
-//        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
-//        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
-        item.setImageCertList(imageCerts);
-
-        modelMap.put("registerBill", item);
+        RegisterBillOutputDto registerBill = buildRegisterBill(id);
+        modelMap.put("registerBill", registerBill);
 
         return "customerDetectRequest/view";
     }
+    /**
+     * 构建报备信息
+     * @param billId
+     * @return
+     */
+    private RegisterBillOutputDto buildRegisterBill(Long billId) {
+        RegisterBill item = billService.get(billId);
+        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        registerBill.setImageCertList(imageCerts);
+        return registerBill;
+    }
+    /**
+     * 权限判断并保护敏感信息
+     *
+     * @param dto
+     * @return
+     */
+    private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
+        if (Objects.isNull(dto)) {
+            return dto;
+        }
+        if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
+            return dto;
+        } else {
+            dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));
+            dto.setAddr(MaskUserInfo.maskAddr(dto.getAddr()));
+            return dto;
+        }
 
+    }
     /**
      * 登记单录入页面
      *
