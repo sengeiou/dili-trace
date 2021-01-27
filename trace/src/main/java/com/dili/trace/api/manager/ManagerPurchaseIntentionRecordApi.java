@@ -13,6 +13,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import com.dili.trace.util.NumUtils;
+import com.dili.trace.util.RegUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,10 @@ public class ManagerPurchaseIntentionRecordApi {
             }
         }
         SessionData sessionData = this.sessionContext.getSessionData();
+
+        if(StringUtils.isNotBlank(input.getPlate())&&!RegUtils.isPlate(input.getPlate())){
+            return BaseOutput.failure("车牌格式错误");
+        }
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
         input.setModified(new Date());
