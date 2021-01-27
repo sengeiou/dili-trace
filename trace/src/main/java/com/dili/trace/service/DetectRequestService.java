@@ -812,7 +812,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(registerBill, userTicket,detectTypeEnum,detectResultEnum);
+        manualCheckBill(detectRecordId,registerBill, userTicket,detectTypeEnum,detectResultEnum);
 
         // 人工检测-检测请求
         manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum,detectTime);
@@ -824,13 +824,21 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param registerBill
      * @param userTicket
      */
-    private void manualCheckBill(RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    private void manualCheckBill(Long detectRecordId,RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+        DetectRecord detectRecord = detectRecordService.get(detectRecordId);
+        if (!Objects.nonNull(detectRecord)){
+            throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
+        }
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
         updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
         updateBill.setOperatorId(userTicket.getId());
         updateBill.setOperatorName(userTicket.getUserName());
         updateBill.setModified(new Date());
+        updateBill.setLatestDetectTime(detectRecord.getDetectTime());
+        updateBill.setLatestPdResult(detectRecord.getPdResult());
+        updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
+        updateBill.setLatestDetectRecordId(detectRecordId);
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
