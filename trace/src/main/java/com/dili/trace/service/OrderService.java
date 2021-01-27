@@ -5,7 +5,7 @@ import com.dili.orders.rpc.OrderServiceRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.TradeType;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;

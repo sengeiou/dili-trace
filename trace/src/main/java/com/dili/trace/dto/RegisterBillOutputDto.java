@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.trace.domain.*;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;

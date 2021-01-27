@@ -7,6 +7,9 @@ import com.dili.trace.domain.TradeDetail;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public class TradeDetailQueryDto extends TradeDetail {
     /**
      * 查询登记开始时间
@@ -23,7 +26,24 @@ public class TradeDetailQueryDto extends TradeDetail {
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private String createdEnd;
-    
+
+
+    @Column(name = "`stock_weight`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private BigDecimal minStockWeight;
+
+
+    @Column(name = "`trade_request_id`")
+    @Operator(Operator.IN)
+    private List<Long> tradeRequestIdList;
+
+    public List<Long> getTradeRequestIdList() {
+        return tradeRequestIdList;
+    }
+
+    public void setTradeRequestIdList(List<Long> tradeRequestIdList) {
+        this.tradeRequestIdList = tradeRequestIdList;
+    }
 
     /**
      * @return String return the createdStart
@@ -53,4 +73,11 @@ public class TradeDetailQueryDto extends TradeDetail {
         this.createdEnd = createdEnd;
     }
 
+    public BigDecimal getMinStockWeight() {
+        return minStockWeight;
+    }
+
+    public void setMinStockWeight(BigDecimal minStockWeight) {
+        this.minStockWeight = minStockWeight;
+    }
 }

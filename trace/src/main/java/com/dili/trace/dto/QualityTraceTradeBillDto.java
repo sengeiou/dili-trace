@@ -1,6 +1,7 @@
-package com.dili.trace.domain.sg;
+package com.dili.trace.dto;
 
 import com.dili.ss.domain.annotation.Operator;
+import com.dili.trace.domain.QualityTraceTradeBill;
 
 import javax.persistence.Column;
 import java.util.List;

@@ -2,7 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.trace.api.output.QualityTraceTradeBillOutput;
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 
 import java.util.List;

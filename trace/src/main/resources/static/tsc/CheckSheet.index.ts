@@ -7,7 +7,15 @@ class CheckSheetIndex extends ListPage {
         window['checkSheetIndex'] = this;
         $('#detail-btn').on('click', async () => await this.doDetail());
         $('#reprint-btn').on('click', async () => await this.doPrint());
+        $('#export').on('click', async () => await this.exportGrid());
+
+
+
         //async ()=>this.init())();
+    }
+    private exportGrid(){
+        //@ts-ignore
+        bui.util.doExport(this.grid.attr('id'),this.queryform.attr('id'),'',this.otherParams)
     }
     public removeAllAndLoadData() {
         //@ts-ignore

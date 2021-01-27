@@ -9,7 +9,7 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;

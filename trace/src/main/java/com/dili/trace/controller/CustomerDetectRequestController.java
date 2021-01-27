@@ -1,16 +1,14 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
-import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
