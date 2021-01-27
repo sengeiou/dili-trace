@@ -86,6 +86,13 @@ public class TradeOrder extends BaseDomain {
     private Date modified;
 
     /**
+     * 买家类型
+     */
+    @ApiModelProperty(value = "买家type")
+    @Column(name = "`buyer_type`")
+    private Integer buyerType;
+
+    /**
      * 第三方流水号
      */
     @ApiModelProperty(value = "第三方流水号")
@@ -95,6 +102,14 @@ public class TradeOrder extends BaseDomain {
     @Transient
     public Long getTradeOrderId() {
         return this.id;
+    }
+
+    public Integer getBuyerType() {
+        return buyerType;
+    }
+
+    public void setBuyerType(Integer buyerType) {
+        this.buyerType = buyerType;
     }
 
     public String getTradeNo() {
