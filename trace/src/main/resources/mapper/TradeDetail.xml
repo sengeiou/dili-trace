@@ -18,10 +18,11 @@
       left join register_bill on trade_detail.bill_id =register_bill.id 
       where buyer_id=#{userId}
       <if test="createdStart != null">
-        <![CDATA[ AND #{createdStart}<=created ]]>
+        <![CDATA[
+        AND #{createdStart}<=(case when trade_detail.trade_type=0 then register_bill.created else trade_detail.created end) ]]>
       </if>
       <if test="createdEnd != null">
-        <![CDATA[AND created <=#{createdEnd}]]>
+        <![CDATA[AND (case when trade_detail.trade_type=0 then register_bill.created else trade_detail.created end) <=#{createdEnd}]]>
       </if>
       <if test="likeProductName != null  and likeProductName != ''">
         AND trade_detail.product_name like '%${likeProductName}%'
