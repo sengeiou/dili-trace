@@ -274,7 +274,7 @@ public class CustomerDetectRequestController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "billId") Long billId
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.getAvaiableBill(billId).orElse(null);
+        RegisterBill item = billService.get(billId);
         if (item == null) {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
