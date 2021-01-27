@@ -169,7 +169,7 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>指定检测人</label>
                     <input type="text" class="form-control input-sm"
-                           value="<%if(null!= detectRequest.designatedName!){%>${detectRequest.designatedName}<%}else{%>-<%}%>"
+                           value="<%if(null!= detectRequest.designatedName!){%>${detectRequest.designatedName!}<%}else{%>-<%}%>"
                            required readonly/>
                 </div>
                 <br>
