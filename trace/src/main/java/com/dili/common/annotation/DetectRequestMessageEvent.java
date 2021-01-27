@@ -54,7 +54,15 @@ public enum DetectRequestMessageEvent {
     /**
      * 上传处理结果
      */
-    uploadHandleResult("upload-handleresult-btn")
+    uploadHandleResult("upload-handleresult-btn"),
+    /**
+     * 抽检
+     */
+    spotCheck("sample-btn"),
+    /**
+     *
+     */
+    unqualifiedHandle("unqualified-handle-btn"),
     ;
 
     private DetectRequestMessageEvent(String code) {

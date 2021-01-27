@@ -111,12 +111,7 @@ public class TradeDetail extends BaseDomain {
     @ApiModelProperty(value = "买家姓名")
     @Column(name = "`buyer_name`")
     private String buyerName;
-    /**
-     * 买家类型
-     */
-    @ApiModelProperty(value = "买家type")
-    @Column(name = "`buyer_type`")
-    private Integer buyerType;
+
 
     /**
      * 卖家ID
@@ -540,11 +535,4 @@ public class TradeDetail extends BaseDomain {
         this.thirdPartyStockId = thirdPartyStockId;
     }
 
-    public Integer getBuyerType() {
-        return buyerType;
-    }
-
-    public void setBuyerType(Integer buyerType) {
-        this.buyerType = buyerType;
-    }
 }

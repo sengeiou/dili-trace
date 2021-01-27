@@ -315,7 +315,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		buyerTradeDetail.setBuyerId(buyer.getBuyerId());
 		buyerTradeDetail.setBuyerName(buyer.getBuyerName());
-		buyerTradeDetail.setBuyerType(buyer.getBuyerType().getCode());
+//		buyerTradeDetail.setBuyerType(buyer.getBuyerType().getCode());
 
 		buyerTradeDetail.setSellerId(tradeDetailItem.getBuyerId());
 		buyerTradeDetail.setSellerName(tradeDetailItem.getBuyerName());

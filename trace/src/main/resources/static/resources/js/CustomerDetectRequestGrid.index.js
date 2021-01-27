@@ -17,12 +17,42 @@ class CustomerDetectRequestGrid extends ListPage {
         $('#detail-btn').on('click', async () => await this.openDetailPage());
         $('#createSheet-btn').on('click', async () => await this.openCreateSheetPage());
         $('#upload-handleresult-btn').on('click', async () => await this.openUploadHandleResultPage());
+        $('#sample-btn').on('click', async () => await this.openSpotCheck());
+        $('#unqualified-handle-btn').on('click', async () => await this.openSpotHandle());
         $('select[name="detectResultSelect"]').on('change', async (o, n) => {
             var data = JSON.parse($('select[name="detectResultSelect"]').val().toString());
             $('input[name="detectType"]').val(data['detectType']);
             $('input[name="detectResult"]').val(data['detectResult']);
         });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+    }
+    async openSpotHandle() {
+        var row = this.rows[0];
+        var url = this.toUrl('/customerDetectRequest/unqualifiedHandle.html?id=' + row.billId);
+        var spotDia = bs4pop.dialog({
+            title: '不合格处置',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '48%',
+            height: '78%',
+            btns: []
+        });
+    }
+    async openSpotCheck() {
+        var row = this.rows[0];
+        var url = this.toUrl('/customerDetectRequest/spotCheck.html?billId=' + row.billId);
+        var spotDia = bs4pop.dialog({
+            title: '抽检',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
     async openUploadHandleResultPage() {
         var row = this.rows[0];
