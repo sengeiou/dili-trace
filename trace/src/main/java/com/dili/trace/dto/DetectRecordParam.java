@@ -7,10 +7,12 @@ import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Created by laikui on 2019/8/15.
+ * @author laikui
+ * @date 2019/8/15
  */
 public class DetectRecordParam extends DetectRecord {
     /**
@@ -28,7 +30,6 @@ public class DetectRecordParam extends DetectRecord {
      */
     @ApiModelProperty(value = "环境标记")
     private String tag;
-
     /**
      * 采样编号
      *
@@ -36,6 +37,37 @@ public class DetectRecordParam extends DetectRecord {
      */
     @Transient
     private String sampleCode;
+    /**
+     * 抽检类型（1，抽检检测、2.抽检人工录入结果）
+     *
+     * @return
+     */
+    @Transient
+    private Integer spotCheckType;
+
+    /**
+     * 报备单id
+     *
+     * @return
+     */
+    @Transient
+    private Long billId;
+    /**
+     * 检测人员id
+     *
+     * @return
+     */
+    @Transient
+    private Long detectOperatorId;
+
+    /**
+     * 检测费用
+     *
+     * @return
+     */
+    @Transient
+    private BigDecimal detectFee;
+
     /**
      * 检测时间查询开始（上报）
      *
@@ -88,7 +120,39 @@ public class DetectRecordParam extends DetectRecord {
      * @return
      */
     @Transient
-    private  String goodsCode;
+    private String goodsCode;
+
+    public BigDecimal getDetectFee() {
+        return detectFee;
+    }
+
+    public void setDetectFee(BigDecimal detectFee) {
+        this.detectFee = detectFee;
+    }
+
+    public Long getDetectOperatorId() {
+        return detectOperatorId;
+    }
+
+    public void setDetectOperatorId(Long detectOperatorId) {
+        this.detectOperatorId = detectOperatorId;
+    }
+
+    public Long getBillId() {
+        return billId;
+    }
+
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
+
+    public Integer getSpotCheckType() {
+        return spotCheckType;
+    }
+
+    public void setSpotCheckType(Integer spotCheckType) {
+        this.spotCheckType = spotCheckType;
+    }
 
     public Date getDetectTimeStart() {
         return detectTimeStart;

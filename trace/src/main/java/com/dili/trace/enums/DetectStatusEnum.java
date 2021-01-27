@@ -35,11 +35,7 @@ public enum DetectStatusEnum {
     /**
      * 已退回
      */
-    RETURN_DETECT(60, "已退回"),
-    /**
-     * 抽检中
-     */
-    SAMPLING(70, "抽检中"),
+    RETURN_DETECT(60, "已退回")
     ;
 
 
