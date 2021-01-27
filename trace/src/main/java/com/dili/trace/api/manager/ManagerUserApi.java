@@ -8,6 +8,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.ClientTypeEnum;
@@ -192,7 +193,7 @@ public class ManagerUserApi {
      */
     @ApiOperation(value = "查询司机信息")
     @RequestMapping(value = "/listDriver.api", method = RequestMethod.POST)
-    public PageOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
+    public BaseOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, marketId);
