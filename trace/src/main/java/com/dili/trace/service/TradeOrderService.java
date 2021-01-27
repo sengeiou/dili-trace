@@ -444,7 +444,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     /**
      * @param tradeDetailInputList
      */
-    public List<TradeRequestDetail> createTradeRequestDetailForInput(List<TradeDetailInputDto> tradeDetailInputList, TradeRequest tradeRequest) {
+    private List<TradeRequestDetail> createTradeRequestDetailForInput(List<TradeDetailInputDto> tradeDetailInputList, TradeRequest tradeRequest) {
         List<TradeDetailInputDto> detailInputList = StreamEx.ofNullable(tradeDetailInputList).flatCollection(Function.identity())
                 .nonNull().toList();
 

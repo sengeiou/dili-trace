@@ -753,7 +753,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         // 创建相关的tradeDetail及batchStock数据
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem -> {
-            this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
+            this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),
                     operatorUser);
         });
 
