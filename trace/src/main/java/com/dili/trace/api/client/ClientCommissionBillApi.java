@@ -93,7 +93,13 @@ public class ClientCommissionBillApi {
 //                    registerBill.setSourceName(user.getTallyAreaNos());
                 }
                 registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+                if(StringUtils.isNotBlank(createListBillParam.getName())&&StringUtils.isBlank(registerBill.getName())){
+                    registerBill.setName(createListBillParam.getName());
+                }
 
+                if(StringUtils.isNotBlank(createListBillParam.getCorporateName())&&StringUtils.isBlank(registerBill.getCorporateName())){
+                    registerBill.setCorporateName(createListBillParam.getCorporateName());
+                }
                 return registerBill;
             }).toList();
 
