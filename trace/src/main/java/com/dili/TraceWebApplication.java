@@ -32,13 +32,13 @@ import tk.mybatis.spring.annotation.MapperScan;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @MapperScan(basePackages = {"com.dili.ss.uid.mapper","com.dili.trace.dao", "com.dili.ss.dao"})
 @ComponentScan(basePackages = {"com.dili.ss.uid","com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
-@RestfulScan({"com.dili.ss.uid","com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
+@RestfulScan({"com.dili.orders.rpc","com.dili.ss.uid","com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
 //@DTOScan({"com.dili.trace","com.dili.ss"})
 //@Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling
 
 @EnableAsync
-@EnableFeignClients(basePackages = {"com.dili.ss.uid","com.dili.assets.sdk.rpc"
+@EnableFeignClients(basePackages = {"com.dili.orders.rpc","com.dili.ss.uid","com.dili.assets.sdk.rpc"
         , "com.dili.customer.sdk.rpc"
         , "com.dili.trace.rpc"
         , "com.dili.bpmc.sdk.rpc"})
