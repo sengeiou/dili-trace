@@ -11,6 +11,7 @@ import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
+import com.dili.trace.util.RegUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,10 +53,10 @@ public class ManagerTruckEnterRecordApi {
     public BaseOutput<BasePage<TruckEnterRecord>> listPage(@RequestBody TruckEnterRecordQueryDto queryInput) {
         SessionData sessionData = this.sessionContext.getSessionData();
         queryInput.setMarketId(sessionData.getMarketId());
-        if(StringUtils.isNotBlank(queryInput.getKeyword())){
+        if (StringUtils.isNotBlank(queryInput.getKeyword())) {
             queryInput.setMetadata(IDTO.AND_CONDITION_EXPR,
-                    ( " (driver_phone like '" + queryInput.getKeyword().trim()
-                    + "%'  or driver_phone like '" + queryInput.getKeyword().trim() + "%')" ));
+                    (" (driver_phone like '" + queryInput.getKeyword().trim()
+                            + "%'  or driver_phone like '" + queryInput.getKeyword().trim() + "%')"));
         }
         BasePage<TruckEnterRecord> data = this.truckEnterRecordService.listPageByExample(queryInput);
 
@@ -80,6 +81,11 @@ public class ManagerTruckEnterRecordApi {
             LOGGER.error("司机报备没有车型");
             return BaseOutput.failure("车型必填");
         }
+        if (!RegUtils.isPlate(input.getTruckPlate())) {
+            return BaseOutput.failure("车牌格式错误");
+        }
+
+
         input.setCode(uidRestfulRpcService.getTruckEnterRecordCode());
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
