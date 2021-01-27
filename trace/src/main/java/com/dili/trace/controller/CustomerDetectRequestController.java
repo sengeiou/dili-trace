@@ -276,8 +276,7 @@ public class CustomerDetectRequestController {
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
         RegisterBill item = billService.get(billId);
         if (item == null) {
-            RegisterBillOutputDto registerBill = buildRegisterBill(billId);
-            modelMap.put("registerBill", registerBill);
+            modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
         }
         DetectRequest detectRequest = detectRequestService.get(item.getDetectRequestId());
