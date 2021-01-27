@@ -13,7 +13,9 @@ import com.dili.trace.dto.TradeDetailInputWrapperDto;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.dto.TradeRequestWrapperDto;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     CustomerRpcService customerRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    UidRestfulRpcService uidRestfulRpcService;
     /**
      * 检查参数是否正确
      *
@@ -620,7 +624,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         });
         return batchStockItem;
     }
-
+    /**
+     * 查询下一个code
+     *
+     * @return
+     */
+    private String getNextCode() {
+        return this.uidRestfulRpcService.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
+    }
     /**
      * 创建TradeRequest
      *
@@ -662,6 +673,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
         tradeRequest.setAmount(BigDecimal.ZERO);
         tradeRequest.setBatchNo(null);
+        tradeRequest.setCode(this.getNextCode());
 
         tradeRequest.setSellerId(seller.getSellerId());
         tradeRequest.setSellerMarketId(tradeDto.getMarketId());
