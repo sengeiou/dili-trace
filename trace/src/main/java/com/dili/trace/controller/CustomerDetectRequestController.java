@@ -369,15 +369,15 @@ public class CustomerDetectRequestController {
     /**
      * 抽检
      *
-     * @param billId
+     * @param record
      * @return
      */
-    @RequestMapping(value = "/doSpotCheck.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doSpotCheck.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput doSpotCheck(@RequestParam(name = "billId", required = true) Long billId) {
+    BaseOutput doSpotCheck(@RequestBody  DetectRecordParam record) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            this.detectRequestService.spotCheckBill(billId, userTicket);
+            this.detectRequestService.spotCheckBill(record, userTicket);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
