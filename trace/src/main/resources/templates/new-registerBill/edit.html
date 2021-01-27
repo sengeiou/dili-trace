@@ -56,8 +56,6 @@
                 <label class="label-title text-right">园区卡号</label>
                 <div class="input-group">
 
-
-
                 <input type="text" class="form-control input-sm" disabled readonly name="b2" <% if( registerBill.tradePrintingCard!=null){%>value="${registerBill.tradePrintingCard}"<%}else{%>value="888880"<%}%> data-value-type="skip"   id="printingCardInput" style="width: 147px;"/>
                 <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" value="${registerBill.tradePrintingCard}" style="width: 147px;"/>
                 <span class="input-group-addon"> <span class="glyphicon" id="queryByCardNoBtn">检索</span> </span>
@@ -139,10 +137,10 @@
                 <%}%>
             </div>
 
-            <div class="form-item-group" id="detectReportDiv">
-                <h4 class="form-item-title">检测报告</h4>
-                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
+        <div class="form-item-group" id="detectReportDiv">
+            <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
 
+                <h4 class="form-item-title">检测报告</h4>
                 <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
                 %>
                 <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
@@ -160,9 +158,96 @@
                 </div>
                 <%}%>
                 <%}%>
+        </div>
+
+
+            <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.QUARANTINE_CERTIFICATE].~size!0)>0){%>
+                <div class="form-item-group" id="quarantineDiv">
+                    <h4 class="form-item-title">检疫合格证</h4>
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.QUARANTINE_CERTIFICATE]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.QUARANTINE_CERTIFICATE.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete" style="display: none">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
                 </div>
+            <%}%>
 
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_VOUCHER].~size!0)>0){%>
+                <div class="form-item-group" id="purchaseDiv">
+                    <h4 class="form-item-title">购货凭证</h4>
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_VOUCHER]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_VOUCHER.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete" style="display: none">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
+                </div>
+                <%}%>
 
+            <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.CUSTOMS_DECLARATION].~size!0)>0){%>
+                <div class="form-item-group" id="customsDeclarationDiv">
+                    <h4 class="form-item-title">报关单</h4>
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.CUSTOMS_DECLARATION]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.CUSTOMS_DECLARATION.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete" style="display: none">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
+                </div>
+            <%}%>
+
+            <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_AGREEMENT].~size!0)>0){%>
+            <div class="form-item-group" id="purchaseAgreementDiv">
+                <h4 class="form-item-title">采购协议</h4>
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_AGREEMENT]){
+                %>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.PURCHASE_AGREEMENT.getCode()}">
+                    <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete" style="display: none">删除</span>
+                    </div>
+                </div>
+                <%}%>
+            </div>
+            <%}%>
 
             <div id="handleResultContainer">
                 <div class="form-item-group" id="handleResultDiv">
@@ -198,6 +283,28 @@
                 </div>
             </div>
         </form>
+
+    <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.OTHERS].~size!0)>0){%>
+    <div class="form-item-group" id="othersDiv">
+        <h4 class="form-item-title">其他</h4>
+        <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.OTHERS]){
+        %>
+        <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+            <span class="fileimg-plus-icon" style="display: none" >+</span>
+            <span class="fileimg-des" style="display: none" >点击上传</span>
+            <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+            <input type="hidden" name="imageCertList[${--imageCount}][uid]" value="${img.uid}">
+            <input type="hidden" name="imageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.OTHERS.getCode()}">
+            <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+            <div class="fileimg-cover" style="display: block;"></div>
+            <div class="fileimg-edit" style="display: block;">
+                <span class="fileimg-view">查看</span>
+                <span class="fileimg-delete" style="display: none">删除</span>
+            </div>
+        </div>
+        <%}%>
+    </div>
+    <%}%>
 
     </div>
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
