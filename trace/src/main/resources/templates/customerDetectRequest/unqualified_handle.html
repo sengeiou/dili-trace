@@ -15,7 +15,7 @@
             <div class="form-item-group">
                 <div class="form-group" id="handleTypeDiv">
                     <label class="label-title text-right"><span class="red">&lowast;</span>类型:</label>
-                    <input type="radio" name="detectType" id="typeRadio2"  value="0"><label for="typeRadio2">接单检测不合格</label>
+                    <input type="radio" name="detectType" id="typeRadio2"  checked value="0"><label for="typeRadio2">接单检测不合格</label>
                     <input type="radio" name="detectType" id="typeRadio3"  value="40"><label for="typeRadio3">抽检不合格</label>
                 </div>
                 <br>
@@ -97,7 +97,8 @@
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if(ret.success){
-                    parent.bs4pop.removeAll();
+                    parent.bs4pop.alert('操作成功', {type: 'error'});
+                    parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData();
                 }else{
                     swal(
                         '错误',

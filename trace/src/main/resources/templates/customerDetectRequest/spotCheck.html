@@ -62,7 +62,7 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
                     <div class="input-group " style="width: 200px;">
-                        <input type="text" style="width: 100%;" name="detectTime" id="detectTime" class="form-control laydatetime laystart" required/>
+                        <input type="text" style="width: 100%;" name="detectTime" id="detectTime" class="form-control laydatetime laystart" autocomplete="off" required/>
                         <div class="input-group-append">
                             <label for="detectTime" class="input-group-text fa fa-calendar"></label>
                         </div>
@@ -86,7 +86,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>检测结果</label>
-                    <select  class="form-control input-sm editableSelect " id="detectResult" name="detectResult" required>
+                    <select  class="form-control input-sm editableSelect " id="detectState" name="detectState" required>
                         <option value="">全部</option>
                         <option value="1">合格</option>
                         <option value="2">不合格</option>
@@ -150,42 +150,42 @@
         let spotCheckType = $('spotCheckType').val();
         let data=$('#spotCheckForm').serializeJSON({useIntKeysAsArrayIndex:true});
         console.log("data===>",data);
-        // $.ajax({
-        //     type: 'post',
-        //     url: '/customerDetectRequest/doManualCheck.action',
-        //     data :  JSON.stringify(data),
-        //     dataType: 'json',
-        //     async: false,
-        //     contentType: "application/json; charset=utf-8",
-        //     success: function (ret) {
-        //         if (ret.code == "200") {
-        //             layer.alert('检测成功',{
-        //                     type:0,
-        //                     time : 1000,
-        //                     end :function(){
-        //                         parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
-        //                     }
-        //                 },
-        //                 function () {
-        //                     parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
-        //                 }
-        //             );
-        //         } else {
-        //             swal(
-        //                 '错误',
-        //                 ret.result,
-        //                 'error'
-        //             );
-        //         }
-        //     },
-        //     error:function(e){
-        //         swal(
-        //             '错误',
-        //             '远程访问失败',
-        //             'error'
-        //         );
-        //     }
-        // });
+        $.ajax({
+            type: 'post',
+            url: '/customerDetectRequest/doSpotCheck.action',
+            data :  JSON.stringify(data),
+            dataType: 'json',
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if (ret.code == "200") {
+                    layer.alert('检测成功',{
+                            type:0,
+                            time : 1000,
+                            end :function(){
+                                parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+                            }
+                        },
+                        function () {
+                            parent.window['CustomerDetectRequestGrid'].removeAllAndLoadData()
+                        }
+                    );
+                } else {
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error:function(e){
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
 
     }
 </script>

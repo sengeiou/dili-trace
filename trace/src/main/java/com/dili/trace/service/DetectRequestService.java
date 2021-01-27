@@ -8,6 +8,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
@@ -33,6 +34,7 @@ import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -611,8 +613,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
-        //已通过审核、未预约检测
-        boolean canSpot = BillVerifyStatusEnum.PASSED.equalsToCode(item.getVerifyStatus())
+        //已进场、未预约检测
+        boolean canSpot = CheckinStatusEnum.ALLOWED.equalsToCode(item.getCheckinStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
         if(canSpot){
             msgStream.add( DetectRequestMessageEvent.spotCheck);
@@ -666,7 +668,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                         }
                     }
                     //初检、复检不合格可以不合格处置
-                    if(DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())){
+                    if(DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())&&item.getHasHandleResult() == 0){
                         msgStream.add(DetectRequestMessageEvent.unqualifiedHandle);
                     }
                 }
@@ -839,6 +841,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setLatestPdResult(detectRecord.getPdResult());
         updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         updateBill.setLatestDetectRecordId(detectRecordId);
+        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
+            updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+        }
         updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
@@ -921,22 +928,75 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 抽检
-     * @param billId
+     * @param record
      * @param userTicket
      */
     @Transactional(rollbackFor = Exception.class)
-    public void spotCheckBill(Long billId, UserTicket userTicket) {
-        if (null == billId) {
-            throw new TraceBizException("预约检测单据Id为空");
+    public void spotCheckBill(DetectRecordParam record, UserTicket userTicket) {
+        if (Objects.isNull(record.getBillId())) {
+            throw new TraceBizException("检测单据Id为空");
         }
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(record.getBillId()).orElseThrow(()->{
+            throw  new TraceBizException("数据不存在或已删除");
+        });
+
+        boolean isCantSpot=BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())
+                ||BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())
+                ||DetectStatusEnum.WAIT_DETECT.equalsToCode(registerBillItem.getDetectStatus())
+                ||DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())
+                ||DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBillItem.getDetectStatus());
+        if(isCantSpot){
+            throw new TraceBizException("当前登记单状态不能进行抽检");
+        }
+        if(SpotTypeStatusEnum.NORMAL.equalsToCode(record.getSpotCheckType())){
+            doAutoSpotCheckBill(registerBillItem,userTicket);
+        }else{
+            doManualSpotCheckBill(record,registerBillItem,userTicket);
+        }
+    }
+
+    /**
+     * 手动录入抽检结果
+     * @param record
+     * @param registerBillItem
+     * @param userTicket
+     */
+    private void doManualSpotCheckBill(DetectRecordParam record, RegisterBill registerBillItem, UserTicket userTicket) {
         //更新报备单检测状态
-        RegisterBill registerBill = billService.get(billId);
-        updateBillDetectStatus(DetectStatusEnum.SAMPLING.getCode(),registerBill,userTicket);
+        RegisterBill registerBill = updateBillDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode(), registerBillItem, userTicket);
+        billService.updateSelective(registerBill);
         // 更新检测请求
         DetectRequest updateParam = new DetectRequest();
-        updateParam.setId(registerBill.getDetectRequestId());
+        updateParam.setId(registerBillItem.getDetectRequestId());
         updateParam.setDetectSource(SampleSourceEnum.SPOT_CHECK.getCode());
-        updateParam.setSampleTime(new Date());
+        updateParam.setDetectorId(record.getDetectOperatorId());
+        updateParam.setDetectorName(record.getDetectOperator());
+        updateParam.setDetectResult(record.getDetectState());
+        updateParam.setDetectTime(DateUtils.getCurrentDate());
+        updateParam.setDetectFee(record.getDetectFee());
+        updateParam.setSampleTime(DateUtils.getCurrentDate());
+        this.updateSelective(updateParam);
+
+        //更新检测记录
+        DetectRecord newRecord = new DetectRecord();
+        BeanUtils.copyProperties(record,newRecord);
+        newRecord.setDetectRequestId(registerBillItem.getDetectRequestId());
+        detectRecordService.insertSelective(newRecord);
+    }
+
+    /**
+     * 抽检检测
+     * @param registerBillItem
+     * @param userTicket
+     */
+    private void doAutoSpotCheckBill(RegisterBill registerBillItem, UserTicket userTicket) {
+        //更新报备单检测状态
+        RegisterBill bill = updateBillDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode(), registerBillItem, userTicket);
+        billService.updateSelective(bill);
+        // 更新检测请求
+        DetectRequest updateParam = new DetectRequest();
+        updateParam.setId(registerBillItem.getDetectRequestId());
+        updateParam.setDetectSource(SampleSourceEnum.SPOT_CHECK.getCode());
         this.updateSelective(updateParam);
     }
 
