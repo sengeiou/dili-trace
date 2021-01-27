@@ -207,12 +207,22 @@ public class CreateRegisterBillInputDto {
     @ApiModelProperty(value = "是否打印检测报告")
     private Integer isPrintCheckSheet;
 
-
+    /**
+     * 业户 名
+     */
+    private String name;
     /**
      * 企业名
      */
     private String corporateName;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 //
 //    /**
 //     * 检测报告url
