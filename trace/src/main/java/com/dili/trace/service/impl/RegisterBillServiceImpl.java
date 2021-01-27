@@ -281,7 +281,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         List<ImageCert> imageCertList= StreamEx.ofNullable(registerBill.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
         if (!imageCertList.isEmpty()) {
             imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
+            //更新报备单上图片标志位
+            this.billService.updateHasImage(registerBill.getBillId(), imageCertList);
         }
+
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
