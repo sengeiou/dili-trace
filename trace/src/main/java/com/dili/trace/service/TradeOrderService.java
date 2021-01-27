@@ -19,6 +19,8 @@ import com.dili.trace.rpc.service.UidRestfulRpcService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import java.util.function.Function;
 @Service
 @Transactional
 public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(TradeOrderService.class);
     @Autowired
     TradeDetailService tradeDetailService;
     @Autowired
@@ -57,10 +60,12 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      */
     private void checkInput(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
 
-        CustomerExtendDto seller = customerRpcService.findCustomerById(tradeDto.getSeller().getSellerId(), tradeDto.getMarketId()).orElseThrow(() -> {
-            return new TraceBizException("卖家不存在");
-        });
-        tradeDto.getSeller().setSellerName(seller.getName());
+        if(TradeOrderTypeEnum.NONE!=tradeDto.getTradeOrderType()){
+            CustomerExtendDto seller = customerRpcService.findCustomerById(tradeDto.getSeller().getSellerId(), tradeDto.getMarketId()).orElseThrow(() -> {
+                return new TraceBizException("卖家不存在");
+            });
+            tradeDto.getSeller().setSellerName(seller.getName());
+        }
 
         if (TradeOrderTypeEnum.SEPREATE != tradeDto.getTradeOrderType()) {
             CustomerExtendDto buyer = customerRpcService.findCustomerById(tradeDto.getBuyer().getBuyerId(), tradeDto.getMarketId()).orElseThrow(() -> {
@@ -183,7 +188,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDto.getBuyer().setBuyerId(registerBill.getUserId());
         tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
 
-        TradeOrder tradeOrder = this.createTradeOrder(tradeDto);
+
 
         ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName());
         ProductStock updatablePS = new ProductStock();
@@ -203,6 +208,11 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetailInputDto.setBillId(registerBill.getBillId());
         tradeDetailInputDto.setTradeWeight(registerBill.getWeight());
         tradeDetailInputList.add(tradeDetailInputDto);
+
+        this.checkInput(tradeDto,Arrays.asList(psInput));
+
+        TradeOrder tradeOrder = this.createTradeOrder(tradeDto);
+
 
         List<TradeRequest> tradeRequestList = StreamEx.of(psInput).map(productStockInput -> {
             TradeRequest tradeRequest = this.createTradeRequest(tradeDto, productStockInput, tradeOrder, productStockInput.getTradeWeight());
@@ -227,6 +237,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         if (productStockInputList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
+        this.checkInput(tradeDto,batchStockInputList);
         TradeOrder tradeOrder = this.createTradeOrder(tradeDto);
 
         List<TradeRequest> tradeRequestList = StreamEx.of(productStockInputList).map(productStockInput -> {
@@ -244,6 +255,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      * @param batchStockInputList
      */
     public TradeOrder createSellTrade(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
+        this.checkInput(tradeDto,batchStockInputList);
         List<ProductStockInput> productStockInputList = StreamEx.ofNullable(batchStockInputList).flatCollection(Function.identity())
                 .nonNull().toList();
         if (productStockInputList.isEmpty()) {
