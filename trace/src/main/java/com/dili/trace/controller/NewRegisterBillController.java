@@ -519,10 +519,6 @@ public class NewRegisterBillController {
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
 
-//		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
-//		conditon.setRegisterBillCode(registerBill.getCode());
-//		conditon.setSort("id");
-//		conditon.setOrder("desc");
         List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
@@ -545,12 +541,24 @@ public class NewRegisterBillController {
             String upStreamName = Optional.ofNullable(upStream).orElse(new UpStream()).getName();
             modelMap.put("upStreamName", upStreamName);
         }
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
-        registerBill.setImageCertList(imageCerts);
-
-        modelMap.put("registerBill", registerBill);
+        RegisterBillOutputDto bill = buildRegisterBill(id);
+        modelMap.put("registerBill", bill);
 
         return "new-registerBill/view";
+    }
+
+    /**
+     * 构建报备信息
+     * @param billId
+     * @return
+     */
+    private RegisterBillOutputDto buildRegisterBill(Long billId) {
+        RegisterBill item = billService.get(billId);
+        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        registerBill.setImageCertList(imageCerts);
+        return registerBill;
     }
 
     /**
