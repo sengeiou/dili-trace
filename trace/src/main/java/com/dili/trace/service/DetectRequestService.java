@@ -266,35 +266,6 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         return StreamEx.of(this.detectRequestMapper.selectByExample(example)).toMap(DetectRequest::getId, Function.identity());
     }
 
-    /**
-     * 获得检测任务
-     *
-     * @param detectorName
-     * @param maxCount
-     * @param marketId
-     */
-    public List<DetectRequest> selectRequestForDetect(String detectorName, Integer maxCount, Long marketId) {
-        //查询并锁定没有被当前dectorName领取的检测任务
-        List<DetectRequest> detectRequestList = this.detectRequestMapper.selectRequestForDetect(marketId, detectorName, maxCount);
-
-        //更新数据的状态
-        StreamEx.of(detectRequestList).forEach(req -> {
-            DetectRequest detectRequest = new DetectRequest();
-            detectRequest.setId(req.getId());
-            detectRequest.setDesignatedName(detectorName);
-
-            RegisterBill registerBill = new RegisterBill();
-            registerBill.setId(req.getBillId());
-            registerBill.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
-
-            this.updateSelective(detectRequest);
-            this.billService.updateSelective(registerBill);
-        });
-
-        //查询所有当前当前dectorName领取的检测任务
-        return this.detectRequestMapper.selectDetectRequest(marketId, detectorName, DetectStatusEnum.DETECTING);
-
-    }
 
     /**
      * 分页查询数据
