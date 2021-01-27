@@ -32,6 +32,10 @@ public class RegisterBillOutputDto extends RegisterBill {
      */
     private List<SeparateSalesRecord> separateSalesRecords;
     List<QualityTraceTradeBill> qualityTraceTradeBillList;
+    /**
+     * 检测类型40为抽检，其他为接单检测
+     */
+    private Integer detectType;
 
     @JSONField(serialize = false)
     public String getHandleResultUrl() {
@@ -121,4 +125,11 @@ public class RegisterBillOutputDto extends RegisterBill {
         this.upStreamName = upStreamName;
     }
 
+    public Integer getDetectType() {
+        return detectType;
+    }
+
+    public void setDetectType(Integer detectType) {
+        this.detectType = detectType;
+    }
 }
