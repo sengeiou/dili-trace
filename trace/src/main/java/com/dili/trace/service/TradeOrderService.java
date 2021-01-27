@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
@@ -362,9 +363,13 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
                     if (TradeOrderTypeEnum.NONE == tradeOrderTypeEnum) {
+                        updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
+                        updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
                         continue;
                     }
+                    updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+                    updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName());
 

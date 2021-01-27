@@ -75,7 +75,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * @param billItem
 	 * @return
 	 */
-	private String buildParentBatchNo(RegisterBill billItem){
+	public String buildParentBatchNo(RegisterBill billItem){
 		return billItem.getName()+" "+DateUtil.format(billItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
 	}
 	/**
@@ -83,7 +83,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * @param tradeDetailItem
 	 * @return
 	 */
-	private String buildParentBatchNo(TradeDetail tradeDetailItem){
+	public String buildParentBatchNo(TradeDetail tradeDetailItem){
 		return tradeDetailItem.getBuyerName()+" "+DateUtil.format(tradeDetailItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
 	}
 
