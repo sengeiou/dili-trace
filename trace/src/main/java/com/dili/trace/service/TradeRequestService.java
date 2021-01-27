@@ -162,7 +162,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 创建销售请求并处理为完成
      */
-    public List<TradeRequest> createSellRequest(TradeDto tradeDto,
+    private List<TradeRequest> createSellRequest(TradeDto tradeDto,
                                                 List<ProductStockInput> batchStockInputList, Optional<OperatorUser> optUser) {
 
         // 检查提交参数
@@ -201,8 +201,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
          * @param buyerId
          * @return
          */
-    @Transactional
-    public List<TradeRequest> createBuyRequest(Long buyerId, List<ProductStockInput> batchStockInputList, Long marketId, Optional<OperatorUser> optUser) {
+//    @Transactional
+    private List<TradeRequest> createBuyRequest(Long buyerId, List<ProductStockInput> batchStockInputList, Long marketId, Optional<OperatorUser> optUser) {
         if (batchStockInputList == null || batchStockInputList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
@@ -755,8 +755,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param handleDto
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void handleBuyerRequest(TradeRequestHandleDto handleDto) {
+//    @Transactional(rollbackFor = Exception.class)
+    private void handleBuyerRequest(TradeRequestHandleDto handleDto) {
         Long tradeRequestId = handleDto.getTradeRequestId();
         Integer handleStatus = handleDto.getHandleStatus();
         TradeRequest tradeRequest = this.get(tradeRequestId);

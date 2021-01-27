@@ -34,7 +34,8 @@ public class TradeService {
     RegisterBillService registerBillService;
     @Autowired
     TradeDetailService tradeDetailService;
-
+    @Autowired
+    TradeOrderService tradeOrderService;
     /**
      * 创建库存
      * @param billId
@@ -60,22 +61,22 @@ public class TradeService {
                 && CheckoutStatusEnum.NONE.equalsToCode(tradeDetailItem.getCheckoutStatus())
                 && BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
                 && SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
-
-            ProductStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
-            batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
-            batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
-            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
-            this.batchStockService.updateSelective(batchStock);
-
-            TradeDetail updatableRecord = new TradeDetail();
-            updatableRecord.setId(tradeDetailItem.getId());
-            updatableRecord.setModified(new Date());
-            updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            updatableRecord.setIsBatched(YesOrNoEnum.YES.getCode());
-            updatableRecord.setProductStockId(batchStock.getId());
-            updatableRecord.setStockWeight(weight);
-            updatableRecord.setTotalWeight(weight);
-            this.tradeDetailService.updateSelective(updatableRecord);
+            this.tradeOrderService.createTradeFromRegisterBill(billItem);
+//            ProductStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
+//            batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
+//            batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
+//            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
+//            this.batchStockService.updateSelective(batchStock);
+//
+//            TradeDetail updatableRecord = new TradeDetail();
+//            updatableRecord.setId(tradeDetailItem.getId());
+//            updatableRecord.setModified(new Date());
+//            updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+//            updatableRecord.setIsBatched(YesOrNoEnum.YES.getCode());
+//            updatableRecord.setProductStockId(batchStock.getId());
+//            updatableRecord.setStockWeight(weight);
+//            updatableRecord.setTotalWeight(weight);
+//            this.tradeDetailService.updateSelective(updatableRecord);
 
         }
         return billId;

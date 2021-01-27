@@ -21,6 +21,21 @@ public class TradeDetailInputDto {
     @ApiModelProperty(value = "订单ID")
     private Long tradeDetailId;
 
+
+    /**
+     * BillID
+     */
+    @ApiModelProperty(value = "BillID")
+    private Long billId;
+
+    public Long getBillId() {
+        return billId;
+    }
+
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
+
     /**
      * @return BigDecimal return the tradeWeight
      */
