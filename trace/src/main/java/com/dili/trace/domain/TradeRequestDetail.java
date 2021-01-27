@@ -19,6 +19,9 @@ public class TradeRequestDetail extends BaseDomain {
     private Long tradeRequestId;
     @Column(name = "`trade_detail_id`")
     private Long tradeDetailId;
+
+    @Column(name = "`bill_Id`")
+    private Long billId;
     @Column(name = "`trade_weight`")
     private BigDecimal tradeWeight;
     /**
@@ -35,6 +38,14 @@ public class TradeRequestDetail extends BaseDomain {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getBillId() {
+        return billId;
+    }
+
+    public void setBillId(Long billId) {
+        this.billId = billId;
     }
 
     public Date getCreated() {
