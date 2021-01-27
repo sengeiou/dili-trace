@@ -7,6 +7,7 @@ import com.dili.trace.dao.TruckEnterRecordMapper;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,12 @@ public class TruckEnterRecordService extends BaseServiceImpl<TruckEnterRecord, L
      */
     public BaseOutput addTruckEnterRecord(TruckEnterRecord truckEnterRecord) {
         try {
+            if(StringUtils.isBlank(truckEnterRecord.getTruckTypeName())){
+                return BaseOutput.failure("车型不能为空");
+            }
+            if(StringUtils.isBlank(truckEnterRecord.getTruckPlate())){
+                return BaseOutput.failure("车不能为空");
+            }
             truckEnterRecord.setCode(this.uidRestfulRpcService.bizNumber(BizNumberType.TRUCK_ENTER_RECORD_CODE.getType()));
             truckEnterRecord.setCreated(DateUtils.getCurrentDate());
             truckEnterRecordMapper.insertSelective(truckEnterRecord);
