@@ -83,8 +83,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                 UpStream upStream = Optional.ofNullable(this.upStreamService.get(tradeDto.getBuyer().getBuyerId())).orElseThrow(() -> {
                     return new TraceBizException("下游不存在");
                 });
+                tradeDto.getBuyer().setBuyerId(null);
                 tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.DOWNSTREAM_BUYER);
-                tradeDto.getBuyer().setBuyerName(upStream.getName());
+                tradeDto.getBuyer().setBuyerName(upStream.getName() + "-" + upStream.getId());
             } else {
                 if (StringUtils.isBlank(tradeDto.getBuyer().getBuyerName())) {
                     throw new TraceBizException("分销客户信息不完整");
@@ -123,7 +124,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             }
         }
         LOGGER.debug("sellerId={},batchStockIdList={}", sellerId, batchStockIdList);
-        if(TradeOrderTypeEnum.NONE!=tradeDto.getTradeOrderType()){
+        if (TradeOrderTypeEnum.NONE != tradeDto.getTradeOrderType()) {
             // 判断是否全部是卖家的库存信息
             boolean notSellerOwnedBatchBlock = StreamEx.of(this.productStockService.findByIdList(batchStockIdList))
                     .map(ProductStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
@@ -377,7 +378,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     if (sellerTD != null) {
                         LOGGER.info("seller tradedetail id={},stockweight={}", sellerTD.getId(), sellerTD.getStockWeight());
                     }
-                    TradeDetail buyerTD = this.createTradeDetail(registerBill, tradeRequest, trd.getTradeWeight());
+                    TradeDetail buyerTD = this.createTradeDetail(registerBill, tradeRequest);
 
                     TradeDetail updatableBuyerTD = new TradeDetail();
                     updatableBuyerTD.setId(buyerTD.getId());
@@ -386,6 +387,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
                     updatableBuyerTD.setParentId(null);
 
+                    ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
+                    LOGGER.debug("buyerProductStock id={},stockweight={}", buyerProductStock.getId(), buyerProductStock.getStockWeight());
 
                     if (TradeOrderTypeEnum.NONE == tradeOrderTypeEnum) {
                         updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
@@ -395,8 +398,6 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         continue;
                     }
 
-                    ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
-                    LOGGER.debug("buyerProductStock id={},stockweight={}",buyerProductStock.getId(),buyerProductStock.getStockWeight());
                     ProductStock updatableBuyerPS = new ProductStock();
                     updatableBuyerPS.setId(buyerProductStock.getId());
                     updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
@@ -407,7 +408,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName());
-                    LOGGER.debug("sellerProductStock id={},stockweight={}",sellerProductStock.getId(),sellerProductStock.getStockWeight());
+                    LOGGER.debug("sellerProductStock id={},stockweight={}", sellerProductStock.getId(), sellerProductStock.getStockWeight());
                     ProductStock updatableSellerPS = new ProductStock();
                     updatableSellerPS.setId(sellerProductStock.getId());
                     updatableSellerPS.setStockWeight(sellerProductStock.getStockWeight().subtract(trd.getTradeWeight()));
@@ -432,9 +433,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
                     this.productRpcService.handleTradeStocks(
                             Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
-                            ,Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))
-                            ,Optional.empty()
-                            ,tradeRequest.getSellerMarketId());
+                            , Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))
+                            , Optional.empty()
+                            , tradeRequest.getSellerMarketId());
 
                 }
 
@@ -531,6 +532,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     return new TraceBizException("操作库存失败");
                 });
         BigDecimal totalTradeWeight = tradeRequest.getTradeWeight();
+        if (BigDecimal.ZERO.compareTo(totalTradeWeight) >= 0) {
+            throw new TraceBizException("购买重量要大于0");
+        }
 
         if (productStockItem.getStockWeight().compareTo(totalTradeWeight) < 0) {
             throw new TraceBizException("购买重量不能超过总库存重量");
@@ -549,14 +553,18 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetailQuery.setMinStockWeight(BigDecimal.ZERO);
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         for (TradeDetail td : tradeDetailList) {
+            if (BigDecimal.ZERO.compareTo(totalTradeWeight) >= 0) {
+                break;
+            }
             TradeRequestDetail tradeRequestDetail = new TradeRequestDetail();
             tradeRequestDetail.setTradeDetailId(td.getTradeDetailId());
             tradeRequestDetail.setTradeRequestId(tradeRequest.getTradeRequestId());
-            if (totalTradeWeight.compareTo(td.getSoftWeight()) >= 0) {
+            if (totalTradeWeight.compareTo(td.getStockWeight()) >= 0) {
                 tradeRequestDetail.setTradeWeight(td.getStockWeight());
                 totalTradeWeight = totalTradeWeight.subtract(td.getStockWeight());
             } else {
                 tradeRequestDetail.setTradeWeight(totalTradeWeight);
+                totalTradeWeight = BigDecimal.ZERO;
             }
             this.tradeRequestDetailService.insertSelective(tradeRequestDetail);
             tradeRequestDetailList.add(tradeRequestDetail);
@@ -564,68 +572,6 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return tradeRequestDetailList;
     }
 
-    /**
-     * @param tradeDetailInputList
-     */
-    public List<TradeDetailInputWrapperDto> buildTradeDetailWrapper(List<TradeDetailInputDto> tradeDetailInputList, TradeRequest tradeRequest) {
-        List<TradeDetailInputDto> detailInputList = StreamEx.ofNullable(tradeDetailInputList).flatCollection(Function.identity())
-                .nonNull().toList();
-
-        boolean invalidTradeWeight = StreamEx.of(detailInputList).anyMatch(trinput -> {
-            return trinput.getTradeWeight() == null || BigDecimal.ZERO.compareTo(trinput.getTradeWeight()) >= 0;
-        });
-        if (invalidTradeWeight) {
-            throw new TraceBizException("购买批次重量不能为空或小于0");
-        }
-
-        List<TradeDetailInputWrapperDto> tradeDetailInputWrapperDtoList = StreamEx.of(detailInputList).map(trinput -> {
-            TradeDetail tradeDetail = this.tradeDetailService.get(trinput.getTradeDetailId());
-            if (tradeDetail == null) {
-                throw new TraceBizException("批次数据不存在");
-            }
-            if (tradeDetail.getStockWeight().compareTo(trinput.getTradeWeight()) < 0) {
-                throw new TraceBizException("购买[" + tradeDetail.getProductName() + "]重量不能批次库存重量");
-            }
-            TradeDetailInputWrapperDto wrapperDto = new TradeDetailInputWrapperDto();
-            wrapperDto.setRequestTradeWeight(trinput.getTradeWeight());
-            wrapperDto.setTradeDetail(tradeDetail);
-            return wrapperDto;
-
-        }).toList();
-
-
-        ProductStock productStockItem = this.productStockService.selectByIdForUpdate(tradeRequest.getProductStockId())
-                .orElseThrow(() -> {
-                    return new TraceBizException("操作库存失败");
-                });
-
-        BigDecimal totalTradeWeight = tradeRequest.getTradeWeight();
-
-        if (productStockItem.getStockWeight().compareTo(totalTradeWeight) < 0) {
-            throw new TraceBizException("购买重量不能超过总库存重量");
-        }
-
-        if (tradeDetailInputWrapperDtoList.isEmpty()) {
-            TradeDetailQueryDto tradeDetailQuery = new TradeDetailQueryDto();
-            tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            tradeDetailQuery.setProductStockId(productStockItem.getId());
-            tradeDetailQuery.setSort("created");
-            tradeDetailQuery.setOrder("asc");
-            tradeDetailQuery.setMinStockWeight(BigDecimal.ZERO);
-            List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
-            for (TradeDetail td : tradeDetailList) {
-                TradeDetailInputWrapperDto wrapperDto = new TradeDetailInputWrapperDto();
-                wrapperDto.setTradeDetail(td);
-                if (totalTradeWeight.compareTo(td.getSoftWeight()) >= 0) {
-                    wrapperDto.setRequestTradeWeight(td.getStockWeight());
-                    totalTradeWeight = totalTradeWeight.subtract(td.getStockWeight());
-                } else {
-                    wrapperDto.setRequestTradeWeight(totalTradeWeight);
-                }
-            }
-        }
-        return tradeDetailInputWrapperDtoList;
-    }
 
     /**
      * createOrFind
@@ -753,10 +699,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      * @param tradeRequest
      * @return
      */
-    public TradeDetail createTradeDetail(RegisterBill registerBillItem, TradeRequest tradeRequest, BigDecimal tradeWeight) {
+    public TradeDetail createTradeDetail(RegisterBill registerBillItem, TradeRequest tradeRequest) {
 
         TradeDetail tradeDetail = new TradeDetail();
-        tradeDetail.setSoftWeight(tradeWeight);
+        tradeDetail.setSoftWeight(BigDecimal.ZERO);
         tradeDetail.setStockWeight(BigDecimal.ZERO);
         tradeDetail.setTotalWeight(BigDecimal.ZERO);
         tradeDetail.setBuyerId(tradeRequest.getBuyerId());
