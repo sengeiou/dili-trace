@@ -74,6 +74,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService;
     @Autowired
     CodeGenerateService codeGenerateService;
+
     /**
      * 创建检测请求
      *
@@ -316,14 +317,14 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 检测请求-接单
      *
-     * @param billId             登记单ID
+     * @param billId         登记单ID
      * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
      * @param detectTime     检测时间
      */
     @Transactional(rollbackFor = Exception.class)
     public void confirm(Long billId, Long designatedId, String designatedName, Date detectTime) {
-        RegisterBill registerBill=this.billService.getAvaiableBill(billId).orElse(null);
+        RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElse(null);
         if (registerBill == null) {
             throw new TraceBizException("检测请求关联的报备单据不存在。");
         }
@@ -355,21 +356,21 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     /**
      * 检测请求-退回
      *
-     * @param registerBill             登记单ID
+     * @param registerBill 登记单ID
      */
     @Transactional(rollbackFor = Exception.class)
     public void doReturn(RegisterBill registerBill) {
-        if (null == registerBill||registerBill.getId()==null||StringUtils.isBlank(registerBill.getReturnReason())) {
+        if (null == registerBill || registerBill.getId() == null || StringUtils.isBlank(registerBill.getReturnReason())) {
             throw new TraceBizException("参数错误");
         }
-        RegisterBill billItem = billService.getAvaiableBill(registerBill.getId()).orElseThrow(()->{
+        RegisterBill billItem = billService.getAvaiableBill(registerBill.getId()).orElseThrow(() -> {
             throw new TraceBizException("登记单不存在");
         });
-        if(!DetectStatusEnum.NONE.equalsToCode(billItem.getDetectStatus())
-        &&!DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(billItem.getDetectStatus())) {
+        if (!DetectStatusEnum.NONE.equalsToCode(billItem.getDetectStatus())
+                && !DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(billItem.getDetectStatus())) {
             throw new TraceBizException("登记单状态已变");
         }
-        RegisterBill bill=new RegisterBill();
+        RegisterBill bill = new RegisterBill();
         bill.setId(billItem.getId());
         bill.setReturnReason(registerBill.getReturnReason());
         bill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
@@ -419,9 +420,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         });
         //设置最新检测记录
         if (StringUtils.isNotBlank(dto.getBillCode())) {
-            List<DetectRecord> detectRecordList=detectRecordService.findTop2AndLatest(dto.getBillCode());
+            List<DetectRecord> detectRecordList = detectRecordService.findTop2AndLatest(dto.getBillCode());
             dto.setDetectRecordList(detectRecordList);
-            StreamEx.ofNullable(detectRecordList).flatCollection(Function.identity()).nonNull().sortedBy(DetectRecord::getId).unordered().findFirst().ifPresent(dr->{
+            StreamEx.ofNullable(detectRecordList).flatCollection(Function.identity()).nonNull().sortedBy(DetectRecord::getId).unordered().findFirst().ifPresent(dr -> {
                 dto.setLatestDetectRecord(dr);
             });
         }
@@ -617,8 +618,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         //已进场、未预约检测
         boolean canSpot = CheckinStatusEnum.ALLOWED.equalsToCode(item.getCheckinStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
-        if(canSpot){
-            msgStream.add( DetectRequestMessageEvent.spotCheck);
+        if (canSpot) {
+            msgStream.add(DetectRequestMessageEvent.spotCheck);
         }
         // 只有待审核且待预约状态的报备单才可以撤销
         if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())
@@ -626,19 +627,19 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.undo));
         }
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
-        if(DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())){
+        if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
 
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                     || BillVerifyStatusEnum.PASSED.equalsToCode(item.getVerifyStatus())
                     || BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus())) {
-                msgStream.add( DetectRequestMessageEvent.booking);
+                msgStream.add(DetectRequestMessageEvent.booking);
             }
         }
 
         //待审核，且未预约检测或者已退回：可以预约检测
         boolean canApp = BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())
                 && (DetectStatusEnum.RETURN_DETECT.equalsToCode(item.getDetectStatus()) || DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus()));
-        if (canApp&&!BillTypeEnum.COMMISSION_BILL.equalsToCode(item.getBillType())) {
+        if (canApp && !BillTypeEnum.COMMISSION_BILL.equalsToCode(item.getBillType())) {
             msgStream.add(DetectRequestMessageEvent.appointment);
         }
         // 待接单：可以接单
@@ -660,7 +661,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                         msgStream.add(DetectRequestMessageEvent.review);
                         msgStream.add(DetectRequestMessageEvent.batchReview);
                     } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())) {
-                        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())){
+                        if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())) {
                             msgStream.add(DetectRequestMessageEvent.review);
                             msgStream.add(DetectRequestMessageEvent.batchReview);
                         }
@@ -669,7 +670,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                         }
                     }
                     //初检、复检不合格可以不合格处置
-                    if(DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus())&&item.getHasHandleResult() == 0){
+                    if (DetectStatusEnum.FINISH_DETECT.equalsToCode(item.getDetectStatus()) && item.getHasHandleResult() == 0) {
                         msgStream.add(DetectRequestMessageEvent.unqualifiedHandle);
                     }
                 }
@@ -692,7 +693,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
     @Transactional(rollbackFor = Exception.class)
     public void undoDetectRequest(Long billId) {
         //更新报备单未已删除
-        this.billService.getAvaiableBill(billId).ifPresent(rb->{
+        this.billService.getAvaiableBill(billId).ifPresent(rb -> {
             // 校验待审核并且待预约才能撤销
             if (!(DetectStatusEnum.NONE.equalsToCode(rb.getDetectStatus()) && BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(rb.getVerifyStatus()))) {
                 throw new TraceBizException("操作失败，数据状态已改变");
@@ -711,6 +712,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 更新检测请求
+     *
      * @param detectRequestId
      */
     private void doUndoDetectRequest(Long detectRequestId) {
@@ -751,15 +753,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("操作失败，数据状态已改变");
         }
         // 待审核：可以预约申请（弹框二次确认）和撤销和预约检测
-        if(DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())){
+        if (DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())
                     || BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())
                     || BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
                 //donothing
-            }else{
+            } else {
                 throw new TraceBizException("操作失败，当前状态不能进行预约");
             }
-        }else{
+        } else {
             throw new TraceBizException("操作失败，当前状态不能进行预约");
         }
 //
@@ -797,13 +799,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum,Date detectTime) {
+    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
 
 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
             throw new TraceBizException("操作失败，登记单已撤销！");
         });
-        if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())){
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus()) || BillVerifyStatusEnum.DELETED.equalsToCode(registerBill.getVerifyStatus())) {
             throw new TraceBizException("当前登记单不能进行接单");
         }
         // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
@@ -815,10 +817,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(detectRecordId,registerBill, userTicket,detectTypeEnum,detectResultEnum);
+        manualCheckBill(detectRecordId, registerBill, userTicket, detectTypeEnum, detectResultEnum);
 
         // 人工检测-检测请求
-        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(),detectTypeEnum,detectResultEnum,detectTime);
+        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(), detectTypeEnum, detectResultEnum, detectTime);
     }
 
     /**
@@ -827,9 +829,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param registerBill
      * @param userTicket
      */
-    private void manualCheckBill(Long detectRecordId,RegisterBill registerBill, UserTicket userTicket,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum) {
+    private void manualCheckBill(Long detectRecordId, RegisterBill registerBill, UserTicket userTicket, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum) {
         DetectRecord detectRecord = detectRecordService.get(detectRecordId);
-        if (!Objects.nonNull(detectRecord)){
+        if (!Objects.nonNull(detectRecord)) {
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
         }
         RegisterBill updateBill = new RegisterBill();
@@ -842,11 +844,13 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateBill.setLatestPdResult(detectRecord.getPdResult());
         updateBill.setLatestDetectOperator(detectRecord.getDetectOperator());
         updateBill.setLatestDetectRecordId(detectRecordId);
-        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
-            updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
-            updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-        }
+
+        BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null);
+//        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+        updateBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+//        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
+//            updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//        }
 //        updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
@@ -856,9 +860,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequestId
      */
-    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId ,DetectTypeEnum detectTypeEnum,DetectResultEnum detectResultEnum,Date detectTime) {
+    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
         DetectRecord detectRecord = detectRecordService.get(detectRecordId);
-        if (!Objects.nonNull(detectRecord)){
+        if (!Objects.nonNull(detectRecord)) {
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
         }
         DetectRequest updateRequest = new DetectRequest();
@@ -929,6 +933,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 抽检
+     *
      * @param record
      * @param userTicket
      */
@@ -937,27 +942,28 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (Objects.isNull(record.getBillId())) {
             throw new TraceBizException("检测单据Id为空");
         }
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(record.getBillId()).orElseThrow(()->{
-            throw  new TraceBizException("数据不存在或已删除");
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(record.getBillId()).orElseThrow(() -> {
+            throw new TraceBizException("数据不存在或已删除");
         });
 
-        boolean isCantSpot=BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())
-                ||BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())
-                ||DetectStatusEnum.WAIT_DETECT.equalsToCode(registerBillItem.getDetectStatus())
-                ||DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())
-                ||DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBillItem.getDetectStatus());
-        if(isCantSpot){
+        boolean isCantSpot = BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus())
+                || BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())
+                || DetectStatusEnum.WAIT_DETECT.equalsToCode(registerBillItem.getDetectStatus())
+                || DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())
+                || DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBillItem.getDetectStatus());
+        if (isCantSpot) {
             throw new TraceBizException("当前登记单状态不能进行抽检");
         }
-        if(SpotTypeStatusEnum.NORMAL.equalsToCode(record.getSpotCheckType())){
-            doAutoSpotCheckBill(registerBillItem,userTicket);
-        }else{
-            doManualSpotCheckBill(record,registerBillItem,userTicket);
+        if (SpotTypeStatusEnum.NORMAL.equalsToCode(record.getSpotCheckType())) {
+            doAutoSpotCheckBill(registerBillItem, userTicket);
+        } else {
+            doManualSpotCheckBill(record, registerBillItem, userTicket);
         }
     }
 
     /**
      * 手动录入抽检结果
+     *
      * @param record
      * @param registerBillItem
      * @param userTicket
@@ -980,13 +986,14 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
         //更新检测记录
         DetectRecord newRecord = new DetectRecord();
-        BeanUtils.copyProperties(record,newRecord);
+        BeanUtils.copyProperties(record, newRecord);
         newRecord.setDetectRequestId(registerBillItem.getDetectRequestId());
         detectRecordService.insertSelective(newRecord);
     }
 
     /**
      * 抽检检测
+     *
      * @param registerBillItem
      * @param userTicket
      */
@@ -1003,10 +1010,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 处理库存
+     *
      * @param billId
      */
     private void handleStock(Long billId) {
-        if(Objects.isNull(billId)){
+        if (Objects.isNull(billId)) {
             throw new TraceBizException("处理库存参数异常");
         }
         RegisterBill bill = billService.get(billId);
@@ -1015,15 +1023,15 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         List<DetectRecord> detectRecords = detectRecordService.listByExample(record);
         List<DetectRecord> records = StreamEx.of(detectRecords).nonNull().filter(dr ->
                 DetectTypeEnum.SPOT_CHECK.equalsToCode(dr.getDetectType())).sorted(Comparator.comparing(DetectRecord::getDetectTime).reversed()).collect(Collectors.toList());
-        if(CollectionUtils.isNotEmpty(records)){
+        if (CollectionUtils.isNotEmpty(records)) {
             DetectRecord detectRecord = records.get(0);
-            if(Objects.isNull(detectRecord.getDetectState())){
+            if (Objects.isNull(detectRecord.getDetectState())) {
                 throw new TraceBizException("检测记录结果为空");
             }
             //不合格
-            if(DetectRecordStateEnum.UNQUALIFIED.equalsToCode(detectRecord.getDetectState())){
+            if (DetectRecordStateEnum.UNQUALIFIED.equalsToCode(detectRecord.getDetectState())) {
                 //销毁库存
-            }else{
+            } else {
                 //释放库存
             }
         }
@@ -1031,38 +1039,45 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
     /**
      * 更新报备单为待检测，并生成采样编号
+     *
      * @param registerBillItem
      * @param userTicket
      * @return
      */
-    private RegisterBill updateBillDetectStatus(Integer opt,RegisterBill registerBillItem, UserTicket userTicket) {
-        RegisterBill upBill=new RegisterBill();
+    private RegisterBill updateBillDetectStatus(Integer opt, RegisterBill registerBillItem, UserTicket userTicket) {
+        RegisterBill upBill = new RegisterBill();
         upBill.setId(registerBillItem.getId());
         upBill.setOperatorName(userTicket.getRealName());
         upBill.setOperatorId(userTicket.getId());
         upBill.setDetectStatus(opt);
-        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
-            upBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
-            upBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-        }
+
+        BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);
+//        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBill.getBillType())) {
+        upBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+
+//        if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+//            upBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//        } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+//            upBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//        }
         return upBill;
     }
 
     /**
      * 上传处理结果
+     *
      * @param bill
      * @param userTicket
      */
     @Transactional(rollbackFor = Exception.class)
     public void uploadUnqualifiedHandle(RegisterBillOutputDto bill, UserTicket userTicket) {
-        if(Objects.isNull(bill)){
+        if (Objects.isNull(bill)) {
             throw new TraceBizException("上传处理结果为空");
         }
         //上传处理图片
         List<ImageCert> imageCerts = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(bill.getImageCertList())){
-             imageCerts = StreamEx.of(bill.getImageCertList()).nonNull().filter(img -> {
+        if (CollectionUtils.isNotEmpty(bill.getImageCertList())) {
+            imageCerts = StreamEx.of(bill.getImageCertList()).nonNull().filter(img -> {
                 // 只取uid不为空，并且类型为处理结果的照片
                 return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.Handle_Result.equalsToCode(img.getCertType());
             }).toList();
@@ -1070,11 +1085,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (CollectionUtils.isEmpty(imageCerts)) {
             throw new TraceBizException("请上传报告");
         }
-        imageCertService.insertImageCert(imageCerts,bill.getId());
+        imageCertService.insertImageCert(imageCerts, bill.getId());
         if (bill.getHandleResult().trim().length() > 1000) {
             throw new TraceBizException("处理结果不能超过1000");
         }
-        RegisterBill item = this.billService.getAvaiableBill(bill.getId()).orElseThrow(()->{
+        RegisterBill item = this.billService.getAvaiableBill(bill.getId()).orElseThrow(() -> {
             throw new TraceBizException("数据不存在或已删除");
         });
         RegisterBill example = new RegisterBill();
@@ -1084,7 +1099,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         this.billService.updateHasImage(item.getBillId(), imageCerts);
 
         //抽检类型处置销毁库存
-        if(DetectTypeEnum.SPOT_CHECK.equalsToCode(bill.getDetectType())){
+        if (DetectTypeEnum.SPOT_CHECK.equalsToCode(bill.getDetectType())) {
             //
         }
     }

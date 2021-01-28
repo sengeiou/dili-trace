@@ -10,7 +10,7 @@ public enum CodeGenerateEnum {
 	/**
 	 * 登记单采样编号
 	 */
-	REGISTER_BILL_CODE("REGISTER_BILL_CODE", "登记单编号", "yyyyMMdd", "d", 5),
+	//REGISTER_BILL_CODE("REGISTER_BILL_CODE", "登记单编号", "yyyyMMdd", "d", 5),
 	/**
 	 * 登记单采样编号
 	 */
@@ -27,7 +27,7 @@ public enum CodeGenerateEnum {
 	/**
 	 * 委托单编号
 	 */
-	COMMISSION_BILL_CODE("COMMISSION_BILL_CODE", "检测报告编号", "yyyyMMdd", "dw", 5),
+	//COMMISSION_BILL_CODE("COMMISSION_BILL_CODE", "检测报告编号", "yyyyMMdd", "dw", 5),
 	/**
 	 * 委托单采样编号
 	 */

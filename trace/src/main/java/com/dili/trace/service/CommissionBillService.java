@@ -356,7 +356,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 //        bill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-        bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+        bill.setSampleCode(this.codeGenerateService.nextSampleCode(BillTypeEnum.COMMISSION_BILL));
         bill.setModified(new Date());
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());

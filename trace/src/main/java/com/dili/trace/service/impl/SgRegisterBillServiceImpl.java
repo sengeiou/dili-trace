@@ -371,11 +371,14 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             updatableBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
             updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
-                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
-                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-            }
+
+            BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);
+            updatableBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+//            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//            }
             // 更新检测请求的检测来源为【AUTO_CHECK 主动送检】
             this.autoCheckDetectRequest(registerBillItem.getDetectRequestId());
             return this.updateRegisterBillAsWaitCheck(updatableBill);
@@ -545,11 +548,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             updatableBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
             updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
-                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
-            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
-                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-            }
+
+            BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);
+            updatableBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+
+//            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//            }
 
             this.samplingCheckDetectRequest(registerBillItem.getDetectRequestId());
             return this.updateRegisterBillAsWaitCheck(updatableBill);
