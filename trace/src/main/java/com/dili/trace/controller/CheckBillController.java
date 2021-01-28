@@ -11,9 +11,9 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.CheckExcelDto;
 import com.dili.trace.dto.CheckOrderDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckResultTypeEnum;
 import com.dili.trace.enums.CheckTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.excel.ExcelListener;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
@@ -109,7 +109,7 @@ public class CheckBillController {
                 checkOrder.setValue(checkOrderDatas.get(0).getValue());
                 checkOrder.setProject(checkOrderDatas.get(0).getProject());
             }
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.CHECK_ORDER);
             if (CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
                 checkOrder.setUrl(imageCerts.get(0).getUid());
             }

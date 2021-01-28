@@ -11,8 +11,8 @@ import com.dili.trace.domain.CheckOrderDispose;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.CheckExcelDto;
 import com.dili.trace.dto.CheckOrderDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckResultTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.service.CheckBillService;
 import com.dili.trace.service.CheckOrderDataService;
@@ -70,7 +70,7 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         ImageCert imageCert = new ImageCert();
 //        imageCert.setUrl(checkOrder.getUrl());
         imageCert.setUid(checkOrder.getUrl());
-        imageCert.setBillType(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
+        imageCert.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
         imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
         imageCert.setBillId(id);
         CheckOrderData checkOrderData = new CheckOrderData();
@@ -96,7 +96,7 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         checkOrderDataService.updateSelective(checkOrderData);
         ImageCert imageCert = new ImageCert();
         imageCert.setBillId(checkOrder.getId());
-        imageCert.setBillType(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
+        imageCert.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
         List<ImageCert> imageCerts = imageCertService.listByExample(imageCert);
         if(CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
             imageCert = imageCerts.get(0);

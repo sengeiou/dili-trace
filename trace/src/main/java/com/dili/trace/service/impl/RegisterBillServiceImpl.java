@@ -927,7 +927,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 }).findFirst().orElse(new RegisterBill());
 
         List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(bid -> {
-            return imageCertService.findImageCertListByBillId(bid).stream();
+            return imageCertService.findImageCertListByBillId(bid,BillTypeEnum.REGISTER_BILL).stream();
         }).toList();
 
         String upStreamName = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {

@@ -362,7 +362,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
         List<ReportInspectionDto> headList = transformationExample(checkOrderList, platformMarketId);
         String ids = getCheckIds(headList);
-        Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode(), ids);
+        Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(BillTypeEnum.CHECK_ORDER.getCode(), ids);
 
         StreamEx.of(headList).nonNull().forEach(h -> {
             List<ReportInspectionImgDto> imgList = buildReportImgList(h.getId(),imageCertMap);
@@ -376,7 +376,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         if (CollectionUtils.isNotEmpty(imgList)) {
             return StreamEx.of(imgList).nonNull().map(m -> {
                 ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
-                reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
+                reportImg.setCredentialName(BillTypeEnum.CHECK_ORDER.getName());
                 if (StringUtils.isNotBlank(m.getUid())) {
                     reportImg.setPicUrl(baseWebPath + m.getUid());
                 }

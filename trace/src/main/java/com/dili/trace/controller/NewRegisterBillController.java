@@ -202,7 +202,7 @@ public class NewRegisterBillController {
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_BILL));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setSourceName(firstTallyAreaNo);
@@ -240,7 +240,7 @@ public class NewRegisterBillController {
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_BILL));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -277,7 +277,7 @@ public class NewRegisterBillController {
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_BILL));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -321,7 +321,7 @@ public class NewRegisterBillController {
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.BILL_TYPE));
+        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_BILL));
 
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息

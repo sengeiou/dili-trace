@@ -705,7 +705,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     private void settingImageCerts(List<Long> billIdList, List<ReportRegisterBillDto> billList) {
-        Map<Long, List<ImageCert>> imageCertMap = this.imageCertService.findImageCertListByBillIdList(billIdList)
+        Map<Long, List<ImageCert>> imageCertMap = this.imageCertService.findImageCertListByBillIdList(billIdList,BillTypeEnum.REGISTER_BILL)
                 .stream().collect(Collectors.groupingBy(ImageCert::getBillId));
         billList.forEach(bill -> {
             // 照片处理

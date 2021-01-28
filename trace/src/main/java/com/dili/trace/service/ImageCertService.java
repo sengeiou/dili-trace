@@ -1,10 +1,10 @@
 package com.dili.trace.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,9 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
      *
      * @param urls
      * @param certTypeEnum
-     * @param certBillTypeEnum
      * @return
      */
-    public List<ImageCert> stringToImageCertList(String urls, ImageCertTypeEnum certTypeEnum, ImageCertBillTypeEnum certBillTypeEnum) {
+    public List<ImageCert> stringToImageCertList(String urls, ImageCertTypeEnum certTypeEnum, BillTypeEnum billTypeEnum) {
 
         return StreamEx.ofNullable(urls).map(String::trim).filter(item -> item.length() > 0)
                 .flatArray(item -> {
@@ -39,10 +38,11 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 //                    cert.setUrl(url);
                     cert.setUid(uid);
                     cert.setCertType(certTypeEnum.getCode());
-                    cert.setBillType(certBillTypeEnum.getCode());
+                    cert.setBillType(billTypeEnum.getCode());
                     return cert;
                 }).toList();
     }
+
     /**
      * 保存图片
      *
@@ -60,47 +60,16 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 
             // 增加新的图片
             return StreamEx.ofNullable(imageCertList).flatCollection(Function.identity()).nonNull()
-                    .filter(cert->cert.getCertType()!=null)
-                    .filter(cert->StringUtils.isNotBlank(cert.getUid())).map(cert -> {
-                cert.setBillId(billId);
-                cert.setId(null);
-                cert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-                this.insertSelective(cert);
-                return cert;
-            }).toList();
+                    .filter(cert -> cert.getCertType() != null)
+                    .filter(cert -> StringUtils.isNotBlank(cert.getUid())).map(cert -> {
+                        cert.setBillId(billId);
+                        cert.setId(null);
+                        cert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+                        this.insertSelective(cert);
+                        return cert;
+                    }).toList();
         }
         return Lists.newArrayList();
-    }
-
-    /**
-     * 查找 图片
-     *
-     * @param billId
-     * @return
-     */
-    public List<ImageCert> findImageCertListByBillId(Long billId) {
-        if (billId == null) {
-            return Lists.newArrayList();
-        }
-        ImageCert queryCondition = new ImageCert();
-        queryCondition.setBillId(billId);
-        queryCondition.setBillType(ImageCertBillTypeEnum.BILL_TYPE.getCode());
-        return this.listByExample(queryCondition);
-    }
-
-    /**
-     * 查找 图片
-     *
-     * @param billIdList
-     * @return
-     */
-    public List<ImageCert> findImageCertListByBillIdList(List<Long> billIdList) {
-        if (billIdList == null || billIdList.isEmpty()) {
-            return Lists.newArrayList();
-        }
-        Example e = new Example(ImageCert.class);
-        e.and().andIn("billId", billIdList).andEqualTo("certType",ImageCertBillTypeEnum.BILL_TYPE.getCode());
-        return this.getDao().selectByExample(e);
     }
 
     /**
@@ -134,13 +103,23 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
     /**
      * 查找 图片
      *
-     * @param billId
-     * @param billType
+     * @param billIdList
      * @return
      */
-    public List<ImageCert> findImageCertListByBillId(Long billId, ImageCertBillTypeEnum billType) {
-        return this.findImageCertListByBillId(billId, billType.getCode());
+    public List<ImageCert> findImageCertListByBillIdList(List<Long> billIdList, BillTypeEnum billTypeEnum) {
+        return this.findImageCertListByBillId(billIdList, billTypeEnum, null);
     }
+
+    /**
+     * 查找 图片
+     *
+     * @param billIdList
+     * @return
+     */
+    public List<ImageCert> findImageCertListByBillIdList(List<Long> billIdList, ImageCertTypeEnum certType) {
+        return this.findImageCertListByBillId(billIdList, null, certType);
+    }
+
 
     /**
      * 查找 图片
@@ -149,13 +128,37 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
      * @param billType
      * @return
      */
-    public List<ImageCert> findImageCertListByBillId(Long billId, Integer billType) {
-        if (billId == null) {
+    public List<ImageCert> findImageCertListByBillId(Long billId, BillTypeEnum billType) {
+        return this.findImageCertListByBillId(Arrays.asList(billId), billType, null);
+    }
+
+    /**
+     * 查找 图片
+     *
+     * @param billIdList
+     * @param billType
+     * @return
+     */
+    private List<ImageCert> findImageCertListByBillId(List<Long> billIdList, BillTypeEnum billType, ImageCertTypeEnum certType) {
+        if (billIdList == null || billIdList.isEmpty()) {
             return Lists.newArrayList();
         }
-        ImageCert queryCondition = new ImageCert();
-        queryCondition.setBillId(billId);
-        queryCondition.setBillType(billType);
-        return this.listByExample(queryCondition);
+        if (billType == null && certType == null) {
+            return Lists.newArrayList();
+        }
+
+        Example e = new Example(ImageCert.class);
+        e.and().andIn("billId", billIdList);
+
+        if (billType != null) {
+            e.and().andEqualTo("billType", billType.getCode());
+        }
+        if (certType != null) {
+            e.and().andEqualTo("certType", billType.getCode());
+        }
+
+
+        return this.getDao().selectByExample(e);
     }
+
 }

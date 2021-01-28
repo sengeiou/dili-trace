@@ -11,7 +11,6 @@ import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;

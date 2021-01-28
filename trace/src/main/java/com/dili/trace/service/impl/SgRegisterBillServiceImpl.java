@@ -1268,9 +1268,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public List<ImageCert> buildImageCertList(String detectReportUrl, String handleResultUrl, String
             originCertifiyUrl) {
 
-        List<ImageCert> detectReport = this.imageCertService.stringToImageCertList(detectReportUrl, ImageCertTypeEnum.DETECT_REPORT, ImageCertBillTypeEnum.BILL_TYPE);
-        List<ImageCert> handleResult = this.imageCertService.stringToImageCertList(handleResultUrl, ImageCertTypeEnum.Handle_Result, ImageCertBillTypeEnum.BILL_TYPE);
-        List<ImageCert> originCertifies = this.imageCertService.stringToImageCertList(originCertifiyUrl, ImageCertTypeEnum.ORIGIN_CERTIFIY, ImageCertBillTypeEnum.BILL_TYPE);
+        List<ImageCert> detectReport = this.imageCertService.stringToImageCertList(detectReportUrl, ImageCertTypeEnum.DETECT_REPORT, BillTypeEnum.REGISTER_BILL);
+        List<ImageCert> handleResult = this.imageCertService.stringToImageCertList(handleResultUrl, ImageCertTypeEnum.Handle_Result, BillTypeEnum.REGISTER_BILL);
+        List<ImageCert> originCertifies = this.imageCertService.stringToImageCertList(originCertifiyUrl, ImageCertTypeEnum.ORIGIN_CERTIFIY, BillTypeEnum.REGISTER_BILL);
 
         return StreamEx.of(detectReport).append(handleResult).append(originCertifies).toList();
 
@@ -1279,7 +1279,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public List<ImageCert> findImageCertListByBillId(Long billId) {
-        return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
+        return this.imageCertService.findImageCertListByBillId(billId, BillTypeEnum.REGISTER_BILL);
     }
 
     @Override

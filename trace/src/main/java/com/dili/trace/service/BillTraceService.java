@@ -15,6 +15,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.rpc.dto.CustDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -178,7 +179,7 @@ public class BillTraceService {
         query.setTradeRequestId(tradeRequestItem.getId());
         List<TradeDetail> traceList = this.tradeDetailService.listByExample(query);
         List<Long> billIdList = StreamEx.of(traceList).map(TradeDetail::getBillId).distinct().toList();
-        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillIdList(billIdList);
+        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillIdList(billIdList, BillTypeEnum.REGISTER_BILL);
         traceDetailOutputDto.setImageCertList(imageCertList);
 
         return traceDetailOutputDto;
