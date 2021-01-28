@@ -794,12 +794,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * 人工直接检测通过或者退回
      *
      * @param billId
-     * @param userTicket
+     * @param operatorUser
      * @param detectTypeEnum
      * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long detectRecordId, Long billId, UserTicket userTicket, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
+    public void manualCheck(Long detectRecordId, Long billId, Optional<OperatorUser> operatorUser, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
 
 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
@@ -817,7 +817,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         // 人工检测-报备单
-        manualCheckBill(detectRecordId, registerBill, userTicket, detectTypeEnum, detectResultEnum);
+        manualCheckBill(detectRecordId, registerBill, operatorUser, detectTypeEnum, detectResultEnum);
 
         // 人工检测-检测请求
         manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(), detectTypeEnum, detectResultEnum, detectTime);
@@ -827,9 +827,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * 人工检测-报备单
      *
      * @param registerBill
-     * @param userTicket
+     * @param operatorUser
      */
-    private void manualCheckBill(Long detectRecordId, RegisterBill registerBill, UserTicket userTicket, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum) {
+    private void manualCheckBill(Long detectRecordId, RegisterBill registerBill, Optional<OperatorUser> operatorUser, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum) {
         DetectRecord detectRecord = detectRecordService.get(detectRecordId);
         if (!Objects.nonNull(detectRecord)) {
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
@@ -837,8 +837,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
         updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
-        updateBill.setOperatorId(userTicket.getId());
-        updateBill.setOperatorName(userTicket.getUserName());
+        operatorUser.ifPresent(opt->{
+            updateBill.setOperatorId(opt.getId());
+            updateBill.setOperatorName(opt.getName());
+        });
+
         updateBill.setModified(new Date());
         updateBill.setLatestDetectTime(detectRecord.getDetectTime());
         updateBill.setLatestPdResult(detectRecord.getPdResult());
