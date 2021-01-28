@@ -397,6 +397,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     }
 
                     ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
+                    LOGGER.debug("buyerProductStock id={},stockweight={}",buyerProductStock.getId(),buyerProductStock.getStockWeight());
                     ProductStock updatableBuyerPS = new ProductStock();
                     updatableBuyerPS.setId(buyerProductStock.getId());
                     updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
@@ -407,7 +408,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName());
-
+                    LOGGER.debug("sellerProductStock id={},stockweight={}",sellerProductStock.getId(),sellerProductStock.getStockWeight());
                     ProductStock updatableSellerPS = new ProductStock();
                     updatableSellerPS.setId(sellerProductStock.getId());
                     updatableSellerPS.setStockWeight(sellerProductStock.getStockWeight().subtract(trd.getTradeWeight()));
