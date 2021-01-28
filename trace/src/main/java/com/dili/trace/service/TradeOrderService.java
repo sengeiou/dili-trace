@@ -200,10 +200,11 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
         ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName());
-//        ProductStock updatablePS = new ProductStock();
-//        updatablePS.setId(productStock.getId());
-//        updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
-//        this.productStockService.updateSelective(updatablePS);
+        ProductStock updatablePS = new ProductStock();
+        updatablePS.setId(productStock.getId());
+        updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
+        updatablePS.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
+        this.productStockService.updateSelective(updatablePS);
 
         ProductStockInput psInput = new ProductStockInput();
         psInput.setTradeWeight(registerBill.getWeight());
@@ -375,11 +376,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         registerBill = this.billService.get(sellerTD.getBillId());
                     }
 
-                    ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
-                    ProductStock updatableBuyerPS = new ProductStock();
-                    updatableBuyerPS.setId(buyerProductStock.getId());
-                    updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
-                    updatableBuyerPS.setTradeDetailNum(buyerProductStock.getTradeDetailNum() + 1);
+
 
 
                     TradeDetail buyerTD = this.createTradeDetail(registerBill, tradeRequest, trd.getTradeWeight());
@@ -398,6 +395,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
                         continue;
                     }
+
+                    ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
+                    ProductStock updatableBuyerPS = new ProductStock();
+                    updatableBuyerPS.setId(buyerProductStock.getId());
+                    updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
+                    updatableBuyerPS.setTradeDetailNum(buyerProductStock.getTradeDetailNum() + 1);
+                    this.productStockService.updateSelective(updatableBuyerPS);
+
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
@@ -415,9 +420,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         updatableSellerPS.setTradeDetailNum(sellerProductStock.getTradeDetailNum() - 1);
                     }
                     this.productStockService.updateSelective(updatableSellerPS);
-                    if (trd.getId() == null) {
-                        this.tradeRequestDetailService.insertSelective(trd);
-                    }
+//                    if (trd.getId() == null) {
+//                        this.tradeRequestDetailService.insertSelective(trd);
+//                    }
 
                     this.tradeDetailService.updateSelective(updatableSellerTD);
                     updatableBuyerTD.setParentId(sellerTD.getId());
