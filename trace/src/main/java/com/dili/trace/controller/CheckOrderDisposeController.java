@@ -6,8 +6,8 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.CheckOrderDispose;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.CheckOrderDisposeDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckDisposeTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.service.CheckOrderDisposeService;
 import com.dili.trace.service.ImageCertService;
@@ -83,7 +83,7 @@ public class CheckOrderDisposeController {
         if (id != null) {
             CheckOrderDispose checkOrderDisposeBase = checkOrderDisposeService.get(id);
             BeanUtils.copyProperties(checkOrderDisposeBase,checkOrderDispose);
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.CHECK_DISPOSE);
             if(CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size()==1){
                 checkOrderDispose.setUrl(imageCerts.get(0).getUid());
             }
@@ -133,7 +133,7 @@ public class CheckOrderDisposeController {
                 imageCert.setBillId(checkOrderDispose.getId());
                 imageCert.setUid(checkOrderDispose.getUrl());
                 imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
-                imageCert.setBillType(ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
+                imageCert.setBillType(BillTypeEnum.CHECK_DISPOSE.getCode());
                 imageCertService.insertSelective(imageCert);
             }
             return BaseOutput.success("新增不合格处置单成功").setData(checkOrderDispose.getId());
@@ -159,7 +159,7 @@ public class CheckOrderDisposeController {
         try {
             checkOrderDisposeService.updateSelective(checkOrderDispose);
             if(checkOrderDispose.getUrl()!=null) {
-                List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(checkOrderDispose.getId(), ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
+                List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(checkOrderDispose.getId(), BillTypeEnum.CHECK_DISPOSE);
                 if (CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
                     imageCerts.get(0).setUid(checkOrderDispose.getUrl());
                     imageCertService.updateSelective(imageCerts.get(0));

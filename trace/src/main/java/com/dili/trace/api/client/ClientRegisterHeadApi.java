@@ -19,7 +19,6 @@ import com.dili.trace.dto.CreateListRegisterHeadParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -97,7 +96,7 @@ public class ClientRegisterHeadApi {
                     if (upStream != null) {
                         e.setUpStreamName(upStream.getName());
                     }
-                    e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), ImageCertBillTypeEnum.MAIN_CHECKIN_ORDER_TYPE));
+                    e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), BillTypeEnum.MASTER_BILL));
                 });
             }
 
@@ -286,7 +285,7 @@ public class ClientRegisterHeadApi {
                 return BaseOutput.failure("没有数据");
             }
 
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.MASTER_BILL.getCode());
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.MASTER_BILL);
             registerHead.setImageCertList(imageCerts);
 
             UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
@@ -340,7 +339,7 @@ public class ClientRegisterHeadApi {
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             if (null != registerBills && CollectionUtils.isNotEmpty(registerBills)) {
                 registerBills.forEach(e -> {
-                    List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
+                    List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_BILL);
                     e.setImageCertList(imageCerts);
                     UpStream u = upStreamService.get(e.getUpStreamId());
                     e.setUpStreamName(u.getName());

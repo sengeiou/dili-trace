@@ -216,7 +216,7 @@ public class ClientRegisterBillApi {
             return new TraceBizException("数据不存在");
         });
 
-            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(query.getId(), BillTypeEnum.REGISTER_BILL.getCode());
+            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(query.getId(), BillTypeEnum.REGISTER_BILL);
             registerBill.setImageCertList(imageCertList);
 
             UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
@@ -267,7 +267,7 @@ public class ClientRegisterBillApi {
             RegisterBillOutputDto registerBill = this.registerBillService.viewTradeDetailBill(inputDto);
 
 
-            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(inputDto.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
+            List<ImageCert> imageCertList = imageCertService.findImageCertListByBillId(inputDto.getBillId(), BillTypeEnum.REGISTER_BILL);
             registerBill.setImageCertList(imageCertList);
 
             UpStream upStream = upStreamService.get(registerBill.getUpStreamId());

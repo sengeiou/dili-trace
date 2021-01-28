@@ -53,6 +53,13 @@ public class ImageCert extends BaseDomain {
 	private Integer certType;
 
 	/**
+	 * 单据类型 {@link com.dili.trace.enums.BillTypeEnum}
+	 */
+	@ApiModelProperty(value = "单据类型。1-报备单 2-检测单 3-检测不合格处置单 4-进门主台账单。默认为1")
+	@Column(name = "`bill_type`")
+	private Integer billType;
+
+	/**
 	 * 关联单据ID
 	 */
 	@Column(name = "`bill_id`")
@@ -70,12 +77,7 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
-	/**
-	 * 单据类型 {@link com.dili.trace.enums.BillTypeEnum}
-	 */
-	@ApiModelProperty(value = "单据类型。1-报备单 2-检测单 3-检测不合格处置单 4-进门主台账单。默认为1")
-	@Column(name = "`bill_type`")
-	private Integer billType;
+
 
 	/**
 	 * 类型名称

@@ -12,8 +12,8 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -241,7 +241,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
      */
 
     public List<ImageCert> findImageCertListByBillId(Long billId) {
-        return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
+        return this.imageCertService.findImageCertListByBillId(billId, BillTypeEnum.REGISTER_BILL);
     }
 
     /**

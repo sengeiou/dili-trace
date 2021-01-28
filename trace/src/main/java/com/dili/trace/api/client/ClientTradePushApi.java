@@ -13,6 +13,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
@@ -82,7 +83,7 @@ public class ClientTradePushApi {
                 registerBill.setWeight(tradeDetail.getPushawayWeight());
             }
 
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId());
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId(), BillTypeEnum.REGISTER_BILL);
             registerBill.setImageCertList(imageCerts);
             TradePushLog pushLog = new TradePushLog();
             pushLog.setTradeDetailId(tradeDetailId);
