@@ -180,7 +180,9 @@ public class CheckSheetController {
         Long marketId = MarketUtil.returnMarket();
         Integer deleteCode = YesOrNoEnum.NO.getCode();
 
-        sqlList.add(" id in(select check_sheet_id from check_sheet_detail where register_bill_id in (select id from register_bill where bill_type="
+        sqlList.add("bill_type="
+                + checkSheet.getBillType()
+                + "and id in(select check_sheet_id from check_sheet_detail where register_bill_id in (select id from register_bill where bill_type="
                 + checkSheet.getBillType()
                 + " and market_id = "
                 + marketId
