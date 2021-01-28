@@ -200,10 +200,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
         ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName());
-        ProductStock updatablePS = new ProductStock();
-        updatablePS.setId(productStock.getId());
-        updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
-        this.productStockService.updateSelective(updatablePS);
+//        ProductStock updatablePS = new ProductStock();
+//        updatablePS.setId(productStock.getId());
+//        updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
+//        this.productStockService.updateSelective(updatablePS);
 
         ProductStockInput psInput = new ProductStockInput();
         psInput.setTradeWeight(registerBill.getWeight());
@@ -380,7 +380,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerPS.setId(buyerProductStock.getId());
                     updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
                     updatableBuyerPS.setTradeDetailNum(buyerProductStock.getTradeDetailNum() + 1);
-                    this.productStockService.updateSelective(updatableBuyerPS);
+
 
                     TradeDetail buyerTD = this.createTradeDetail(registerBill, tradeRequest, trd.getTradeWeight());
                     LOGGER.info("buyer tradedetail id={},stockweight={}", buyerTD.getId(), buyerTD.getStockWeight());
