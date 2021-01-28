@@ -369,18 +369,16 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
                     RegisterBill registerBill = this.billService.get(trd.getBillId());
                     TradeDetail sellerTD = this.tradeDetailService.get(trd.getTradeDetailId());
-                    if (sellerTD != null) {
-                        LOGGER.info("seller tradedetail id={},stockweight={}", sellerTD.getId(), sellerTD.getStockWeight());
-                    }
+
                     if (TradeOrderTypeEnum.NONE != tradeOrderTypeEnum) {
                         registerBill = this.billService.get(sellerTD.getBillId());
                     }
 
-
-
-
+                    if (sellerTD != null) {
+                        LOGGER.info("seller tradedetail id={},stockweight={}", sellerTD.getId(), sellerTD.getStockWeight());
+                    }
                     TradeDetail buyerTD = this.createTradeDetail(registerBill, tradeRequest, trd.getTradeWeight());
-                    LOGGER.info("buyer tradedetail id={},stockweight={}", buyerTD.getId(), buyerTD.getStockWeight());
+
                     TradeDetail updatableBuyerTD = new TradeDetail();
                     updatableBuyerTD.setId(buyerTD.getId());
                     updatableBuyerTD.setStockWeight(trd.getTradeWeight());
@@ -393,6 +391,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
+                        LOGGER.info("buyer tradedetail id={},stockweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight());
                         continue;
                     }
 
@@ -427,6 +426,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
                     this.tradeDetailService.updateSelective(updatableSellerTD);
                     updatableBuyerTD.setParentId(sellerTD.getId());
+                    LOGGER.info("buyer tradedetail id={},stockweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight());
                     this.tradeDetailService.updateSelective(updatableBuyerTD);
 
 
