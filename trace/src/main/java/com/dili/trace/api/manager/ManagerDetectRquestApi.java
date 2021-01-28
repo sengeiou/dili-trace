@@ -21,6 +21,7 @@ import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.trace.dto.DetectRequestOutDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -157,15 +159,15 @@ public class ManagerDetectRquestApi {
             if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(bill.getVerifyStatus())||BillVerifyStatusEnum.DELETED.equalsToCode(bill.getVerifyStatus())){
                 return BaseOutput.failure("当前登记单不能进行接单");
             }
-            //未填写时间时，设置为当前时间
-            if (null == detectRequestDto.getDetectTime()) {
-                detectRequestDto.setDetectTime(DateUtils.getCurrentDate());
-            }
-            //未填写检测人员时设置为当前登录人
-            if (null == detectRequestDto.getDetectorId()) {
-                detectRequestDto.setDetectorId(sessionContext.getAccountId());
-                detectRequestDto.setDetectorName(sessionContext.getUserName());
-            }
+//            //未填写时间时，设置为当前时间
+//            if (null == detectRequestDto.getDetectTime()) {
+//                detectRequestDto.setDetectTime(DateUtils.getCurrentDate());
+//            }
+//            //未填写检测人员时设置为当前登录人
+//            if (null == detectRequestDto.getDetectorId()) {
+//                detectRequestDto.setDetectorId(sessionContext.getAccountId());
+//                detectRequestDto.setDetectorName(sessionContext.getUserName());
+//            }
             detectRequestService.receiveDetectRequest(bill.getId(), detectRequestDto);
         } catch (Exception e) {
             return BaseOutput.failure().setData(e.getMessage());
@@ -371,12 +373,8 @@ public class ManagerDetectRquestApi {
             input.setCreated(new Date());
             input.setModified(new Date());
 
-            // 检测记录插入后，进行后台自动人工检测完成
-            UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
-            userTicket.setId(this.sessionContext.getAccountId());
-            userTicket.setUserName(this.sessionContext.getUserName());
 
-            int detectRecordId = this.detectRecordService.saveDetectRecordManually(input, userTicket);
+            int detectRecordId = this.detectRecordService.saveDetectRecordManually(input, this.sessionContext.getSessionData().getOptUser());
 
             return BaseOutput.success().setData(detectRecordId);
         } catch (TraceBizException e) {

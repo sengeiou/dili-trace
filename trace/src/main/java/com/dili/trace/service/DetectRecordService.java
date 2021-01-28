@@ -4,10 +4,12 @@ import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.trace.dto.DetectRecordParam;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.domain.UserTicket;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -48,7 +50,7 @@ public interface DetectRecordService extends BaseService<DetectRecord, Long> {
 	 * @param userTicket
 	 * @return
 	 */
-	public int saveDetectRecordManually(DetectRecordInputDto input, UserTicket userTicket);
+	public int saveDetectRecordManually(DetectRecordInputDto input, Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 获取上报检测数据

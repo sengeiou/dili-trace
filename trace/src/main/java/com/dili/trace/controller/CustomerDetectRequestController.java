@@ -257,7 +257,7 @@ public class CustomerDetectRequestController {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setCreated(DateUtils.getCurrentDate());
             input.setModified(DateUtils.getCurrentDate());
-            this.detectRecordService.saveDetectRecordManually(input, userTicket);
+            this.detectRecordService.saveDetectRecordManually(input, Optional.of(new OperatorUser(userTicket.getId(),userTicket.getRealName())));
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

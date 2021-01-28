@@ -550,12 +550,7 @@ public class ClientDetectRequestApi {
             input.setCreated(new Date());
             input.setModified(new Date());
 
-            // 检测记录插入后，进行后台自动人工检测完成
-            UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
-            userTicket.setId(this.sessionContext.getAccountId());
-            userTicket.setUserName(this.sessionContext.getUserName());
-
-            int i = this.detectRecordService.saveDetectRecordManually(input, userTicket);
+            int i = this.detectRecordService.saveDetectRecordManually(input, this.sessionContext.getSessionData().getOptUser());
             return BaseOutput.success().setData(i);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

@@ -8,6 +8,7 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordInputDto;
 import com.dili.trace.dto.DetectRecordParam;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.DetectRecordStateEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -30,6 +31,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -84,7 +86,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int saveDetectRecordManually(DetectRecordInputDto input, UserTicket userTicket) {
+    public int saveDetectRecordManually(DetectRecordInputDto input, Optional<OperatorUser> operatorUser) {
         DetectResultEnum detectResultEnum=DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
             return  new TraceBizException("检测结果不正确");
         });
@@ -140,7 +142,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         }
         detectRecord.setDetectRequestId(registerBill.getDetectRequestId());
         this.saveOrUpdate(detectRecord);
-        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), userTicket,detectTypeEnum,detectResultEnum,input.getDetectTime());
+        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), operatorUser,detectTypeEnum,detectResultEnum,input.getDetectTime());
 
         return 1;
     }
