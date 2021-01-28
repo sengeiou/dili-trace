@@ -847,7 +847,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBill.getBillType())) {
             updateBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
         }
-        updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//        updateBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
         this.billService.updateSelective(updateBill);
     }
 
