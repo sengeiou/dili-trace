@@ -810,7 +810,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
 
 
-        return StreamEx.of(tradeRequests).nonNull().map(tr -> {
+        return StreamEx.of(tradeRequests).nonNull().filter(tr->{
+            return tr.getSellerId()!=null;
+        }).map(tr -> {
 
             Long sellerId = tr.getSellerId();
             return this.customerRpcService.findCustomerById(sellerId, tr.getSellerMarketId()).map(cust -> {
