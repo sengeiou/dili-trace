@@ -15,7 +15,9 @@ import com.dili.trace.dto.TradeRequestWrapperDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +54,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     BillService billService;
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
+    @Autowired
+    ProductRpcService productRpcService;
 
     /**
      * 检查参数是否正确
@@ -224,6 +228,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
         this.dealTradeOrder(tradeOrder.getTradeOrderId(), TradeOrderStatusEnum.FINISHED);
+        this.productRpcService.create(registerBill, Optional.empty());
         return tradeOrder;
 
     }
@@ -414,6 +419,13 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     this.tradeDetailService.updateSelective(updatableSellerTD);
                     updatableBuyerTD.setParentId(sellerTD.getId());
                     this.tradeDetailService.updateSelective(updatableBuyerTD);
+
+
+                    this.productRpcService.handleTradeStocks(
+                            Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
+                            ,Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))
+                            ,Optional.empty()
+                            ,tradeRequest.getSellerMarketId());
 
                 }
 
