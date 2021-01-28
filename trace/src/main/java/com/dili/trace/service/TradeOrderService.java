@@ -123,12 +123,15 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             }
         }
         LOGGER.debug("sellerId={},batchStockIdList={}", sellerId, batchStockIdList);
-        // 判断是否全部是卖家的库存信息
-        boolean notSellerOwnedBatchBlock = StreamEx.of(this.productStockService.findByIdList(batchStockIdList))
-                .map(ProductStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
-        if (notSellerOwnedBatchBlock) {
-            throw new TraceBizException("参数不匹配:有库存不属于当前卖家");
+        if(TradeOrderTypeEnum.NONE!=tradeDto.getTradeOrderType()){
+            // 判断是否全部是卖家的库存信息
+            boolean notSellerOwnedBatchBlock = StreamEx.of(this.productStockService.findByIdList(batchStockIdList))
+                    .map(ProductStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
+            if (notSellerOwnedBatchBlock) {
+                throw new TraceBizException("参数不匹配:有库存不属于当前卖家");
+            }
         }
+
 
     }
 
