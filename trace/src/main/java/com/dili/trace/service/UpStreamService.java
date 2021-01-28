@@ -105,53 +105,41 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	/**
 	 * 新增上游
 	 * 
-	 * @param upStreamDto
+	 * @param input
 	 * @return
 	 */
 	@Transactional
-	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser,Boolean ... noticeException) {
+	public BaseOutput addUpstream(UpStreamDto input, OperatorUser operatorUser,Boolean ... noticeException) {
 		// 增加下游企业时创建用户
-		this.addUserForDownStream(upStreamDto).ifPresent(sourceuserId -> {
-			upStreamDto.setSourceUserId(sourceuserId);
+		this.addUserForDownStream(input).ifPresent(sourceuserId -> {
+			input.setSourceUserId(sourceuserId);
 		});
 		try {
 
 			// 校验数据
-			if (StringUtils.isNoneBlank(upStreamDto.getLicense()) && upStreamDto.getLicense().length() > MAX_LICENSE_LENGTH) {
+			if (StringUtils.isNoneBlank(input.getLicense()) && input.getLicense().length() > MAX_LICENSE_LENGTH) {
 				throw new TraceBizException("统一信用代码不超过20位！");
 			}
-			if (StringUtils.isNoneBlank(upStreamDto.getName()) && upStreamDto.getName().length() > MAX_LICENSE_LENGTH) {
+			if (StringUtils.isNoneBlank(input.getName()) && input.getName().length() > MAX_LICENSE_LENGTH) {
 				throw new TraceBizException("企业(个人)名称不超过20位！");
 			}
-			if (StringUtils.isNoneBlank(upStreamDto.getLegalPerson()) && upStreamDto.getLegalPerson().length() > MAX_LICENSE_LENGTH) {
+			if (StringUtils.isNoneBlank(input.getLegalPerson()) && input.getLegalPerson().length() > MAX_LICENSE_LENGTH) {
 				throw new TraceBizException("法人姓名不超过20位！");
 			}
 
-			// 校验身份证号是否重复
-			validateDuplicateIdCardNo(upStreamDto.getMarketId(),upStreamDto.getIdCard(), upStreamDto.getUpORdown());
 
 			// 校验手机号是否重复
-			validateDuplicateTelPhone(upStreamDto.getMarketId(),upStreamDto.getTelphone(), upStreamDto.getUpORdown());
+			validateDuplicateTelPhone(input).ifPresent((us)->{
+				input.setId(us.getId());
+			});
 
-			UpStreamDto query = new UpStreamDto();
-			query.setSourceUserId(upStreamDto.getSourceUserId());
-			query.setTelphone(upStreamDto.getTelphone());
-			query.setUpORdown(upStreamDto.getUpORdown());
-			query.setMarketId(upStreamDto.getMarketId());
-			query.setName(upStreamDto.getName());
-
-			// 用户-电话-上下游-市场维度-姓名为唯一键
-			List<UpStream> upStreamList = listByExample(query);
-			if (CollUtil.isEmpty(upStreamList)) {
-				insertSelective(upStreamDto);
+			if (input.getId() == null){
+				insertSelective(input);
 			}
-			if (upStreamDto.getId() == null){
-				upStreamDto.setId(upStreamList.get(0).getId());
-			}
-			addUpstreamUsers(upStreamDto, operatorUser);
+			addUpstreamUsers(input, operatorUser);
 		} catch (DuplicateKeyException e) {
 			if (noticeException != null && noticeException[0]){
-				throw new TraceBizException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
+				throw new TraceBizException("已存在手机号:" + input.getTelphone() + "的企业/个人");
 			}
 		}
 
@@ -164,40 +152,37 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 * @param marketId
 	 * @param idCard
 	 */
-	private void validateDuplicateIdCardNo(Long marketId, String idCard, Integer upOrDown) {
+	private Optional<UpStream> validateDuplicateIdCardNo(Long marketId, String idCard, Integer upOrDown) {
 		if(StringUtils.isBlank(idCard)){
 			LOGGER.info("无需校验身份证号");
-			return;
+			return Optional.empty();
 		}
 		UpStreamDto dto = new UpStreamDto();
 		dto.setIdCard(idCard);
 		dto.setMarketId(marketId);
 		dto.setUpORdown(upOrDown);
 		List<UpStream> streamList = getActualDao().select(dto);
-		if (CollectionUtils.isNotEmpty(streamList) && streamList.size() > 0) {
-			throw new TraceBizException("已存在身份证号:" + idCard + "的企业/个人");
-		}
+		return StreamEx.of(streamList).nonNull().findFirst();
+
 	}
 
 	/**
 	 * 验证手机号是否唯一
 	 *
-	 * @param marketId
-	 * @param telPhone
 	 */
-	private void validateDuplicateTelPhone(Long marketId, String telPhone, Integer upOrDown) {
-		if(StringUtils.isBlank(telPhone)){
+	private Optional<UpStream> validateDuplicateTelPhone(UpStream input) {
+		if(StringUtils.isBlank(input.getTelphone())){
 			LOGGER.info("无需校验手机号");
-			return;
+			return Optional.empty();
 		}
 		UpStreamDto dto = new UpStreamDto();
-		dto.setTelphone(telPhone);
-		dto.setMarketId(marketId);
-		dto.setUpORdown(upOrDown);
+		dto.setTelphone(input.getTelphone());
+		dto.setMarketId(input.getMarketId());
+		dto.setUpORdown(input.getUpORdown());
+		dto.setName(input.getName());
 		List<UpStream> streamList = getActualDao().select(dto);
-		if (CollectionUtils.isNotEmpty(streamList) && streamList.size() > 0) {
-			throw new TraceBizException("已存在手机号:" + telPhone + "的企业/个人");
-		}
+		return StreamEx.of(streamList).nonNull().findFirst();
+
 	}
 
 	/**
