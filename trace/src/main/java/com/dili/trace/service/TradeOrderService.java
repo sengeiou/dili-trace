@@ -411,14 +411,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         this.productStockService.updateSelective(updatableBuyerPS);
                     });
 
-
+                    LOGGER.debug("seller id={},name={}",sellerTD.getBuyerId(),sellerTD.getBuyerName());
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
-                    ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName()).orElseThrow(() -> {
+                    ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getBuyerId(), sellerTD.getBuyerName()).orElseThrow(() -> {
                         return new TraceBizException("创建/查询卖家库存失败");
                     });
-                    LOGGER.debug("sellerProductStock id={},stockweight={},tradeweight={}", sellerProductStock.getId(), sellerProductStock.getStockWeight(), trd.getTradeWeight());
+                    LOGGER.debug("sellerProductStock id={},sellerid={},stockweight={},tradeweight={}", sellerProductStock.getId(),sellerProductStock.getUserId(), sellerProductStock.getStockWeight(), trd.getTradeWeight());
                     ProductStock updatableSellerPS = new ProductStock();
                     updatableSellerPS.setId(sellerProductStock.getId());
                     updatableSellerPS.setStockWeight(sellerProductStock.getStockWeight().subtract(trd.getTradeWeight()));
