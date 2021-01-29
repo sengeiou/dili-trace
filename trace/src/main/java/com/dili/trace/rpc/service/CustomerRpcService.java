@@ -39,8 +39,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -209,6 +208,31 @@ public class CustomerRpcService {
         return this.findCustomerById(customerId, marketId).orElseThrow(() -> {
             return new TraceBizException("查询客户信息失败");
         });
+    }
+
+    /**
+     * 查询相同市场的用户
+     *
+     * @param custIdList
+     * @param marketId
+     * @return
+     */
+    public Map<Long, CustomerExtendDto> findCustomersByIdList(List<Long> custIdList, Long marketId) {
+        if (marketId == null || custIdList == null || custIdList.isEmpty()) {
+            return new HashMap<>();
+        }
+        Set<Long> idSet = StreamEx.of(custIdList).nonNull().distinct().toSet();
+
+        if (idSet.isEmpty()) {
+            return new HashMap<>();
+        }
+        CustomerQueryInput queyrQueryInput = new CustomerQueryInput();
+        queyrQueryInput.setMarketId(marketId);
+        queyrQueryInput.setIdSet(idSet);
+        return StreamEx.ofNullable(this.list(queyrQueryInput)).flatCollection(Function.identity()).nonNull()
+                .mapToEntry(CustomerExtendDto::getId, Function.identity()).toMap();
+
+
     }
 
     /**

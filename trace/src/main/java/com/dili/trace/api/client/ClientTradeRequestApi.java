@@ -148,7 +148,7 @@ public class ClientTradeRequestApi {
             if (tradeRequestItem == null) {
                 return BaseOutput.failure("数据不存在");
             }
-            if(!userId.equals(tradeRequestItem.getBuyerId())&&!userId.equals(tradeRequestItem.getSellerId())){
+            if (!userId.equals(tradeRequestItem.getBuyerId()) && !userId.equals(tradeRequestItem.getSellerId())) {
                 return BaseOutput.failure("没有权限查看数据");
             }
             TradeRequestOutputDto out = new TradeRequestOutputDto();
@@ -230,7 +230,7 @@ public class ClientTradeRequestApi {
 
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
             tradeDto.getSeller().setSellerId(sellerId);
-            TradeOrder tradeOrder=   this.tradeOrderService.createSeperateTrade(tradeDto,
+            TradeOrder tradeOrder = this.tradeOrderService.createSeperateTrade(tradeDto,
                     inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
@@ -270,7 +270,7 @@ public class ClientTradeRequestApi {
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
             tradeDto.getSeller().setSellerId(sellerId);
 
-            TradeOrder tradeOrder=   this.tradeOrderService.createSellTrade(tradeDto,
+            TradeOrder tradeOrder = this.tradeOrderService.createSellTrade(tradeDto,
                     inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
@@ -419,18 +419,19 @@ public class ClientTradeRequestApi {
 
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             List<CustomerExtendOutPutDto> list = getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER).getData();
-
-            List<CustomerExtendOutPutDto> data = StreamEx.of(this.userStoreService.listUserStoreByKeyword(marketId, query.getKeyword())).map(us -> {
+            List<UserStore> userStoreList = this.userStoreService.listUserStoreByKeyword(marketId, query.getKeyword());
+            List<Long> userIdList = StreamEx.of(userStoreList).map(UserStore::getUserId).nonNull().distinct().toList();
+            //批量查询防止报错
+            Map<Long, CustomerExtendDto> customerExtendDtoMap = this.customerRpcService.findCustomersByIdList(userIdList, marketId);
+            List<CustomerExtendOutPutDto> data = StreamEx.of(userStoreList).map(us -> {
                 CustomerExtendOutPutDto dto = new CustomerExtendOutPutDto();
                 dto.setName(us.getUserName());
                 dto.setId(us.getUserId());
                 dto.setMarketId(us.getMarketId());
                 dto.setMarketName(us.getMarketName());
-                this.customerRpcService.findCustomerById(us.getUserId(), us.getMarketId()).ifPresent(cusDto -> {
-                    dto.setOrganizationType(cusDto.getOrganizationType());
-                    dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
-                });
-
+                CustomerExtendDto cusDto = customerExtendDtoMap.getOrDefault(us.getUserId(), new CustomerExtendDto());
+                dto.setOrganizationType(cusDto.getOrganizationType());
+                dto.setAttachmentGroupInfoList(cusDto.getAttachmentGroupInfoList());
                 return dto;
             }).append(list).distinct(CustomerExtendOutPutDto::getId).toList();
             return JSON.toJSONString(BaseOutput.successData(data), SerializerFeature.DisableCircularReferenceDetect);
