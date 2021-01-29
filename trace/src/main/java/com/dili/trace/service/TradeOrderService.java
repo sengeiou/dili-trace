@@ -200,7 +200,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
 
 
-        ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName());
+        ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName()).orElseThrow(()->{
+            return new TraceBizException("创建/查询卖家库存失败");
+        });
         ProductStock updatablePS = new ProductStock();
         updatablePS.setId(productStock.getId());
         updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
@@ -387,28 +389,36 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
                     updatableBuyerTD.setParentId(null);
 
-                    ProductStock buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
-                    LOGGER.debug("buyerProductStock id={},stockweight={}", buyerProductStock.getId(), buyerProductStock.getStockWeight());
+                    Optional<ProductStock> buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
+                    buyerProductStock.ifPresent(bp->{
+                        LOGGER.debug("buyerProductStock id={},stockweight={},tradeweight={}", bp.getId(), bp.getStockWeight(), trd.getTradeWeight());
+                    });
+
 
                     if (TradeOrderTypeEnum.NONE == tradeOrderTypeEnum) {
                         updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
-                        LOGGER.info("buyer tradedetail id={},stockweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight());
+                        LOGGER.info("buyer tradedetail id={},stockweight={},tradeweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight(), trd.getTradeWeight());
                         continue;
                     }
 
-                    ProductStock updatableBuyerPS = new ProductStock();
-                    updatableBuyerPS.setId(buyerProductStock.getId());
-                    updatableBuyerPS.setStockWeight(buyerProductStock.getStockWeight().add(trd.getTradeWeight()));
-                    updatableBuyerPS.setTradeDetailNum(buyerProductStock.getTradeDetailNum() + 1);
-                    this.productStockService.updateSelective(updatableBuyerPS);
+                    buyerProductStock.ifPresent(bp -> {
+                        ProductStock updatableBuyerPS = new ProductStock();
+                        updatableBuyerPS.setId(bp.getId());
+                        updatableBuyerPS.setStockWeight(bp.getStockWeight().add(trd.getTradeWeight()));
+                        updatableBuyerPS.setTradeDetailNum(bp.getTradeDetailNum() + 1);
+                        this.productStockService.updateSelective(updatableBuyerPS);
+                    });
+
 
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
 
-                    ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName());
-                    LOGGER.debug("sellerProductStock id={},stockweight={}", sellerProductStock.getId(), sellerProductStock.getStockWeight());
+                    ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getSellerId(), sellerTD.getSellerName()).orElseThrow(() -> {
+                        return new TraceBizException("创建/查询卖家库存失败");
+                    });
+                    LOGGER.debug("sellerProductStock id={},stockweight={},tradeweight={}", sellerProductStock.getId(), sellerProductStock.getStockWeight(), trd.getTradeWeight());
                     ProductStock updatableSellerPS = new ProductStock();
                     updatableSellerPS.setId(sellerProductStock.getId());
                     updatableSellerPS.setStockWeight(sellerProductStock.getStockWeight().subtract(trd.getTradeWeight()));
@@ -578,7 +588,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      *
      * @return
      */
-    private ProductStock createOrFindProductStock(RegisterBill registerBill, Long userId, String userName) {
+    private Optional<ProductStock> createOrFindProductStock(RegisterBill registerBill, Long userId, String userName) {
+        if (userId == null) {
+            return Optional.empty();
+        }
         ProductStock psQuery = new ProductStock();
         psQuery.setUserId(userId);
         // query.setPreserveType(tradeDetailItem.getPreserveType());
@@ -607,7 +620,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             return batchStock;
 
         });
-        return batchStockItem;
+        return Optional.of(batchStockItem);
     }
 
     /**
