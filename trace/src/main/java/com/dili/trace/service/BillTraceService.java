@@ -100,7 +100,7 @@ public class BillTraceService {
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
+                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(),tr.getBuyerName(), tr.getBuyerMarketId());
                         TraceDataDto downTrace = new TraceDataDto();
                         downTrace.setCreated(tr.getCreated());
                         downTrace.setBuyerName(tr.getBuyerName());
@@ -122,7 +122,7 @@ public class BillTraceService {
                     .of(this.tradeDetailService.findTradeDetailByIdList(upTradeDetailIdList))
                     .map(TradeDetail::getTradeRequestId).nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
-                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
+                        CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(),tr.getBuyerName(), tr.getBuyerMarketId());
 
                         TraceDataDto upTraceDto = new TraceDataDto();
                         upTraceDto.setCreated(tr.getCreated());
@@ -155,7 +155,7 @@ public class BillTraceService {
                             return null;
                         }
                         try {
-                            CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(), tr.getBuyerMarketId());
+                            CustDto cust=this.findCustByIdAndMarketId(tr.getBuyerId(),tr.getBuyerName(), tr.getBuyerMarketId());
                             TraceDataDto downTrace = new TraceDataDto();
                             downTrace.setCreated(tr.getCreated());
                             downTrace.setBuyerName(tr.getBuyerName());
@@ -254,16 +254,18 @@ public class BillTraceService {
      * @param marketId
      * @return
      */
-    private CustDto findCustByIdAndMarketId(Long userId, Long marketId) {
+    private CustDto findCustByIdAndMarketId(Long userId,String buyerName, Long marketId) {
 
-        CustomerExtendDto buyer = this.customerRpcService.findCustomerByIdOrEx(userId, marketId);
-        String buyerMarketName = this.firmRpcService.getFirmByIdOrEx(marketId).getName();
-        String buyerTallyAreaNos = StreamEx.ofNullable(buyer).map(CustomerExtendDto::getTallyingAreaList).nonNull()
-                .flatCollection(Function.identity()).nonNull()
+
+        String buyerTallyAreaNos=StreamEx.of(
+                this.customerRpcService.findCustomerById(userId, marketId))
+                .map(CustomerExtendDto::getTallyingAreaList).nonNull().flatCollection(Function.identity()).nonNull()
                 .map(TallyingArea::getAssetsName).distinct().joining(",");
+
+        String buyerMarketName = this.firmRpcService.getFirmByIdOrEx(marketId).getName();
         CustDto cust=new CustDto();
         cust.setUserId(userId);
-        cust.setUserName(buyer.getName());
+        cust.setUserName(buyerName);
         cust.setMarketId(marketId);
         cust.setMarketName(buyerMarketName);
         cust.setTallyAreaNos(buyerTallyAreaNos);

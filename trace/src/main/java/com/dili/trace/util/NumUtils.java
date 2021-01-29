@@ -21,6 +21,11 @@ public class NumUtils {
      */
     public static final BigDecimal MAX_UNIT_PRICE = new BigDecimal("9999.99");
 
+    /**
+     * 最大报备件数
+     */
+    public static final BigDecimal MAX_NUM = new BigDecimal(99999999);
+
     public static Optional<Long> toLong(String str) {
         if (StringUtils.isBlank(str)) {
             return Optional.empty();
