@@ -126,6 +126,7 @@ public class ClientProductStockApi {
 			TradeDetail tradeDetailQuery = new TradeDetail();
 			tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 			tradeDetailQuery.setProductStockId(inputDto.getProductStockId());
+			tradeDetailQuery.setBuyerId(userId);
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 			return BaseOutput.success().setData(tradeDetailList);
 		} catch (TraceBizException e) {
