@@ -11,6 +11,7 @@
       AND (r.buyer_id = #{buyerId} OR r.seller_id = #{buyerId})
       and (r.created >= #{createdStart} and r.created <=#{createdEnd})
       and o.order_status = #{orderStatus}
+      and r.seller_id is not null
      ]]>
   </select>
 
