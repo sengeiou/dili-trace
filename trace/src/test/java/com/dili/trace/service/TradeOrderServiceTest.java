@@ -13,11 +13,13 @@ import com.dili.trace.enums.BuyerTypeEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import org.apache.poi.ss.formula.functions.T;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
@@ -39,13 +41,21 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeOrderService tradeOrderService;
     //对真实的bean进行一次spy之后再注入。
+    //相当于 @Autowired之后进行Spy然后再替换这个Service (@Autowired+@Spy)
     @SpyBean
     CustomerRpcService customerRpcService;
-    //用mock的bean来代码本次testcase相关的所有依赖的bean
+    //用mock的bean来代码本次testcase相关的所有依赖的bean(@Autowired+@Mocked)
     @MockBean
     CustomerRpc customerRpc;
 
-//    @MockBean
+
+
+    //@Mock标注的Bean并没有被初始化，需要对当前对象进行初始化init(MockitoAnnotations.initMocks(this);)
+    //@Spy的bean一定要有真实的属性值
+//    @Mock
+//    private CustomerRpc t; //MockitoAnnotations.initMocks(this);相当于t= Mockito.mock(CustomerRpc.class)
+//    @Spy
+//    private CustomerRpc t=new CustomerRpc();
 
     @Test
     public void findCustomerById() {
