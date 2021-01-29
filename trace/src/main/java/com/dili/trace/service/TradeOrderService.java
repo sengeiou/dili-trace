@@ -417,6 +417,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
                     updatableBuyerTD.setCheckinRecordId(sellerTD.getCheckinRecordId());
                     updatableBuyerTD.setCheckoutRecordId(sellerTD.getCheckoutRecordId());
+                    updatableBuyerTD.setCheckinStatus(sellerTD.getCheckinStatus());
+                    updatableBuyerTD.setCheckoutStatus(sellerTD.getCheckoutStatus());
                     updatableBuyerTD.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
 
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getBuyerId(), sellerTD.getBuyerName()).orElseThrow(() -> {
