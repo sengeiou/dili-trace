@@ -398,6 +398,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     if (TradeOrderTypeEnum.NONE == tradeOrderTypeEnum) {
                         updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
                         updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
+                        updatableBuyerTD.setTradeType(TradeTypeEnum.NONE.getCode());
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
                         LOGGER.info("buyer tradedetail id={},stockweight={},tradeweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight(), trd.getTradeWeight());
                         continue;
@@ -414,6 +415,9 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     LOGGER.debug("seller id={},name={}",sellerTD.getBuyerId(),sellerTD.getBuyerName());
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
+                    updatableBuyerTD.setCheckinRecordId(sellerTD.getCheckinRecordId());
+                    updatableBuyerTD.setCheckoutRecordId(sellerTD.getCheckoutRecordId());
+                    updatableBuyerTD.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
 
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getBuyerId(), sellerTD.getBuyerName()).orElseThrow(() -> {
                         return new TraceBizException("创建/查询卖家库存失败");
