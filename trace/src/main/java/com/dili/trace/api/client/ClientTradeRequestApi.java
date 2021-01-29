@@ -148,7 +148,7 @@ public class ClientTradeRequestApi {
             if (tradeRequestItem == null) {
                 return BaseOutput.failure("数据不存在");
             }
-            if (!tradeRequestItem.getBuyerId().equals(userId) && !tradeRequestItem.getSellerId().equals(userId)) {
+            if(!userId.equals(tradeRequestItem.getBuyerId())&&!userId.equals(tradeRequestItem.getSellerId())){
                 return BaseOutput.failure("没有权限查看数据");
             }
             TradeRequestOutputDto out = new TradeRequestOutputDto();
