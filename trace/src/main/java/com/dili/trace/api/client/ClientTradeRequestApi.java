@@ -190,6 +190,7 @@ public class ClientTradeRequestApi {
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
 
             tradeDto.getBuyer().setBuyerId(buyerId);
+            tradeDto.getBuyer().setBuyerName(sessionData.getUserName());
             tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
             TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, inputDto);
             return BaseOutput.success();
