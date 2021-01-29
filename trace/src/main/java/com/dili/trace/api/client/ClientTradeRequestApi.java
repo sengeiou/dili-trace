@@ -28,10 +28,7 @@ import com.dili.trace.domain.*;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
 import com.dili.trace.dto.VehicleInfoDto;
-import com.dili.trace.enums.ClientTypeEnum;
-import com.dili.trace.enums.TradeOrderStatusEnum;
-import com.dili.trace.enums.TradeOrderTypeEnum;
-import com.dili.trace.enums.TradeReturnStatusEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
@@ -193,6 +190,7 @@ public class ClientTradeRequestApi {
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
 
             tradeDto.getBuyer().setBuyerId(buyerId);
+            tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
             TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, inputDto);
             return BaseOutput.success();
         } catch (TraceBizException e) {

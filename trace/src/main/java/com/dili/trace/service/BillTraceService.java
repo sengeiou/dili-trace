@@ -72,7 +72,7 @@ public class BillTraceService {
         TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
         traceDetailOutputDto.setTradeRequestId(tradeRequestItem.getTradeRequestId());
         traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
-        if (tradeRequestItem.getBuyerId().equals(userId)) {
+        if (tradeRequestItem.getBuyerId()!=null&&tradeRequestItem.getBuyerId().equals(userId)) {
 
             CustomerExtendDto seller = this.customerRpcService.findCustomerByIdOrEx(tradeRequestItem.getSellerId(), tradeRequestItem.getSellerMarketId());
             String sellerMarketName = this.firmRpcService.getFirmByIdOrEx(tradeRequestItem.getSellerMarketId()).getName();
