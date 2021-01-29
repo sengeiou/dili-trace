@@ -195,35 +195,44 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品产地不能为空");
         }
 
-        // 计件类型，件数件重校验
+        // 件数
         if (registerHead.getPieceNum() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件数不能为空");
             throw new TraceBizException("商品件数不能为空");
         }
-        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
-                BigDecimal.ZERO.compareTo(registerHead.getPieceNum()) >= 0) {
-            logger.error("商品件数不能小于0");
-            throw new TraceBizException("商品件数不能小于0");
-        }
-        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
-                NumUtils.MAX_NUM.compareTo(registerHead.getPieceNum()) < 0) {
-            logger.error("商品件数不能大于{}", NumUtils.MAX_NUM.toString());
-            throw new TraceBizException("商品件数不能大于" + NumUtils.MAX_NUM.toString());
+        if (Objects.nonNull(registerHead.getPieceNum())) {
+            if (BigDecimal.ZERO.compareTo(registerHead.getPieceNum()) >= 0) {
+                logger.error("商品件数不能小于0");
+                throw new TraceBizException("商品件数不能小于0");
+            }
+            if (NumUtils.MAX_NUM.compareTo(registerHead.getPieceNum()) < 0) {
+                logger.error("商品件数不能大于{}", NumUtils.MAX_NUM.toString());
+                throw new TraceBizException("商品件数不能大于" + NumUtils.MAX_NUM.toString());
+            }
+            if (!NumUtils.isIntegerValue(registerHead.getPieceNum())) {
+                logger.error("商品件数必须为整数");
+                throw new TraceBizException("商品件数必须为整数");
+            }
         }
 
+        // 件重
         if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件重不能为空");
             throw new TraceBizException("商品件重不能为空");
         }
-        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
-                BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
-            logger.error("商品件重不能小于0");
-            throw new TraceBizException("商品件重不能小于0");
-        }
-        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
-                NumUtils.MAX_WEIGHT.compareTo(registerHead.getPieceWeight()) < 0) {
-            logger.error("商品件重不能大于{}", NumUtils.MAX_WEIGHT.toString());
-            throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+        if (Objects.nonNull(registerHead.getPieceWeight())) {
+            if (BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
+                logger.error("商品件重不能小于0");
+                throw new TraceBizException("商品件重不能小于0");
+            }
+            if (NumUtils.MAX_WEIGHT.compareTo(registerHead.getPieceWeight()) < 0) {
+                logger.error("商品件重不能大于{}", NumUtils.MAX_WEIGHT.toString());
+                throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+            }
+            if (!NumUtils.isIntegerValue(registerHead.getPieceWeight())) {
+                logger.error("商品件重必须为整数");
+                throw new TraceBizException("商品件重必须为整数");
+            }
         }
 
         // 商品重量校验
