@@ -169,7 +169,7 @@ public class ManagerRegisterBillApi {
         query.setMarketId(this.sessionContext.getSessionData().getMarketId());
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         return StreamEx.of(this.registerBillService.listByExample(query)).findFirst().map(bill -> {
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(bill.getId(), BillTypeEnum.REGISTER_BILL);
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(bill.getId(), BillTypeEnum.fromCode(bill.getBillType()).orElse(null));
             bill.setImageCertList(imageCerts);
 
             Optional.ofNullable(upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {

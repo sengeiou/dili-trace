@@ -426,7 +426,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
                 dto.setLatestDetectRecord(dr);
             });
         }
-        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), BillTypeEnum.REGISTER_BILL);
+        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), BillTypeEnum.fromCode(dto.getBillType()).orElse(null));
         dto.setImageCertList(imageCertList);
         return dto;
     }

@@ -83,7 +83,7 @@ public class ClientTradePushApi {
                 registerBill.setWeight(tradeDetail.getPushawayWeight());
             }
 
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId(), BillTypeEnum.REGISTER_BILL);
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId(), BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null));
             registerBill.setImageCertList(imageCerts);
             TradePushLog pushLog = new TradePushLog();
             pushLog.setTradeDetailId(tradeDetailId);

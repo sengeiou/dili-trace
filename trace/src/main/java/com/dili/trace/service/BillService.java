@@ -56,6 +56,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
     @Autowired
     DetectRequestService detectRequestService;
 
+
     /**
      * 根据id查询
      * @param billId
@@ -233,16 +234,6 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
         return billId;
     }
 
-    /**
-     * 查询图片
-     *
-     * @param billId
-     * @return
-     */
-
-    public List<ImageCert> findImageCertListByBillId(Long billId) {
-        return this.imageCertService.findImageCertListByBillId(billId, BillTypeEnum.REGISTER_BILL);
-    }
 
     /**
      * 上传检测报告
@@ -266,7 +257,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
             throw new TraceBizException("状态错误,不能上传检测报告");
         }
 
-        List<ImageCert> imageCerts = StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+        List<ImageCert> imageCerts = StreamEx.ofNullable(this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.fromCode(item.getBillType()).orElse(null)))
                 .flatCollection(Function.identity()).filter(img -> {
 
                     return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
@@ -296,7 +287,7 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
             throw new TraceBizException("数据错误");
         }
 
-        List<ImageCert> imageCerts = StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+        List<ImageCert> imageCerts = StreamEx.ofNullable(this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.fromCode(item.getBillType()).orElse(null)))
                 .flatCollection(Function.identity()).filter(img -> {
 
                     return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(img.getCertType());
