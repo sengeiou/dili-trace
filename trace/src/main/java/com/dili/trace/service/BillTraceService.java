@@ -201,14 +201,14 @@ public class BillTraceService {
             throw new TraceBizException("没有查找到详情");
         }
         List<TradeDetail> list = Lists.newArrayList();
-        if (tradeRequestItem.getBuyerId().equals(userId)) {
+        if (userId.equals(tradeRequestItem.getBuyerId())) {
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setBuyerId(userId);
             tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
             List<TradeDetail> downTraceList = this.tradeDetailService.listByExample(tradeDetailQuery);
             list.addAll(downTraceList);
-        } else if (tradeRequestItem.getSellerId().equals(userId)) {
+        } else if (userId.equals(tradeRequestItem.getSellerId())) {
 
             TradeDetail condition = new TradeDetail();
             condition.setSellerId(userId);
@@ -222,7 +222,6 @@ public class BillTraceService {
 
             List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
             list.addAll(buyerTradeDetailList);
-            ;
 
         } else {
             throw new TraceBizException("没有查询到数据");
