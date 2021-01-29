@@ -414,7 +414,8 @@ public class ClientTradeRequestApi {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             query.setPage(1);
-            query.setRows(Integer.MAX_VALUE);
+            //取100个，再多远程太慢了
+            query.setRows(100);
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query, marketId);
 
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
