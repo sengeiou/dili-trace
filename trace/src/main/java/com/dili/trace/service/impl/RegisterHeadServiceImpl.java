@@ -195,12 +195,19 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBizException("商品产地不能为空");
         }
 
-        // 件数
-        if (registerHead.getPieceNum() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
-            logger.error("商品件数不能为空");
-            throw new TraceBizException("商品件数不能为空");
+        // 计重类型，把件数和件重置空
+        if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerHead.getMeasureType())) {
+            registerHead.setPieceNum(null);
+            registerHead.setPieceWeight(null);
         }
-        if (Objects.nonNull(registerHead.getPieceNum())) {
+
+        // 计件类型，校验件数和件重
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
+            // 件数
+            if (registerHead.getPieceNum() == null) {
+                logger.error("商品件数不能为空");
+                throw new TraceBizException("商品件数不能为空");
+            }
             if (BigDecimal.ZERO.compareTo(registerHead.getPieceNum()) >= 0) {
                 logger.error("商品件数不能小于0");
                 throw new TraceBizException("商品件数不能小于0");
@@ -213,14 +220,12 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
                 logger.error("商品件数必须为整数");
                 throw new TraceBizException("商品件数必须为整数");
             }
-        }
 
-        // 件重
-        if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
-            logger.error("商品件重不能为空");
-            throw new TraceBizException("商品件重不能为空");
-        }
-        if (Objects.nonNull(registerHead.getPieceWeight())) {
+            // 件重
+            if (registerHead.getPieceWeight() == null) {
+                logger.error("商品件重不能为空");
+                throw new TraceBizException("商品件重不能为空");
+            }
             if (BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
                 logger.error("商品件重不能小于0");
                 throw new TraceBizException("商品件重不能小于0");
