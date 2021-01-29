@@ -181,15 +181,13 @@ public class ClientTradeRequestApi {
         }
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
-            Long buyerId = sessionData.getUserId();
-            Long marketId = sessionData.getMarketId();
-            logger.info("buyerId id in session:{}", buyerId);
+            logger.info("buyerId id in session:{}", sessionData.getUserId());
 
             TradeDto tradeDto = new TradeDto();
-            tradeDto.setMarketId(marketId);
+            tradeDto.setMarketId(sessionData.getMarketId());
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
 
-            tradeDto.getBuyer().setBuyerId(buyerId);
+            tradeDto.getBuyer().setBuyerId(sessionData.getUserId());
             tradeDto.getBuyer().setBuyerName(sessionData.getUserName());
             tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
             TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, inputDto);
@@ -220,17 +218,17 @@ public class ClientTradeRequestApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            Long sellerId = sessionData.getUserId();
-            Long marketId = sessionData.getMarketId();
-            logger.info("seller id in session:{}", sellerId);
+            logger.info("seller id in session:{}", sessionData.getUserId());
 
             TradeDto tradeDto = new TradeDto();
-            tradeDto.setMarketId(marketId);
+            tradeDto.setMarketId(sessionData.getMarketId());
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
+            tradeDto.getSeller().setSellerId(sessionData.getUserId());
+            tradeDto.getSeller().setSellerName(sessionData.getUserName());
 
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
-            tradeDto.getSeller().setSellerId(sellerId);
-            TradeOrder tradeOrder = this.tradeOrderService.createSeperateTrade(tradeDto,
+
+            TradeOrder tradeOrder = this.tradeOrderService.createSellTrade(tradeDto,
                     inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
@@ -259,18 +257,16 @@ public class ClientTradeRequestApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            Long sellerId = sessionData.getUserId();
-            Long marketId = sessionData.getMarketId();
-            logger.info("seller id in session:{}", sellerId);
+            logger.info("seller id in session:{}", sessionData.getUserId());
 
             TradeDto tradeDto = new TradeDto();
-            tradeDto.setMarketId(marketId);
+            tradeDto.setMarketId(sessionData.getMarketId());
             tradeDto.setTradeOrderType(TradeOrderTypeEnum.SEPREATE);
-
+            tradeDto.getSeller().setSellerId(sessionData.getUserId());
+            tradeDto.getSeller().setSellerName(sessionData.getUserName());
             tradeDto.getBuyer().setBuyerId(inputDto.getBuyerId());
-            tradeDto.getSeller().setSellerId(sellerId);
 
-            TradeOrder tradeOrder = this.tradeOrderService.createSellTrade(tradeDto,
+            TradeOrder tradeOrder = this.tradeOrderService.createSeperateTrade(tradeDto,
                     inputDto.getBatchStockList());
             return BaseOutput.success();
         } catch (TraceBizException e) {
