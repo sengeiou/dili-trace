@@ -376,6 +376,48 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.error("商品重量必须为整数");
             throw new TraceBizException("商品重量必须为整数");
         }
+
+        // 计件类型，件数件重校验
+        if (registerBill.getPieceNum() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType())) {
+            logger.error("商品件数不能为空");
+            throw new TraceBizException("商品件数不能为空");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                BigDecimal.ZERO.compareTo(registerBill.getPieceNum()) >= 0) {
+            logger.error("商品件数不能小于0");
+            throw new TraceBizException("商品件数不能小于0");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                NumUtils.MAX_NUM.compareTo(registerBill.getPieceNum()) < 0) {
+            logger.error("商品件数不能大于{}", NumUtils.MAX_NUM.toString());
+            throw new TraceBizException("商品件数不能大于" + NumUtils.MAX_NUM.toString());
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                !NumUtils.isIntegerValue(registerBill.getPieceNum())) {
+            logger.error("商品件数必须为整数");
+            throw new TraceBizException("商品件数必须为整数");
+        }
+
+        if (registerBill.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType())) {
+            logger.error("商品件重不能为空");
+            throw new TraceBizException("商品件重不能为空");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                BigDecimal.ZERO.compareTo(registerBill.getPieceWeight()) >= 0) {
+            logger.error("商品件重不能小于0");
+            throw new TraceBizException("商品件重不能小于0");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                NumUtils.MAX_WEIGHT.compareTo(registerBill.getPieceWeight()) < 0) {
+            logger.error("商品件重不能大于{}", NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType()) &&
+                !NumUtils.isIntegerValue(registerBill.getPieceWeight())) {
+            logger.error("商品件重必须为整数");
+            throw new TraceBizException("商品件重必须为整数");
+        }
+
         if(registerBill.getTruckTareWeight()!=null){
             if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getTruckTareWeight()) < 0) {
                 logger.error("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
