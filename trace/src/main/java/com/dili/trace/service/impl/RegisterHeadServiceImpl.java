@@ -196,13 +196,24 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         }
 
         // 计件类型，件数件重校验
-        if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
-            logger.error("商品件重不能为空");
-            throw new TraceBizException("商品件重不能为空");
-        }
         if (registerHead.getPieceNum() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件数不能为空");
             throw new TraceBizException("商品件数不能为空");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
+                BigDecimal.ZERO.compareTo(registerHead.getPieceNum()) >= 0) {
+            logger.error("商品件数不能小于0");
+            throw new TraceBizException("商品件数不能小于0");
+        }
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
+                NumUtils.MAX_NUM.compareTo(registerHead.getPieceNum()) < 0) {
+            logger.error("商品件数不能大于{}", NumUtils.MAX_NUM.toString());
+            throw new TraceBizException("商品件数不能大于" + NumUtils.MAX_NUM.toString());
+        }
+
+        if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
+            logger.error("商品件重不能为空");
+            throw new TraceBizException("商品件重不能为空");
         }
         if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType()) &&
                 BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
@@ -228,12 +239,24 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品重量不能大于{}", NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
-
         if (!NumUtils.isIntegerValue(registerHead.getWeight())) {
             logger.error("商品重量必须为整数");
             throw new TraceBizException("商品重量必须为整数");
         }
 
+        // 待进门重量校验（如果有）
+        if (Objects.nonNull(registerHead.getRemainWeight()) && BigDecimal.ZERO.compareTo(registerHead.getRemainWeight()) >= 0) {
+            logger.error("待进门重量不能小于0");
+            throw new TraceBizException("待进门重量不能小于0");
+        }
+        if (Objects.nonNull(registerHead.getRemainWeight()) && NumUtils.MAX_WEIGHT.compareTo(registerHead.getRemainWeight()) < 0) {
+            logger.error("待进门重量不能大于{}", NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("待进门重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+        if (Objects.nonNull(registerHead.getRemainWeight()) && !NumUtils.isIntegerValue(registerHead.getRemainWeight())) {
+            logger.error("待进门重量必须为整数");
+            throw new TraceBizException("待进门重量必须为整数");
+        }
 
         // 商品单价校验（如果有）
         if (Objects.nonNull(registerHead.getUnitPrice())
@@ -269,14 +292,17 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        String specName=input.getSpecName();
-        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
-            throw new TraceBizException("规格名称包含非法字符");
-        }
-        String remark=input.getRemark();
-        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
-            throw new TraceBizException("备注包含非法字符");
-        }
+//        String specName=input.getSpecName();
+//        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+//            throw new TraceBizException("规格名称包含非法字符");
+//        }
+//        String remark=input.getRemark();
+//        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+//            throw new TraceBizException("备注包含非法字符");
+//        }
+
+        this.checkRegisterHead(input);
+
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
         RegisterBill rbq=new RegisterBill();
