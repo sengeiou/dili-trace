@@ -74,10 +74,11 @@ public class BillTraceService {
         traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
         if (tradeRequestItem.getBuyerId()!=null&&tradeRequestItem.getBuyerId().equals(userId)) {
 
-            CustomerExtendDto seller = this.customerRpcService.findCustomerByIdOrEx(tradeRequestItem.getSellerId(), tradeRequestItem.getSellerMarketId());
             String sellerMarketName = this.firmRpcService.getFirmByIdOrEx(tradeRequestItem.getSellerMarketId()).getName();
-            String sellerTallyAreaNos = StreamEx.ofNullable(seller).map(CustomerExtendDto::getTallyingAreaList).nonNull()
-                    .flatCollection(Function.identity()).nonNull()
+
+            String sellerTallyAreaNos=StreamEx.of(
+            this.customerRpcService.findCustomerById(tradeRequestItem.getSellerId(), tradeRequestItem.getSellerMarketId()))
+                    .map(CustomerExtendDto::getTallyingAreaList).nonNull().flatCollection(Function.identity()).nonNull()
                     .map(TallyingArea::getAssetsName).distinct().joining(",");
 
 
