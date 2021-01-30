@@ -8,6 +8,7 @@ import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -41,8 +42,13 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             newDomain.setCreated(new Date());
             newDomain.setModified(new Date());
             newDomain.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
-            this.insertSelective(newDomain);
-            return newDomain;
+            try {
+                this.insertSelective(newDomain);
+                return newDomain;
+            }catch (DuplicateKeyException e){
+                return StreamEx.of(this.listByExample(query)).findFirst().orElse(null);
+            }
+
         });
         this.syncRpcService.syncRpcUser(userInfo);
         return userInfo;
