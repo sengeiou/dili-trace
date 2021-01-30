@@ -401,6 +401,11 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         updatableBuyerTD.setTradeType(TradeTypeEnum.NONE.getCode());
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
                         LOGGER.info("buyer tradedetail id={},stockweight={},tradeweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight(), trd.getTradeWeight());
+                        this.productRpcService.handleTradeStocks(
+                                Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
+                                , Lists.newArrayList()
+                                , Optional.empty()
+                                , tradeRequest.getSellerMarketId());
                         continue;
                     }
 
