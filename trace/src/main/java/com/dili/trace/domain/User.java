@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -18,7 +19,7 @@ import java.util.Date;
  * This file was generated on 2019-07-26 09:20:35.
  */
 @Table(name = "`user`")
-public interface User extends IBaseDomain {
+public class User extends BaseDomain {
     /**
      * ID
      *
@@ -27,156 +28,100 @@ public interface User extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label = "id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+    private Long id;
 
-    void setId(Long id);
 
     /**
      * 名称
      */
     @ApiModelProperty(value = "名称")
     @Column(name = "`name`")
-    @FieldDef(label = "name", maxLength = 30)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getName();
+    private String name;
 
-    void setName(String name);
 
     /**
      * 手机号（帐号）
      */
     @ApiModelProperty(value = "手机号（帐号）")
     @Column(name = "`phone`")
-    @FieldDef(label = "phone", maxLength = 15)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getPhone();
-
-    void setPhone(String phone);
+    private String phone;
 
     /**
      * 理货区号
      */
     @ApiModelProperty(value = "理货区号")
     @Column(name = "`tally_area_nos`")
-    @FieldDef(label = "tallyAreaNos")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getTallyAreaNos();
-
-    void setTallyAreaNos(String tallyAreaNos);
+    private String tallyAreaNos;
 
     /**
      * 身份证号
      */
     @ApiModelProperty(value = "身份证号")
     @Column(name = "`card_no`")
-    @FieldDef(label = "cardNo", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNo();
-
-    void setCardNo(String cardNo);
+    private String cardNo;
 
     /**
      * 地址
      */
     @ApiModelProperty(value = "地址")
     @Column(name = "`addr`")
-    @FieldDef(label = "addr", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getAddr();
-
-    void setAddr(String addr);
+    private String addr;
 
     /**
      * 身份证照正面URL
      */
     @ApiModelProperty(value = "身份证照正面URL")
     @Column(name = "`card_no_front_url`")
-    @FieldDef(label = "cardNoFrontUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNoFrontUrl();
-
-    void setCardNoFrontUrl(String cardNoFrontUrl);
+    private String cardNoFrontUrl;
 
     /**
      * 身份证照反面URL
      */
     @ApiModelProperty(value = "身份证照反面URL")
     @Column(name = "`card_no_back_url`")
-    @FieldDef(label = "cardNoBackUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNoBackUrl();
-
-    void setCardNoBackUrl(String cardNoBackUrl);
+    private String cardNoBackUrl;
 
     /**
      * 营业执照URL
      */
     @ApiModelProperty(value = "营业执照URL")
     @Column(name = "`business_license_url`")
-    @FieldDef(label = "businessLicenseUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getBusinessLicenseUrl();
-
-    void setBusinessLicenseUrl(String businessLicenseUrl);
+    private String businessLicenseUrl;
 
     /**
      * 销售城市ID
      */
     @ApiModelProperty(value = "销售城市ID")
     @Column(name = "`sales_city_id`")
-    @FieldDef(label = "salesCityId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getSalesCityId();
-
-    void setSalesCityId(Long salesCityId);
-
+    private Long salesCityId;
     /**
      * 销售城市名称
      */
     @ApiModelProperty(value = "销售城市名称")
     @Column(name = "`sales_city_name`")
-    @FieldDef(label = "salesCityName", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getSalesCityName();
-
-    void setSalesCityName(String salesCityName);
-
+    private String salesCityName;
     /**
      * 状态
      */
     @ApiModelProperty(value = "状态")
     @Column(name = "`state`")
-    @FieldDef(label = "1:启用 2：禁用")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getState();
-
-    void setState(Integer state);
+    private Integer state;
 
     /**
      * 密码
      */
     @ApiModelProperty(value = "密码")
     @Column(name = "`password`")
-    @FieldDef(label = "password", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
     @JSONField(serialize = false)
-    String getPassword();
-
-    void setPassword(String password);
+    private String password;
 
     /**
-     * 删除状态1:正常 -1：删除
+     * 删除状态1:正常 0：删除
      *
      * @return
      */
     @Column(name = "`yn`")
-    @FieldDef(label = "1:正常 -1：删除")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getYn();
-
-    void setYn(Integer yn);
+    private Integer yn;
 
     /**
      * 版本
@@ -184,42 +129,28 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`version`")
-    @FieldDef(label = "version")
-    @EditMode(editor = FieldEditor.Number)
-    Integer getVersion();
-
-    void setVersion(Integer version);
+    private Integer version;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
-    @FieldDef(label = "created")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getCreated();
-
-    void setCreated(Date created);
+    private Date created;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
-    @FieldDef(label = "modified")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getModified();
+    private Date modified;
 
-    void setModified(Date modified);
 
     /**
      * 0：未删除，非0:已经删除
      */
     @Column(name = "`is_delete`")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getIsDelete();
-
-    void setIsDelete(Long isDelete);
+    private Long isDelete;
 
     /**
      * 法人
@@ -227,67 +158,50 @@ public interface User extends IBaseDomain {
     @ApiModelProperty(value = "法人姓名")
     @Column(name = "`legal_person`")
 
-    public String getLegalPerson();
-
-    public void setLegalPerson(String legalPerson);
+    private String legalPerson;
 
     /**
      * 统一信用代码
      */
     @ApiModelProperty(value = "统一信用代码")
     @Column(name = "`license`")
-    public String getLicense();
-
-    public void setLicense(String license);
+    private String license;
 
     /**
      * 用户类型 {@link com.dili.trace.glossary.UserTypeEnum}
      */
     @Column(name = "`user_type`")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getUserType();
-
-    void setUserType(Integer userType);
+    private Integer userType;
 
     /**
      * 所属市场
      */
     @ApiModelProperty(value = "所属市场")
     @Column(name = "`market_id`")
-    public Long getMarketId();
-
-    public void setMarketId(Long marketId);
+    private Long marketId;
 
     /**
      * 所属市场名称
      */
     @ApiModelProperty(value = "所属市场名称")
     @Column(name = "`market_name`")
-    public String getMarketName();
+    private String marketName;
 
-    public void setMarketName(String marketName);
 
     /**
      * 生产许可证URL
      */
     @ApiModelProperty(value = "生产许可证URL")
     @Column(name = "`manufacturing_license_url`")
-    @FieldDef(label = "manufacturing_license_url", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getManufacturingLicenseUrl();
+    private String manufacturingLicenseUrl;
 
-    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl);
 
     /**
      * 经营许可证URL
      */
     @ApiModelProperty(value = "经营许可证URL")
     @Column(name = "`operation_license_url`")
-    @FieldDef(label = "operation_license_url", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getOperationLicenseUrl();
-
-    public void setOperationLicenseUrl(String operationLicenseUrl);
+    private String operationLicenseUrl;
 
     /**
      * 二维码状态
@@ -295,9 +209,7 @@ public interface User extends IBaseDomain {
      */
     @ApiModelProperty(value = "二维码状态")
     @Column(name = "`qr_status`")
-    Integer getQrStatus();
-
-    void setQrStatus(Integer qrStatus);
+    private Integer qrStatus;
 
     /**
      * 前一次二维码状态
@@ -305,56 +217,16 @@ public interface User extends IBaseDomain {
      */
     @ApiModelProperty(value = "")
     @Column(name = "`pre_qr_status`")
-    Integer getPreQrStatus();
+    private Integer preQrStatus;
 
-    void setPreQrStatus(Integer preQrStatus);
-
-
-    /**
-     * 验证码
-     */
-    @ApiModelProperty(value = "验证码")
-    @Transient
-    String getCheckCode();
-
-    void setCheckCode(String checkCode);
-
-    /**
-     * 确认密码
-     */
-    @ApiModelProperty(value = "确认密码")
-    @Transient
-    String getAckPassword();
-
-    void setAckPassword(String ackPassword);
-
-    /**
-     * 旧密码
-     */
-    @ApiModelProperty(value = "旧密码")
-    @Transient
-    String getOldPassword();
-
-    void setOldPassword(String oldPassword);
-
-    /**
-     * 车牌
-     *
-     * @return
-     */
-    @Transient
-    String getPlates();
-
-    void setPlates(String plates);
 
     /**
      * 审核状态
      */
     @ApiModelProperty(value = "审核状态")
     @Column(name = "`validate_state`")
-    Integer getValidateState();
+    private Integer validateState;
 
-    void setValidateState(Integer state);
 
     /**
      * 经营类型
@@ -362,9 +234,8 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`vocation_type`")
-    Integer getVocationType();
+    private Integer vocationType;
 
-    void setVocationType(Integer type);
 
     /**
      * 业务分类id
@@ -372,9 +243,8 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "business_category_ids")
-    String getBusinessCategoryIds();
+    private String businessCategoryIds;
 
-    void setBusinessCategoryIds(String businessCategoryIds);
 
     /**
      * 业务分类描述
@@ -382,14 +252,13 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "business_categories")
-    String getBusinessCategories();
+    private String businessCategories;
 
-    void setBusinessCategories(String businessCategories);
 
-    @Transient
-    default String getVocationTypeName() {
-        return VocationTypeEnum.getNameFromCode(this.getVocationType());
-    }
+//    @Transient
+//    default String getVocationTypeName() {
+//        return VocationTypeEnum.getNameFromCode(this.getVocationType());
+//    }
 
     /**
      * 来源
@@ -397,9 +266,7 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`source`")
-    Integer getSource();
-
-    void setSource(Integer source);
+    private Integer source;
 
     /**
      * 微信openid
@@ -407,14 +274,8 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`open_id`")
-    String getOpenId();
+    private String openId;
 
-    /**
-     * 微信openid
-     *
-     * @param open_id
-     */
-    void setOpenId(String open_id);
 
     /**
      * 微信弹窗绑定确认时间
@@ -422,14 +283,8 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`confirm_date`")
-    Date getConfirmDate();
+    private Date confirmDate;
 
-    /**
-     * 微信弹窗绑定确认时间
-     *
-     * @param confirm_date
-     */
-    void setConfirmDate(Date confirm_date);
 
     /**
      * 用户上报标志位
@@ -437,14 +292,8 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`is_push`")
-    Integer getIsPush();
+    private Integer isPush;
 
-    /**
-     * 用户上报标志位
-     *
-     * @param is_push
-     */
-    void setIsPush(Integer is_push);
 
     /**
      * 用户活跃标志位
@@ -452,14 +301,7 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`is_active`")
-    Integer getIsActive();
-
-    /**
-     * 用户活跃标志位
-     *
-     * @param is_active
-     */
-    void setIsActive(Integer is_active);
+    private Integer isActive;
 
     /**
      * 经营户第三方编码
@@ -467,26 +309,330 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`third_party_code`")
-    String getThirdPartyCode();
+    private String thirdPartyCode;
 
-    /**
-     * 经营户第三方编码
-     *
-     * @param third_party_code
-     */
-    void setThirdPartyCode(String third_party_code);
 
     /**
      * 经营户扩展信息
      *
      * @return
      */
-    UserExt getUserExt();
+    @Transient
+    private UserExt userExt;
+    @Transient
+    private String plates;
 
-    /**
-     * 经营户扩展信息
-     *
-     * @param userExt
-     */
-    void setUserExt(UserExt userExt);
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getTallyAreaNos() {
+        return tallyAreaNos;
+    }
+
+    public void setTallyAreaNos(String tallyAreaNos) {
+        this.tallyAreaNos = tallyAreaNos;
+    }
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
+
+    public String getCardNoFrontUrl() {
+        return cardNoFrontUrl;
+    }
+
+    public void setCardNoFrontUrl(String cardNoFrontUrl) {
+        this.cardNoFrontUrl = cardNoFrontUrl;
+    }
+
+    public String getCardNoBackUrl() {
+        return cardNoBackUrl;
+    }
+
+    public void setCardNoBackUrl(String cardNoBackUrl) {
+        this.cardNoBackUrl = cardNoBackUrl;
+    }
+
+    public String getBusinessLicenseUrl() {
+        return businessLicenseUrl;
+    }
+
+    public void setBusinessLicenseUrl(String businessLicenseUrl) {
+        this.businessLicenseUrl = businessLicenseUrl;
+    }
+
+    public Long getSalesCityId() {
+        return salesCityId;
+    }
+
+    public void setSalesCityId(Long salesCityId) {
+        this.salesCityId = salesCityId;
+    }
+
+    public String getSalesCityName() {
+        return salesCityName;
+    }
+
+    public void setSalesCityName(String salesCityName) {
+        this.salesCityName = salesCityName;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Integer getYn() {
+        return yn;
+    }
+
+    public void setYn(Integer yn) {
+        this.yn = yn;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public Long getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Long isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public String getLegalPerson() {
+        return legalPerson;
+    }
+
+    public void setLegalPerson(String legalPerson) {
+        this.legalPerson = legalPerson;
+    }
+
+    public String getLicense() {
+        return license;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
+    }
+
+    public Integer getUserType() {
+        return userType;
+    }
+
+    public void setUserType(Integer userType) {
+        this.userType = userType;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getMarketName() {
+        return marketName;
+    }
+
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
+
+    public String getManufacturingLicenseUrl() {
+        return manufacturingLicenseUrl;
+    }
+
+    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl) {
+        this.manufacturingLicenseUrl = manufacturingLicenseUrl;
+    }
+
+    public String getOperationLicenseUrl() {
+        return operationLicenseUrl;
+    }
+
+    public void setOperationLicenseUrl(String operationLicenseUrl) {
+        this.operationLicenseUrl = operationLicenseUrl;
+    }
+
+    public Integer getQrStatus() {
+        return qrStatus;
+    }
+
+    public void setQrStatus(Integer qrStatus) {
+        this.qrStatus = qrStatus;
+    }
+
+    public Integer getPreQrStatus() {
+        return preQrStatus;
+    }
+
+    public void setPreQrStatus(Integer preQrStatus) {
+        this.preQrStatus = preQrStatus;
+    }
+
+    public Integer getValidateState() {
+        return validateState;
+    }
+
+    public void setValidateState(Integer validateState) {
+        this.validateState = validateState;
+    }
+
+    public Integer getVocationType() {
+        return vocationType;
+    }
+
+    public void setVocationType(Integer vocationType) {
+        this.vocationType = vocationType;
+    }
+
+    public String getBusinessCategoryIds() {
+        return businessCategoryIds;
+    }
+
+    public void setBusinessCategoryIds(String businessCategoryIds) {
+        this.businessCategoryIds = businessCategoryIds;
+    }
+
+    public String getBusinessCategories() {
+        return businessCategories;
+    }
+
+    public void setBusinessCategories(String businessCategories) {
+        this.businessCategories = businessCategories;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public Date getConfirmDate() {
+        return confirmDate;
+    }
+
+    public void setConfirmDate(Date confirmDate) {
+        this.confirmDate = confirmDate;
+    }
+
+    public Integer getIsPush() {
+        return isPush;
+    }
+
+    public void setIsPush(Integer isPush) {
+        this.isPush = isPush;
+    }
+
+    public Integer getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Integer isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getThirdPartyCode() {
+        return thirdPartyCode;
+    }
+
+    public void setThirdPartyCode(String thirdPartyCode) {
+        this.thirdPartyCode = thirdPartyCode;
+    }
+
+    public UserExt getUserExt() {
+        return userExt;
+    }
+
+    public void setUserExt(UserExt userExt) {
+        this.userExt = userExt;
+    }
+
+    public String getPlates() {
+        return plates;
+    }
+
+    public void setPlates(String plates) {
+        this.plates = plates;
+    }
 }

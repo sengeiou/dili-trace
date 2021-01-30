@@ -1,4 +1,4 @@
-package com.dili.common.annotation;
+package com.dili.trace.events;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

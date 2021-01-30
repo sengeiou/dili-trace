@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;

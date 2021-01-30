@@ -15,7 +15,7 @@ import com.dili.trace.domain.User;
  * <p>
  * This file was generated on 2019-07-26 09:20:35.
  */
-public interface UserListDto extends User {
+public class UserListDto extends User {
     /**
      * 创建时间开始
      *
@@ -23,9 +23,8 @@ public interface UserListDto extends User {
      */
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
-    Date getCreatedStart();
+    private Date createdStart;
 
-    void setCreatedStart(Date createdStart);
 
     /**
      * 创建时间结束
@@ -34,9 +33,7 @@ public interface UserListDto extends User {
      */
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
-    Date getCreatedEnd();
-
-    void setCreatedEnd(Date createdEnd);
+    private Date createdEnd;
 
     /**
      * 昵称模糊查询
@@ -45,9 +42,7 @@ public interface UserListDto extends User {
      */
     @Column(name = "tally_area_nos")
     @Like
-    String getLikeTallyAreaNos();
-
-    void setLikeTallyAreaNos(String likeTallyAreaNos);
+    private String likeTallyAreaNos;
 
     /**
      * 是否有营业执照
@@ -55,9 +50,8 @@ public interface UserListDto extends User {
      * @return
      */
     @Transient
-    Boolean getHasBusinessLicense();
+    private Boolean hasBusinessLicense;
 
-    void setHasBusinessLicense(Boolean hasBusinessLicense);
 
     /**
      * 业户名称
@@ -66,9 +60,7 @@ public interface UserListDto extends User {
      */
     @Column(name = "name")
     @Like
-    String getLikeName();
-
-    void setLikeName(String likeName);
+    private String likeName;
 
     /**
      * 业户id集合
@@ -77,9 +69,8 @@ public interface UserListDto extends User {
      */
     @Column(name = "`id`")
     @Operator(Operator.IN)
-    List<Long> getIds();
+    private List<Long> Ids;
 
-    void setIds(List<Long> ids);
 
     /**
      * 业户id
@@ -87,9 +78,7 @@ public interface UserListDto extends User {
      * @return
      */
     @Transient
-    Long getUserId();
-
-    void setUserId(Long userId);
+    private Long userId;
 
 
     /**
@@ -99,12 +88,71 @@ public interface UserListDto extends User {
      */
     @Column(name = "name")
     @Like
-    String getKeyword();
+    private String keyword;
 
-    /**
-     * 姓名/手机号/经营户卡号模糊查询
-     *
-     * @param keyword
-     */
-    void setKeyword(String keyword);
+    public Date getCreatedStart() {
+        return createdStart;
+    }
+
+    public void setCreatedStart(Date createdStart) {
+        this.createdStart = createdStart;
+    }
+
+    public Date getCreatedEnd() {
+        return createdEnd;
+    }
+
+    public void setCreatedEnd(Date createdEnd) {
+        this.createdEnd = createdEnd;
+    }
+
+    public String getLikeTallyAreaNos() {
+        return likeTallyAreaNos;
+    }
+
+    public void setLikeTallyAreaNos(String likeTallyAreaNos) {
+        this.likeTallyAreaNos = likeTallyAreaNos;
+    }
+
+    public Boolean getHasBusinessLicense() {
+        return hasBusinessLicense;
+    }
+
+    public void setHasBusinessLicense(Boolean hasBusinessLicense) {
+        this.hasBusinessLicense = hasBusinessLicense;
+    }
+
+    public String getLikeName() {
+        return likeName;
+    }
+
+    public void setLikeName(String likeName) {
+        this.likeName = likeName;
+    }
+
+    public List<Long> getIds() {
+        return Ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        Ids = ids;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+
 }

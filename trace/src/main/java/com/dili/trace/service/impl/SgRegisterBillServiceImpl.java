@@ -2,7 +2,7 @@ package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;

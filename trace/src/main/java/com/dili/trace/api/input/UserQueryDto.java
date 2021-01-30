@@ -11,18 +11,32 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.Column;
 import java.util.Date;
 
-public interface UserQueryDto extends User {
+public class UserQueryDto extends User {
     @Column(name = "`name`")
     @Like
-    String getName();
-
-    void setName(String name);
+    private String name;
 
     @Column(name = "`tally_area_nos`")
     @Like
-    String getTallyAreaNos();
+    private String tallyAreaNos;
 
-    void setTallyAreaNos(String tallyAreaNos);
+    @Override
+    public String getName() {
+        return name;
+    }
 
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    @Override
+    public String getTallyAreaNos() {
+        return tallyAreaNos;
+    }
+
+    @Override
+    public void setTallyAreaNos(String tallyAreaNos) {
+        this.tallyAreaNos = tallyAreaNos;
+    }
 }

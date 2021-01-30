@@ -59,8 +59,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     DefaultConfiguration defaultConfiguration;
     @Autowired
     QrCodeService qrCodeService;
-    @Value("${current.baseWebPath}")
-    private String baseWebPath;
     @Autowired
     UserQrHistoryService userQrHistoryService;
     @Autowired
@@ -79,10 +77,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Autowired
     CustomerRpcService customerRpcService;
+
     @Autowired
     TallyingAreaRpcService tallyingAreaRpcService;
-    @Resource
-    CustomerRpc customerRpc;
 
     @Override
     public User login(String phone, String encryptedPassword) {
