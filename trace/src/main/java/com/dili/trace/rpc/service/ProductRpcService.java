@@ -203,23 +203,6 @@ public class ProductRpcService {
         return obj;
     }
 
-    /**
-     * 构造扣减库存对象
-     *
-     * @param bizId
-     * @param reduceNum
-     * @param thirdPartyStockId
-     * @return
-     */
-    private StockReduceDto buildStockReduceDto(Long bizId, BigDecimal reduceNum, Long thirdPartyStockId) {
-        StockReduceDto stockReduceDto = new StockReduceDto();
-        // 业务单据号
-        stockReduceDto.setBizId(bizId);
-        stockReduceDto.setReduceNum(reduceNum);
-        // 库存ID
-        stockReduceDto.setStockId(thirdPartyStockId);
-        return stockReduceDto;
-    }
 
     /**
      * 同步完成 UAP 库存后，溯源本地维护 stockId
@@ -273,6 +256,80 @@ public class ProductRpcService {
     }
 
     /**
+     * 扣减库存
+     *
+     * @param sellerMarketId
+     * @param deductWeight
+     * @param optUser
+     */
+    public void deductRegDetail(Long tradeDetailId, Long sellerMarketId, String sellerMarketName, BigDecimal deductWeight, Optional<OperatorUser> optUser) {
+        TradeDetail tradeDetail = this.tradeDetailService.get(tradeDetailId);
+
+        StockReduceDto stockReduceDto = new StockReduceDto();
+        // 业务单据号
+        stockReduceDto.setBizId(tradeDetailId);
+        stockReduceDto.setReduceNum(deductWeight);
+        // 库存ID
+        stockReduceDto.setStockId(tradeDetail.getThirdPartyStockId());
+
+        StockReduceRequestDto obj = new StockReduceRequestDto();
+        obj.setFirmId(sellerMarketId);
+        obj.setFirmName(sellerMarketName);
+
+        List<StockReduceDto> reduceDtoList = Lists.newArrayList(stockReduceDto);
+
+        obj.setStockReduceItems(reduceDtoList);
+
+
+        try {
+            BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
+            if (out.isSuccess()) {
+                return;
+            }
+            logger.error("扣减库存失败:{}", out.getMessage());
+        } catch (Exception e) {
+            logger.error("扣减库存失败:{}", e.getMessage());
+        }
+
+
+    }
+
+    /**
+     * 为买家创建库存
+     *
+     * @param buyerTradeDetailId
+     * @param buyerMarketId
+     * @param optUser
+     */
+    public void createRegCreate(Long buyerTradeDetailId, Long buyerMarketId, Optional<OperatorUser> optUser) {
+        this.buildCreateDtoFromBill(buyerTradeDetailId, buyerMarketId, optUser).ifPresent(createDto -> {
+
+            try {
+                BaseOutput<RegCreateResultDto> out = this.productRpc.create(createDto);
+                if (out.isSuccess() && out.getData() != null && out.getData().getRegDetailDtos() != null) {
+                    List<RegDetailDto> regDetailDtoList = out.getData().getRegDetailDtos();
+                    RegDetailDto detailDto = StreamEx.of(regDetailDtoList).nonNull().filter(dto -> dto.getStockId() != null).findFirst().orElse(null);
+                    if (detailDto != null) {
+                        TradeDetail condition = new TradeDetail();
+                        condition.setId(createDto.getTradeDetailId());
+                        condition.setThirdPartyStockId(detailDto.getStockId());
+                        tradeDetailService.updateSelective(condition);
+                        return;
+                    }
+                    logger.error("返回的数据不符合接口");
+                    return;
+                }
+                logger.error("创建库存失败:{}", out.getMessage());
+            } catch (Exception e) {
+                logger.error("创建库存失败:{}", e.getMessage());
+            }
+
+
+        });
+
+    }
+
+    /**
      * 根据报备单构建库存创建 DTO
      *
      * @param optUser
@@ -282,40 +339,18 @@ public class ProductRpcService {
         TradeDetail tradeDetail = this.tradeDetailService.get(buyerTradeDetailId);
         RegisterBill registerBill = this.billService.get(tradeDetail.getBillId());
         ProductStock buyerProductStock = this.productStockService.get(tradeDetail.getProductStockId());
-        TradeDetail tdQ = new TradeDetail();
-        tdQ.setProductStockId(buyerProductStock.getProductStockId());
-        List<RegDetailDto> regDetailDtoList = StreamEx.of(this.tradeDetailService.listByExample(tdQ)).filter(td -> {
-            return td.getThirdPartyStockId() == null;
-        }).map(td->{
-            //库存详情信息
-            RegDetailDto detailDto = new RegDetailDto();
-            detailDto.setBrand(buyerProductStock.getBrandName());
-            detailDto.setSpec(buyerProductStock.getSpecName());
-            // 买家增加库存
-            detailDto.setCustomerId(buyerProductStock.getUserId());
-            detailDto.setCustomerName(buyerProductStock.getUserName());
-            detailDto.setCateId(buyerProductStock.getProductId());
-            detailDto.setCname(buyerProductStock.getProductName());
 
-            if (WeightUnitEnum.JIN.equalsToCode(td.getWeightUnit())) {
-                detailDto.setInUnit(StockInUnitEnum.JIN.getCode());
-            } else if (WeightUnitEnum.KILO.equalsToCode(td.getWeightUnit())) {
-                detailDto.setInUnit(StockInUnitEnum.KILO.getCode());
-            } else {
-                detailDto.setInUnit(StockInUnitEnum.PIECE.getCode());
-            }
-            detailDto.setPlace(registerBill.getOriginName());
-            detailDto.setPrice(registerBill.getUnitPrice());
-            detailDto.setWeight(td.getStockWeight());
-            detailDto.setProductId(registerBill.getProductId());
-            detailDto.setProductName(registerBill.getProductName());
-            return detailDto;
-        }).toList();
-        if(regDetailDtoList.isEmpty()){
+
+        List<RegDetailDto> regDetailDtoList = StreamEx.of(this.buildRegDetailDto(tradeDetail, registerBill, buyerProductStock)).toList();
+        if (regDetailDtoList.isEmpty()) {
             return Optional.empty();
         }
+        TradeDetail tdQ = new TradeDetail();
+        tdQ.setProductStockId(buyerProductStock.getProductStockId());
+
 
         RegCreateDto createDto = new RegCreateDto();
+        createDto.setTradeDetailId(tradeDetail.getId());
         createDto.setFirmId(buyerMarketId);
         this.firmRpcService.getFirmById(buyerMarketId).ifPresent(firm -> {
             createDto.setFirmName(firm.getName());
@@ -331,20 +366,47 @@ public class ProductRpcService {
         createDto.setRegDetailDtos(regDetailDtoList);
         createDto.setSource(StockRegisterSourceEnum.REG.getCode());
 
-        // 远程调用库存接口
-        BaseOutput<RegCreateResultDto> out = this.productRpc.create(createDto);
-
-//        if (out.isSuccess() && out.getData() != null) {
-//            // 同步完成后更新和溯源库存的关联关系
-//            updateStockIdAfterCreate(out, bill.getId());
-//            logger.debug("创建库存成功");
-//            return out.getData();
-//        } else {
-//            logger.error("创建库存失败:{}", out.getMessage());
-//        }
-        
         return Optional.of(createDto);
     }
+
+    /**
+     * 构造批次
+     *
+     * @param tradeDetail
+     * @param registerBill
+     * @param buyerProductStock
+     * @return
+     */
+    private Optional<RegDetailDto> buildRegDetailDto(TradeDetail tradeDetail, RegisterBill registerBill, ProductStock buyerProductStock) {
+        if (buyerProductStock == null) {
+            return Optional.empty();
+        }
+
+        //库存详情信息
+        RegDetailDto detailDto = new RegDetailDto();
+        detailDto.setBrand(buyerProductStock.getBrandName());
+        detailDto.setSpec(buyerProductStock.getSpecName());
+        // 买家增加库存
+        detailDto.setCustomerId(buyerProductStock.getUserId());
+        detailDto.setCustomerName(buyerProductStock.getUserName());
+        detailDto.setCateId(buyerProductStock.getProductId());
+        detailDto.setCname(buyerProductStock.getProductName());
+
+        if (WeightUnitEnum.JIN.equalsToCode(registerBill.getWeightUnit())) {
+            detailDto.setInUnit(StockInUnitEnum.JIN.getCode());
+        } else if (WeightUnitEnum.KILO.equalsToCode(registerBill.getWeightUnit())) {
+            detailDto.setInUnit(StockInUnitEnum.KILO.getCode());
+        } else {
+            detailDto.setInUnit(StockInUnitEnum.PIECE.getCode());
+        }
+        detailDto.setPlace(registerBill.getOriginName());
+        detailDto.setPrice(registerBill.getUnitPrice());
+        detailDto.setWeight(tradeDetail.getStockWeight());
+        detailDto.setProductId(registerBill.getProductId());
+        detailDto.setProductName(registerBill.getProductName());
+        return Optional.of(detailDto);
+    }
+
 
     /**
      * 根据报备单构建库存创建 DTO
