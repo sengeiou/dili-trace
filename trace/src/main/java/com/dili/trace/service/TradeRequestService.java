@@ -10,10 +10,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.api.input.ProductStockInput;
+import com.dili.trace.api.input.*;
 import com.dili.trace.api.input.TradeDetailInputDto;
-import com.dili.trace.api.input.TradeRequestHandleDto;
-import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
@@ -844,7 +842,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param user
      * @return
      */
-    public List<Long> selectBuyerIdWithouTradeRequest(UserListDto user) {
+    public List<Long> selectBuyerIdWithouTradeRequest(UserQueryDto user) {
         return getActualDao().selectBuyerIdWithouTradeRequest(user);
     }
 

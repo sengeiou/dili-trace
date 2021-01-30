@@ -2,6 +2,7 @@ package com.dili.trace.dao;
 
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.input.TradeRequestInputDto;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.dto.*;
 import com.dili.trace.dto.thirdparty.report.ReportDeletedOrderDto;
@@ -20,7 +21,7 @@ public interface TradeRequestMapper extends MyMapper<TradeRequest> {
     * @param user
     * @return
     */
-   List<Long> selectBuyerIdWithouTradeRequest(UserListDto user);
+   List<Long> selectBuyerIdWithouTradeRequest(UserQueryDto user);
 
    public List<ReportScanCodeOrderDto> selectScanOrderReport(PushDataQueryDto dto);
 

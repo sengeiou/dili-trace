@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.MatchDetectParam;
@@ -35,7 +36,7 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      * @param user
      * @return
      */
-    public List<Long> selectUserIdWithouBill(UserListDto user);
+    public List<Long> selectUserIdWithouBill(UserQueryDto user);
 
     /**
      * 通过ID悲观锁定数据

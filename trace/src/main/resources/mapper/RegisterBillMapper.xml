@@ -23,7 +23,7 @@
     <result column="origin_id" jdbcType="BIGINT" property="originId" />
     <result column="origin_name" jdbcType="VARCHAR" property="originName" />
     <result column="weight" jdbcType="DECIMAL" property="weight" />
-    <result column="detect_state" jdbcType="TINYINT" property="detectState" />
+
     <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
     <result column="latest_detect_time" jdbcType="TIMESTAMP" property="latestDetectTime" />
     <result column="exe_machine_no" jdbcType="VARCHAR" property="exeMachineNo" />
@@ -188,7 +188,7 @@
     group by verify_status
   </select>
 
-  <select id="selectUserIdWithouBill" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
+  <select id="selectUserIdWithouBill" parameterType="com.dili.trace.api.input.UserQueryDto" resultType="java.lang.Long">
     select id from `user` where id not in(
     select user_id from register_bill where is_deleted=0
     <if test="createdStart != null">

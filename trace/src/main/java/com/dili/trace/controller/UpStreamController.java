@@ -16,7 +16,6 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RUserUpstreamDto;
 import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.dto.UserListDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.MarketService;
 import com.dili.trace.service.RUserUpStreamService;

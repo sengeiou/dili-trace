@@ -15,11 +15,11 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.Market;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserPlate;
-import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
@@ -117,7 +117,7 @@ public class UserController {
             @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(UserListDto user) throws Exception {
+    String listPage(UserQueryDto user) throws Exception {
         // 设置市场查询条件
         user.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput out = this.userService.listEasyuiPageByExample(user);
@@ -132,7 +132,7 @@ public class UserController {
      */
     @RequestMapping(value = "/listByCondition.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput listByCondition(@RequestBody UserListDto userListDto) {
+    BaseOutput listByCondition(@RequestBody UserQueryDto userListDto) {
         CustomerQueryInput customer = new CustomerQueryInput();
         customer.setMarketId(marketService.getCurrentLoginMarketId());
         customer.setName(userListDto.getLikeName());
