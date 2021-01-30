@@ -8,9 +8,11 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.trace.service.UserInfoService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.redis.UserRedis;
 import com.dili.uap.sdk.redis.UserUrlRedis;
@@ -32,13 +34,6 @@ import java.util.Optional;
 public class SessionInterceptor extends HandlerInterceptorAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);
 
-    private static final String ATTRIBUTE_CONTEXT_INITIALIZED = SessionInterceptor.class.getName()
-            + ".CONTEXT_INITIALIZED";
-    // SESSION KEY
-    // private static final String SESSION_PREFIX = "TRACE_SESSION_";
-    // private static final String SESSION_PREFIX_ACCOUNT =
-    // "TRACE_SESSION_ACCOUNT_";
-    // private static final String PREFIX_GAP = "_";
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired
@@ -51,6 +46,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserUrlRedis userUrlRedis;
     @Autowired
     SyncRpcService syncRpcService;
+    @Autowired
+    UserInfoService userInfoService;
     @Resource
     RedisUtil redisUtil;
     private ObjectMapper mapper = new ObjectMapper();
@@ -77,11 +74,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             if (access == null) {
                 return this.write401(response, "没有权限访问");
             }
-            Optional<SessionData> currentSessionData=Optional.empty();
+            Optional<SessionData> currentSessionData = Optional.empty();
             if (access.role() == Role.ANY) {
-                currentSessionData=this.loginAsAny(request);
+                currentSessionData = this.loginAsAny(request);
             } else if (access.role() == Role.Client) {
-                currentSessionData=this.loginAsClient(request);
+                currentSessionData = this.loginAsClient(request);
             } else if (access.role() == Role.Manager) {
                 currentSessionData = this.loginAsManager(request);
             } else if (access.role() == Role.NONE) {
@@ -93,7 +90,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             if (!currentSessionData.isPresent()) {
                 return this.write401(response, "没有权限访问");
             }
-            this.sessionContext.setSessionData(currentSessionData.get(),access);
+            this.sessionContext.setSessionData(currentSessionData.get(), access);
 
         } catch (TraceBizException e) {
             return this.writeError(response, e.getMessage());
@@ -154,17 +151,18 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     private Optional<SessionData> loginAsClient(HttpServletRequest req) {
         Optional<SessionData> data = this.customerRpcService.getCurrentCustomer();
         //asyncRpcUser(data);
+        this.sync(data);
         return data;
     }
 
     private Optional<SessionData> loginAsAny(HttpServletRequest req) {
         String userToken = req.getHeader("UAP_Token");
         String userId = req.getHeader("userId");
-        if(StringUtils.isNotBlank(userToken)){
+        if (StringUtils.isNotBlank(userToken)) {
             return this.loginAsManager(req);
-        }else if(StringUtils.isNotBlank(userId)){
+        } else if (StringUtils.isNotBlank(userId)) {
             return this.loginAsClient(req);
-        }else{
+        } else {
             return Optional.empty();
         }
     }
@@ -252,6 +250,13 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void sync(Optional<SessionData> sessionData) {
+        sessionData.ifPresent(sd -> {
+            UserInfo userInfo = this.userInfoService.saveUserInfo(sd.getUserId(), sd.getUserName(), sd.getMarketId(), sd.getMarketName());
+            this.syncRpcService.syncRpcUser(userInfo);
+        });
     }
 
     private <T extends Annotation> T findAnnotation(HandlerMethod handler, Class<T> annotationType) {

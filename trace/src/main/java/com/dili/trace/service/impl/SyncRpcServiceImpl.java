@@ -16,19 +16,24 @@ import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.CategoryService;
 import com.dili.trace.service.SyncRpcService;
+import com.dili.trace.service.UserInfoService;
 import com.dili.trace.service.UserService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,6 +48,11 @@ public class SyncRpcServiceImpl implements SyncRpcService {
 
     @Resource
     private CustomerRpc customerRpc;
+    @Autowired
+    CustomerRpcService customerRpcService;
+    @Autowired
+    @Lazy
+    UserInfoService userInfoService;
     @Resource
     private AssetsRpc assetsRpc;
     @Autowired
@@ -329,6 +339,25 @@ public class SyncRpcServiceImpl implements SyncRpcService {
         category.setFullName(dto.getName());
         category.setModified(DateUtils.getCurrentDate());
         return category;
+    }
+
+
+    @Override
+    public void syncRpcUser(UserInfo userInfo) {
+
+        if (userInfo.getLastSyncTime() != null) {
+            LocalDateTime lastsyncTime = userInfo.getLastSyncTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            if (lastsyncTime.isAfter(LocalDateTime.now().minusMinutes(10))) {
+                return;
+            }
+            if (YesOrNoEnum.YES.equals(userInfo.getLastSyncSuccess())) {
+                return;
+            }
+        }
+
+        this.customerRpcService.findCustomerById(userInfo.getUserId(), userInfo.getMarketId()).ifPresent(cust -> {
+            this.userInfoService.updateUserInfoByCustomerExtendDto(userInfo.getId(), cust);
+        });
     }
 
     @Override
