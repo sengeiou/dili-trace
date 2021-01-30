@@ -172,7 +172,12 @@ public class UserInfo extends BaseDomain {
      */
     @Column(name = "`user_type`")
     private Integer userType;
-
+    /**
+     * 用户ID
+     */
+    @ApiModelProperty(value = "用户ID")
+    @Column(name = "`user_id`")
+    private Long userId;
     /**
      * 所属市场
      */
@@ -311,6 +316,17 @@ public class UserInfo extends BaseDomain {
     @Column(name = "`third_party_code`")
     private String thirdPartyCode;
 
+    /**
+     * 最后的同步时间
+     */
+    @Column(name = "`last_sync_time`")
+    private Date lastSyncTime;
+    /**
+     * 最后是否同步成功(1:成功,0:失败)
+     */
+    @Column(name = "`last_sync_success`")
+    private Integer lastSyncSuccess;
+
 
     /**
      * 经营户扩展信息
@@ -321,6 +337,14 @@ public class UserInfo extends BaseDomain {
     private UserExt userExt;
     @Transient
     private String plates;
+
+    public Date getLastSyncTime() {
+        return lastSyncTime;
+    }
+
+    public void setLastSyncTime(Date lastSyncTime) {
+        this.lastSyncTime = lastSyncTime;
+    }
 
     @Override
     public Long getId() {
@@ -634,5 +658,21 @@ public class UserInfo extends BaseDomain {
 
     public void setPlates(String plates) {
         this.plates = plates;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Integer getLastSyncSuccess() {
+        return lastSyncSuccess;
+    }
+
+    public void setLastSyncSuccess(Integer lastSyncSuccess) {
+        this.lastSyncSuccess = lastSyncSuccess;
     }
 }
