@@ -13,6 +13,10 @@ ALTER TABLE dili_trace.`user` MODIFY COLUMN modified DATETIME NULL;
 ALTER TABLE dili_trace.`user` MODIFY COLUMN created DATETIME NULL;
 ALTER TABLE dili_trace.`user` MODIFY COLUMN validate_state tinyint DEFAULT 10 NULL COMMENT '未实名10 待审核 20  审核未通过 30 审核通过 40';
 ALTER TABLE dili_trace.`user` MODIFY COLUMN name varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE dili_trace.trade_request MODIFY COLUMN reason varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '原因';
+
+ALTER TABLE dili_trace.`user` DROP KEY user_unique_phone;
+ALTER TABLE dili_trace.`user` ADD CONSTRAINT user_id_market_id_unique UNIQUE KEY (market_id,user_id);
 
 
 

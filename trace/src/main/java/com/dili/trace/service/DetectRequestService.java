@@ -83,7 +83,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("登记单不存在");
         }
 
-        boolean canCreateDetectRequest = StreamEx.of(BillVerifyStatusEnum.WAIT_AUDIT, BillVerifyStatusEnum.RETURNED)
+        boolean canCreateDetectRequest = StreamEx.of(BillVerifyStatusEnum.WAIT_AUDIT, BillVerifyStatusEnum.PASSED, BillVerifyStatusEnum.RETURNED)
                 .map(BillVerifyStatusEnum::getCode)
                 .toList()
                 .contains(billItem.getVerifyStatus());
