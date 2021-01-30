@@ -237,7 +237,7 @@ public class CheckBillController {
                     } else if (CheckResultTypeEnum.NO_PASS.getName().equals(checkExcelDto.getCheckResult())) {
                         checkExcelDto.setCheckResult(String.valueOf(CheckResultTypeEnum.NO_PASS.getCode()));
                     }
-                    User userFromThird = this.getUserFromThird(checkExcelDto.getThirdPartyCode());
+                    UserInfo userFromThird = this.getUserFromThird(checkExcelDto.getThirdPartyCode());
                     CheckOrder checkOrder = new CheckOrder();
                     BeanUtils.copyProperties(checkExcelDto, checkOrder);
                     checkOrder.setMarketId(MarketUtil.returnMarket());
@@ -276,7 +276,7 @@ public class CheckBillController {
     public @ResponseBody
     BaseOutput getUserNameByCard(@RequestParam String thirdCode) {
         try {
-            User userFromThird = this.getUserFromThird(thirdCode);
+            UserInfo userFromThird = this.getUserFromThird(thirdCode);
             if (Objects.nonNull(userFromThird)) {
                 return BaseOutput.successData(userFromThird);
             }
@@ -323,11 +323,11 @@ public class CheckBillController {
      * @param thirdCode
      * @return
      */
-    private User getUserFromThird(String thirdCode) {
-        User user = DTOUtils.newDTO(User.class);
+    private UserInfo getUserFromThird(String thirdCode) {
+        UserInfo user = new UserInfo();
         user.setThirdPartyCode(thirdCode);
         user.setMarketId(MarketUtil.returnMarket());
-        List<User> users = userService.listByExample(user);
+        List<UserInfo> users = userService.listByExample(user);
         if (CollectionUtils.isNotEmpty(users) && users.size() == 1) {
             return users.get(0);
         }

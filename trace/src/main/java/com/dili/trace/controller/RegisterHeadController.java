@@ -96,7 +96,7 @@ public class RegisterHeadController {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		for (RegisterHead registerHead : registerHeads) {
 
-			User user = userService.get(registerHead.getUserId());
+			UserInfo user = userService.get(registerHead.getUserId());
 			if (user == null) {
 				return BaseOutput.failure("用户不存在");
 			}

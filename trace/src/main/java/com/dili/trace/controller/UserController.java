@@ -17,7 +17,7 @@ import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.Market;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
@@ -86,6 +86,7 @@ public class UserController {
     UserRpc userRpc;
     @Resource
     MarketService marketService;
+
     /**
      * 跳转到User页面
      *
@@ -181,7 +182,7 @@ public class UserController {
     @ApiOperation("跳转到User页面")
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @PathVariable Long id) {
-        User userItem = this.userService.get(id);
+        UserInfo userItem = this.userService.get(id);
         String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
                 .collect(Collectors.joining(","));
         if (userItem != null) {
@@ -209,9 +210,9 @@ public class UserController {
     @ApiOperation("跳转到edit页面")
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, Long id) {
-        modelMap.put("item", DTOUtils.newDTO(User.class));
+        modelMap.put("item", new UserInfo());
         if (id != null) {
-            User user = this.userService.get(id);
+            UserInfo user = this.userService.get(id);
             modelMap.put("item", user);
         }
         modelMap.put("userTypeMap", Stream.of(UserTypeEnum.values())
@@ -254,7 +255,7 @@ public class UserController {
     @ResponseBody
     public BaseOutput activeUser(Long id, Integer is_active) {
         try {
-            User user = DTOUtils.newDTO(User.class);
+            UserInfo user = new UserInfo();
             user.setId(id);
             user.setIsActive(is_active);
             int count = this.userService.updateSelective(user);
@@ -290,7 +291,7 @@ public class UserController {
             if (CollectionUtils.isNotEmpty(tallyingAreaList)) {
                 StreamEx.of(tallyingAreaList).nonNull().forEach(tr -> {
                     BaseOutput<Customer> customerResult = customerRpc.getById(tr.getCustomerId());
-                    if(customerResult.isSuccess()){
+                    if (customerResult.isSuccess()) {
                         Customer customer = customerResult.getData();
                         if (null != customer) {
                             DTO dto = new DTO();
@@ -339,7 +340,7 @@ public class UserController {
                     obj.put("id", user.getId());
                     obj.put("userName", user.getName());
                     obj.put("user", user);
-                    String val = bulldShowVal( user);
+                    String val = bulldShowVal(user);
                     obj.put("value", val);
                     list.add(obj);
                 }
@@ -358,15 +359,15 @@ public class UserController {
      * @param user
      * @return
      */
-    private String bulldShowVal( CustomerExtendDto user) {
+    private String bulldShowVal(CustomerExtendDto user) {
         StringBuilder showVal = new StringBuilder();
         showVal.append(user.getName());
         showVal.append("  |  ");
         showVal.append(null == user.getCertificateNumber() ? "(无证件号)" : user.getCertificateNumber());
         showVal.append("  |  ");
-        if(null!=user.getCustomerMarket()){
-            showVal.append(null==user.getCustomerMarket().getProfessionName()?"(无市场名称)":user.getCustomerMarket().getProfessionName());
-        }else{
+        if (null != user.getCustomerMarket()) {
+            showVal.append(null == user.getCustomerMarket().getProfessionName() ? "(无市场名称)" : user.getCustomerMarket().getProfessionName());
+        } else {
             showVal.append("(无市场)");
         }
         showVal.append("  |  ");

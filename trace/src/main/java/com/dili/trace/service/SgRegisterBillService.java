@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.entity.SessionData;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;

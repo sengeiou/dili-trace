@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 
 /**

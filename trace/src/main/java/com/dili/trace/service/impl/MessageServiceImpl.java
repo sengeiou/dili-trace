@@ -11,7 +11,7 @@ import com.dili.trace.dao.SmsMessageMapper;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.MessageConfig;
 import com.dili.trace.domain.SmsMessage;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -113,7 +113,7 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
         if (smsFlag.equals("1")) {
             logger.info("send sms");
             for (Long recevierId : receiverIdArray) {
-                User receiverUser = userService.get(recevierId);
+                UserInfo receiverUser = userService.get(recevierId);
                 JSONObject params = new JSONObject();
                 params.put("marketCode", marketCode);
                 params.put("systemCode", ExecutionConstants.SYSTEM_CODE);

@@ -5,7 +5,7 @@ import com.dili.common.util.MD5Util;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.ExcelUtils;
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BeanMapUtil;
 import org.apache.commons.beanutils.BeanMap;
@@ -35,7 +35,7 @@ public class ExcelTest extends AutoWiredBaseTest {
 //            int len =0;
 //            User user1= null;
             for (Map<String,Object> data : datas.get(0) ) {
-                User user = JSONObject.parseObject(JSONObject.toJSONString(data),User.class);
+                UserInfo user = JSONObject.parseObject(JSONObject.toJSONString(data),UserInfo.class);
                 user.setValidateState(40);
                 user.setPassword("123456");
 //                userService.register(user,false);
@@ -55,11 +55,6 @@ public class ExcelTest extends AutoWiredBaseTest {
         } catch (Exception e) {
 
         }
-    }
-
-    @Test
-    public void md5(){
-        System.out.println(MD5Util.md5("123456"));
     }
 
 }

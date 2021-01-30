@@ -8,7 +8,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.UserLoginHistoryMapper;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserLoginHistory;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.UserLoginHistoryQueryDto;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class UserLoginHistoryService extends BaseServiceImpl<UserLoginHistory, Long> {
-    public UserLoginHistory createLoginHistory(User user) {
+    public UserLoginHistory createLoginHistory(UserInfo user) {
         UserLoginHistory loginHistory = new UserLoginHistory();
 
         loginHistory.setUserId(user.getId());

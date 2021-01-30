@@ -4,7 +4,6 @@ import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.User;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 

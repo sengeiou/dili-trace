@@ -11,7 +11,6 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.TallyAreaNoMapper;
 import com.dili.trace.domain.RUserTallyArea;
 import com.dili.trace.domain.TallyAreaNo;
-import com.dili.trace.domain.User;
 import com.dili.trace.util.ChineseStringUtil;
 import com.google.common.collect.Lists;
 

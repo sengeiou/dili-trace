@@ -1,25 +1,16 @@
 package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTO;
-import com.dili.trace.api.input.UserInput;
-import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.api.output.UserQrOutput;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.UserListDto;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
-public interface UserService extends BaseService<User, Long> {
+public interface UserService extends BaseService<UserInfo, Long> {
 
 
     /**
@@ -29,7 +20,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param encryptedPassword MD5加密密码
      * @return
      */
-    User login(String phone, String encryptedPassword);
+    UserInfo login(String phone, String encryptedPassword);
 
 
     /**
@@ -38,7 +29,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param phone
      * @return
      */
-    List<User> getUserByExistsAccount(String phone);
+    List<UserInfo> getUserByExistsAccount(String phone);
 
 
     /**
@@ -53,19 +44,19 @@ public interface UserService extends BaseService<User, Long> {
      * @param keyword
      * @return
      */
-    public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
+    public List<UserInfo> findUserByNameOrPhoneOrTallyNo(String keyword);
 
     /**
      * @param user
      * @return
      */
-    public Integer countUser(User user);
+    public Integer countUser(UserInfo user);
 
     /**
      * @param openid
      * @return
      */
-    User wxLogin(String openid);
+    UserInfo wxLogin(String openid);
 
     /**
      * 根据用户id修改
@@ -87,7 +78,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param marketId
      * @return
      */
-    User findByTallyAreaNo(String tallyAreaNo, Long marketId);
+    UserInfo findByTallyAreaNo(String tallyAreaNo, Long marketId);
 
     /**
      * 获取无照片的经营户
@@ -95,7 +86,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param user
      * @return
      */
-    List<User> getUserByCredentialUrl(User user);
+    List<UserInfo> getUserByCredentialUrl(UserInfo user);
 
     /**
      * 根据用户ids获取用户list
@@ -103,5 +94,5 @@ public interface UserService extends BaseService<User, Long> {
      * @param userIdList
      * @return
      */
-    List<User> getUserListByUserIds(List<Long> userIdList);
+    List<UserInfo> getUserListByUserIds(List<Long> userIdList);
 }

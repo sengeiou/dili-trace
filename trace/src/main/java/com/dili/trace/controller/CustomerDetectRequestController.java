@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.dili.common.annotation.DetectRequestMessageEvent;
+import com.dili.trace.events.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;

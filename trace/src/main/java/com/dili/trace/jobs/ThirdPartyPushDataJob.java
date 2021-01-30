@@ -434,7 +434,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         List<UserQrHistory> qrHistories = new ArrayList<>();
         List<UserQrHistory> allQrHistories = new ArrayList<>();
         Map<Long, String> userMap = new HashMap<>(16);
-        User user = DTOUtils.newDTO(User.class);
+        UserInfo user = new UserInfo();
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
         user.setMarketId(marketId);
 
@@ -533,7 +533,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //获取正常经营(审核通过)的经营户列表（排除未实名的用户）
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
-        User queUser = DTOUtils.newDTO(User.class);
+        UserInfo queUser = new UserInfo();
         queUser.setYn(normalUserType);
         //1为需要上报
         queUser.setIsPush(isPush);
@@ -596,7 +596,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         boolean finalNewPushFlag = newPushFlag;
         Timestamp sqlPushTime = new Timestamp(updateTime.getTime());
-        User queUser = DTOUtils.newDTO(User.class);
+        UserInfo queUser = new UserInfo();
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
             //首次push不需要将原作废经营户上报
@@ -613,7 +613,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
         queUser.setMarketId(marketId);
-        List<User> userList = this.userService.listByExample(queUser);
+        List<UserInfo> userList = this.userService.listByExample(queUser);
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         if (CollectionUtils.isNotEmpty(userList)) {

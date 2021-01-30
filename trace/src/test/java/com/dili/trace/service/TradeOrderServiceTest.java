@@ -1,29 +1,19 @@
 package com.dili.trace.service;
 
+import cn.hutool.db.sql.SqlFormatter;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.ProductStockInput;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.BuyerTypeEnum;
-import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import org.apache.poi.ss.formula.functions.T;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -142,25 +132,8 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
 
     @Transactional
     @Test
-    @Commit
+//    @Commit
     public void createSellTrade() {
-//        Optional<CustomerExtendDto>opt=new
-
-//        Mockito.doAnswer(invocation -> {
-//            CustomerExtendDto dto=new CustomerExtendDto();
-//            dto.setId(31L);
-//            dto.setName("zhangsan");
-//            return Optional.of(dto);
-//
-//        }).when(Mockito.spy(this.customerRpcService)).findCustomerById(31L,Mockito.anyLong());
-//
-//        Mockito.doAnswer(invocation -> {
-//            CustomerExtendDto dto=new CustomerExtendDto();
-//            dto.setId(2L);
-//            dto.setName("lisi");
-//            return Optional.of(dto);
-//
-//        }).when(Mockito.spy(this.customerRpcService)).findCustomerById(2L,Mockito.anyLong());
 
         TradeDto tradeDto = new TradeDto();
         tradeDto.setMarketId(8L);

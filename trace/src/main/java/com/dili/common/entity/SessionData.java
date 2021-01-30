@@ -2,7 +2,6 @@ package com.dili.common.entity;
 
 import com.dili.common.annotation.Role;
 import com.dili.customer.sdk.enums.CustomerEnum;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.idname.AbstraceIdName;
@@ -31,7 +30,7 @@ public class SessionData {
     /**
      * 角色
      */
-    private List<CustomerEnum.CharacterType> subRoles=new ArrayList<>();
+    private List<CustomerEnum.CharacterType> subRoles = new ArrayList<>();
     /**
      * 用户id
      */
@@ -68,7 +67,7 @@ public class SessionData {
     private Set<String> userWeChatMenus;
 
 
-    public Optional<OperatorUser>getOptUser(){
+    public Optional<OperatorUser> getOptUser() {
         if (this.role == null || (this.role != Role.Manager && this.role != Role.Client)) {
             return Optional.empty();
         }
@@ -78,8 +77,8 @@ public class SessionData {
         return Optional.of(operatorUser);
     }
 
-    public boolean hasSubRole(CustomerEnum.CharacterType role){
-        return this.subRoles==null?false:this.subRoles.contains(role);
+    public boolean hasSubRole(CustomerEnum.CharacterType role) {
+        return this.subRoles == null ? false : this.subRoles.contains(role);
     }
 
     public <T extends AbstraceIdName> Optional<T> to() {
@@ -157,17 +156,6 @@ public class SessionData {
         this.role = role;
     }
 
-    public static SessionData fromUser(User user, Integer identityType) {
-        SessionData data = new SessionData();
-        data.identityType = identityType;
-        data.userId = user.getId();
-        data.userName = user.getName();
-        data.tallyAreaNos = user.getTallyAreaNos();
-        data.qrStatus = -1;
-        data.marketId = user.getMarketId();
-        data.marketName = user.getMarketName();
-        return data;
-    }
 
     public static SessionData fromUser(OperatorUser user, Integer identityType) {
         SessionData data = new SessionData();
@@ -181,7 +169,7 @@ public class SessionData {
         SessionData data = new SessionData();
         data.userId = ut.getId();
         data.userName = ut.getRealName();
-        data.marketId=ut.getFirmId();
+        data.marketId = ut.getFirmId();
         data.marketName = ut.getFirmName();
         return data;
     }

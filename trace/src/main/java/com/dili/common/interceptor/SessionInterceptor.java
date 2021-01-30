@@ -8,7 +8,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.api.components.SessionRedisService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UapRpcService;
@@ -42,9 +41,6 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     // private static final String PREFIX_GAP = "_";
     @Autowired
     private LoginSessionContext sessionContext;
-
-    @Autowired
-    SessionRedisService sessionRedisService;
     @Autowired
     UapRpcService uapRpcService;
     @Autowired

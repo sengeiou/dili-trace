@@ -118,11 +118,11 @@ public class HangGuoDataUtil {
     /**
      * @return
      */
-    private Map<String, User> getUserMap() {
-        User u = DTOUtils.newDTO(User.class);
+    private Map<String, UserInfo> getUserMap() {
+        UserInfo u = new UserInfo();
         u.setMarketId(HGMarketId);
         u.setYn(YesOrNoEnum.YES.getCode());
-        List<User> userList = userService.listByExample(u);
+        List<UserInfo> userList = userService.listByExample(u);
         return StreamEx.of(userList).nonNull().collect(Collectors.toMap(us -> us.getThirdPartyCode(), user -> user, (a, b) -> a));
     }
 
@@ -206,13 +206,13 @@ public class HangGuoDataUtil {
         userCode = StreamEx.of(userCode).nonNull().distinct().collect(Collectors.toList());
         commodityCode = StreamEx.of(commodityCode).nonNull().distinct().collect(Collectors.toList());
         billNos = StreamEx.of(billNos).nonNull().distinct().collect(Collectors.toList());
-        List<User> userList = getUserListByThirdPartyCode(userCode);
+        List<UserInfo> userList = getUserListByThirdPartyCode(userCode);
         List<HangGuoCategory> categoryList = getCategoryListByThirdCode(commodityCode);
         if (CollectionUtils.isEmpty(userList) || CollectionUtils.isEmpty(categoryList)) {
             logger.info("交易数据没有对应的经营户或者商品,无法关联,不创建正式交易单");
             return;
         }
-        Map<String, User> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (key1, key2) -> key1));
+        Map<String, UserInfo> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(UserInfo::getThirdPartyCode, user -> user, (key1, key2) -> key1));
         Map<String, HangGuoCategory> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(HangGuoCategory::getCode, category -> category, (key1, key2) -> key1));
 
         //报备单库存map
@@ -268,7 +268,7 @@ public class HangGuoDataUtil {
      * @param createTime
      * @return
      */
-    private List<TradeDetail> getTradeOrderDetailRequestList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Map<String, HangGuoCategory> categoryMap,
+    private List<TradeDetail> getTradeOrderDetailRequestList(List<HangGuoTrade> tradeList, Map<String, UserInfo> userMap, Map<String, HangGuoCategory> categoryMap,
                                                              Map<Long, TradeDetail> billMap, Map<String, TradeRequest> tradeRequestMap, Date createTime) {
         List<TradeDetail> detailList = new ArrayList<>();
         Integer isBatched = 1;
@@ -372,7 +372,7 @@ public class HangGuoDataUtil {
      * @param createTime
      * @return
      */
-    private List<TradeRequest> getTradeOrderRequestList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Map<String, HangGuoCategory> categoryMap, Map<String, TradeOrder> orderMap, Map<Long, TradeDetail> billMap, Date createTime) {
+    private List<TradeRequest> getTradeOrderRequestList(List<HangGuoTrade> tradeList, Map<String, UserInfo> userMap, Map<String, HangGuoCategory> categoryMap, Map<String, TradeOrder> orderMap, Map<Long, TradeDetail> billMap, Date createTime) {
         List<TradeRequest> requestList = new ArrayList<>();
         BigDecimal reportMaxAmount = new BigDecimal(reportMaxAmountInt);
         //createTime
@@ -454,7 +454,7 @@ public class HangGuoDataUtil {
      * @param createTime
      * @return
      */
-    private List<TradeOrder> getTradeOrderList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Date createTime) {
+    private List<TradeOrder> getTradeOrderList(List<HangGuoTrade> tradeList, Map<String, UserInfo> userMap, Date createTime) {
         List<TradeOrder> orderList = new ArrayList<>();
         StreamEx.of(tradeList).nonNull().forEach(t -> {
             Long buyId = userMap.get(t.getMemberNo().trim()).getId();
@@ -493,7 +493,7 @@ public class HangGuoDataUtil {
      * @param userCode
      * @return
      */
-    private List<User> getUserListByThirdPartyCode(List<String> userCode) {
+    private List<UserInfo> getUserListByThirdPartyCode(List<String> userCode) {
         if (CollectionUtils.isEmpty(userCode)) {
             return null;
         }
@@ -520,7 +520,7 @@ public class HangGuoDataUtil {
         HangGuoCategory category = new HangGuoCategory();
         category.setMarketId(HGMarketId);
         List<HangGuoCategory> categoryList = categoryService.list(category);
-        Map<String, User> userMap = getUserMap();
+        Map<String, UserInfo> userMap = getUserMap();
         Map<String, HangGuoCategory> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(HangGuoCategory::getCode, c -> c, (a, b) -> a));
 
         //patch由于没有对应用户或商品导致之前的交易单没有处理
@@ -535,7 +535,7 @@ public class HangGuoDataUtil {
      * @param categoryMap
      * @param createTime
      */
-    private void updateCacheTradeReportFlagToFalse(Map<String, User> userMap, Map<String, HangGuoCategory> categoryMap, Date createTime) {
+    private void updateCacheTradeReportFlagToFalse(Map<String, UserInfo> userMap, Map<String, HangGuoCategory> categoryMap, Date createTime) {
         //大于指定的交易金额patch为无需上报
         hangGuoDataService.updateTradeReportListByBeyondAmount(reportMaxAmountInt);
         //交易单对应商品或用户关联不到
@@ -570,7 +570,7 @@ public class HangGuoDataUtil {
      *
      * @param createTime
      */
-    private void updateCacheTradeReportFlagToTrue(Map<String, User> userMap, Map<String, HangGuoCategory> categoryMap, Date createTime) {
+    private void updateCacheTradeReportFlagToTrue(Map<String, UserInfo> userMap, Map<String, HangGuoCategory> categoryMap, Date createTime) {
         //查询当前缓存表中无需处理的交易数据昨天-今天
         HangGuoTrade trade = new HangGuoTrade();
         trade.setHandleFlag(DataHandleFlagEnum.UN_NEED_HANDLE.getCode());

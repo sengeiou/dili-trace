@@ -11,12 +11,11 @@ import java.util.function.Function;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.Market;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
@@ -125,7 +124,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
 
     public BaseOutput marketCount(Optional<OperatorUser> optUser, Market market) {
         Long marketId = market.getId();
-        User query = DTOUtils.newDTO(User.class);
+        UserInfo query = new UserInfo();
         query.setMarketId(marketId);
         query.setYn(YesOrNoEnum.YES.getCode());
         Integer userCount = this.userService.countUser(query);
@@ -186,12 +185,12 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         codeCountDto.setYellowCount(qrStatusMap.getOrDefault(UserQrStatusEnum.YELLOW.getCode(), 0));
         codeCountDto.setRedCount(qrStatusMap.getOrDefault(UserQrStatusEnum.RED.getCode(), 0));
 
-        User yellowQuery = DTOUtils.newDTO(User.class);
+        UserInfo yellowQuery = new UserInfo();
         yellowQuery.setYn(YesOrNoEnum.YES.getCode());
         yellowQuery.setQrStatus(UserQrStatusEnum.YELLOW.getCode());
         yellowQuery.setMarketId(market.getId());
 
-        User redQuery = DTOUtils.newDTO(User.class);
+        UserInfo redQuery = new UserInfo();
         redQuery.setYn(YesOrNoEnum.YES.getCode());
         redQuery.setQrStatus(UserQrStatusEnum.RED.getCode());
         redQuery.setMarketId(market.getId());

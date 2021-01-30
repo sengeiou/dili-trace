@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
@@ -67,8 +67,8 @@ public class TradeCustomerApi {
      */
     @ApiOperation("根据理货区号获取客户获取")
     @RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}",method = {RequestMethod.GET, RequestMethod.POST})
-    public BaseOutput<User> findTallyAreaNo(@PathVariable String tallyAreaNo){
-        User customer = userService.findByTallyAreaNo(tallyAreaNo,loginSessionContext.getSessionData().getMarketId());
+    public BaseOutput<UserInfo> findTallyAreaNo(@PathVariable String tallyAreaNo){
+        UserInfo customer = userService.findByTallyAreaNo(tallyAreaNo,loginSessionContext.getSessionData().getMarketId());
         if(customer!=null){
             return BaseOutput.success().setData(customer);
         }else {

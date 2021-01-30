@@ -6,7 +6,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.UserHistoryMapper;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserHistory;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserTallyArea;
@@ -116,7 +116,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 		if (userId == null) {
 			return Optional.empty();
 		}
-		User item = this.userService.get(userId);
+		UserInfo item = this.userService.get(userId);
 		if (item == null) {
 			return Optional.empty();
 		}
@@ -129,7 +129,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 
 	}
 
-	private UserHistory buildUserHistory(User user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList) {
+	private UserHistory buildUserHistory(UserInfo user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList) {
 		UserHistory history = DTOUtils.newDTO(UserHistory.class);
 		history.setUserId(user.getId());
 		history.setAddr(user.getAddr());

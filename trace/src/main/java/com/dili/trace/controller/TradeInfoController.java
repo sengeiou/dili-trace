@@ -6,7 +6,7 @@ import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -80,8 +80,8 @@ public class TradeInfoController {
      */
     @ApiOperation("根据理货区号获取客户获取")
     @RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}", method = {RequestMethod.GET, RequestMethod.POST})
-    public BaseOutput<User> findUserByTallyAreaNo(@PathVariable String tallyAreaNo) {
-        User user = userService.findByTallyAreaNo(tallyAreaNo, MarketUtil.returnMarket());
+    public BaseOutput<UserInfo> findUserByTallyAreaNo(@PathVariable String tallyAreaNo) {
+        UserInfo user = userService.findByTallyAreaNo(tallyAreaNo, MarketUtil.returnMarket());
         if (user != null) {
             return BaseOutput.success().setData(this.maskUser(user));
         } else {
@@ -110,7 +110,7 @@ public class TradeInfoController {
      * @param user
      * @return
      */
-    private User maskUser(User user) {
+    private UserInfo maskUser(UserInfo user) {
         if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
             return user;
         } else {

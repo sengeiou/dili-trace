@@ -16,7 +16,7 @@ import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
@@ -53,12 +53,12 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	// LoginSessionContext sessionContext;
 	// private MockMvc mockMvc;
 	// @Injectable
-	private User userItem;
+	private UserInfo userItem;
 
 	@BeforeEach
 	public void before() {
 		MockitoAnnotations.initMocks(this);
-		userItem = this.userService.listPageByExample(DTOUtils.newDTO(User.class)).getDatas().stream().findFirst()
+		userItem = this.userService.listPageByExample(new UserInfo()).getDatas().stream().findFirst()
 				.orElse(null);
 		assertNotNull(userItem);
 		// Mockito.doReturn(userItem.getId()).when(sessionContext).getAccountId();

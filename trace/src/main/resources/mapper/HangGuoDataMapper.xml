@@ -23,7 +23,7 @@
     </update>
 
     <select id="getUserListByThirdPartyCode" parameterType="java.util.List"
-            resultType="com.dili.trace.domain.User">
+            resultType="com.dili.trace.domain.UserInfo">
         SELECT
         u.name,
         u.id,

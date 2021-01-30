@@ -1,14 +1,10 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.ss.base.BaseServiceAdaptor;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.dao.UserStoreMapper;
-import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.UserStoreService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

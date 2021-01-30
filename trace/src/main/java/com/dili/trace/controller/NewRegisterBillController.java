@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -1058,7 +1058,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
             // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
+            UserInfo user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
 
             if (user != null) {
                 userInfoDto.setUserId(String.valueOf(user.getId()));

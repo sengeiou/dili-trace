@@ -394,12 +394,6 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     buyerProductStock.ifPresent(bp->{
                         updatableBuyerTD.setProductStockId(bp.getProductStockId());
                         LOGGER.debug("buyerProductStock id={},stockweight={},tradeweight={}", bp.getId(), bp.getStockWeight(), trd.getTradeWeight());
-
-                        ProductStock updatableBuyerPS = new ProductStock();
-                        updatableBuyerPS.setId(bp.getId());
-                        updatableBuyerPS.setStockWeight(bp.getStockWeight().add(trd.getTradeWeight()));
-                        updatableBuyerPS.setTradeDetailNum(bp.getTradeDetailNum() + 1);
-                        this.productStockService.updateSelective(updatableBuyerPS);
                     });
                     if (TradeOrderTypeEnum.NONE == tradeOrderTypeEnum) {
                         updatableBuyerTD.setBatchNo(this.tradeDetailService.buildParentBatchNo(registerBill));
@@ -410,7 +404,14 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         continue;
                     }
 
+                    buyerProductStock.ifPresent(bp->{
 
+                        ProductStock updatableBuyerPS = new ProductStock();
+                        updatableBuyerPS.setId(bp.getId());
+                        updatableBuyerPS.setStockWeight(bp.getStockWeight().add(trd.getTradeWeight()));
+                        updatableBuyerPS.setTradeDetailNum(bp.getTradeDetailNum() + 1);
+                        this.productStockService.updateSelective(updatableBuyerPS);
+                    });
 
                     LOGGER.debug("seller id={},name={}",sellerTD.getBuyerId(),sellerTD.getBuyerName());
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));

@@ -162,15 +162,15 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private void getThirdSupplierPicData(Date endTime) {
-        User user = DTOUtils.newInstance(User.class);
+        UserInfo user = new UserInfo();
         Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
         user.setMarketId(firm.getId());
         user.setYn(YesOrNoEnum.YES.getCode());
-        List<User> userList = userService.getUserByCredentialUrl(user);
+        List<UserInfo> userList = userService.getUserByCredentialUrl(user);
 
         if (!CollectionUtils.isEmpty(userList)) {
             String supType = "S";
-            List<User> updateList = new ArrayList<>();
+            List<UserInfo> updateList = new ArrayList<>();
             StreamEx.of(userList).nonNull().forEach(u -> {
                 String picContent = getSupplierPic(u.getThirdPartyCode(), endTime);
 //                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), supType, picContent);
@@ -187,14 +187,14 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private void getThirdMemberPicData(Date endTime) {
-        User user = DTOUtils.newInstance(User.class);
+        UserInfo user = new UserInfo();
         Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
         user.setMarketId(firm.getId());
         user.setYn(YesOrNoEnum.YES.getCode());
-        List<User> userList = userService.getUserByCredentialUrl(user);
+        List<UserInfo> userList = userService.getUserByCredentialUrl(user);
         if (!CollectionUtils.isEmpty(userList)) {
             String memType = "M";
-            List<User> updateList = new ArrayList<>();
+            List<UserInfo> updateList = new ArrayList<>();
             StreamEx.of(userList).nonNull().forEach(u -> {
                 String picContent = getMemberPic(u.getThirdPartyCode(), endTime);
 //                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), memType, picContent);

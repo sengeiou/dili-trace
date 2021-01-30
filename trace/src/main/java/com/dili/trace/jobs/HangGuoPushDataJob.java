@@ -476,7 +476,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             newPushFlag = false;
         }
 
-        User user = DTOUtils.newDTO(User.class);
+        UserInfo user = new UserInfo();
         user.setMarketId(market.getId());
         user.setState(EnabledStateEnum.ENABLED.getCode());
         user.setYn(YesOrNoEnum.YES.getCode());
@@ -486,12 +486,12 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             addQue += " and  modified >= '" + DateUtils.format(updateTime) + "' ";
         }
         user.mset(IDTO.AND_CONDITION_EXPR, addQue);
-        List<User> userList = userService.listByExample(user);
+        List<UserInfo> userList = userService.listByExample(user);
         if (CollectionUtils.isEmpty(userList)) {
             return BaseOutput.success("NULL USER NEED PUSH");
         }
-        Map<String, List<User>> listMap = StreamEx.of(userList).nonNull().collect(Collectors.groupingBy(u -> u.getName() + "_" + u.getPhone() + "_" + u.getMarketId()));
-        List<User> gourpUser = new ArrayList<>();
+        Map<String, List<UserInfo>> listMap = StreamEx.of(userList).nonNull().collect(Collectors.groupingBy(u -> u.getName() + "_" + u.getPhone() + "_" + u.getMarketId()));
+        List<UserInfo> gourpUser = new ArrayList<>();
         StreamEx.of(listMap.entrySet()).nonNull().forEach(ul -> {
             gourpUser.add(ul.getValue().get(0));
         });

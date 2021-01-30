@@ -17,7 +17,7 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -97,23 +97,23 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		return null;
 	}*/
 
-	protected User findUser() {
-		User query = DTOUtils.newDTO(User.class);
+	protected UserInfo findUser() {
+		UserInfo query = new UserInfo();
 		query.setPage(1);
 		query.setRows(1);
-		User userItem = StreamEx.of(this.userService.listPageByExample(query).getDatas()).findFirst().orElse(null);
+		UserInfo userItem = StreamEx.of(this.userService.listPageByExample(query).getDatas()).findFirst().orElse(null);
 		assertNotNull(userItem);
 		return userItem;
 	}
-	protected List<User> findUsers() {
-		User query = DTOUtils.newDTO(User.class);
+	protected List<UserInfo> findUsers() {
+		UserInfo query = new UserInfo();
 		query.setPage(1);
 		query.setRows(10);
 		return this.userService.listPageByExample(query).getDatas();
 	}
 
 	protected RegisterBill buildBill() {
-		User userItem = this.findUser();
+		UserInfo userItem = this.findUser();
 //		Category categoryItem = this.findCategory();
 		RegisterBill bill = new RegisterBill();
 //		bill.setBillType(BillTypeEnum.NONE.getCode());
