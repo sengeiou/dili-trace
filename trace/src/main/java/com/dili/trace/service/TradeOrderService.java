@@ -200,7 +200,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
 
 
-        ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName()).orElseThrow(()->{
+        ProductStock productStock = this.createOrFindProductStock(registerBill, registerBill.getUserId(), registerBill.getName()).orElseThrow(() -> {
             return new TraceBizException("创建/查询卖家库存失败");
         });
         ProductStock updatablePS = new ProductStock();
@@ -391,7 +391,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
                     //分销时候buyerProductStock为空
                     Optional<ProductStock> buyerProductStock = this.createOrFindProductStock(registerBill, tradeRequest.getBuyerId(), tradeRequest.getBuyerName());
-                    buyerProductStock.ifPresent(bp->{
+                    buyerProductStock.ifPresent(bp -> {
                         updatableBuyerTD.setProductStockId(bp.getProductStockId());
                         LOGGER.debug("buyerProductStock id={},stockweight={},tradeweight={}", bp.getId(), bp.getStockWeight(), trd.getTradeWeight());
                     });
@@ -401,15 +401,16 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         updatableBuyerTD.setTradeType(TradeTypeEnum.NONE.getCode());
                         this.tradeDetailService.updateSelective(updatableBuyerTD);
                         LOGGER.info("buyer tradedetail id={},stockweight={},tradeweight={}", updatableBuyerTD.getId(), updatableBuyerTD.getStockWeight(), trd.getTradeWeight());
-                        this.productRpcService.handleTradeStocks(
-                                Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
-                                , Lists.newArrayList()
-                                , Optional.empty()
-                                , tradeRequest.getSellerMarketId());
+                        this.productRpcService.createRegCreate(updatableBuyerTD.getId(), tradeRequest.getBuyerMarketId(), Optional.empty());
+//                        this.productRpcService.handleTradeStocks(
+//                                Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
+//                                , Lists.newArrayList()
+//                                , Optional.empty()
+//                                , tradeRequest.getSellerMarketId());
                         continue;
                     }
 
-                    buyerProductStock.ifPresent(bp->{
+                    buyerProductStock.ifPresent(bp -> {
 
                         ProductStock updatableBuyerPS = new ProductStock();
                         updatableBuyerPS.setId(bp.getId());
@@ -418,7 +419,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                         this.productStockService.updateSelective(updatableBuyerPS);
                     });
 
-                    LOGGER.debug("seller id={},name={}",sellerTD.getBuyerId(),sellerTD.getBuyerName());
+                    LOGGER.debug("seller id={},name={}", sellerTD.getBuyerId(), sellerTD.getBuyerName());
                     updatableBuyerTD.setBatchNo(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                     updatableBuyerTD.setParentBatchNo(this.tradeDetailService.buildParentBatchNo(sellerTD));
                     updatableBuyerTD.setCheckinRecordId(sellerTD.getCheckinRecordId());
@@ -430,7 +431,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     ProductStock sellerProductStock = this.createOrFindProductStock(registerBill, sellerTD.getBuyerId(), sellerTD.getBuyerName()).orElseThrow(() -> {
                         return new TraceBizException("创建/查询卖家库存失败");
                     });
-                    LOGGER.debug("sellerProductStock id={},sellerid={},stockweight={},tradeweight={}", sellerProductStock.getId(),sellerProductStock.getUserId(), sellerProductStock.getStockWeight(), trd.getTradeWeight());
+                    LOGGER.debug("sellerProductStock id={},sellerid={},stockweight={},tradeweight={}", sellerProductStock.getId(), sellerProductStock.getUserId(), sellerProductStock.getStockWeight(), trd.getTradeWeight());
                     ProductStock updatableSellerPS = new ProductStock();
                     updatableSellerPS.setId(sellerProductStock.getId());
                     updatableSellerPS.setStockWeight(sellerProductStock.getStockWeight().subtract(trd.getTradeWeight()));
@@ -453,11 +454,13 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     this.tradeDetailService.updateSelective(updatableBuyerTD);
 
 
-                    this.productRpcService.handleTradeStocks(
-                            Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
-                            , Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))
-                            , Optional.empty()
-                            , tradeRequest.getSellerMarketId());
+                    this.productRpcService.createRegCreate(updatableBuyerTD.getId(), tradeRequest.getBuyerMarketId(), Optional.empty());
+                    this.productRpcService.deductRegDetail(sellerTD.getTradeDetailId(), tradeRequest.getSellerMarketId(), tradeRequest.getSellerName(),trd.getTradeWeight(), Optional.empty());
+//                    this.productRpcService.handleTradeStocks(
+//                            Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
+//                            , Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))
+//                            , Optional.empty()
+//                            , tradeRequest.getSellerMarketId());
 
                 }
 
