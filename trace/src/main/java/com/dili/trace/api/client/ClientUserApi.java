@@ -33,28 +33,28 @@ import java.util.Arrays;
 @RequestMapping(value = "/api/client/userApi")
 public class ClientUserApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientUserApi.class);
-    @Autowired
-    SyncRpcService syncRpcService;
-
-    /**
-     * 分页查询上游信息
-     */
-    @RequestMapping(value = "/syncUserInfo.api", method = {RequestMethod.POST, RequestMethod.GET})
-    @ResponseBody
-    public BaseOutput listPagedUpStream(Long id) {
-        if (null == id) {
-            return BaseOutput.failure("syncUserInfo id is null");
-        }
-        try {
-            syncRpcService.syncRpcUserByUserId(id);
-            return BaseOutput.success();
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-    }
+//    @Autowired
+//    SyncRpcService syncRpcService;
+//
+//    /**
+//     * 同步信息
+//     */
+//    @RequestMapping(value = "/syncUserInfo.api", method = {RequestMethod.POST, RequestMethod.GET})
+//    @ResponseBody
+//    public BaseOutput syncUserInfo(Long id) {
+//        if (null == id) {
+//            return BaseOutput.failure("syncUserInfo id is null");
+//        }
+//        try {
+//            syncRpcService.syncRpcUserByUserId(id);
+//            return BaseOutput.success();
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//    }
 
 
 }

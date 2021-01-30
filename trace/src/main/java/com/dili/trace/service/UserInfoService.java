@@ -26,10 +26,9 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
      *
      * @param userId
      * @param marketId
-     * @param marketName
      * @return
      */
-    public UserInfo saveUserInfo(Long userId, String userName, Long marketId, String marketName) {
+    public UserInfo saveUserInfo(Long userId, Long marketId) {
 
         UserQueryDto query = new UserQueryDto();
         query.setUserId(userId);
@@ -38,9 +37,7 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
 
             UserInfo newDomain = new UserInfo();
             newDomain.setUserId(userId);
-            newDomain.setName(userName);
             newDomain.setMarketId(marketId);
-            newDomain.setMarketName(marketName);
             newDomain.setCreated(new Date());
             newDomain.setModified(new Date());
             newDomain.setLastSyncSuccess(YesOrNoEnum.NO.getCode());

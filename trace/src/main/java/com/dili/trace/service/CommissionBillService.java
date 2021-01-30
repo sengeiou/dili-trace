@@ -56,7 +56,9 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @throws Exception
      */
     @Autowired
-    SyncRpcService syncRpcService;
+    UserInfoService userInfoService;
+    @Autowired
+    GoodsInfoService goodsInfoService;
 //    public String listPage(RegisterBillDto query) throws Exception {
 //        RegisterBillDto dto = this.preBuildDTO(query);
 //        dto.setBillType(this.supportedBillType().getCode());
@@ -294,12 +296,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         bill.setMarketId(bill.getMarketId());
         bill.setPlate("");
         //同步uap商品、经营户
-        if(Objects.nonNull(bill.getProductId())){
-            syncRpcService.syncGoodsToRpcCategory(bill.getProductId());
-        }
-        if(Objects.nonNull(bill.getUserId())){
-            syncRpcService.syncRpcUserByUserId(bill.getUserId());
-        }
+        goodsInfoService.saveGoodsInfo(bill.getProductId(),bill.getMarketId());
+        userInfoService.saveUserInfo(bill.getUserId(),bill.getMarketId());
         this.billService.insertSelective(bill);
     return bill;
     }
