@@ -12,6 +12,8 @@ ALTER TABLE dili_trace.`user` MODIFY COLUMN state tinyint(1) DEFAULT 1 NULL COMM
 ALTER TABLE dili_trace.`user` MODIFY COLUMN modified DATETIME NULL;
 ALTER TABLE dili_trace.`user` MODIFY COLUMN created DATETIME NULL;
 ALTER TABLE dili_trace.`user` MODIFY COLUMN validate_state tinyint DEFAULT 10 NULL COMMENT '未实名10 待审核 20  审核未通过 30 审核通过 40';
+ALTER TABLE dili_trace.`user` MODIFY COLUMN name varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+
 
 
 

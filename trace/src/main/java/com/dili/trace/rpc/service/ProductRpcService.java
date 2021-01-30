@@ -149,14 +149,17 @@ public class ProductRpcService {
             }
         });
 
-        // 构建扣减库存基础信息
-        StockReduceRequestDto obj = buildReduceDtoFromTrade(sellerDetailList, optUser, marketId);
-        BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
-        if (out.isSuccess() && out.getData() != null) {
+        if(sellerDetailList!=null&&!sellerDetailList.isEmpty()){
+            // 构建扣减库存基础信息
+            StockReduceRequestDto obj = buildReduceDtoFromTrade(sellerDetailList, optUser, marketId);
+            BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
+            if (out.isSuccess() && out.getData() != null) {
+                return;
+            }
+            logger.error("创建库存失败：{}",out.getMessage());
             return;
         }
-        logger.error("创建库存失败：{}",out.getMessage());
-        return;
+
        // throw new TraceBizException("扣减库存失败");
     }
 
