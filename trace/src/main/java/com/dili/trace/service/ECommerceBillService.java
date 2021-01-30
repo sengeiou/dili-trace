@@ -65,7 +65,9 @@ public class ECommerceBillService {
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
     @Autowired
-    SyncRpcService syncRpcService;
+    UserInfoService userInfoService;
+    @Autowired
+    GoodsInfoService goodsInfoService;
 
 
     /**
@@ -89,7 +91,7 @@ public class ECommerceBillService {
             rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
         });
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
-        EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
+        EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(), results);
         return out.toString();
     }
 
@@ -322,9 +324,9 @@ public class ECommerceBillService {
         this.detectRequestService.updateSelective(detectRequest);
 
         //patch bill单上的requestId
-        updateBillDetectRequestId(registerBill.getId(),item.getId());
+        updateBillDetectRequestId(registerBill.getId(), item.getId());
 
-        if(CollectionUtils.isNotEmpty(separateInputList)){
+        if (CollectionUtils.isNotEmpty(separateInputList)) {
             BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r -> {
                 return !StringUtils.isAllBlank(r.getTallyAreaNo(), r.getSalesUserName(), r.getSalesPlate());
             }).map(r -> {
@@ -344,6 +346,7 @@ public class ECommerceBillService {
 
     /**
      * 创建检测请求单后与委托单进行关联
+     *
      * @param billId
      * @param detectRequestId
      */
@@ -436,8 +439,8 @@ public class ECommerceBillService {
         String code = uidRestfulRpcService.bizNumber(BizNumberType.ECOMMERCE_BILL.getType());
         logger.debug("ECommerceBill.code={}", code);
         bill.setCode(code);
-        List<ImageCert>imageCertList=StreamEx.ofNullable(bill.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(img->{
-            return img.getCertType()!=null&&StringUtils.isNotBlank(img.getUid());
+        List<ImageCert> imageCertList = StreamEx.ofNullable(bill.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(img -> {
+            return img.getCertType() != null && StringUtils.isNotBlank(img.getUid());
         }).toList();
         bill.setImageCertList(imageCertList);
 //		bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
@@ -457,14 +460,10 @@ public class ECommerceBillService {
 
         bill.setMarketId(MarketUtil.returnMarket());
         this.billService.insertSelective(bill);
-        this.billService.updateHasImage(bill.getBillId(),bill.getImageCertList());
+        this.billService.updateHasImage(bill.getBillId(), bill.getImageCertList());
         //同步uap商品、经营户
-        if(Objects.nonNull(bill.getProductId())){
-            syncRpcService.syncGoodsToRpcCategory(bill.getProductId());
-        }
-        if(Objects.nonNull(bill.getUserId())){
-            syncRpcService.syncRpcUserByUserId(bill.getUserId());
-        }
+        this.goodsInfoService.saveGoodsInfo(bill.getProductId(), bill.getMarketId());
+        this.userInfoService.saveUserInfo(bill.getUserId(), bill.getMarketId());
         return bill.getId();
     }
 

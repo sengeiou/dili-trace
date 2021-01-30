@@ -254,8 +254,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
     private void sync(Optional<SessionData> sessionData) {
         sessionData.ifPresent(sd -> {
-            UserInfo userInfo = this.userInfoService.saveUserInfo(sd.getUserId(), sd.getUserName(), sd.getMarketId(), sd.getMarketName());
-            this.syncRpcService.syncRpcUser(userInfo);
+            this.userInfoService.saveUserInfo(sd.getUserId(), sd.getMarketId());
         });
     }
 
