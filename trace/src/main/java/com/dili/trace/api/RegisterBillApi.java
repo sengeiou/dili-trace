@@ -14,7 +14,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.RegisterBillService;
@@ -57,6 +57,7 @@ public class RegisterBillApi {
 
     /**
      * 通过登记单ID获取登记单详细信息
+     *
      * @param inputDto
      * @return
      */
@@ -67,14 +68,14 @@ public class RegisterBillApi {
             return BaseOutput.failure("参数错误");
         }
 
-        logger.info("获取登记单详细信息->marketId:{},billId:{},tradeDetailId:{}", inputDto.getMarketId(),inputDto.getBillId(), inputDto.getTradeDetailId());
+        logger.info("获取登记单详细信息->marketId:{},billId:{},tradeDetailId:{}", inputDto.getMarketId(), inputDto.getBillId(), inputDto.getTradeDetailId());
         try {
             Long userId = this.sessionContext.getAccountId();
             if (userId == null) {
                 return BaseOutput.failure("你还未登录");
             }
             RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto);
-            String data=JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
+            String data = JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
             return BaseOutput.success().setData(JSON.parse(data));
 
         } catch (TraceBizException e) {
@@ -87,7 +88,8 @@ public class RegisterBillApi {
     }
 
     /**
-     *获取报备单列表
+     * 获取报备单列表
+     *
      * @param inputDto
      * @param request
      * @return
@@ -109,10 +111,10 @@ public class RegisterBillApi {
         logger.info("获取报备单列表->billId:{},SupplierId:{}", inputDto.getBillId(), inputDto.getSupplierId());
         try {
             // 根据经营户卡号查询经营户
-            User user = DTOUtils.newDTO(User.class);
+            UserInfo user = new UserInfo();
             user.setThirdPartyCode(inputDto.getSupplierId());
             user.setYn(YesOrNoEnum.YES.getCode());
-            List<User> userList = userService.listByExample(user);
+            List<UserInfo> userList = userService.listByExample(user);
             if (CollectionUtils.isEmpty(userList)) {
                 return BaseOutput.failure("supplierId没有匹配的经营户");
             }
@@ -168,7 +170,7 @@ public class RegisterBillApi {
 
     }
 
-   /* *//**
+    /* *//**
      * 返回商品码对应的第三级品种ID
      *
      * @param goodsCode 商品码
@@ -185,14 +187,14 @@ public class RegisterBillApi {
             throw new TraceBizException("商品码[" + goodsCode + "]不存在，请联系管理员检查商品主数据！");
         }
     }*/
-/*
+    /*
 
-    */
+     */
 /**
-     * 查询目标商品的三级商品
-     * @param resCategory
-     * @return
-     *//*
+ * 查询目标商品的三级商品
+ * @param resCategory
+ * @return
+ *//*
 
     private Long getParentCategoryId(CusCategoryDTO resCategory) {
         if (null == resCategory) {

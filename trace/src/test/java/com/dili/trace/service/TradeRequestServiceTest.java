@@ -15,7 +15,7 @@ import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.*;
 import com.google.common.collect.Lists;
@@ -55,11 +55,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     }
 
     private ProductStock createBatchStock() {
-        List<User> userList = super.findUsers();
+        List<UserInfo> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
-        User seller = userList.get(0);
-        User buyer = userList.get(1);
+        UserInfo seller = userList.get(0);
+        UserInfo buyer = userList.get(1);
 
         Brand brand = new Brand();
         brand.setUserId(seller.getId());
@@ -85,11 +85,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     }
 
     private TradeRequest createBuyTradeRequest(ProductStock batchStock) {
-        List<User> userList = super.findUsers();
+        List<UserInfo> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
-        User seller = userList.get(0);
-        User buyer = userList.get(1);
+        UserInfo seller = userList.get(0);
+        UserInfo buyer = userList.get(1);
 
         ProductStockInput input = new ProductStockInput();
         input.setProductStockId(batchStock.getId());
@@ -125,11 +125,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void createBuyRequest() {
-        List<User> userList = super.findUsers();
+        List<UserInfo> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
-        User seller = userList.get(0);
-        User buyer = userList.get(1);
+        UserInfo seller = userList.get(0);
+        UserInfo buyer = userList.get(1);
 
         Brand brand = new Brand();
         brand.setUserId(seller.getId());
@@ -176,11 +176,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void createSellRequest() {
-        List<User> userList = super.findUsers();
+        List<UserInfo> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
-        User ownedUser = userList.get(0);
-        User buyer = userList.get(1);
+        UserInfo ownedUser = userList.get(0);
+        UserInfo buyer = userList.get(1);
 
         Brand brand = new Brand();
         brand.setUserId(ownedUser.getId());

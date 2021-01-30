@@ -11,10 +11,9 @@ import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.HangGuoDataMapper;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.service.CategoryService;
@@ -83,7 +82,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
             Set<Long> userSet = new HashSet<>(userIds);
             customerQueryInput.setIdSet(userSet);
             BaseOutput<List<CustomerExtendDto>> rpcUserByIds = customerRpc.list(customerQueryInput);
-            List<User> userList = userService.getUserListByUserIds(userIds);
+            List<UserInfo> userList = userService.getUserListByUserIds(userIds);
             if (null == rpcUserByIds) {
                 return;
             }
@@ -349,15 +348,15 @@ public class SyncRpcServiceImpl implements SyncRpcService {
                 if (Objects.isNull(rpcUser.getId()) || Objects.isNull(rpcUser.getCustomerMarket())) {
                     return;
                 }
-                User user = getNewUserPojo();
+                UserInfo user = getNewUserPojo();
                 user.setId(rpcUser.getId());
                 user.setMarketId(rpcUser.getCustomerMarket().getMarketId());
-                List<User> userList = userService.list(user);
+                List<UserInfo> userList = userService.list(user);
                 if (CollectionUtils.isNotEmpty(userList)) {
-                    User upUser = buildUpdateUser(rpcUser);
+                    UserInfo upUser = buildUpdateUser(rpcUser);
                     updateUserInfo(upUser);
                 } else {
-                    User addUser = buildAddUser(rpcUser);
+                    UserInfo addUser = buildAddUser(rpcUser);
                     addUserInfoByRpc(addUser);
                 }
             });
@@ -372,17 +371,17 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param userList
      * @param list
      */
-    private void updateUserByRpcUserList(List<CustomerExtendDto> userList, List<User> list) {
-        Map<Long, User> userMap = StreamEx.of(list).nonNull().collect(Collectors.toMap(User::getId, Function.identity(), (a, b) -> a));
+    private void updateUserByRpcUserList(List<CustomerExtendDto> userList, List<UserInfo> list) {
+        Map<Long, UserInfo> userMap = StreamEx.of(list).nonNull().collect(Collectors.toMap(UserInfo::getId, Function.identity(), (a, b) -> a));
         //取需要更新的用户信息updateList
-        List<User> updateList = new ArrayList<>();
-        List<User> addList = new ArrayList<>();
+        List<UserInfo> updateList = new ArrayList<>();
+        List<UserInfo> addList = new ArrayList<>();
         StreamEx.of(userList).nonNull().forEach(rpcUser -> {
             if (userMap.containsKey(rpcUser.getId())) {
-                User upUser = buildUpdateUser(rpcUser);
+                UserInfo upUser = buildUpdateUser(rpcUser);
                 updateList.add(upUser);
             } else {
-                User addUser = buildAddUser(rpcUser);
+                UserInfo addUser = buildAddUser(rpcUser);
                 addList.add(addUser);
             }
         });
@@ -399,7 +398,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      *
      * @param addUser
      */
-    private void addUserInfoByRpc(User addUser) {
+    private void addUserInfoByRpc(UserInfo addUser) {
         userService.insertSelective(addUser);
     }
 
@@ -408,7 +407,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      *
      * @param upUser
      */
-    private void updateUserInfo(User upUser) {
+    private void updateUserInfo(UserInfo upUser) {
         userService.updateSelective(upUser);
     }
 
@@ -431,9 +430,9 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private User buildAddUser(CustomerExtendDto rpcUser) {
+    private UserInfo buildAddUser(CustomerExtendDto rpcUser) {
         Integer version = 0;
-        User addUser = buildUpdateUser(rpcUser);
+        UserInfo addUser = buildUpdateUser(rpcUser);
         addUser.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
         addUser.setVersion(version);
         addUser.setCreated(DateUtils.getCurrentDate());
@@ -448,8 +447,8 @@ public class SyncRpcServiceImpl implements SyncRpcService {
      * @param rpcUser
      * @return
      */
-    private User buildUpdateUser(CustomerExtendDto rpcUser) {
-        User upUser = getNewUserPojo();
+    private UserInfo buildUpdateUser(CustomerExtendDto rpcUser) {
+        UserInfo upUser = getNewUserPojo();
         upUser.setId(rpcUser.getId());
         upUser.setName(rpcUser.getName());
         upUser.setPhone(null == rpcUser.getContactsPhone() ? "''" : rpcUser.getContactsPhone());
@@ -477,7 +476,7 @@ public class SyncRpcServiceImpl implements SyncRpcService {
     /**
      * @return
      */
-    private static User getNewUserPojo() {
-        return DTOUtils.newDTO(User.class);
+    private static UserInfo getNewUserPojo() {
+        return new UserInfo();
     }
 }

@@ -52,12 +52,12 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     }
 
     @Override
-    public List<User> getUserListByThirdPartyCode(List<String> list) {
+    public List<UserInfo> getUserListByThirdPartyCode(List<String> list) {
         return hangGuoDataMapper.getUserListByThirdPartyCode(list);
     }
 
     @Override
-    public void batchUpdateUserByThirdCode(List<User> updateUserList) {
+    public void batchUpdateUserByThirdCode(List<UserInfo> updateUserList) {
         hangGuoDataMapper.batchUpdateUserByThirdCode(updateUserList);
     }
 

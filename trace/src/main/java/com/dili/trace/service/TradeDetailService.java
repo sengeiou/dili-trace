@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
@@ -16,7 +15,6 @@ import com.dili.trace.dao.TradeDetailMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.*;

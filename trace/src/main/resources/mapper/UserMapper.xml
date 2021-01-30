@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="com.dili.trace.domain.User">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserInfo">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
-    <result column="card_no_url" jdbcType="VARCHAR" property="cardNoUrl" />
     <result column="tally_area_nos" jdbcType="VARCHAR" property="tallyAreaNos" />
     <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
     <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
@@ -21,7 +19,6 @@
     <result column="vocation_type" jdbcType="BIT" property="vocationType" />
     <result column="qr_status" jdbcType="BIT" property="qrStatus" />
     <result column="source" jdbcType="BIT" property="source" />
-    <result column="pwd" jdbcType="VARCHAR" property="pwd" />
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
     <result column="market_name" jdbcType="VARCHAR" property="marketName" />
     <result column="business_category_ids" jdbcType="VARCHAR" property="businessCategoryIds" />
@@ -47,7 +44,7 @@
     from user
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <update id="updateBy" parameterType="com.dili.trace.domain.User">
+  <update id="updateBy" parameterType="com.dili.trace.domain.UserInfo">
     <!--
       WARNING - @mbg.generated
     -->
@@ -96,7 +93,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.api.output.UserOutput">
+  <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.UserInfo" resultType="com.dili.trace.api.output.UserOutput">
     SELECT validate_state validateState,COUNT(1) numbers
     from `user` u
     where  yn = 1
@@ -207,7 +204,7 @@
     <![CDATA[AND ( t.created > #{limitTime} OR t.modified > #{limitTime})]]>
   </update>
 
-  <select id="getActiveUserListByBill" resultType="com.dili.trace.domain.User" >
+  <select id="getActiveUserListByBill" resultType="com.dili.trace.domain.UserInfo" >
     SELECT u.id,u.name,u.is_delete,u.is_active
     FROM
     user u
@@ -220,7 +217,7 @@
     AND b.id IS NULL
   </select>
 
-  <select id="getActiveUserListByBuyer" resultType="com.dili.trace.domain.User" >
+  <select id="getActiveUserListByBuyer" resultType="com.dili.trace.domain.UserInfo" >
     SELECT u.id,u.name,u.is_delete,u.is_active
     FROM
     user u
@@ -232,7 +229,7 @@
     AND t.id IS NULL
   </select>
 
-  <select id="getActiveUserListBySeller" resultType="com.dili.trace.domain.User" >
+  <select id="getActiveUserListBySeller" resultType="com.dili.trace.domain.UserInfo" >
     SELECT u.id,u.name,u.is_delete,u.is_active
     FROM
     user u
@@ -256,7 +253,7 @@
       </foreach>
   </update>
 
-  <select id="getUserByCredentialUrl" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.domain.User">
+  <select id="getUserByCredentialUrl" parameterType="com.dili.trace.domain.UserInfo" resultType="com.dili.trace.domain.UserInfo">
     SELECT
       u.`id`,
       u.`third_party_code`
@@ -270,7 +267,7 @@
           AND e.supplier_type IS NOT NULL
   </select>
 
-  <select id="getUserListByUserIds" resultType="com.dili.trace.domain.User">
+  <select id="getUserListByUserIds" resultType="com.dili.trace.domain.UserInfo">
     select u.id,u.name,
     u.tally_area_nos, u.market_name, u.market_id from user u
     where u.id

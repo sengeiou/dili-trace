@@ -11,7 +11,7 @@ import com.dili.trace.api.input.CheckOutApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
@@ -81,7 +81,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}).map(e -> {
 			TradeDetail tradeDetailItem = e.getKey();
 			RegisterBill registerBillItem = e.getValue();
-			User user = this.getUser(registerBillItem.getUserId())
+			UserInfo user = this.getUser(registerBillItem.getUserId())
 					.orElseThrow(() -> new TraceBizException("用户信息不存在"));
 			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
@@ -117,8 +117,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * @param userId
 	 * @return
 	 */
-	private Optional<User> getUser(Long userId) {
-		User user = this.userService.get(userId);
+	private Optional<UserInfo> getUser(Long userId) {
+		UserInfo user = this.userService.get(userId);
 		return Optional.ofNullable(user);
 	}
 

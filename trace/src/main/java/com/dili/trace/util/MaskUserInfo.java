@@ -1,7 +1,7 @@
 package com.dili.trace.util;
 
 import com.dili.trace.domain.Customer;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,7 +41,7 @@ public class MaskUserInfo {
 		return phone;
 		
 	}
-	private User maskUser(User user) {
+	private UserInfo maskUser(UserInfo user) {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return user;
 		} else {

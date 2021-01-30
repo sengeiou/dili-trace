@@ -4,15 +4,13 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
-import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.TruckEnterRecord;
-import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserDriverRef;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.dto.query.UserDriverRefQueryDto;
 import com.dili.trace.enums.MessageReceiverEnum;
@@ -32,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -189,7 +186,7 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "是否需要注册", notes = "是否需要注册")
     @RequestMapping(value = "/needRegister.api", method = RequestMethod.POST)
     @Deprecated
-    public BaseOutput needRegister(@RequestBody User user) {
+    public BaseOutput needRegister(@RequestBody UserInfo user) {
 
         return BaseOutput.success().setData("need");
     }
@@ -224,7 +221,7 @@ public class ClientDriverUserApi {
     @Deprecated
     public BaseOutput getDriverList() {
         try {
-            User user = DTOUtils.newDTO(User.class);
+            UserInfo user = new UserInfo();
             user.setName("测试");
             user.setId(1L);
 

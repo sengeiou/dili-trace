@@ -5,7 +5,6 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterHeadDto;
 

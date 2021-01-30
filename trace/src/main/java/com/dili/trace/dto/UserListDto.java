@@ -8,14 +8,14 @@ import javax.persistence.Transient;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 
 /**
  * 由MyBatis Generator工具自动生成
  * <p>
  * This file was generated on 2019-07-26 09:20:35.
  */
-public class UserListDto extends User {
+public class UserListDto extends UserInfo {
     /**
      * 创建时间开始
      *

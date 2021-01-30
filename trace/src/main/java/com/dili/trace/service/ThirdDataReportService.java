@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDetailDto;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDto;
@@ -37,7 +37,7 @@ public class ThirdDataReportService {
      * @param platformMarketId
      * @return
      */
-    public ReportUserDto reprocessUser(User info, Long platformMarketId) {
+    public ReportUserDto reprocessUser(UserInfo info, Long platformMarketId) {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
         //个人10 企业20 转换 1企业2个人
@@ -78,7 +78,7 @@ public class ThirdDataReportService {
         return reportUser;
     }
 
-    private List<ReportUserImgDto> getBlAccountImgList(User info) {
+    private List<ReportUserImgDto> getBlAccountImgList(UserInfo info) {
         List<ReportUserImgDto> userImgList = new ArrayList<>();
         //生产许可证
         if (StringUtils.isNotBlank(info.getManufacturingLicenseUrl())) {

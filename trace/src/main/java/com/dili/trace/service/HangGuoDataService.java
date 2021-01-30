@@ -38,14 +38,14 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @param list
      * @return
      */
-    List<User> getUserListByThirdPartyCode(List<String> list);
+    List<UserInfo> getUserListByThirdPartyCode(List<String> list);
 
     /**
      * 根据第三方编码更新用户
      *
      * @param updateUserList
      */
-    void batchUpdateUserByThirdCode(List<User> updateUserList);
+    void batchUpdateUserByThirdCode(List<UserInfo> updateUserList);
 
     /**
      * 根据商品编码获取商品列表

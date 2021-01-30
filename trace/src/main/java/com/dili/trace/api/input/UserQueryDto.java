@@ -1,17 +1,11 @@
 package com.dili.trace.api.input;
 
 import com.dili.ss.domain.annotation.Like;
-import com.dili.ss.domain.annotation.Operator;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.domain.User;
-import io.swagger.annotations.ApiModelProperty;
+import com.dili.trace.domain.UserInfo;
 
 import javax.persistence.Column;
-import java.util.Date;
 
-public class UserQueryDto extends User {
+public class UserQueryDto extends UserInfo {
     @Column(name = "`name`")
     @Like
     private String name;

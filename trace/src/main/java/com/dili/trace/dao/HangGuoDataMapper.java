@@ -39,14 +39,14 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param list
      * @return
      */
-    List<User> getUserListByThirdPartyCode(@Param("list") List<String> list);
+    List<UserInfo> getUserListByThirdPartyCode(@Param("list") List<String> list);
 
     /**
      * 根据第三方编码更新用户信息
      *
      * @param updateUserList
      */
-    void batchUpdateUserByThirdCode(@Param("list") List<User> updateUserList);
+    void batchUpdateUserByThirdCode(@Param("list") List<UserInfo> updateUserList);
 
     /**
      * 根据第三方编码更新商品信息

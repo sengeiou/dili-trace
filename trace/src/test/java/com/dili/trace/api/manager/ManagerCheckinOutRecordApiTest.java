@@ -10,7 +10,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.TruckTypeEnum;
@@ -35,7 +35,7 @@ public class ManagerCheckinOutRecordApiTest extends AutoWiredBaseTest {
     LoginSessionContext sessionContext;
     // private MockMvc mockMvc;
     // @Injectable
-    private User userItem;
+    private UserInfo userItem;
 
     @BeforeEach
     public void before() {

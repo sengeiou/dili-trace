@@ -15,7 +15,8 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.SysConfig;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.SysConfigTypeEnum;
@@ -41,7 +42,7 @@ import static java.util.stream.Collectors.toList;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 @Service
-public class UserServiceImpl extends BaseServiceImpl<User, Long> implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements UserService {
 
     public UserMapper getActualDao() {
         return (UserMapper) getDao();
@@ -82,13 +83,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     TallyingAreaRpcService tallyingAreaRpcService;
 
     @Override
-    public User login(String phone, String encryptedPassword) {
+    public UserInfo login(String phone, String encryptedPassword) {
         return null;
     }
 
     @Override
-    public List<User> getUserByExistsAccount(String phone) {
-        User query = DTOUtils.newDTO(User.class);
+    public List<UserInfo> getUserByExistsAccount(String phone) {
+        UserInfo query = new UserInfo();
         query.setPhone(phone);
         query.setYn(YesOrNoEnum.YES.getCode());
         return listByExample(query);
@@ -125,11 +126,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
         dto.setYn(1);
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
-        List<User> users = out.getRows();
+        List<UserInfo> users = out.getRows();
         List<Long> userIdList = users.stream().map(o -> {
             return o.getId();
         }).collect(toList());
-        List<User> userList = users.stream().map(u -> {
+        List<UserInfo> userList = users.stream().map(u -> {
             Long userId = u.getId();
             u.setPlates("");
             return u;
@@ -141,27 +142,27 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 
     @Override
-    public List<User> findUserByNameOrPhoneOrTallyNo(String keyword) {
+    public List<UserInfo> findUserByNameOrPhoneOrTallyNo(String keyword) {
         if (StringUtils.isBlank(keyword)) {
             return Lists.newArrayList();
         }
-        Example e = new Example(User.class);
+        Example e = new Example(UserInfo.class);
         e.or().orLike("tallyAreaNos", "%" + keyword.trim() + "%").orLike("name", "%" + keyword.trim() + "%")
                 .orLike("phone", "%" + keyword.trim() + "%");
         return this.getDao().selectByExample(e);
     }
 
     @Override
-    public Integer countUser(User user) {
+    public Integer countUser(UserInfo user) {
         return this.getActualDao().selectCount(user);
     }
 
     @Override
-    public User wxLogin(String openid) {
-        User query = DTOUtils.newDTO(User.class);
+    public UserInfo wxLogin(String openid) {
+        UserInfo query = new UserInfo();
         query.setOpenId(openid);
         query.setYn(YesOrNoEnum.YES.getCode());
-        User po = listByExample(query).stream().findFirst().orElse(null);
+        UserInfo po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
             throw new TraceBizException("用户未注册");
         }
@@ -219,17 +220,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      * @param map
      */
     private void updateUserUnActive(Map<String, Object> map) {
-        List<User> unActiveListBill = getActualDao().getActiveUserListByBill(map);
-        List<User> unActiveListSeller = getActualDao().getActiveUserListBySeller(map);
+        List<UserInfo> unActiveListBill = getActualDao().getActiveUserListByBill(map);
+        List<UserInfo> unActiveListSeller = getActualDao().getActiveUserListBySeller(map);
         CopyOnWriteArrayList<Long> billList = new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Long> sellList = new CopyOnWriteArrayList<>();
         //去活跃 未激活、禁用用户
         Integer activeFlag = 1;
-        User user = DTOUtils.newDTO(User.class);
+        UserInfo user = new UserInfo();
         user.setIsActive(activeFlag);
         user.mset(IDTO.AND_CONDITION_EXPR, " ( state=0 or yn=-1 )");
-        List<User> userList = listByExample(user);
-        List<Long> sUserList = StreamEx.of(userList).nonNull().map(User::getId).collect(toList());
+        List<UserInfo> userList = listByExample(user);
+        List<Long> sUserList = StreamEx.of(userList).nonNull().map(UserInfo::getId).collect(toList());
         if (CollectionUtils.isNotEmpty(sUserList)) {
             LOGGER.info("---用户状态去活跃集合 relustList---" + JSON.toJSONString(sUserList));
             getActualDao().updateUserUnActiveFlag(sUserList);
@@ -273,7 +274,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 
     @Override
-    public User findByTallyAreaNo(String tallyAreaNo, Long marketId) {
+    public UserInfo findByTallyAreaNo(String tallyAreaNo, Long marketId) {
         UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
         query.setTallyAreaNo(tallyAreaNo);
         TallyingArea tallyingArea = tallyingAreaRpcService.findCustomerByIdOrEx(tallyAreaNo, marketId);
@@ -282,7 +283,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             return null;
         }
         CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(tallyingArea.getCustomerId(), marketId);
-        User user = DTOUtils.newDTO(User.class);
+        UserInfo user = new UserInfo();
         user.setId(customer.getId());
         user.setName(customer.getName());
         user.setCardNo(customer.getCertificateNumber());
@@ -298,12 +299,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      * @return
      */
     @Override
-    public List<User> getUserByCredentialUrl(User user) {
+    public List<UserInfo> getUserByCredentialUrl(UserInfo user) {
         return getActualDao().getUserByCredentialUrl(user);
     }
 
     @Override
-    public List<User> getUserListByUserIds(List<Long> userIdList) {
+    public List<UserInfo> getUserListByUserIds(List<Long> userIdList) {
         return getActualDao().getUserListByUserIds(userIdList);
     }
 

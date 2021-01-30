@@ -10,7 +10,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.google.common.collect.Lists;
 

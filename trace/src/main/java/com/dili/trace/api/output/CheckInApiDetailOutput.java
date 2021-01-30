@@ -1,7 +1,7 @@
 package com.dili.trace.api.output;
 
 import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckInApiDetailOutput {
@@ -28,7 +28,7 @@ public class CheckInApiDetailOutput {
 	/**
 	 * 经营户
 	 */
-	private User user;
+	private UserInfo user;
 
 	public Integer getDetectState() {
 		return detectState;
@@ -46,11 +46,11 @@ public class CheckInApiDetailOutput {
 		this.upStream = upStream;
 	}
 
-	public User getUser() {
+	public UserInfo getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserInfo user) {
 		this.user = user;
 	}
 

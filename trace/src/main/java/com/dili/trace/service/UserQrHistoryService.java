@@ -11,7 +11,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.TFEnum;
@@ -41,7 +41,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (userId == null) {
 			return null;
 		}
-		User userItem = this.userService.get(userId);
+		UserInfo userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -65,7 +65,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (userId == null) {
 			return null;
 		}
-		User userItem = this.userService.get(userId);
+		UserInfo userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -112,7 +112,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 				throw new TraceBizException("错误");
 		}
 		Integer qrStatus = userQrStatus.getCode();
-		User userItem = this.userService.get(userId);
+		UserInfo userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -136,7 +136,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (userId == null) {
 			return null;
 		}
-		User userItem = this.userService.get(userId);
+		UserInfo userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -229,7 +229,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
 	private void updateUserQrStatus(Long userId, Integer qrStatus) {
 
-		User user = DTOUtils.newDTO(User.class);
+		UserInfo user = new UserInfo();
 		user.setId(userId);
 		user.setQrStatus(qrStatus);
 		// user.setPreQrStatus(userItem.getQrStatus());
@@ -237,7 +237,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
 	}
 
-	private UserQrHistory buildUserQrHistory(User userItem, Integer qrStatus) {
+	private UserQrHistory buildUserQrHistory(UserInfo userItem, Integer qrStatus) {
 
 		UserQrHistory userQrHistory = new UserQrHistory();
 		userQrHistory.setUserId(userItem.getId());

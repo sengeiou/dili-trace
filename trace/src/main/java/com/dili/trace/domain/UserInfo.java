@@ -19,7 +19,7 @@ import java.util.Date;
  * This file was generated on 2019-07-26 09:20:35.
  */
 @Table(name = "`user`")
-public class User extends BaseDomain {
+public class UserInfo extends BaseDomain {
     /**
      * ID
      *

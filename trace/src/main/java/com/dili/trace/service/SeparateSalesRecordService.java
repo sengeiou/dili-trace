@@ -8,7 +8,6 @@ import com.dili.trace.api.output.SeparateSalesApiListOutput;
 import com.dili.trace.api.output.SeparateSalesApiListQueryInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.User;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.

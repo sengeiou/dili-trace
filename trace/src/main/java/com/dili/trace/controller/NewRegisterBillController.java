@@ -1058,7 +1058,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
             // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
+            UserInfo user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
 
             if (user != null) {
                 userInfoDto.setUserId(String.valueOf(user.getId()));

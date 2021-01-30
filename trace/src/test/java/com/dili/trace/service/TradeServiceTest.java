@@ -13,7 +13,7 @@ import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
@@ -100,10 +100,10 @@ public class TradeServiceTest extends AutoWiredBaseTest {
     @Transactional
     @Test
     public void updateSellerAndBuyerTradeDetail() {
-        List<User> userList = super.findUsers();
+        List<UserInfo> userList = super.findUsers();
         assertTrue(userList.size()>=2);
-        User seller=userList.get(0);
-        User buyer=userList.get(1);
+        UserInfo seller=userList.get(0);
+        UserInfo buyer=userList.get(1);
 
         BigDecimal tradeWeight = BigDecimal.valueOf(30);
         RegisterBill bill = super.buildBill();

@@ -9,7 +9,7 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.TradeReportDto;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.domain.SysConfig;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.BillReportQueryDto;
 import com.dili.trace.enums.OrderTypeEnum;
@@ -219,14 +219,14 @@ public class BillReportService {
             }
         }
         if (resultCount == 0) {
-            User user = DTOUtils.newDTO(User.class);
+            UserInfo user = new UserInfo();
             Integer normal = 1;
             Long noDelte = new Long(0);
             user.setValidateState(ValidateStateEnum.PASSED.getCode());
             user.setIsDelete(noDelte);
             user.setYn(YesOrNoEnum.YES.getCode());
             user.setState(normal);
-            List<User> userList = userService.listByExample(user);
+            List<UserInfo> userList = userService.listByExample(user);
             resultCount = userList.size();
         }
         return resultCount;
