@@ -685,13 +685,12 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
         tradeRequest.setAmount(BigDecimal.ZERO);
         tradeRequest.setBatchNo(null);
-        tradeRequest.setCode(this.getNextCode());
+        tradeRequest.setCode(this.uidRestfulRpcService.nextTradeRequestCode());
 
         tradeRequest.setSellerId(seller.getSellerId());
         tradeRequest.setSellerMarketId(tradeDto.getMarketId());
         tradeRequest.setSellerName(seller.getSellerName());
         tradeRequest.setSellerNo(null);
-        tradeRequest.setCode(null);
         tradeRequest.setCreated(now);
         tradeRequest.setModified(now);
         tradeRequest.setNumber(0);

@@ -47,6 +47,14 @@ public class UidRestfulRpcService {
     }
 
     /**
+     * 查询下一个traderequest code
+     * @return
+     */
+    public String nextTradeRequestCode(){
+            return this.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
+    }
+
+    /**
      * 生成检测单编号
      * @return
      */
