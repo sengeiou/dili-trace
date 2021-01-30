@@ -2,9 +2,7 @@ package com.dili.common.config;
 
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.interceptor.AddAttributeInterceptor;
-import com.dili.common.interceptor.LoginInterceptor;
 import com.dili.common.interceptor.SessionInterceptor;
-import com.dili.common.interceptor.SignInterceptor;
 import com.dili.uap.sdk.session.SessionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -59,16 +57,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     public AddAttributeInterceptor addAttributeInterceptor() {
         return new AddAttributeInterceptor();
     }
-//
-//    @Bean
-//    public LoginInterceptor loginInterceptor() {
-//        return new LoginInterceptor();
-//    }
 
-//    @Bean
-//    public SignInterceptor signInterceptor() {
-//        return new SignInterceptor();
-//    }
 
 
     @Override

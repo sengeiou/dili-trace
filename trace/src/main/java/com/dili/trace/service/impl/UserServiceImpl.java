@@ -1,58 +1,39 @@
 package com.dili.trace.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.util.MD5Util;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.rpc.CustomerRpc;
-import com.dili.customer.sdk.rpc.TallyingAreaRpc;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.api.components.ManageSystemComponent;
-import com.dili.trace.api.components.SessionRedisService;
-import com.dili.trace.api.input.UserInput;
-import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.*;
-import com.dili.trace.dto.MessageInputDto;
-import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.domain.SysConfig;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
-import com.dili.trace.enums.*;
-import com.dili.trace.glossary.*;
+import com.dili.trace.enums.SysConfigTypeEnum;
+import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.TallyingAreaRpcService;
 import com.dili.trace.service.*;
-import com.dili.trace.util.QRCodeUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -85,8 +66,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     TallyAreaNoService tallyAreaNoService;
     @Autowired
-    SessionRedisService sessionRedisService;
-    @Autowired
     IWxAppService wxAppService;
 
     @Autowired
@@ -94,9 +73,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Autowired
     UserStoreService userStoreService;
-
-    @Autowired
-    ManageSystemComponent manageSystemComponent;
 
     @Autowired
     SysConfigService sysConfigService;

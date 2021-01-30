@@ -57,9 +57,4 @@ public class ExcelTest extends AutoWiredBaseTest {
         }
     }
 
-    @Test
-    public void md5(){
-        System.out.println(MD5Util.md5("123456"));
-    }
-
 }
