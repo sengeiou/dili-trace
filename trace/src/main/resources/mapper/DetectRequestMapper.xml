@@ -358,5 +358,6 @@
               #{billType}
           </foreach>
       </if>
+      group by b.id
   </select>
 </mapper>
