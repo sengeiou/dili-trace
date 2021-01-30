@@ -521,16 +521,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             if (hasChildTD) {
                 throw new TraceBizException("不能对已销售的商品申请退货");
             }
-            ProductStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
+            ProductStock buyerPS = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
                     .orElseThrow(() -> {
                         return new TraceBizException("操作库存失败");
                     });
 
-            ProductStock batchStock = new ProductStock();
-            batchStock.setId(batchStockItem.getId());
-            batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() - 1);
-            batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(td.getStockWeight()));
-            this.batchStockService.updateSelective(batchStock);
+            ProductStock updateBuyerStock = new ProductStock();
+            updateBuyerStock.setId(buyerPS.getId());
+            updateBuyerStock.setTradeDetailNum(buyerPS.getTradeDetailNum() - 1);
+            updateBuyerStock.setStockWeight(buyerPS.getStockWeight().subtract(td.getStockWeight()));
+            this.batchStockService.updateSelective(updateBuyerStock);
 
             TradeDetail tradeDetail = new TradeDetail();
             tradeDetail.setId(td.getId());
@@ -606,6 +606,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 TradeDetail buyerTradeDetail = new TradeDetail();
                 buyerTradeDetail.setId(buyertd.getId());
                 buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
+                buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
                 this.tradeDetailService.updateSelective(buyerTradeDetail);
 
                 ProductStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getProductStockId())
@@ -636,7 +637,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             try {
                 userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(), tradeRequestItem.getBuyerId());
             } catch (ParseException e) {
-                e.printStackTrace();
                 logger.error(e.getMessage(), e);
             }
         }
