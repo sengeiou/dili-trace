@@ -13,12 +13,11 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.UserInfo;
-import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserTallyArea;
-import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -28,11 +27,9 @@ import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -95,7 +92,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
         return listByExample(query);
     }
 
-    private Optional<String> andCondition(UserListDto dto) {
+    private Optional<String> andCondition(UserQueryDto dto) {
         List<String> strList = new ArrayList<String>();
         if (dto != null && dto.getHasBusinessLicense() != null) {
             if (dto.getHasBusinessLicense()) {
@@ -116,7 +113,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
     }
 
     @Override
-    public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
+    public EasyuiPageOutput listEasyuiPageByExample(UserQueryDto dto) throws Exception {
         // 经营户卡号查询，不足6位，左边补0
         if (!StringUtils.isEmpty(dto.getThirdPartyCode())) {
             dto.setThirdPartyCode(StringUtils.leftPad(dto.getThirdPartyCode(), 6, "0"));

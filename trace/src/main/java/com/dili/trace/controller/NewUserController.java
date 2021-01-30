@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.dto.*;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
@@ -67,7 +68,7 @@ public class NewUserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
     @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody String listPage(UserListDto user) throws Exception {
+    public @ResponseBody String listPage(UserQueryDto user) throws Exception {
         // 设置市场查询条件
         user.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput out = this.userService.listEasyuiPageByExample(user);

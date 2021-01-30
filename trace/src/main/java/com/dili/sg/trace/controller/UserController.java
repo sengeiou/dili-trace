@@ -2,7 +2,7 @@ package com.dili.sg.trace.controller;
 
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.dto.UserListDto;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
@@ -67,7 +67,7 @@ public class UserController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(UserListDto user) throws Exception {
+	public @ResponseBody String listPage(UserQueryDto user) throws Exception {
 		EasyuiPageOutput out=this.userService.listEasyuiPageByExample(BeanMapUtil.trimBean(user));
 		return out.toString();
 	}

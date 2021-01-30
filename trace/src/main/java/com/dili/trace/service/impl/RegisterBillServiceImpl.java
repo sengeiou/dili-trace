@@ -13,6 +13,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
@@ -827,7 +828,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
      * @return
      */
     public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
-        UserListDto dto = new UserListDto();
+        UserQueryDto dto = new UserQueryDto();
         dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
         dto.setCreatedStart(createdStart);
         dto.setCreatedEnd(createdEnd);

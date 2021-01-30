@@ -2,8 +2,8 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.domain.UserInfo;
-import com.dili.trace.dto.UserListDto;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public interface UserService extends BaseService<UserInfo, Long> {
      * @return
      * @throws Exception
      */
-    public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
+    public EasyuiPageOutput listEasyuiPageByExample(UserQueryDto dto) throws Exception;
 
 
     /**
