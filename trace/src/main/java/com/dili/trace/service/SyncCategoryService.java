@@ -21,14 +21,14 @@ public class SyncCategoryService {
     /**
      * 保存并同步商品信息
      *
-     * @param productId
+     * @param categoryId
      * @param marketId
      */
-    public void saveAndSyncGoodInfo(Long productId, Long marketId) {
-        if (productId == null || marketId == null) {
+    public void saveAndSyncGoodInfo(Long categoryId, Long marketId) {
+        if (categoryId == null || marketId == null) {
             return;
         }
-        HangGuoCategory category = this.categoryService.saveCategory(productId, marketId);
+        HangGuoCategory category = this.categoryService.saveCategory(categoryId, marketId);
         this.asyncService.syncCategoryInfo(category, cusCategoryDTO -> {
             this.categoryService.updateCategory(category.getId(), cusCategoryDTO);
         });

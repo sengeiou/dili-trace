@@ -36,8 +36,6 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             UserInfo newDomain = new UserInfo();
             newDomain.setUserId(userId);
             newDomain.setMarketId(marketId);
-            newDomain.setCreated(new Date());
-            newDomain.setModified(new Date());
             newDomain.setPreQrStatus(UserQrStatusEnum.BLACK.getCode());
             newDomain.setQrStatus(UserQrStatusEnum.BLACK.getCode());
             newDomain.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
