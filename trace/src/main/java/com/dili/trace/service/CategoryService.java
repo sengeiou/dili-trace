@@ -4,11 +4,13 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.UserQueryDto;
+import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.dto.query.CategoryQueryDto;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import one.util.streamex.StreamEx;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ import java.util.Date;
  */
 @Service
 public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
+    @Autowired
+    HangGuoDataMapper hangGuoDataMapper;
+
     /**
      * 保存category
      *
@@ -31,24 +36,24 @@ public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
         if (categoryId == null || marektId == null) {
             return null;
         }
-        CategoryQueryDto query = new CategoryQueryDto();
-        query.setCategoryId(categoryId);
-        query.setMarketId(marektId);
-        HangGuoCategory category = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
+        try {
+            HangGuoCategory category = new HangGuoCategory();
+            category.setCategoryId(categoryId);
+            category.setMarketId(marektId);
+            category.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
+            this.hangGuoDataMapper.insertIgnoreCategory(category);
 
-            HangGuoCategory newDomain = new HangGuoCategory();
-            newDomain.setCategoryId(categoryId);
-            newDomain.setMarketId(marektId);
-            newDomain.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
-            try {
-                this.insertSelective(newDomain);
-                return newDomain;
-            } catch (Exception e) {
-                return StreamEx.of(this.listByExample(query)).findFirst().orElse(null);
-            }
+            CategoryQueryDto query = new CategoryQueryDto();
+            query.setCategoryId(categoryId);
+            query.setMarketId(marektId);
 
-        });
-        return category;
+            return StreamEx.of(this.listByExample(query)).findFirst().orElse(null);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+
+
     }
 
     /**
@@ -62,20 +67,21 @@ public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
         if (id == null || categoryDTO == null) {
             return;
         }
-        HangGuoCategory updatableCategory = new HangGuoCategory();
-        updatableCategory.setId(id);
-        updatableCategory.setCreated(categoryDTO.getCreateTime());
-        updatableCategory.setModified(categoryDTO.getModifyTime());
-        updatableCategory.setLastSyncSuccess(YesOrNoEnum.YES.getCode());
-        updatableCategory.setLastSyncTime(new Date());
-        updatableCategory.setLastSyncSuccess(YesOrNoEnum.YES.getCode());
-        updatableCategory.setName(categoryDTO.getName());
-        updatableCategory.setFullName(categoryDTO.getName());
-        updatableCategory.setParentId(categoryDTO.getParent());
+
         try {
+            HangGuoCategory updatableCategory = new HangGuoCategory();
+            updatableCategory.setId(id);
+            updatableCategory.setCreated(categoryDTO.getCreateTime());
+            updatableCategory.setModified(categoryDTO.getModifyTime());
+            updatableCategory.setLastSyncSuccess(YesOrNoEnum.YES.getCode());
+            updatableCategory.setLastSyncTime(new Date());
+            updatableCategory.setLastSyncSuccess(YesOrNoEnum.YES.getCode());
+            updatableCategory.setName(categoryDTO.getName());
+            updatableCategory.setFullName(categoryDTO.getName());
+            updatableCategory.setParentId(categoryDTO.getParent());
             this.updateSelective(updatableCategory);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
         }
     }
 

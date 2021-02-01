@@ -96,4 +96,13 @@ public interface UserMapper extends MyMapper<UserInfo> {
      * @return
      */
     List<UserInfo> getUserListByUserIds(@Param("idList") List<Long> idList);
+
+    /**
+     * 插入或者忽略用户信息
+     *
+     * @param userInfo
+     * @return
+     */
+
+    public int insertIgnoreUserInfo(UserInfo userInfo);
 }

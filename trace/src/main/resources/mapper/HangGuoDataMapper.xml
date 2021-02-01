@@ -409,4 +409,10 @@
         AND DATE(ca_1.modified)=DATE(#{modified})
     </update>
 
+    <insert id="insertIgnoreCategory" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory" >
+      INSERT ignore into `category`
+      (category_id,market_id,last_sync_success)
+      values(#{categoryId},#{marketId},#{lastSyncSuccess});
+  </insert>
+
 </mapper>

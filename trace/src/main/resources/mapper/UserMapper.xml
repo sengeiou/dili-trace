@@ -275,5 +275,10 @@
       #{oid}
     </foreach>
   </select>
+  <insert id="insertIgnoreUserInfo" parameterType="com.dili.trace.domain.UserInfo" >
+      INSERT ignore into `user`
+      (user_id,market_id,pre_qr_status,qr_status,last_sync_success)
+      values(#{userId},#{marketId},#{preQrStatus},#{qrStatus},#{lastSyncSuccess});
+  </insert>
 
 </mapper>
