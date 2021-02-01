@@ -19,6 +19,7 @@ ALTER TABLE dili_trace.`user` DROP KEY user_unique_phone;
 ALTER TABLE dili_trace.`user` ADD CONSTRAINT user_id_market_id_unique UNIQUE KEY (market_id,user_id);
 
 ALTER TABLE dili_trace.trade_request ADD order_status INT NULL COMMENT '状态';
+ALTER TABLE dili_trace.trade_order MODIFY COLUMN order_status int NULL COMMENT '订单状态';
 
 
 DROP TABLE IF EXISTS category;
