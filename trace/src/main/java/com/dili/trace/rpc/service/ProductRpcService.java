@@ -254,17 +254,75 @@ public class ProductRpcService {
 
         return createDtoList;
     }
-
     /**
-     * 扣减库存
+     * 增加白细美库存
      *
-     * @param sellerMarketId
+     * @param increaseWeight
+     * @param optUser
+     */
+    public void increaseRegDetail(Long tradeDetailId, Long marketId, BigDecimal increaseWeight, Optional<OperatorUser> optUser) {
+
+        if(tradeDetailId==null){
+            return;
+        }
+        TradeDetail tradeDetail = this.tradeDetailService.get(tradeDetailId);
+        if(tradeDetail==null){
+            return;
+        }
+        logger.debug("tradeDetailId={},thirdPartyStockId={}",tradeDetailId,tradeDetail.getThirdPartyStockId());
+        if(tradeDetail.getThirdPartyStockId()==null){
+            return;
+        }
+
+        StockReduceDto stockReduceDto = new StockReduceDto();
+        // 业务单据号
+        stockReduceDto.setBizId(tradeDetailId);
+        stockReduceDto.setReduceNum(increaseWeight);
+        // 库存ID
+        stockReduceDto.setStockId(tradeDetail.getThirdPartyStockId());
+
+        StockReduceRequestDto obj = new StockReduceRequestDto();
+        obj.setFirmId(marketId);
+        this.firmRpcService.getFirmById(marketId).ifPresent(mk->{
+            obj.setFirmName(mk.getName());
+        });
+
+
+        List<StockReduceDto> reduceDtoList = Lists.newArrayList(stockReduceDto);
+
+        obj.setStockReduceItems(reduceDtoList);
+
+
+        try {
+            BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
+            if (out.isSuccess()) {
+                return;
+            }
+            logger.error("扣减库存失败:{}", out.getMessage());
+        } catch (Exception e) {
+            logger.error("扣减库存失败:{}", e.getMessage());
+        }
+
+
+    }
+    /**
+     * 扣减批次库存
+     *
      * @param deductWeight
      * @param optUser
      */
-    public void deductRegDetail(Long tradeDetailId, Long sellerMarketId, String sellerMarketName, BigDecimal deductWeight, Optional<OperatorUser> optUser) {
+    public void deductRegDetail(Long tradeDetailId, Long marketId,BigDecimal deductWeight, Optional<OperatorUser> optUser) {
+        if(tradeDetailId==null){
+            return;
+        }
         TradeDetail tradeDetail = this.tradeDetailService.get(tradeDetailId);
-
+        if(tradeDetail==null){
+            return;
+        }
+        logger.debug("tradeDetailId={},thirdPartyStockId={}",tradeDetailId,tradeDetail.getThirdPartyStockId());
+        if(tradeDetail.getThirdPartyStockId()==null){
+            return;
+        }
         StockReduceDto stockReduceDto = new StockReduceDto();
         // 业务单据号
         stockReduceDto.setBizId(tradeDetailId);
@@ -273,8 +331,10 @@ public class ProductRpcService {
         stockReduceDto.setStockId(tradeDetail.getThirdPartyStockId());
 
         StockReduceRequestDto obj = new StockReduceRequestDto();
-        obj.setFirmId(sellerMarketId);
-        obj.setFirmName(sellerMarketName);
+        obj.setFirmId(marketId);
+        this.firmRpcService.getFirmById(marketId).ifPresent(mk->{
+            obj.setFirmName(mk.getName());
+        });
 
         List<StockReduceDto> reduceDtoList = Lists.newArrayList(stockReduceDto);
 
