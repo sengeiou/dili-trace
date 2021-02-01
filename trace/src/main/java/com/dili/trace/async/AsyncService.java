@@ -47,11 +47,11 @@ public class AsyncService {
      */
     @Async
     public void syncCategoryInfo(HangGuoCategory category, Consumer<CusCategoryDTO> consumer) {
-        if (category == null || category.getMarketId() == null) {
+        if (category == null || category.getMarketId() == null || category.getId() == null || category.getCategoryId() == null) {
             return;
         }
         CusCategoryQuery cusQuery = new CusCategoryQuery();
-        cusQuery.setIds(Lists.newArrayList(String.valueOf(category.getId())));
+        cusQuery.setIds(Lists.newArrayList(String.valueOf(category.getCategoryId())));
         StreamEx.of(this.assetsRpcService.listCusCategory(cusQuery, category.getMarketId())).nonNull().findFirst().ifPresent(cate -> {
             consumer.accept(cate);
         });
