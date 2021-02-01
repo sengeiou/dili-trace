@@ -65,9 +65,9 @@ public class ECommerceBillService {
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
     @Autowired
-    UserInfoService userInfoService;
+    SyncUserInfoService syncUserInfoService;
     @Autowired
-    GoodsInfoService goodsInfoService;
+    SyncCategoryService syncCategoryService;
 
 
     /**
@@ -462,8 +462,8 @@ public class ECommerceBillService {
         this.billService.insertSelective(bill);
         this.billService.updateHasImage(bill.getBillId(), bill.getImageCertList());
         //同步uap商品、经营户
-        this.goodsInfoService.saveGoodsInfo(bill.getProductId(), bill.getMarketId());
-        this.userInfoService.saveUserInfo(bill.getUserId(), bill.getMarketId());
+        this.syncCategoryService.saveAndSyncGoodInfo(bill.getProductId(), bill.getMarketId());
+        this.syncUserInfoService.saveAndSyncUserInfo(bill.getUserId(), bill.getMarketId());
         return bill.getId();
     }
 

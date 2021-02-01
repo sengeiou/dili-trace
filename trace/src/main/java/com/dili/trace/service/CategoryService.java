@@ -9,5 +9,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
+    /**
+     * 保存category
+     *
+     * @param id
+     * @param marektId
+     * @return
+     */
+    public HangGuoCategory saveCategory(Long id, Long marektId) {
+        LOGGER.debug("saveCategory id={},marketId={}", id, marektId);
+        return null;
+    }
 
 }

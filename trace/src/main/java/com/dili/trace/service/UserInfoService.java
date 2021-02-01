@@ -51,7 +51,6 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             }
 
         });
-        this.syncRpcService.syncRpcUser(userInfo);
         return userInfo;
     }
 

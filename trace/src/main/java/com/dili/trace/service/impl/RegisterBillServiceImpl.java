@@ -8,7 +8,6 @@ import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -93,9 +92,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     BillVerifyHistoryService billVerifyHistoryService;
     @Autowired
-    UserInfoService userInfoService;
+    SyncUserInfoService syncUserInfoService;
     @Autowired
-    GoodsInfoService goodsInfoService;
+    SyncCategoryService syncCategoryService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -303,8 +302,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(), registerBill.getMarketId());
         //同步uap商品、经营户
-        this.goodsInfoService.saveGoodsInfo(registerBill.getProductId(), registerBill.getMarketId());
-        this.userInfoService.saveUserInfo(registerBill.getUserId(), registerBill.getMarketId());
+        this.syncCategoryService.saveAndSyncGoodInfo(registerBill.getProductId(), registerBill.getMarketId());
+        this.syncUserInfoService.saveAndSyncUserInfo(registerBill.getUserId(), registerBill.getMarketId());
         return registerBill.getId();
     }
 

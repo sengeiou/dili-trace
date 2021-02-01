@@ -11,6 +11,7 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.SyncRpcService;
+import com.dili.trace.service.SyncUserInfoService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.trace.service.UserInfoService;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -47,7 +48,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     SyncRpcService syncRpcService;
     @Autowired
-    UserInfoService userInfoService;
+    SyncUserInfoService syncUserInfoService;
     @Resource
     RedisUtil redisUtil;
     private ObjectMapper mapper = new ObjectMapper();
@@ -254,7 +255,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
     private void sync(Optional<SessionData> sessionData) {
         sessionData.ifPresent(sd -> {
-            this.userInfoService.saveUserInfo(sd.getUserId(), sd.getMarketId());
+            this.syncUserInfoService.saveAndSyncUserInfo(sd.getUserId(), sd.getMarketId());
         });
     }
 
