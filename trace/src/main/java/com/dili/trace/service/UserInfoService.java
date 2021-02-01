@@ -18,8 +18,6 @@ import java.util.Date;
  */
 @Service
 public class UserInfoService extends TraceBaseService<UserInfo, Long> {
-    @Autowired
-    SyncRpcService syncRpcService;
 
     /**
      * 保存或者查询需要同步的用户
@@ -51,7 +49,6 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             }
 
         });
-        this.syncRpcService.syncRpcUser(userInfo);
         return userInfo;
     }
 

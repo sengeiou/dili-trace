@@ -1,13 +1,8 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
@@ -20,7 +15,6 @@ import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
-import com.dili.trace.util.MarketUtil;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,9 +50,9 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @throws Exception
      */
     @Autowired
-    UserInfoService userInfoService;
+    SyncUserInfoService syncUserInfoService;
     @Autowired
-    GoodsInfoService goodsInfoService;
+    SyncCategoryService syncCategoryService;
 //    public String listPage(RegisterBillDto query) throws Exception {
 //        RegisterBillDto dto = this.preBuildDTO(query);
 //        dto.setBillType(this.supportedBillType().getCode());
@@ -296,8 +290,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         bill.setMarketId(bill.getMarketId());
         bill.setPlate("");
         //同步uap商品、经营户
-        goodsInfoService.saveGoodsInfo(bill.getProductId(),bill.getMarketId());
-        userInfoService.saveUserInfo(bill.getUserId(),bill.getMarketId());
+        syncCategoryService.saveAndSyncGoodInfo(bill.getProductId(),bill.getMarketId());
+        syncUserInfoService.saveAndSyncUserInfo(bill.getUserId(),bill.getMarketId());
         this.billService.insertSelective(bill);
     return bill;
     }

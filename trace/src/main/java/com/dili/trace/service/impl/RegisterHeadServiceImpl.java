@@ -65,9 +65,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Autowired
     BillService billService;
     @Autowired
-    UserInfoService userInfoService;
+    SyncUserInfoService syncUserInfoService;
     @Autowired
-    GoodsInfoService goodsInfoService;
+    SyncCategoryService syncCategoryService;
 
 
     public RegisterHeadMapper getActualDao() {
@@ -156,8 +156,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
                 });
 
         //同步uap商品、经营户
-        this.goodsInfoService.saveGoodsInfo(registerHead.getProductId(), registerHead.getMarketId());
-        this.userInfoService.saveUserInfo(registerHead.getUserId(), registerHead.getMarketId());
+        this.syncCategoryService.saveAndSyncGoodInfo(registerHead.getProductId(), registerHead.getMarketId());
+        this.syncUserInfoService.saveAndSyncUserInfo(registerHead.getUserId(), registerHead.getMarketId());
 
         return registerHead.getId();
     }
