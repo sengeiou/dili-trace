@@ -235,7 +235,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
         this.dealTradeOrder(tradeOrder.getTradeOrderId(), TradeOrderStatusEnum.FINISHED);
-        this.productRpcService.create(registerBill, Optional.empty());
+//        this.productRpcService.create(registerBill, Optional.empty());
         return tradeOrder;
 
     }
@@ -455,7 +455,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
 
                     this.productRpcService.createRegCreate(updatableBuyerTD.getId(), tradeRequest.getBuyerMarketId(), Optional.empty());
-                    this.productRpcService.deductRegDetail(sellerTD.getTradeDetailId(), tradeRequest.getSellerMarketId(), tradeRequest.getSellerName(),trd.getTradeWeight(), Optional.empty());
+                    this.productRpcService.deductRegDetail(sellerTD.getTradeDetailId(), tradeRequest.getSellerMarketId(), trd.getTradeWeight(), Optional.empty());
 //                    this.productRpcService.handleTradeStocks(
 //                            Lists.newArrayList(this.tradeDetailService.get(updatableBuyerTD.getId()))
 //                            , Lists.newArrayList(this.tradeDetailService.get(updatableSellerTD.getId()))

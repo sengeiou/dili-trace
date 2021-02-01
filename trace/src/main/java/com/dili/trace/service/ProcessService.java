@@ -84,12 +84,12 @@ public class ProcessService {
      * @param billId
      * @param marketId
      */
-    public void afterCheckIn(Long billId, Long marketId,Optional<OperatorUser> optUser ) {
-        RegisterBill registerBill = billService.get(billId);
-
-        // 进门之后向 UAP 同步库存
-        productRpcService.create(registerBill, optUser);
-    }
+//    public void afterCheckIn(Long billId, Long marketId,Optional<OperatorUser> optUser ) {
+//        RegisterBill registerBill = billService.get(billId);
+//
+//        // 进门之后向 UAP 同步库存
+//        productRpcService.create(registerBill, optUser);
+//    }
 
     /**
      * 交易之后
@@ -97,8 +97,8 @@ public class ProcessService {
      * @param sellerDetailList
      * @param marketId
      */
-    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId, Optional<OperatorUser> optUser) {
-        // 交易之后向 UAP 同步库存
-        productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
-    }
+//    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId, Optional<OperatorUser> optUser) {
+//        // 交易之后向 UAP 同步库存
+//        productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
+//    }
 }

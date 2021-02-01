@@ -37,6 +37,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -138,6 +139,14 @@ public class CommissionDetectRequestController {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
         }
+
+        if (null != item.getPieceNum()) {
+            modelMap.put("pieceNum", item.getPieceNum().setScale(0, BigDecimal.ROUND_DOWN));
+        }
+        if (null != item.getPieceWeight()) {
+            modelMap.put("pieceWeight", item.getPieceWeight().setScale(0, BigDecimal.ROUND_DOWN));
+        }
+
         DetectRequest detectRequest = detectRequestService.get(item.getDetectRequestId());
         modelMap.put("detectRequest", detectRequest);
         if (displayWeight == null) {

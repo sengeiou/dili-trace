@@ -17,9 +17,9 @@ public class StockReduceDto implements Serializable {
     @NotNull(message = "库存业务号不能空")
     @Min(value = 1, message = "库存业务号不能为负数")
     private Long stockId;
-    /**扣减库存  */
-    @NotNull(message = "扣减数量不能为空")
-    @Min(value = 1, message = "扣减库存数量不能为负数")
+    /**增减库存  */
+    @NotNull(message = "增减数量不能为空")
+    @Min(value = 1, message = "增减库存数量不能为负数")
     private BigDecimal reduceNum;
     /**扣减库存关联的业务单号 */
     @NotNull(message = "业务号不能为空")

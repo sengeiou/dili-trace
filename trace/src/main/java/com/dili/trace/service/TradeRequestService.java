@@ -22,6 +22,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -75,6 +76,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ProcessService processService;
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
+    @Autowired
+    ProductRpcService productRpcService;
 
     /**
      * 返回真实mapper
@@ -395,10 +398,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
 
         // 向UAP同步库存
-        if (TradeOrderTypeEnum.BUY.equals(tradeDto.getTradeOrderType())) {
-            // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
-            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, tradeDto.getMarketId(), optUser);
-        }
+//        if (TradeOrderTypeEnum.BUY.equals(tradeDto.getTradeOrderType())) {
+//            // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
+//            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, tradeDto.getMarketId(), optUser);
+//        }
 
         // BatchStock batchStock = new BatchStock();
         // batchStock.setId(batchStockItem.getId());
@@ -631,6 +634,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 }
                 this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
+
+
+                this.productRpcService.increaseRegDetail(sellerTradeDetail.getTradeDetailId(),tradeRequestItem.getSellerMarketId(),buyertd.getStockWeight(),Optional.empty());
+                this.productRpcService.deductRegDetail(buyerTradeDetail.getTradeDetailId(),tradeRequestItem.getBuyerMarketId(),buyertd.getStockWeight(),Optional.empty());
             });
 
 

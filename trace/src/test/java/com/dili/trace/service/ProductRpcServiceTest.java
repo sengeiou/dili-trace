@@ -77,25 +77,25 @@ public class ProductRpcServiceTest {
     /**
      * test
      */
-    @Test
-    public void createTest() {
-        RegisterBill bill = billService.get(127L);
-        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
-        Optional<OperatorUser > opt = Optional.of(operatorUser);
-        RegCreateResultDto result = productRpcService.create(bill, opt);
-    }
+//    @Test
+//    public void createTest() {
+//        RegisterBill bill = billService.get(127L);
+//        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
+//        Optional<OperatorUser > opt = Optional.of(operatorUser);
+//        RegCreateResultDto result = productRpcService.create(bill, opt);
+//    }
 
     /**
      * test
      */
-    @Test
-    public void reduceTest() {
-        Long stockId = 20201223000015L;
-        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
-        Optional<OperatorUser > opt = Optional.of(operatorUser);
-        RegisterBill bill = billService.get(127L);
-        bill.setWeight(BigDecimal.ONE);
-        productRpcService.reduceByStockIds(stockId, bill, opt);
-    }
+//    @Test
+//    public void reduceTest() {
+//        Long stockId = 20201223000015L;
+//        OperatorUser operatorUser = new OperatorUser(31L, "悟空");
+//        Optional<OperatorUser > opt = Optional.of(operatorUser);
+//        RegisterBill bill = billService.get(127L);
+//        bill.setWeight(BigDecimal.ONE);
+//        productRpcService.reduceByStockIds(stockId, bill, opt);
+//    }
 
 }
