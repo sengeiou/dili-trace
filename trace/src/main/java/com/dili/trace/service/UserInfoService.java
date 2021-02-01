@@ -42,7 +42,7 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             try {
                 this.insertSelective(newDomain);
                 return newDomain;
-            } catch (DuplicateKeyException e) {
+            } catch (Exception e) {
                 return StreamEx.of(this.listByExample(query)).findFirst().orElse(null);
             }
 

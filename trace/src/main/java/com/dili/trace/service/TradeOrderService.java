@@ -298,10 +298,12 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         List<ProductStockInput> productStockInputList = StreamEx.ofNullable(batchStockInputList).flatCollection(Function.identity())
                 .nonNull().toList();
         if (productStockInputList.isEmpty()) {
+            LOGGER.error("productStockInputList.isEmpty={}",productStockInputList.isEmpty());
             throw new TraceBizException("参数错误");
         }
         List<Long> productStockIdList = StreamEx.of(productStockInputList).map(ProductStockInput::getProductStockId).distinct().toList();
         if (productStockIdList.isEmpty() || productStockIdList.size() != 1) {
+            LOGGER.error("productStockInputList.isEmpty={},productStockIdList.size={}",productStockInputList.isEmpty(),productStockIdList.size());
             throw new TraceBizException("参数错误");
         }
         Long productStockId = productStockIdList.get(0);
