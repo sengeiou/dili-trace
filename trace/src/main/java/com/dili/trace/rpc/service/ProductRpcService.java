@@ -294,13 +294,13 @@ public class ProductRpcService {
 
 
         try {
-            BaseOutput<List<StockReductResultDto>> out = this.productRpc.reduceByStockIds(obj);
+            BaseOutput<List<StockReductResultDto>> out = this.productRpc.incByStockIds(obj);
             if (out.isSuccess()) {
                 return;
             }
-            logger.error("扣减库存失败:{}", out.getMessage());
+            logger.error("增加批次库存失败:{}", out.getMessage());
         } catch (Exception e) {
-            logger.error("扣减库存失败:{}", e.getMessage());
+            logger.error("增加批次库存失败:{}", e.getMessage());
         }
 
 
@@ -346,9 +346,9 @@ public class ProductRpcService {
             if (out.isSuccess()) {
                 return;
             }
-            logger.error("扣减库存失败:{}", out.getMessage());
+            logger.error("扣减批次库存失败:{}", out.getMessage());
         } catch (Exception e) {
-            logger.error("扣减库存失败:{}", e.getMessage());
+            logger.error("增加批次库存失败:{}", e.getMessage());
         }
 
 

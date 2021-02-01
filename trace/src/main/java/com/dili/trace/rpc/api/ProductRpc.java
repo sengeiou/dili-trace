@@ -23,7 +23,14 @@ import java.util.List;
         url = "${productService.url:}"
 )
 public interface ProductRpc {
-
+    /**
+     * 库存扣减
+     *
+     * @param obj
+     * @return
+     */
+    @PostMapping(value="/api/stock/incByStockIds",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseOutput<List<StockReductResultDto>> incByStockIds(@VOBody StockReduceRequestDto obj);
 
     /**
      * 库存扣减
