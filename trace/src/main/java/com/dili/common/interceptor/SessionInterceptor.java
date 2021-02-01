@@ -10,7 +10,6 @@ import com.dili.ss.redis.service.RedisUtil;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.SyncUserInfoService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.trace.service.UserInfoService;
@@ -45,8 +44,6 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserRedis userRedis;
     @Autowired
     UserUrlRedis userUrlRedis;
-    @Autowired
-    SyncRpcService syncRpcService;
     @Autowired
     SyncUserInfoService syncUserInfoService;
     @Resource
@@ -246,11 +243,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
      * 同步用户
      */
     public void doSyncUserRpc(Long userId) {
-        try {
-            syncRpcService.syncRpcUserByUserId(userId);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+//        try {
+//            syncRpcService.syncRpcUserByUserId(userId);
+//        } catch (Exception e) {
+//            logger.error(e.getMessage());
+//        }
     }
 
     private void sync(Optional<SessionData> sessionData) {

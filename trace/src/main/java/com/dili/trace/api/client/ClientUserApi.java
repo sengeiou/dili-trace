@@ -10,7 +10,6 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.service.SyncRpcService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
