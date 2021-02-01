@@ -49,7 +49,7 @@ ALTER TABLE dili_trace.category ADD CONSTRAINT category_market_unique UNIQUE KEY
 
 
 
-CREATE TABLE `user_sync_data` (
+CREATE TABLE `userinfo_sync_data` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT NULL COMMENT '客户ID',
   `market_id` bigint(20) DEFAULT NULL COMMENT '市场ID',
