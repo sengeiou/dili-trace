@@ -584,9 +584,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetailQuery.setSort("created");
         tradeDetailQuery.setOrder("asc");
         tradeDetailQuery.setMinStockWeight(BigDecimal.ZERO);
-        if(tradeRequest.getProductStockId()!=null){
-            tradeDetailQuery.setProductStockId(tradeRequest.getProductStockId());
-        }
+
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         for (TradeDetail td : tradeDetailList) {
             if (BigDecimal.ZERO.compareTo(totalTradeWeight) >= 0) {

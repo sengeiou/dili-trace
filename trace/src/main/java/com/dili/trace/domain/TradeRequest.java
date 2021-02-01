@@ -152,6 +152,13 @@ public class TradeRequest extends BaseDomain {
     @Column(name = "`handle_time`")
     private Date handleTime;
 
+    /**
+     * 状态
+     */
+    @Column(name = "`trade_request_status`")
+    private Integer tradeRequestStatus;
+
+
     @Transient
     public Long getTradeRequestId() {
         return this.id;
@@ -787,5 +794,13 @@ public class TradeRequest extends BaseDomain {
 
     public void setSellerMarketId(Long sellerMarketId) {
         this.sellerMarketId = sellerMarketId;
+    }
+
+    public Integer getTradeRequestStatus() {
+        return tradeRequestStatus;
+    }
+
+    public void setTradeRequestStatus(Integer tradeRequestStatus) {
+        this.tradeRequestStatus = tradeRequestStatus;
     }
 }
