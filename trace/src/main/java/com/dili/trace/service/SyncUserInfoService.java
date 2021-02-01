@@ -25,8 +25,7 @@ public class SyncUserInfoService {
     public UserInfo saveAndSyncUserInfo(Long userId, Long marketId) {
         UserInfo userInfo = this.userInfoService.saveUserInfo(userId, marketId);
         this.asyncService.syncUserInfo(userInfo, customerExtendDto -> {
-
-
+            this.userInfoService.updateUserInfoByCustomerExtendDto(userInfo.getId(), customerExtendDto);
         });
         return userInfo;
     }

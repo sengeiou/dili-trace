@@ -30,7 +30,8 @@ public class SyncCategoryService {
         }
         HangGuoCategory category = this.categoryService.saveCategory(productId, marketId);
         this.asyncService.syncCategoryInfo(category, cusCategoryDTO -> {
-
+            this.categoryService.updateCategory(category.getId(), cusCategoryDTO);
         });
     }
+
 }
