@@ -35,6 +35,9 @@ public enum TradeOrderStatusEnum {
 	public static Optional<TradeOrderStatusEnum> fromCode(Integer code) {
 		return StreamEx.of(TradeOrderStatusEnum.values()).filterBy(TradeOrderStatusEnum::getCode, code).findFirst();
 	}
+	public static String toName(Integer code){
+		return TradeOrderStatusEnum.fromCode(code).map(TradeOrderStatusEnum::getName).orElse("");
+	}
 
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);

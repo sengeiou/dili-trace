@@ -707,7 +707,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         TradeRequest tradeRequest = this.get(tradeRequestId);
         TradeOrder tradeOrder = new TradeOrder();
         tradeOrder.setId(tradeRequest.getTradeOrderId());
-        tradeOrder.setOrderStatus(handleStatus);
+//        tradeOrder.setOrderStatus(handleStatus);
         this.tradeOrderService.updateSelective(tradeOrder);
 
         TradeDetail tradeDetailQuery = new TradeDetail();

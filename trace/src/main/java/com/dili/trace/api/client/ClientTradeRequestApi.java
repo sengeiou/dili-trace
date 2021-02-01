@@ -113,11 +113,6 @@ public class ClientTradeRequestApi {
 
             BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
             List<TradeRequest> data = page.getDatas();
-            StreamEx.of(data).nonNull().forEach(td -> {
-                TradeOrder tradeOrder = this.tradeOrderService.get(td.getTradeOrderId());
-                td.setOrderStatus(tradeOrder.getOrderStatus());
-                td.setOrderStatusName(TradeOrderStatusEnum.fromCode(tradeOrder.getOrderStatus()).get().getName());
-            });
             return BaseOutput.success().setData(page);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

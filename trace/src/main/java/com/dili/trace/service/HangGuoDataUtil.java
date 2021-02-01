@@ -468,7 +468,7 @@ public class HangGuoDataUtil {
             order.setBuyerName(buyName);
             order.setSellerId(sellerId);
             order.setSellerName(sellerName);
-            order.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
+//            order.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
             order.setOrderType(TradeOrderTypeEnum.BUY.getCode());
             order.setCreated(createTime);
             order.setModified(createTime);
