@@ -18,7 +18,7 @@ ALTER TABLE dili_trace.trade_request MODIFY COLUMN reason varchar(200) CHARACTER
 ALTER TABLE dili_trace.`user` DROP KEY user_unique_phone;
 ALTER TABLE dili_trace.`user` ADD CONSTRAINT user_id_market_id_unique UNIQUE KEY (market_id,user_id);
 
-ALTER TABLE dili_trace.trade_request ADD trade_request_status INT NULL COMMENT '状态';
+ALTER TABLE dili_trace.trade_request ADD order_status INT NULL COMMENT '状态';
 
 
 DROP TABLE IF EXISTS category;

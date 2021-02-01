@@ -109,8 +109,8 @@ public class TraceRecordController {
         List<TradeRequest> requestList   = tradeRequestService.listByExample(tradeRequest);
         StreamEx.of(requestList).nonNull().forEach(r -> {
             TradeOrder tradeOrder = this.tradeOrderService.get(r.getTradeOrderId());
-            r.setOrderStatus(tradeOrder.getOrderStatus());
-            r.setOrderStatusName(TradeOrderStatusEnum.fromCode(tradeOrder.getOrderStatus()).get().getName());
+//            r.setOrderStatus(tradeOrder.getOrderStatus());
+//            r.setOrderStatusName(TradeOrderStatusEnum.fromCode(tradeOrder.getOrderStatus()).get().getName());
             r.setReportFlagStr(TradeReportFlagEnum.fromCode(r.getReportFlag()).get().getName());
         });
         List results = ValueProviderUtils.buildDataByProvider(tradeRequest, requestList);

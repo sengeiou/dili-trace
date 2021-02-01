@@ -152,7 +152,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeOrder.setSellerId(tradeDto.getSeller().getSellerId());
         tradeOrder.setSellerName(tradeDto.getSeller().getSellerName());
         tradeOrder.setSellerMarketId(tradeDto.getMarketId());
-        tradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
+//        tradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
         tradeOrder.setOrderType(tradeDto.getTradeOrderType().getCode());
         this.insertSelective(tradeOrder);
         return tradeOrder;
@@ -176,10 +176,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             return new TraceBizException("类型错误");
         });
 
-        TradeOrder updatableTradeOrder = new TradeOrder();
-        updatableTradeOrder.setId(tradeOrder.getId());
-        updatableTradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
-        this.updateSelective(updatableTradeOrder);
+        TradeRequest updatableTradeRequest = new TradeRequest();
+        updatableTradeRequest.setId(tradeRequest.getId());
+        updatableTradeRequest.setOrderStatus(tradeOrderStatusEnum.getCode());
+        this.tradeRequestService.updateSelective(updatableTradeRequest);
 
         this.dealTradeRequest(tradeRequest, tradeOrderStatusEnum, tradeOrderTypeEnum);
 
@@ -338,24 +338,21 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             return;
         }
         TradeOrder tradeOrderItem = this.get(tradeOrderId);
-        if (tradeOrderStatusEnum.equalsToCode(tradeOrderItem.getOrderStatus())) {
-            return;
-        }
-
         TradeOrderTypeEnum tradeOrderTypeEnum = TradeOrderTypeEnum.fromCode(tradeOrderItem.getOrderType()).orElseThrow(() -> {
             return new TraceBizException("交易类型错误");
         });
-
-        TradeOrder updatableTradeOrder = new TradeOrder();
-        updatableTradeOrder.setId(tradeOrderItem.getId());
-        updatableTradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
-        this.updateSelective(updatableTradeOrder);
 
 
         TradeRequest trQ = new TradeRequest();
         trQ.setTradeOrderId(tradeOrderId);
         for (TradeRequest tradeRequest : this.tradeRequestService.listByExample(trQ)) {
-
+            if (tradeOrderStatusEnum.equalsToCode(tradeRequest.getOrderStatus())) {
+                return;
+            }
+            TradeRequest updatableTradeRequest = new TradeRequest();
+            updatableTradeRequest.setId(tradeRequest.getId());
+            updatableTradeRequest.setOrderStatus(tradeOrderStatusEnum.getCode());
+            this.tradeRequestService.updateSelective(updatableTradeRequest);
             this.dealTradeRequest(tradeRequest, tradeOrderStatusEnum
                     , tradeOrderTypeEnum);
         }
@@ -495,7 +492,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeOrder.setSellerId(tradeDto.getSeller().getSellerId());
         tradeOrder.setSellerName(tradeDto.getSeller().getSellerName());
         tradeOrder.setSellerMarketId(tradeDto.getMarketId());
-        tradeOrder.setOrderStatus(TradeOrderStatusEnum.NONE.getCode());
+//        tradeOrder.setOrderStatus(TradeOrderStatusEnum.NONE.getCode());
         tradeOrder.setOrderType(tradeDto.getTradeOrderType().getCode());
         this.insertSelective(tradeOrder);
         return tradeOrder;
@@ -707,6 +704,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeRequest.setModified(now);
         tradeRequest.setNumber(0);
         tradeRequest.setPackageNumber(0);
+        tradeRequest.setOrderStatus(TradeOrderStatusEnum.NONE.getCode());
         tradeRequest.setWeightUnit(productStock.getWeightUnit());
         tradeRequest.setOrderDate(now);
 
@@ -767,10 +765,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      * @param tradeOrderItem
      * @param tradeStatusEnum
      */
-
-    public void handleTradeOrder(TradeOrder tradeOrderItem, TradeOrderStatusEnum tradeStatusEnum) {
-        tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());
-        this.updateSelective(tradeOrderItem);
-    }
+//
+//    public void handleTradeOrder(TradeOrder tradeOrderItem, TradeOrderStatusEnum tradeStatusEnum) {
+//        tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());
+//        this.updateSelective(tradeOrderItem);
+//    }
 
 }

@@ -170,7 +170,7 @@ public class EventMessageApi {
                         if (null != orderRequest) {
                             TradeOrder tradeOrder = this.tradeOrderService.get(orderRequest.getTradeOrderId());
                             if (null != tradeOrder) {
-                                eventMessage.setSourceOrderStatus(tradeOrder.getOrderStatus());
+//                                eventMessage.setSourceOrderStatus(tradeOrder.getOrderStatus());
                             }
                         }
                     }

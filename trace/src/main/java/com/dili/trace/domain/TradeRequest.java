@@ -3,6 +3,8 @@ package com.dili.trace.domain;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.annotation.Like;
+import com.dili.trace.enums.TradeOrderStatusEnum;
+import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -155,8 +157,8 @@ public class TradeRequest extends BaseDomain {
     /**
      * 状态
      */
-    @Column(name = "`trade_request_status`")
-    private Integer tradeRequestStatus;
+    @Column(name = "`order_status`")
+    private Integer orderStatus;
 
 
     @Transient
@@ -164,11 +166,6 @@ public class TradeRequest extends BaseDomain {
         return this.id;
     }
 
-    /**
-     * 交易单状态
-     */
-    @Transient
-    private Integer orderStatus;
 
     /**
      * 交易单状态描述
@@ -531,7 +528,7 @@ public class TradeRequest extends BaseDomain {
     }
 
     public String getOrderStatusName() {
-        return orderStatusName;
+        return TradeOrderStatusEnum.toName(this.getOrderStatus());
     }
 
     public void setOrderStatusName(String orderStatusName) {
@@ -796,11 +793,5 @@ public class TradeRequest extends BaseDomain {
         this.sellerMarketId = sellerMarketId;
     }
 
-    public Integer getTradeRequestStatus() {
-        return tradeRequestStatus;
-    }
 
-    public void setTradeRequestStatus(Integer tradeRequestStatus) {
-        this.tradeRequestStatus = tradeRequestStatus;
-    }
 }

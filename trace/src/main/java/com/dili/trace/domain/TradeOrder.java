@@ -62,9 +62,9 @@ public class TradeOrder extends BaseDomain {
     /**
      * 交易状态
      */
-    @ApiModelProperty(value = "交易状态")
-    @Column(name = "`order_status`")
-    private Integer orderStatus;
+//    @ApiModelProperty(value = "交易状态")
+//    @Column(name = "`order_status`")
+//    private Integer orderStatus;
 
     /**
      * 交易类型
@@ -217,20 +217,20 @@ public class TradeOrder extends BaseDomain {
     public void setModified(Date modified) {
         this.modified = modified;
     }
-
-    /**
-     * @return Integer return the orderStatus
-     */
-    public Integer getOrderStatus() {
-        return orderStatus;
-    }
-
-    /**
-     * @param orderStatus the orderStatus to set
-     */
-    public void setOrderStatus(Integer orderStatus) {
-        this.orderStatus = orderStatus;
-    }
+//
+//    /**
+//     * @return Integer return the orderStatus
+//     */
+//    public Integer getOrderStatus() {
+//        return orderStatus;
+//    }
+//
+//    /**
+//     * @param orderStatus the orderStatus to set
+//     */
+//    public void setOrderStatus(Integer orderStatus) {
+//        this.orderStatus = orderStatus;
+//    }
 
     /**
      * @return Integer return the orderType
