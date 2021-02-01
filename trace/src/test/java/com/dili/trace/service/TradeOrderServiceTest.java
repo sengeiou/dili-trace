@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -37,7 +38,6 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     //用mock的bean来代码本次testcase相关的所有依赖的bean(@Autowired+@Mocked)
     @MockBean
     CustomerRpc customerRpc;
-
 
 
     //@Mock标注的Bean并没有被初始化，需要对当前对象进行初始化init(MockitoAnnotations.initMocks(this);)
@@ -63,6 +63,33 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
         //当调用方法时直接调用真实方法,之后返回thenreturn的值
         Mockito.when(this.customerRpcService.findCustomerById(1L, 8L)).thenReturn(Optional.empty());
 
+    }
+
+    @Test
+    public void createBuy_test1() {
+
+
+        TradeDto tradeDto = new TradeDto();
+        tradeDto.setMarketId(8L);
+        tradeDto.setTradeOrderType(TradeOrderTypeEnum.SELL);
+
+        tradeDto.getBuyer().setBuyerId(589L);
+        tradeDto.getBuyer().setBuyerName("错位时空");
+        tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
+
+        List<ProductStockInput> batchStockInputList = new ArrayList<>();
+        ProductStockInput input = new ProductStockInput();
+        input.setProductStockId(157L);
+        input.setTradeWeight(BigDecimal.valueOf(2));
+        batchStockInputList.add(input);
+
+        ProductStockInput input2 = new ProductStockInput();
+        input2.setProductStockId(158L);
+        input2.setTradeWeight(BigDecimal.valueOf(2));
+        batchStockInputList.add(input2);
+
+        TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, batchStockInputList);
+        Assertions.assertNotNull(tradeOrder);
     }
 
     @Test
@@ -100,7 +127,7 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     @Test
     public void createSeperateTrade() {
 
-        CustomerExtendDto cust=new CustomerExtendDto();
+        CustomerExtendDto cust = new CustomerExtendDto();
         cust.setId(31L);
         cust.setName("zhangsan");
         Mockito.doReturn(Optional.of(cust)).when(customerRpcService).findCustomerById(31L, 8L);
