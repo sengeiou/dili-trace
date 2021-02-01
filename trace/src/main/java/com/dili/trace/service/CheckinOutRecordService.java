@@ -248,7 +248,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 					operateUser);
 
 			// 本地库存处理完成后。同步库存到UAP
-			processService.afterCheckIn(billItem.getId(), billItem.getMarketId(),operateUser);
+//			processService.afterCheckIn(billItem.getId(), billItem.getMarketId(),operateUser);
 
 			return item;
 		}

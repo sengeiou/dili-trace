@@ -398,10 +398,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
 
         // 向UAP同步库存
-        if (TradeOrderTypeEnum.BUY.equals(tradeDto.getTradeOrderType())) {
-            // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
-            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, tradeDto.getMarketId(), optUser);
-        }
+//        if (TradeOrderTypeEnum.BUY.equals(tradeDto.getTradeOrderType())) {
+//            // 销售类型才直接处理库存。购买类型有锁库存的操作，应该在卖家确认时向 UAP 同步库存
+//            processService.afterTrade(buyerTradeDetailList, sellerTradeDetailList, tradeDto.getMarketId(), optUser);
+//        }
 
         // BatchStock batchStock = new BatchStock();
         // batchStock.setId(batchStockItem.getId());
