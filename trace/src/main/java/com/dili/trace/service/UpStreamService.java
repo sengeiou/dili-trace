@@ -143,7 +143,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			}
 		}
 
-		return BaseOutput.success();
+		return BaseOutput.successData(input.getId());
 	}
 
 	/**
@@ -178,7 +178,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		UpStreamDto dto = new UpStreamDto();
 		dto.setTelphone(input.getTelphone());
 		dto.setMarketId(input.getMarketId());
-		dto.setUpORdown(input.getUpORdown());
+//		dto.setUpORdown(input.getUpORdown());
 		dto.setName(input.getName());
 		List<UpStream> streamList = getActualDao().select(dto);
 		return StreamEx.of(streamList).nonNull().findFirst();
