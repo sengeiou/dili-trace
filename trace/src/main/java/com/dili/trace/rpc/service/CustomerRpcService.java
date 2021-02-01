@@ -275,6 +275,19 @@ public class CustomerRpcService {
         }
         return customer;
     }
+    /**
+     * 查询客户
+     *
+     * @param customerId
+     * @return
+     */
+    public CustomerExtendDto findApprovedCustomerByIdOrEx(Long customerId, Long marketId,String errorMsg) {
+        CustomerExtendDto customer = this.findCustomerByIdOrEx(customerId, marketId);
+        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(customer.getCustomerMarket().getApprovalStatus())) {
+            throw new TraceBizException(errorMsg);
+        }
+        return customer;
+    }
 
     /**
      * return Optional.empty();

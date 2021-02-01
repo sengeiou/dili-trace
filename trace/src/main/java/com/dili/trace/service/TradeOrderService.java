@@ -295,16 +295,21 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      * @param batchStockInputList
      */
     public TradeOrder createBuyTrade(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
+        TradeDto.Buyer buyer = tradeDto.getBuyer();
+        this.customerRpcService.findApprovedCustomerByIdOrEx(buyer.getBuyerId(), tradeDto.getMarketId(), "用户未审核通过不能进行购买");
         List<ProductStockInput> productStockInputList = StreamEx.ofNullable(batchStockInputList).flatCollection(Function.identity())
-                .nonNull().toList();
+                .nonNull().filter(pin -> {
+                    return pin.getProductStockId() != null;
+                }).toList();
         if (productStockInputList.isEmpty()) {
-            LOGGER.error("productStockInputList.isEmpty={}",productStockInputList.isEmpty());
+            LOGGER.error("productStockInputList.isEmpty={}", productStockInputList.isEmpty());
             throw new TraceBizException("参数错误");
         }
-        List<Long> productStockIdList = StreamEx.of(productStockInputList).map(ProductStockInput::getProductStockId).distinct().toList();
-        if (productStockIdList.isEmpty() || productStockIdList.size() != 1) {
-            LOGGER.error("productStockInputList.isEmpty={},productStockIdList.size={}",productStockInputList.isEmpty(),productStockIdList.size());
-            throw new TraceBizException("参数错误");
+        List<Long> productStockIdList = StreamEx.of(productStockInputList).map(ProductStockInput::getProductStockId).distinct().nonNull().toList();
+
+        boolean ownedByOneSeller = StreamEx.of(this.productStockService.findByIdList(productStockIdList)).map(ProductStock::getUserId).distinct().count() == 1;
+        if (!ownedByOneSeller) {
+            throw new TraceBizException("所要购买的商品不属于同一个卖家");
         }
         Long productStockId = productStockIdList.get(0);
         ProductStock productStock = productStockService.get(productStockId);
