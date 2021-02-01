@@ -47,6 +47,9 @@ public class AsyncService {
      */
     @Async
     public void syncCategoryInfo(HangGuoCategory category, Consumer<CusCategoryDTO> consumer) {
+        if (category == null || category.getMarketId() == null) {
+            return;
+        }
         CusCategoryQuery cusQuery = new CusCategoryQuery();
         cusQuery.setIds(Lists.newArrayList(String.valueOf(category.getId())));
         StreamEx.of(this.assetsRpcService.listCusCategory(cusQuery, category.getMarketId())).nonNull().findFirst().ifPresent(cate -> {
