@@ -25,6 +25,41 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
     UserMapper userMapper;
 
     /**
+     * 根据userid查询 UserInfo
+     * @param userId
+     * @return
+     */
+    public Optional<UserInfo>findByUserId(Long userId){
+        if(userId==null){
+            return Optional.empty();
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        return StreamEx.of(this.listByExample(userInfo)).findFirst();
+    }
+
+    /**
+     * 根据userid更新颜色
+     * @param userId
+     * @param userQrStatusEnum
+     * @return
+     */
+    public int updateUserQrByUserId(Long userId,UserQrStatusEnum userQrStatusEnum){
+        if(userId==null||userQrStatusEnum==null){
+            return 0;
+        }
+        UserInfo condition=new UserInfo();
+        condition.setUserId(userId);
+
+
+        UserInfo domain=new UserInfo();
+        domain.setQrStatus(userQrStatusEnum.getCode());
+
+        this.updateByExample(domain,condition);
+        return 0;
+    }
+
+    /**
      * 保存或者查询需要同步的用户
      *
      * @param userId

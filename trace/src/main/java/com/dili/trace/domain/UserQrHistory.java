@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 由MyBatis Generator工具自动生成
- * 
+ * <p>
  * This file was generated on 2019-07-26 09:20:35.
  */
 @Table(name = "`user_qr_history`")
@@ -70,14 +70,20 @@ public class UserQrHistory extends BaseDomain {
      */
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
-    private Long billId;
+    private Long qrHistoryEventId;
+
+    /**
+     * 类型
+     */
+    @Column(name = "`qr_history_type`")
+    private Integer qrHistoryEventType;
 
     /**
      * 交易单ID
      */
-    @ApiModelProperty(value = "交易单ID")
-    @Column(name = "`trade_request_id`")
-    private Long tradeRequestId;
+//    @ApiModelProperty(value = "交易单ID")
+//    @Column(name = "`trade_request_id`")
+//    private Long tradeRequestId;
 
     /**
      * 查验状态
@@ -86,6 +92,9 @@ public class UserQrHistory extends BaseDomain {
     @Column(name = "`verify_status`")
     private Integer verifyStatus;
 
+
+
+
     /**
      * 是否有效
      */
@@ -93,13 +102,13 @@ public class UserQrHistory extends BaseDomain {
     @Column(name = "`is_valid`")
     private Integer isValid;
 
-    public Long getTradeRequestId() {
-        return tradeRequestId;
-    }
-
-    public void setTradeRequestId(Long tradeRequestId) {
-        this.tradeRequestId = tradeRequestId;
-    }
+//    public Long getTradeRequestId() {
+//        return tradeRequestId;
+//    }
+//
+//    public void setTradeRequestId(Long tradeRequestId) {
+//        this.tradeRequestId = tradeRequestId;
+//    }
 
     /**
      * @return Long return the id
@@ -203,16 +212,16 @@ public class UserQrHistory extends BaseDomain {
     /**
      * @return Long return the billId
      */
-    public Long getBillId() {
-        return billId;
-    }
-
-    /**
-     * @param billId the billId to set
-     */
-    public void setBillId(Long billId) {
-        this.billId = billId;
-    }
+//    public Long getBillId() {
+//        return billId;
+//    }
+//
+//    /**
+//     * @param billId the billId to set
+//     */
+//    public void setBillId(Long billId) {
+//        this.billId = billId;
+//    }
 
     /**
      * @return Integer return the verifyStatus
@@ -242,4 +251,19 @@ public class UserQrHistory extends BaseDomain {
         this.isValid = isValid;
     }
 
+    public Long getQrHistoryEventId() {
+        return qrHistoryEventId;
+    }
+
+    public void setQrHistoryEventId(Long qrHistoryEventId) {
+        this.qrHistoryEventId = qrHistoryEventId;
+    }
+
+    public Integer getQrHistoryEventType() {
+        return qrHistoryEventType;
+    }
+
+    public void setQrHistoryEventType(Integer qrHistoryEventType) {
+        this.qrHistoryEventType = qrHistoryEventType;
+    }
 }

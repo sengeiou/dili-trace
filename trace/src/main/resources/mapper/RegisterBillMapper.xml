@@ -189,7 +189,7 @@
   </select>
 
   <select id="selectUserIdWithouBill" parameterType="com.dili.trace.api.input.UserQueryDto" resultType="java.lang.Long">
-    select id from `user` where id not in(
+    select u.user_id from `user` u where u.user_id not in(
     select user_id from register_bill where is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=created ]]>

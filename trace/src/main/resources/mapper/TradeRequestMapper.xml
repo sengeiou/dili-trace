@@ -16,8 +16,8 @@
   </select>
 
   <select id="selectBuyerIdWithouTradeRequest" parameterType="com.dili.trace.api.input.UserQueryDto" resultType="java.lang.Long">
-    select id from `user` where id not in(
-    select t.buyer_id from trade_request t, trade_order o where t.return_status != 20 and o.order_status=10
+    select u.user_id from `user` u where u.user_id not in(
+    select t.buyer_id from trade_request t, trade_order o where t.return_status != 20 and t.order_status=10
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=t.created ]]>
     </if>

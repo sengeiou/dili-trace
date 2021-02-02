@@ -640,12 +640,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.productRpcService.deductRegDetail(buyerTradeDetail.getTradeDetailId(),tradeRequestItem.getBuyerMarketId(),buyertd.getStockWeight(),Optional.empty());
             });
 
-
-            try {
-                userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(), tradeRequestItem.getBuyerId());
-            } catch (ParseException e) {
-                logger.error(e.getMessage(), e);
-            }
+            this.userQrHistoryService.rollBackByTradeRequest(tradeRequestItem);
         }
 
         return tradeRequest.getId();

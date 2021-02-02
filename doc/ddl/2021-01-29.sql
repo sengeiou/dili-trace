@@ -1,3 +1,15 @@
+-- dili_trace.trade_request_detail definition
+
+CREATE TABLE `trade_request_detail` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `trade_request_id` bigint DEFAULT NULL,
+  `trade_detail_id` bigint DEFAULT NULL,
+  `trade_weight` decimal(15,3) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `bill_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=213 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 ALTER TABLE dili_trace.trade_detail MODIFY COLUMN buyer_id bigint NULL COMMENT '买家ID';
 ALTER TABLE dili_trace.trade_request MODIFY COLUMN seller_name varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL;
 ALTER TABLE dili_trace.register_head MODIFY COLUMN piece_num decimal(11,3) DEFAULT 0.000 COMMENT '件数';

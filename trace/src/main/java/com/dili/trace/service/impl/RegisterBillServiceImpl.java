@@ -586,7 +586,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         });
         this.updateSelective(bill);
         this.registerBillHistoryService.createHistory(billItem.getBillId());
-        this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
+        this.userQrHistoryService.rollbackByBill(billItem);
         return billId;
     }
 
@@ -840,19 +840,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         StreamEx.of(userIdList).nonNull().forEach(uid -> {
             this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
         });
-
-        // RegisterBillDto bq = new RegisterBillDto();
-        // bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
-        // bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
-        // bq.setMetadata(IDTO.AND_CONDITION_EXPR,
-        // "user_id in(select id from `user` where qr_status=" +
-        // UserQrStatusEnum.BLACK.getCode() + ")");
-        // StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid
-        // -> {
-        // return this.userService.get(uid);
-        // }).nonNull().forEach(userItem -> {
-        // this.updateUserQrStatusByUserId(userItem.getId());
-        // });
     }
 
     @Override
@@ -1346,7 +1333,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         });
         this.updateSelective(bill);
         this.registerBillHistoryService.createHistory(billItem.getBillId());
-        this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
+        this.userQrHistoryService.rollbackByBill(bill);
         return dto.getBillId();
     }
 

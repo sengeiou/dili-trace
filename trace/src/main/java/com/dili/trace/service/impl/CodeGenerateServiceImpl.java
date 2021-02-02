@@ -73,9 +73,6 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 //
 //        CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
 //                .orElse(null);
-//        if (codeGenerate == null) {
-//            throw new TraceBizException("生成编号错误");
-//        }
 //
 //        // 时间比较
 //        LocalDateTime now = LocalDateTime.now();
@@ -230,21 +227,6 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 
 //
-//    @Override
-//    @Transactional(propagation = Propagation.REQUIRED)
-//    public String nextRegisterBillSampleCode() {
-//        String lockKey = "lock_trace_registerbill_samplecode";
-//        try {
-//            redisDistributedLock.tryGetLockSync(lockKey, lockKey, 10);
-//            return this.nextCode(CodeGenerateEnum.REGISTER_BILL_SAMPLECODE);
-//        } catch (Exception e) {
-//            throw new TraceBizException("生成编号错误");
-//        } finally {
-//            redisDistributedLock.releaseLock(lockKey, lockKey);
-//        }
-//
-//    }
-
 
     @Transactional(propagation = Propagation.REQUIRED)
     public String nextECOMMERCE_BILL_SEPERATE_REPORT_CODE() {

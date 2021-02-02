@@ -644,14 +644,6 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         return Optional.of(batchStockItem);
     }
 
-    /**
-     * 查询下一个code
-     *
-     * @return
-     */
-    private String getNextCode() {
-        return this.uidRestfulRpcService.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
-    }
 
     /**
      * 创建TradeRequest

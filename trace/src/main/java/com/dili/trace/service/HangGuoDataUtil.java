@@ -343,7 +343,7 @@ public class HangGuoDataUtil {
             codeGenerate = codeGenerateList.get(0);
         }
         if (codeGenerate == null) {
-            throw new TraceBizException("生成编号错误");
+            throw new TraceBizException("生成编号时发生错误");
         }
         String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
         if (!nextSegment.equals(codeGenerate.getSegment())) {
