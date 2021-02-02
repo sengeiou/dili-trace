@@ -16,7 +16,7 @@ public class SyncUserInfoService {
     AsyncService asyncService;
 
     /**
-     * 保存并同步用户信息
+     * 保存并同步客户信息(客户登录或者管理员帮客户报备时调用此方法)
      *
      * @param userId
      * @param marketId
