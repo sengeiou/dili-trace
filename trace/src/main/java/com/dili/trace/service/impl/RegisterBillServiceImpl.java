@@ -819,7 +819,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     /**
-     * 根据报备单数量更新用户状态到黑码
+     * 根据报备单数量(一定时间:默认过去七天)更新用户状态到黑码
      *
      * @param
      * @return
