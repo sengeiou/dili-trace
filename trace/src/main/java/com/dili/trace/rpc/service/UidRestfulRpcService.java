@@ -26,8 +26,19 @@ public class UidRestfulRpcService {
 
     @Autowired(required = false)
     UidRestfulRpc uidRestfulRpc;
-    @Autowired
-    private LoginSessionContext sessionContext;
+    /**
+     * 生成编号
+     * @param bizNumberType
+     * @return
+     */
+    public  String bizNumber(BizNumberType bizNumberType){
+
+        if(bizNumberType==null){
+            logger.error("bizNumberType ={}",bizNumberType);
+            throw new TraceBizException("生成编号出错");
+        }
+        return this.bizNumber(bizNumberType.getType());
+    }
 
     /**
      * 生成编号
@@ -35,14 +46,20 @@ public class UidRestfulRpcService {
      * @return
      */
     public String bizNumber(String type) {
-        BaseOutput<String> out = this.uidRestfulRpc.bizNumber(type);
+        String bizType=StringUtils.trimToNull(type);
+        if(bizType==null){
+            logger.error("bizType ={}",bizType);
+            throw new TraceBizException("生成编号出错");
+        }
+        BaseOutput<String> out = this.uidRestfulRpc.bizNumber(bizType);
         if (out!=null&&out.isSuccess()&& StringUtils.isNotBlank(out.getData())){
             return out.getData().trim();
         } else {
             if (out != null) {
-                logger.error("生成编号出错：{}--{}--{}", out.getCode(), out.getMessage(), out.getErrorData());
+                logger.error("生成编号出错：bizType={},{}--{}--{}", bizType,out.getCode(), out.getMessage(), out.getErrorData());
             }
         }
+        logger.error("生成编号出错 bizType ={}",bizType);
         throw new TraceBizException("生成编号出错");
     }
 
@@ -51,7 +68,7 @@ public class UidRestfulRpcService {
      * @return
      */
     public String nextTradeRequestCode(){
-            return this.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
+        return this.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
     }
 
     /**
