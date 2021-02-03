@@ -5,8 +5,8 @@ CREATE TABLE `category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `parent_id` bigint(20) DEFAULT NULL COMMENT '上一级ID',
   `category_id` bigint(20) DEFAULT NULL COMMENT 'categoryID',
-  `name` varchar(20) DEFAULT NULL COMMENT '名称',
-  `full_name` varchar(20) DEFAULT NULL COMMENT '全名',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '名称',
+  `full_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL  COMMENT '全名',
   `level` int(11) NOT NULL DEFAULT '1' COMMENT '层级',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -25,6 +25,3 @@ CREATE TABLE `category` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE dili_trace.category ADD CONSTRAINT category_market_unique UNIQUE KEY (category_id,market_id);
-
-ALTER TABLE dili_trace.category MODIFY COLUMN name varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '名称';
-ALTER TABLE dili_trace.category MODIFY COLUMN full_name varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '全名';
