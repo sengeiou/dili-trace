@@ -26,6 +26,7 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
@@ -128,15 +129,7 @@ public class UpStreamController {
     String listPage(@RequestBody UpStreamDto upStreamDto) throws Exception {
         // 业户名称查询
         if (StringUtils.isNotBlank(upStreamDto.getLikeUserName())) {
-            //通过userName查询上游企业id
-            Set<Long> upstreamIds = buildUpstreamIdsByLikeName(upStreamDto.getLikeUserName());
-            if (CollectionUtils.isEmpty(upstreamIds)) {
-                return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
-            }
-            upStreamDto.setIds(new ArrayList<>(upstreamIds));
-            if (CollectionUtils.isEmpty(upStreamDto.getIds())) {
-                return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
-            }
+            upStreamDto.setMetadata(IDTO.AND_CONDITION_EXPR, " id in(select upstream_id from r_user_upstream where user_name like '%"+upStreamDto.getLikeUserName()+"%')");
         }
 
         // 设置市场查询条件
@@ -144,20 +137,7 @@ public class UpStreamController {
         BasePage<UpStream> streamBasePage = upStreamService.listPageByExample(upStreamDto);
         Long totalItem = streamBasePage.getTotalItem();
         List<UpStream> upStreams = streamBasePage.getDatas();
-        List<UpStreamDto> upStreamDtos = new ArrayList<>();
-        if (!upStreams.isEmpty()) {
-            //构建上游企业用户map
-            Map<Long, String> upUserMap = buildUpUserMap(upStreams);
-            upStreams.forEach(o -> {
-                UpStreamDto usd = new UpStreamDto();
-                BeanUtils.copyProperties(o, usd);
-                Object nameList = upUserMap.get(o.getId());
-                usd.setUserNames(nameList == null ? "" : StringUtils.strip(nameList.toString(), "[]"));
-                upStreamDtos.add(usd);
-            });
-        } else {
-            return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
-        }
+        List<UpStreamDto> upStreamDtos = this. buildUpUserMap(upStreams);
         List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
         return new EasyuiPageOutput(totalItem, results).toString();
 
@@ -169,72 +149,31 @@ public class UpStreamController {
      * @param upStreams
      * @return
      */
-    private Map<Long, String> buildUpUserMap(List<UpStream> upStreams) {
+    private   List<UpStreamDto> buildUpUserMap(List<UpStream> upStreams) {
+        if(upStreams==null||upStreams.isEmpty()){
+            return Lists.newArrayList();
+        }
         //查询上游企业关联用户列表
         RUserUpstreamDto rUserUpstreamDto = new RUserUpstreamDto();
-        rUserUpstreamDto.setUpstreamIds(upStreams.stream().map(o -> o.getId()).collect(Collectors.toList()));
+        rUserUpstreamDto.setUpstreamIds(StreamEx.of(upStreams).nonNull().map(o -> o.getId()).distinct().toList());
         List<RUserUpstream> upstreamsRefs = rUserUpStreamService.listByExample(rUserUpstreamDto);
-        Map<Long, String> upUserMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(upstreamsRefs)) {
-            List<CustomerExtendDto> customerExtendDtoList = new ArrayList<>();
-            //查询用户集合
-            upstreamsRefs.forEach(u -> {
-                BaseOutput<CustomerExtendDto> customerExtendDtoBaseOutput = customerRpc.get(u.getUserId(), MarketUtil.returnMarket());
-                if (!customerExtendDtoBaseOutput.isSuccess()){
-                    throw new RuntimeException("查询客户失败");
-                }
-                customerExtendDtoList.add(customerExtendDtoBaseOutput.getData());
-            });
-            if (CollectionUtils.isNotEmpty(customerExtendDtoList)) {
-                //用户id，name组成用户map
-                Map<Long, String> userMap = customerExtendDtoList.stream().collect(Collectors.toMap(CustomerExtendDto::getId, CustomerExtendDto::getName, (a, b) -> a));
-                //根据上游企业id 分组 用户id，组成按上游企业id分组的用户集合
-                Map<Long, List<RUserUpstream>> upStreamUserMap = upstreamsRefs.stream().collect(Collectors.groupingBy(RUserUpstream::getUpstreamId));
-                //遍历上游企业集合，将用户map名称与上游企业用户集合关联
-                upStreamUserMap.entrySet().stream().forEach(up -> {
-                    Set<String> userNames = new HashSet<>();
-                    up.getValue().stream().filter(upt -> null != upt.getUserId()).map(upt -> upt.getUserId()).forEach(userId -> {
-                        if (null != userMap.get(userId)) {
-                            userNames.add(userMap.get(userId));
-                        }
-                    });
-                    if (!userNames.isEmpty()) {
-                        upUserMap.put(up.getKey(), userNames.toString());
-                    }
-                });
-            }
+        //用户id，name组成用户map
+        Map<Long, List<String>> userMap = StreamEx.of(upstreamsRefs)
+                .nonNull().mapToEntry(RUserUpstream::getUpstreamId, RUserUpstream::getUserName)
+                .filterKeys(Objects::nonNull).grouping();
+        List<UpStreamDto> upStreamDtos = new ArrayList<>();
 
-        }
-        return upUserMap;
+        upStreams.forEach(o -> {
+            UpStreamDto usd = new UpStreamDto();
+            BeanUtils.copyProperties(o, usd);
+            List<String> nameList = userMap.get(o.getId());
+            usd.setUserNames(nameList.isEmpty()? "" : StringUtils.strip(String.join(",",nameList), "[]"));
+            upStreamDtos.add(usd);
+        });
+
+        return upStreamDtos;
     }
 
-    /**
-     * 构建上游企业id map
-     *
-     * @param likeUserName
-     * @return
-     */
-    private Set<Long> buildUpstreamIdsByLikeName(String likeUserName) {
-        CustomerQueryInput customerQueryInput = new CustomerQueryInput();
-        customerQueryInput.setName(likeUserName);
-        customerQueryInput.setMarketId(MarketUtil.returnMarket());
-        BaseOutput<List<CustomerExtendDto>> customerExtendDtoOutput = customerRpc.list(customerQueryInput);
-        if (!customerExtendDtoOutput.isSuccess()){
-            throw new RuntimeException("客户查询错误");
-        }
-        List<Long> userIds = new ArrayList<>(16);
-        if (null != customerExtendDtoOutput && null != customerExtendDtoOutput.getData()) {
-            userIds = customerExtendDtoOutput.getData().stream().map(o -> o.getId()).collect(Collectors.toList());
-        }
-        if (CollectionUtils.isEmpty(userIds)) {
-            return null;
-        }
-        RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
-        rUserUpstream.setUserIds(userIds);
-        return StreamEx.ofNullable(rUserUpStreamService.listByExample(rUserUpstream))
-                .flatCollection(Function.identity()).map(o -> o.getUpstreamId()).collect(Collectors.toSet());
-
-    }
 
     /**
      * 根据上游用户ID查询其绑定的所有业户

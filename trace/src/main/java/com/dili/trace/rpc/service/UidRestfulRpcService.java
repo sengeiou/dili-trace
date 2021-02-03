@@ -26,19 +26,8 @@ public class UidRestfulRpcService {
 
     @Autowired(required = false)
     UidRestfulRpc uidRestfulRpc;
-    /**
-     * 生成编号
-     * @param bizNumberType
-     * @return
-     */
-    public  String bizNumber(BizNumberType bizNumberType){
-
-        if(bizNumberType==null){
-            logger.error("bizNumberType ={}",bizNumberType);
-            throw new TraceBizException("生成编号出错");
-        }
-        return this.bizNumber(bizNumberType.getType());
-    }
+    @Autowired
+    private LoginSessionContext sessionContext;
 
     /**
      * 生成编号
@@ -68,7 +57,7 @@ public class UidRestfulRpcService {
      * @return
      */
     public String nextTradeRequestCode(){
-        return this.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
+            return this.bizNumber(BizNumberType.TRADE_REQUEST_CODE.getType());
     }
 
     /**
