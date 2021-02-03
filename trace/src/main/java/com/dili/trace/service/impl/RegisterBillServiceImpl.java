@@ -826,30 +826,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
         dto.setCreatedStart(createdStart);
         dto.setCreatedEnd(createdEnd);
-        List<Long> userIdList = this.getActualDao().selectUserIdWithouBill(dto);
-        if (userIdList == null) {
-            userIdList = new ArrayList<>();
-        }
-        List<Long> buyerIdList = tradeRequestService.selectBuyerIdWithouTradeRequest(dto);
-        if (buyerIdList != null) {
-            userIdList.retainAll(buyerIdList);
-        }
-        StreamEx.of(userIdList).nonNull().forEach(uid -> {
-            this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
-        });
+        
 
-        // RegisterBillDto bq = new RegisterBillDto();
-        // bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
-        // bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
-        // bq.setMetadata(IDTO.AND_CONDITION_EXPR,
-        // "user_id in(select id from `user` where qr_status=" +
-        // UserQrStatusEnum.BLACK.getCode() + ")");
-        // StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid
-        // -> {
-        // return this.userService.get(uid);
-        // }).nonNull().forEach(userItem -> {
-        // this.updateUserQrStatusByUserId(userItem.getId());
-        // });
+
     }
 
     @Override

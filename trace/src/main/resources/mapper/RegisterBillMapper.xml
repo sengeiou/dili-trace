@@ -188,19 +188,7 @@
     group by verify_status
   </select>
 
-  <select id="selectUserIdWithouBill" parameterType="com.dili.trace.api.input.UserQueryDto" resultType="java.lang.Long">
-    select u.user_id from `user` u where u.user_id not in(
-    select user_id from register_bill where is_deleted=0
-    <if test="createdStart != null">
-      <![CDATA[ AND #{createdStart}<=created ]]>
-    </if>
-    <if test="createdEnd != null">
-      <![CDATA[AND created <=#{createdEnd}]]>
-    </if>
-    )
-    <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
-
-  </select>
+  
   <select id="selectBillReportData"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
 
     select * from (select DISTINCT  area from tally_area_no

@@ -9,7 +9,9 @@ import java.util.Optional;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.dao.UserQrHistoryMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.QrHistoryEventTypeEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
@@ -30,17 +32,27 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
     TradeRequestService tradeRequestService;
     @Autowired
     BillService billService;
+    @Autowired
+    UserQrHistoryMapper qrHistoryMapper;
 
     public void run(String... args) {
 
     }
 
-    public UserQrHistory createUserQrHistoryForWithousBills(Long userId) {
+    public UserQrHistory createUserQrHistoryForWithousBills(UserQrHistoryQueryDto historyQueryDto) {
+    	  UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
+    	  historyQueryDto.setContent("最近七天无报备且无交易单" + ",变为" + qrStatusEnum.getDesc() + "码");
+    	this.qrHistoryMapper.updateQrStatusByQrHistory(historyQueryDto);
         UserInfo userItem = this.userInfoService.findByUserId(userId).orElse(null);
         if (java.util.Objects.equals(userItem, null)) {
             return null;
         }
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
+        UserQrHistoryQueryDto qrhis=new UserQrHistoryQueryDto();
+        qrhis.setQrStatus(qrStatusEnum.getCode());
+        
+        
+       
         this.updateUserQrStatus(userItem.getId(), qrStatusEnum);
         return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
             return qrStatusEnum.equalsCode(qrhis.getQrStatus());

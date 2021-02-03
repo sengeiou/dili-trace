@@ -840,15 +840,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }).nonNull().distinct(UserOutput::getUserId).toList();
     }
 
-    /**
-     * 查询近7天有买商品的用户
-     *
-     * @param user
-     * @return
-     */
-    public List<Long> selectBuyerIdWithouTradeRequest(UserQueryDto user) {
-        return getActualDao().selectBuyerIdWithouTradeRequest(user);
-    }
 
     /**
      * 查询近7天有买商品的用户

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.UserQrHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserQrHistory">
+
+  </resultMap>
+  <update id="updateQrStatus" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto">
+      update `user` set qr_status=#{qrStatus},content=#{content} where user_id not in(
+            select user_id from user_qr_history uq
+            where <![CDATA[AND ( uq.created >= #{createdStart} OR uq.created <= #{createdEnd})]]>
+            and is_valid=#{isValid}
+      )
+      and qr_status!=#{qrStatus}
+  </update>
+</mapper>
