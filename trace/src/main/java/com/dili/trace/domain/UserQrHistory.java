@@ -66,16 +66,16 @@ public class UserQrHistory extends BaseDomain {
     private Date modified;
 
     /**
-     * 报备单ID
+     * qr事件ID
      */
-    @ApiModelProperty(value = "报备单ID")
-    @Column(name = "`bill_id`")
+    @ApiModelProperty(value = "qr事件ID")
+    @Column(name = "`qr_history_eventid`")
     private Long qrHistoryEventId;
 
     /**
-     * 类型
+     * qr事件类型
      */
-    @Column(name = "`qr_history_type`")
+    @Column(name = "`qr_history_event_type`")
     private Integer qrHistoryEventType;
 
     /**

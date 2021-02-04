@@ -25,3 +25,14 @@ CREATE TABLE `category` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE dili_trace.category ADD CONSTRAINT category_market_unique UNIQUE KEY (category_id,market_id);
+
+ALTER TABLE dili_trace.`user` ADD qr_content varchar(500) NULL COMMENT '最后的二维码变更内容';
+ALTER TABLE dili_trace.`user` ADD qr_history_id bigint(20) NULL COMMENT '最后的二维码变更历史ID';
+
+
+
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN bill_id;
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
+
+ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_eventid bigint(20) NULL COMMENT 'qr事件ID';
+ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';

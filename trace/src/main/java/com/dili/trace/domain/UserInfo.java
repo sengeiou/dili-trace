@@ -326,7 +326,33 @@ public class UserInfo extends BaseDomain {
      */
     @Column(name = "`last_sync_success`")
     private Integer lastSyncSuccess;
+    /**
+     * 最后的二维码变更内容
+     */
+    @Column(name = "`qr_content`")
+    private String qrContent;
 
+    /**
+     * 最后的二维码变更历史ID
+     */
+    @Column(name = "`qr_history_id`")
+    private Long qrHistoryId;
+
+    public String getQrContent() {
+        return qrContent;
+    }
+
+    public void setQrContent(String qrContent) {
+        this.qrContent = qrContent;
+    }
+
+    public Long getQrHistoryId() {
+        return qrHistoryId;
+    }
+
+    public void setQrHistoryId(Long qrHistoryId) {
+        this.qrHistoryId = qrHistoryId;
+    }
 
     /**
      * 经营户扩展信息

@@ -5,16 +5,7 @@
 
     </resultMap>
     
-    <update id="updateQrStatusByUserIdList">
-        update `user` set qr_status=#{qrStatus},content=#{content} where 0=1
-        <if test="userIdList!=null and userIdList.size()>0">
-        or user_id
-        <foreach collection="userIdList" open=" IN (" close=")" item="userId"  separator=",">
-          #{userId}
-        </foreach>
-      </if>
-    </update>
-    
+
     <select id="selectUserIdWithoutHistory" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="java.lang.Long">
       select user_id from `user` where user_id not in(
             select user_id from user_qr_history uq
@@ -22,5 +13,8 @@
             and is_valid=#{isValid}
       )
       <![CDATA[AND qr_status<>#{qrStatus})]]>
+      <if test="userId != null">
+        AND user_id = #{userId}
+      </if>
   </select>
 </mapper>

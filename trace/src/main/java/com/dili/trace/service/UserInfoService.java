@@ -26,11 +26,12 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
 
     /**
      * 根据userid查询 UserInfo
+     *
      * @param userId
      * @return
      */
-    public Optional<UserInfo>findByUserId(Long userId){
-        if(userId==null){
+    public Optional<UserInfo> findByUserId(Long userId) {
+        if (userId == null) {
             return Optional.empty();
         }
         UserInfo userInfo = new UserInfo();
@@ -38,24 +39,30 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
         return StreamEx.of(this.listByExample(userInfo)).findFirst();
     }
 
+    public Optional<UserInfo> selectByUserIdForUpdate(Long userId) {
+
+        return Optional.empty();
+    }
+
     /**
      * 根据userid更新颜色
+     *
      * @param userId
      * @param userQrStatusEnum
      * @return
      */
-    public int updateUserQrByUserId(Long userId,UserQrStatusEnum userQrStatusEnum){
-        if(userId==null||userQrStatusEnum==null){
+    public int updateUserQrByUserId(Long userId, UserQrStatusEnum userQrStatusEnum) {
+        if (userId == null || userQrStatusEnum == null) {
             return 0;
         }
-        UserInfo condition=new UserInfo();
+        UserInfo condition = new UserInfo();
         condition.setUserId(userId);
 
 
-        UserInfo domain=new UserInfo();
+        UserInfo domain = new UserInfo();
         domain.setQrStatus(userQrStatusEnum.getCode());
 
-        this.updateByExample(domain,condition);
+        this.updateByExample(domain, condition);
         return 0;
     }
 
@@ -100,8 +107,8 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
         if (id == null || extDto == null) {
             return 0;
         }
-        UserInfo userInfoItem=this.get(id);
-        if(userInfoItem==null){
+        UserInfo userInfoItem = this.get(id);
+        if (userInfoItem == null) {
             return 0;
         }
         try {
@@ -124,12 +131,13 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
 
     /**
      * 根据CustomerExtendDto更新
+     *
      * @param extDto
      * @return
      */
     public int updateUserInfoByCustomerExtendDto(CustomerExtendDto extDto) {
-        return this.saveUserInfo(extDto.getId(),extDto.getCustomerMarket().getMarketId()).map(item->{
-            return this.updateUserInfoByCustomerExtendDto(item.getId(),extDto);
+        return this.saveUserInfo(extDto.getId(), extDto.getCustomerMarket().getMarketId()).map(item -> {
+            return this.updateUserInfoByCustomerExtendDto(item.getId(), extDto);
         }).orElse(0);
     }
 

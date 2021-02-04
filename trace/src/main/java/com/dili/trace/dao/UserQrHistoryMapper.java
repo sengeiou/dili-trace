@@ -8,10 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 public interface UserQrHistoryMapper extends MyMapper<UserQrHistory> {
 
-    public int updateQrStatusByUserIdList(@Param("userIdList") List<Long>userIdList
-            ,@Param("qrStatus")Integer qrStatus
-            ,@Param("content")String content);
-
     public List<Long> selectUserIdWithoutHistory(UserQrHistoryQueryDto historyQueryDto);
 
 }
