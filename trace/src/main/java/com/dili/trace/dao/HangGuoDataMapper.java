@@ -88,7 +88,6 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 超过金额patch为不上报
-     *
      * @param reportMaxAmountInt
      */
     void updateTradeReportListByBeyondAmount(@Param("maxAmount") Integer reportMaxAmountInt);
@@ -125,22 +124,17 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 获取检测详情
-     *
      * @param headList
      * @return
      */
     List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
-
     /**
      * 获取检测主单
-     *
      * @param checkOrder
      */
     List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder);
-
     /**
      * 不合格处置主单
-     *
      * @param dispose
      * @return
      */
@@ -148,7 +142,6 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 查询缓存表
-     *
      * @param que
      * @return
      */
@@ -156,14 +149,12 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 插入缓存表
-     *
      * @param addSource
      */
     void insertThirdPartySourceData(ThirdPartySourceData addSource);
 
     /**
      * 获取杭果交易数据
-     *
      * @param queryDto
      * @return
      */
@@ -171,21 +162,18 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 更新检测主单上报标志位
-     *
      * @param inspectionDtoList
      */
     void updateCheckOrderReportFlag(List<ReportInspectionDto> inspectionDtoList);
 
     /**
      * 更新检测处置单上报标志位
-     *
      * @param disposalDtos
      */
     void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
 
     /**
      * 获取商品断层列表
-     *
      * @param category
      * @return
      */
@@ -193,7 +181,6 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 获取商品按code
-     *
      * @param parentCode
      * @return
      */
@@ -201,14 +188,12 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 更新商品信息
-     *
      * @param categoryList
      */
     void batchUpdateCategoryByThirdCode(@Param("list") List<HangGuoCategory> categoryList);
 
     /**
      * 根据UapId更新parentId
-     *
      * @param category
      */
     void updateParentByUapId(HangGuoCategory category);

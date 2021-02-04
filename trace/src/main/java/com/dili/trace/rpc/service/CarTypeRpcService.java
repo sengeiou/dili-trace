@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+/**
+ * SB
+ * @author admin
+ */
 @Service
 public class CarTypeRpcService {
     private static final Logger logger = LoggerFactory.getLogger(CarTypeRpcService.class);
