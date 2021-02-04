@@ -43,5 +43,5 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 ALTER TABLE dili_trace.user_qr_history DROP COLUMN bill_id;
 ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
 
-ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_eventid bigint(20) NULL COMMENT 'qr事件ID';
+ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_id bigint(20) NULL COMMENT 'qr事件ID';
 ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';

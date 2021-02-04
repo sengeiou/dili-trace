@@ -69,7 +69,7 @@ public class UserQrHistory extends BaseDomain {
      * qr事件ID
      */
     @ApiModelProperty(value = "qr事件ID")
-    @Column(name = "`qr_history_eventid`")
+    @Column(name = "`qr_history_event_id`")
     private Long qrHistoryEventId;
 
     /**
