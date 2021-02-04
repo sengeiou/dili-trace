@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.UserQrHistoryMapper">
-  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserQrHistory">
+    <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserQrHistory">
 
-  </resultMap>
-  <update id="updateQrStatus" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto">
-      update `user` set qr_status=#{qrStatus},content=#{content} where user_id not in(
+    </resultMap>
+    
+    <update id="updateQrStatusByUserIdList">
+        update `user` set qr_status=#{qrStatus},content=#{content} where 0=1
+        <if test="userIdList!=null and userIdList.size()>0">
+        or user_id
+        <foreach collection="userIdList" open=" IN (" close=")" item="userId"  separator=",">
+          #{userId}
+        </foreach>
+      </if>
+    </update>
+    
+    <select id="selectUserIdWithoutHistory" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="java.lang.Long">
+      select user_id from `user` where user_id not in(
             select user_id from user_qr_history uq
             where <![CDATA[AND ( uq.created >= #{createdStart} OR uq.created <= #{createdEnd})]]>
             and is_valid=#{isValid}
       )
-      and qr_status!=#{qrStatus}
-  </update>
+      <![CDATA[AND qr_status<>#{qrStatus})]]>
+  </select>
 </mapper>

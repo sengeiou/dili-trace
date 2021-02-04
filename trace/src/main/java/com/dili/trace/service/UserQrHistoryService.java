@@ -15,6 +15,7 @@ import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.QrHistoryEventTypeEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -24,6 +25,7 @@ import one.util.streamex.StreamEx;
 
 @Service
 public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> implements CommandLineRunner {
+
     @Autowired
     UserInfoService userInfoService;
     @Autowired
@@ -40,25 +42,18 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
     }
 
     public UserQrHistory createUserQrHistoryForWithousBills(UserQrHistoryQueryDto historyQueryDto) {
-    	  UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
-    	  historyQueryDto.setContent("最近七天无报备且无交易单" + ",变为" + qrStatusEnum.getDesc() + "码");
-    	this.qrHistoryMapper.updateQrStatusByQrHistory(historyQueryDto);
-        UserInfo userItem = this.userInfoService.findByUserId(userId).orElse(null);
-        if (java.util.Objects.equals(userItem, null)) {
-            return null;
-        }
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
-        UserQrHistoryQueryDto qrhis=new UserQrHistoryQueryDto();
-        qrhis.setQrStatus(qrStatusEnum.getCode());
+        historyQueryDto.setQrStatus(qrStatusEnum.getCode());
+        List<Long> userIdList = this.qrHistoryMapper.selectUserIdWithoutHistory(historyQueryDto);
         
-        
-       
+        String content="最近七天无报备且无交易单" + ",变为" + qrStatusEnum.getDesc() + "码";
+        this.qrHistoryMapper.updateQrStatusByUserIdList(userIdList,qrStatusEnum.getCode(),content);
         this.updateUserQrStatus(userItem.getId(), qrStatusEnum);
         return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
             return qrStatusEnum.equalsCode(qrhis.getQrStatus());
         }).orElseGet(() -> {
             String color = qrStatusEnum.getDesc();
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum,QrHistoryEventTypeEnum.NO_DATA,null);
+            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum, QrHistoryEventTypeEnum.NO_DATA, null);
             userQrHistory.setContent("最近七天无报备且无交易单" + ",变为" + color + "码");
             this.insertSelective(userQrHistory);
             return userQrHistory;
@@ -79,7 +74,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         }).orElseGet(() -> {
             String color = qrStatusEnum.getDesc();
 
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum,QrHistoryEventTypeEnum.NEW_USER,null);
+            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null);
             userQrHistory.setContent("完成注册,默认为" + color + "码");
             this.insertSelective(userQrHistory);
             return userQrHistory;
@@ -108,7 +103,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         }).orElseGet(() -> {
             String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
                     .orElse(UserQrStatusEnum.BLACK.getDesc());
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, userQrStatus,QrHistoryEventTypeEnum.REGISTER_BILL,billItem.getId());
+            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, userQrStatus, QrHistoryEventTypeEnum.REGISTER_BILL, billItem.getId());
             userQrHistory.setVerifyStatus(billVerifyStatusEnum.getCode());
             userQrHistory.setContent("最新操作报备单审核状态是" + billVerifyStatusEnum.getName() + ",变为" + color + "码");
             this.insertSelective(userQrHistory);
@@ -150,15 +145,12 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         }).orElseGet(() -> {
             String color = qrStatusEnum.getDesc();
 
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum,QrHistoryEventTypeEnum.TRADE_REQUEST,tradeRequestId);
+            UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatusEnum, QrHistoryEventTypeEnum.TRADE_REQUEST, tradeRequestId);
             userQrHistory.setContent("订单交易完成, 变为" + color + "码");
             this.insertSelective(userQrHistory);
             return userQrHistory;
         });
     }
-
-
-
 
     protected Date start(LocalDateTime now) {
         Date start = Date.from(
@@ -171,17 +163,14 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         return end;
     }
 
-
-
-
     private void updateUserQrStatus(Long userId, UserQrStatusEnum qrStatus) {
         this.userInfoService.updateUserQrByUserId(userId, qrStatus);
     }
 
-    private UserQrHistory buildUserQrHistory(UserInfo userItem
-            ,UserQrStatusEnum qrStatusEnum
-            ,QrHistoryEventTypeEnum historyEventTypeEnum
-            ,Long qrHistoryEventId) {
+    private UserQrHistory buildUserQrHistory(UserInfo userItem,
+             UserQrStatusEnum qrStatusEnum,
+             QrHistoryEventTypeEnum historyEventTypeEnum,
+             Long qrHistoryEventId) {
 
         UserQrHistory userQrHistory = new UserQrHistory();
         userQrHistory.setUserId(userItem.getUserId());
@@ -208,14 +197,15 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     /**
      * 回退交易二维码记录
+     *
      * @param tradeRequest
      */
     public void rollBackByTradeRequest(TradeRequest tradeRequest) {
 
-        if (tradeRequest == null  || tradeRequest.getId() == null) {
+        if (tradeRequest == null || tradeRequest.getId() == null) {
             return;
         }
-        TradeRequest item=this.tradeRequestService.get(tradeRequest.getId());
+        TradeRequest item = this.tradeRequestService.get(tradeRequest.getId());
         Long userId = tradeRequest.getBuyerId();
         UserQrHistory rollbackQrHistory = new UserQrHistory();
         rollbackQrHistory.setUserId(item.getBuyerId());
@@ -225,16 +215,16 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     /**
      * 回退报备单二维码颜色记录
+     *
      * @param registerBill
      */
     public void rollbackByBill(RegisterBill registerBill) {
 
-
-        if (registerBill == null  || registerBill.getId() == null) {
+        if (registerBill == null || registerBill.getId() == null) {
             return;
         }
-        RegisterBill item=this.billService.get(registerBill.getId());
-        if(item==null){
+        RegisterBill item = this.billService.get(registerBill.getId());
+        if (item == null) {
             return;
         }
         UserQrHistory rollbackQrHistory = new UserQrHistory();
@@ -246,18 +236,19 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     /**
      * 回退记录
+     *
      * @param rollbackQrHistory
      * @param historyTypeEnum
      */
     private void rollback(UserQrHistory rollbackQrHistory, QrHistoryEventTypeEnum historyTypeEnum) {
-        if(rollbackQrHistory==null||historyTypeEnum==null){
+        if (rollbackQrHistory == null || historyTypeEnum == null) {
             return;
         }
-        if(rollbackQrHistory.getUserId()==null||rollbackQrHistory.getQrHistoryEventId()==null){
+        if (rollbackQrHistory.getUserId() == null || rollbackQrHistory.getQrHistoryEventId() == null) {
             return;
         }
 
-        Long userId=rollbackQrHistory.getUserId();
+        Long userId = rollbackQrHistory.getUserId();
 
         UserQrHistory domain = new UserQrHistory();
         // domain.setBillId(deletedBillId);
@@ -283,6 +274,5 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         this.updateUserQrStatus(userId, qrStatusEnum);
 
     }
-
 
 }
