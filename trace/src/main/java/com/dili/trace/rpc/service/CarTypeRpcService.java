@@ -20,6 +20,10 @@ public class CarTypeRpcService {
     @Autowired
     CarTypeRpc carTypeRpc;
 
+    /**
+     * 查询所有车型
+     * @return 
+     */
     public List<CarTypeDTO> listCarType() {
         try {
             BaseOutput<List<CarTypeDTO>> out = this.carTypeRpc.listCarType();

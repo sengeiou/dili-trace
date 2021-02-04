@@ -58,7 +58,6 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> {//im
     //     uq.setRows(200);
     //     while (true) {
     //         List<User> userList = StreamEx.of(this.userService.listPageByExample(uq).getDatas()).map(userItem -> {
-
     //             String parsedTallyAreaNos = StringUtils
     //                     .trimToNull(this.parseAndConvertTallyAreaNos(userItem.getTallyAreaNos()));
     //             if (!Objects.equals(parsedTallyAreaNos, StringUtils.trimToNull(userItem.getTallyAreaNos()))) {
@@ -69,7 +68,6 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> {//im
     //                 return this.userService.get(u.getId());
     //             }
     //             return userItem;
-
     //         }).toList();
     //         if (userList.isEmpty()) {
     //             return;
@@ -92,7 +90,6 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> {//im
     //         } catch (Exception e) {
     //             logger.error(e.getMessage(), e);
     //         }
-
     //         uq.setPage(uq.getPage() + 1);
     //     }
     // }
