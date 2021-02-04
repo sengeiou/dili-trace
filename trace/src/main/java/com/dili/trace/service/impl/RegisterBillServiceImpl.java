@@ -815,21 +815,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, userId);
     }
 
-    /**
-     * 根据报备单数量(一定时间:默认过去七天)更新用户状态到黑码
-     *
-     * @param
-     * @return
-     */
-    public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
-        UserQueryDto dto = new UserQueryDto();
-        dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
-        dto.setCreatedStart(createdStart);
-        dto.setCreatedEnd(createdEnd);
-        
-
-
-    }
 
     @Override
     public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {

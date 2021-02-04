@@ -42,13 +42,15 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     }
 
-    public void createUserQrHistoryForWithousBills(UserQrHistoryQueryDto historyQueryDto) {
+    /**
+     * 更新过期用户的状态
+     * @param historyQueryDto
+     */
+    public void updateUserQrForExpire(UserQrHistoryQueryDto historyQueryDto) {
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
         historyQueryDto.setQrStatus(qrStatusEnum.getCode());
         //查询出符合条件的userid
         List<Long> userIdList = this.qrHistoryMapper.selectUserIdWithoutHistory(historyQueryDto);
-
-
 
         StreamEx.of(userIdList).forEach(userId -> {
             //锁定对应的userinfo对象
@@ -61,18 +63,19 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
                 }
                 //插入qrhistory对象
                 String content = "最近七天无报备且无交易单" + ",变为" + qrStatusEnum.getDesc() + "码";
-                UserQrHistory userQrHistory = this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.NO_DATA, null);
-                userQrHistory.setContent(content);
-                this.insertSelective(userQrHistory);
+                 this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.NO_DATA, null).ifPresent(userQrHistory-> {
+                    userQrHistory.setContent(content);
+                    this.insertSelective(userQrHistory);
 
-                //更新userinfo的qr信息
-                UserInfo userInfo=new UserInfo();
-                userInfo.setId(userInfoItem.getId());
-                userInfo.setQrHistoryId(userQrHistory.getId());
-                userInfo.setPreQrStatus(userInfoItem.getQrStatus());
-                userInfo.setQrStatus(qrStatusEnum.getCode());
-                userInfo.setQrContent(content);
-                this.userInfoService.updateSelective(userInfo);
+                    //更新userinfo的qr信息
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.setId(userInfoItem.getId());
+                    userInfo.setQrHistoryId(userQrHistory.getId());
+                    userInfo.setPreQrStatus(userInfoItem.getQrStatus());
+                    userInfo.setQrStatus(qrStatusEnum.getCode());
+                    userInfo.setQrContent(content);
+                    this.userInfoService.updateSelective(userInfo);
+                });
             });
 
         });
@@ -88,18 +91,20 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
             UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
             //插入qrhistory对象
             String content ="完成注册,默认为" + qrStatusEnum.getDesc() + "码";
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null);
-            userQrHistory.setContent(content);
-            this.insertSelective(userQrHistory);
+            this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null).ifPresent(userQrHistory-> {
 
-            //更新userinfo的qr信息
-            UserInfo userInfo=new UserInfo();
-            userInfo.setId(userInfoItem.getId());
-            userInfo.setQrHistoryId(userQrHistory.getId());
-            userInfo.setPreQrStatus(userInfoItem.getQrStatus());
-            userInfo.setQrStatus(qrStatusEnum.getCode());
-            userInfo.setQrContent(content);
-            this.userInfoService.updateSelective(userInfo);
+                userQrHistory.setContent(content);
+                this.insertSelective(userQrHistory);
+
+                //更新userinfo的qr信息
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(userInfoItem.getId());
+                userInfo.setQrHistoryId(userQrHistory.getId());
+                userInfo.setPreQrStatus(userInfoItem.getQrStatus());
+                userInfo.setQrStatus(qrStatusEnum.getCode());
+                userInfo.setQrContent(content);
+                this.userInfoService.updateSelective(userInfo);
+            });
         });
     }
 
@@ -122,18 +127,21 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
             }
             UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
             //插入qrhistory对象
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.REGISTER_BILL, billItem.getId());
-            userQrHistory.setContent(content);
-            this.insertSelective(userQrHistory);
+             this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.REGISTER_BILL, billItem.getId()).ifPresent(userQrHistory->{
 
-            //更新userinfo的qr信息
-            UserInfo userInfo=new UserInfo();
-            userInfo.setId(userInfoItem.getId());
-            userInfo.setQrHistoryId(userQrHistory.getId());
-            userInfo.setPreQrStatus(userInfoItem.getQrStatus());
-            userInfo.setQrStatus(qrStatusEnum.getCode());
-            userInfo.setQrContent(content);
-            this.userInfoService.updateSelective(userInfo);
+                 userQrHistory.setContent(content);
+                 this.insertSelective(userQrHistory);
+
+                 //更新userinfo的qr信息
+                 UserInfo userInfo=new UserInfo();
+                 userInfo.setId(userInfoItem.getId());
+                 userInfo.setQrHistoryId(userQrHistory.getId());
+                 userInfo.setPreQrStatus(userInfoItem.getQrStatus());
+                 userInfo.setQrStatus(qrStatusEnum.getCode());
+                 userInfo.setQrContent(content);
+                 this.userInfoService.updateSelective(userInfo);
+            });
+
         });
     }
 
@@ -158,7 +166,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         return userQrStatus;
     }
 
-    public void createUserQrHistoryForOrder(Long tradeRequestId, Long userId) {
+    public void createUserQrHistoryForTradeRequest(Long tradeRequestId, Long userId) {
 
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.GREEN;
         String content="订单交易完成, 变为" + qrStatusEnum.getDesc() + "码";
@@ -170,18 +178,20 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
             }
 
             //插入qrhistory对象
-            UserQrHistory userQrHistory = this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.TRADE_REQUEST, tradeRequestId);
-            userQrHistory.setContent(content);
-            this.insertSelective(userQrHistory);
+            this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.TRADE_REQUEST, tradeRequestId).ifPresent(userQrHistory->{
+                userQrHistory.setContent(content);
+                this.insertSelective(userQrHistory);
 
-            //更新userinfo的qr信息
-            UserInfo userInfo=new UserInfo();
-            userInfo.setId(userInfoItem.getId());
-            userInfo.setQrHistoryId(userQrHistory.getId());
-            userInfo.setPreQrStatus(userInfoItem.getQrStatus());
-            userInfo.setQrStatus(qrStatusEnum.getCode());
-            userInfo.setQrContent(content);
-            this.userInfoService.updateSelective(userInfo);
+                //更新userinfo的qr信息
+                UserInfo userInfo=new UserInfo();
+                userInfo.setId(userInfoItem.getId());
+                userInfo.setQrHistoryId(userQrHistory.getId());
+                userInfo.setPreQrStatus(userInfoItem.getQrStatus());
+                userInfo.setQrStatus(qrStatusEnum.getCode());
+                userInfo.setQrContent(content);
+                this.userInfoService.updateSelective(userInfo);
+            });
+
         });
 
 
@@ -202,13 +212,13 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         this.userInfoService.updateUserQrByUserId(userId, qrStatus);
     }
 
-    private UserQrHistory buildUserQrHistory(Long userId,
+    private Optional<UserQrHistory> buildUserQrHistory(Long userId,
                                              UserQrStatusEnum qrStatusEnum,
                                              QrHistoryEventTypeEnum historyEventTypeEnum,
                                              Long qrHistoryEventId) {
-        return this.userInfoService.findByUserId(userId).map(userItem -> {
+        return StreamEx.of(this.userInfoService.findByUserId(userId)).map(userItem -> {
             return this.buildUserQrHistory(userItem, qrStatusEnum, historyEventTypeEnum, qrHistoryEventId);
-        }).orElse(null);
+        }).findFirst();
 
     }
 
@@ -296,7 +306,6 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         Long userId = rollbackQrHistory.getUserId();
 
         UserQrHistory domain = new UserQrHistory();
-        // domain.setBillId(deletedBillId);
         domain.setIsValid(YesOrNoEnum.NO.getCode());
 
         UserQrHistory condition = new UserQrHistory();
