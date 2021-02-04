@@ -77,29 +77,29 @@ public interface UserHistory extends IBaseDomain {
 
     void setAddr(String addr);
 
-    @ApiModelProperty(value = "身份证照正面URL")
-    @Column(name = "`card_no_front_url`")
-    @FieldDef(label="cardNoFrontUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNoFrontUrl();
+//    @ApiModelProperty(value = "身份证照正面URL")
+//    @Column(name = "`card_no_front_url`")
+//    @FieldDef(label="cardNoFrontUrl", maxLength = 50)
+//    @EditMode(editor = FieldEditor.Text, required = false)
+//    String getCardNoFrontUrl();
+//
+//    void setCardNoFrontUrl(String cardNoFrontUrl);
 
-    void setCardNoFrontUrl(String cardNoFrontUrl);
+//    @ApiModelProperty(value = "身份证照反面URL")
+//    @Column(name = "`card_no_back_url`")
+//    @FieldDef(label="cardNoBackUrl", maxLength = 50)
+//    @EditMode(editor = FieldEditor.Text, required = false)
+//    String getCardNoBackUrl();
+//
+//    void setCardNoBackUrl(String cardNoBackUrl);
 
-    @ApiModelProperty(value = "身份证照反面URL")
-    @Column(name = "`card_no_back_url`")
-    @FieldDef(label="cardNoBackUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNoBackUrl();
-
-    void setCardNoBackUrl(String cardNoBackUrl);
-
-    @ApiModelProperty(value = "营业执照URL")
-    @Column(name = "`business_license_url`")
-    @FieldDef(label="businessLicenseUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getBusinessLicenseUrl();
-
-    void setBusinessLicenseUrl(String businessLicenseUrl);
+//    @ApiModelProperty(value = "营业执照URL")
+//    @Column(name = "`business_license_url`")
+//    @FieldDef(label="businessLicenseUrl", maxLength = 50)
+//    @EditMode(editor = FieldEditor.Text, required = false)
+//    String getBusinessLicenseUrl();
+//
+//    void setBusinessLicenseUrl(String businessLicenseUrl);
 
     @ApiModelProperty(value = "销售城市ID")
     @Column(name = "`sales_city_id`")
@@ -125,13 +125,13 @@ public interface UserHistory extends IBaseDomain {
 
     void setState(Integer state);
 
-    @ApiModelProperty(value = "密码")
-    @Column(name = "`password`")
-    @FieldDef(label="password", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getPassword();
-
-    void setPassword(String password);
+//    @ApiModelProperty(value = "密码")
+//    @Column(name = "`password`")
+//    @FieldDef(label="password", maxLength = 50)
+//    @EditMode(editor = FieldEditor.Text, required = false)
+//    String getPassword();
+//
+//    void setPassword(String password);
 
     @Column(name = "`yn`")
     @FieldDef(label="1:正常 -1：删除")
@@ -140,12 +140,12 @@ public interface UserHistory extends IBaseDomain {
 
     void setYn(Integer yn);
 
-    @Column(name = "`version`")
-    @FieldDef(label="version")
-    @EditMode(editor = FieldEditor.Number)
-    Integer getVersion();
-
-    void setVersion(Integer version);
+//    @Column(name = "`version`")
+//    @FieldDef(label="version")
+//    @EditMode(editor = FieldEditor.Number)
+//    Integer getVersion();
+//
+//    void setVersion(Integer version);
 
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")

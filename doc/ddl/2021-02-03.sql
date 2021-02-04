@@ -28,6 +28,15 @@ ALTER TABLE dili_trace.category ADD CONSTRAINT category_market_unique UNIQUE KEY
 
 ALTER TABLE dili_trace.`user` ADD qr_content varchar(500) NULL COMMENT '最后的二维码变更内容';
 ALTER TABLE dili_trace.`user` ADD qr_history_id bigint(20) NULL COMMENT '最后的二维码变更历史ID';
+ALTER TABLE dili_trace.`user` DROP COLUMN `password`;
+ALTER TABLE dili_trace.`user` DROP COLUMN `version`;
+
+
+ALTER TABLE dili_trace.`user_history` DROP COLUMN `password`;
+ALTER TABLE dili_trace.`user_history` DROP COLUMN `version`;
+ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_front_url`;
+ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_back_url`;
+ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 
 
 

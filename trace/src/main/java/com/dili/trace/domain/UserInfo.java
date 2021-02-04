@@ -110,10 +110,10 @@ public class UserInfo extends BaseDomain {
     /**
      * 密码
      */
-    @ApiModelProperty(value = "密码")
-    @Column(name = "`password`")
-    @JSONField(serialize = false)
-    private String password;
+//    @ApiModelProperty(value = "密码")
+//    @Column(name = "`password`")
+//    @JSONField(serialize = false)
+//    private String password;
 
     /**
      * 删除状态1:正常 0：删除
@@ -128,8 +128,8 @@ public class UserInfo extends BaseDomain {
      *
      * @return
      */
-    @Column(name = "`version`")
-    private Integer version;
+//    @Column(name = "`version`")
+//    private Integer version;
 
     /**
      * 创建时间
@@ -470,13 +470,13 @@ public class UserInfo extends BaseDomain {
         this.state = state;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public Integer getYn() {
         return yn;
@@ -486,13 +486,13 @@ public class UserInfo extends BaseDomain {
         this.yn = yn;
     }
 
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     public Date getCreated() {
         return created;
