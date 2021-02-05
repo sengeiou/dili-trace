@@ -40,13 +40,13 @@ public class AddAttributeInterceptor extends HandlerInterceptorAdapter {
 
         List<String> activeProfiles = StreamEx.of(this.environment.getActiveProfiles()).nonNull().toList();
         if (activeProfiles.contains("dev") || activeProfiles.contains("test")) {
-            this.buildConfiguration.setVersion(String.valueOf(System.currentTimeMillis()));
+            this.buildConfiguration.setDate(String.valueOf(System.currentTimeMillis()));
         } else {
-            if ("${pom.version}".equalsIgnoreCase(this.buildConfiguration.getVersion())) {
-                this.buildConfiguration.setVersion(String.valueOf(System.currentTimeMillis()));
+            if ("${pom.date}".equalsIgnoreCase(this.buildConfiguration.getDate())) {
+                this.buildConfiguration.setDate(String.valueOf(System.currentTimeMillis()));
             }
         }
-        return this.buildConfiguration.getVersion();
+        return this.buildConfiguration.getDate();
     }
 
 }
