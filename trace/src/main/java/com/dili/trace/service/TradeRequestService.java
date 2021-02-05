@@ -183,7 +183,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.toName(request.getWeightUnit()) + "订单编号:" + request.getCode();
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName, request.getSellerMarketId());
                     // 卖家下单
-                    userQrHistoryService.createUserQrHistoryForOrder(request.getId(), buyerId);
+                    userQrHistoryService.createUserQrHistoryForTradeRequest(request.getId(), buyerId);
                     return this.hanleRequest(request, tradeDetailInputList, tradeDto, optUser);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
@@ -766,7 +766,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             //下单消息--一个单一个消息方便跳转页面
             String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.toName(tradeRequest.getWeightUnit()) + "),  订单编号:" + tradeRequest.getCode();
             addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName, tradeRequest.getSellerMarketId());
-            userQrHistoryService.createUserQrHistoryForOrder(tradeRequest.getId(), tradeRequest.getBuyerId());
+            userQrHistoryService.createUserQrHistoryForTradeRequest(tradeRequest.getId(), tradeRequest.getBuyerId());
         }
     }
 

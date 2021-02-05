@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.async.AsyncService;
 import com.dili.trace.domain.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ public class SyncUserInfoService {
     UserInfoService userInfoService;
     @Autowired
     AsyncService asyncService;
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
 
     /**
      * 保存并同步客户信息(客户登录或者管理员帮客户报备时调用此方法)
@@ -26,8 +29,12 @@ public class SyncUserInfoService {
      */
     public Optional<UserInfo> saveAndSyncUserInfo(Long userId, Long marketId) {
         return this.userInfoService.saveUserInfo(userId, marketId).map(userInfo -> {
+            if(YesOrNoEnum.YES.getCode().equals(userInfo.getLastSyncSuccess())){
+                return userInfo;
+            }
             this.asyncService.syncUserInfo(userInfo, customerExtendDto -> {
                 this.userInfoService.updateUserInfoByCustomerExtendDto(userInfo.getId(), customerExtendDto);
+                this.userQrHistoryService.createUserQrHistoryForUserRegist(userInfo.getUserId(),userInfo.getMarketId());
             });
             return userInfo;
         });

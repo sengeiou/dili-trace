@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -82,6 +81,11 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     }
 
+    /**
+     * createUserQrHistoryForUserRegist
+     * @param userId
+     * @param marketId
+     */
     public void createUserQrHistoryForUserRegist(Long userId, Long marketId) {
         this.userInfoService.saveUserInfo(userId,marketId).ifPresent(userInfoItem->{
 
@@ -108,6 +112,11 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         });
     }
 
+    /**
+     * createUserQrHistoryForVerifyBill
+     * @param billItem
+     * @param userId
+     */
     public void createUserQrHistoryForVerifyBill(RegisterBill billItem, Long userId) {
         if (billItem == null) {
             return ;
@@ -166,6 +175,11 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         return userQrStatus;
     }
 
+    /**
+     * createUserQrHistoryForTradeRequest
+     * @param tradeRequestId
+     * @param userId
+     */
     public void createUserQrHistoryForTradeRequest(Long tradeRequestId, Long userId) {
 
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.GREEN;
@@ -197,20 +211,28 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
     }
 
+    /**
+     * 计算开始时间
+     * @param now
+     * @return
+     */
     protected Date start(LocalDateTime now) {
         Date start = Date.from(
                 now.minusDays(6).atZone(ZoneId.systemDefault()).toInstant());
         return start;
     }
 
+    /**
+     * 计算结束时间
+     * @param now
+     * @return
+     */
     protected Date end(LocalDateTime now) {
         Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
         return end;
     }
 
-    private void updateUserQrStatus(Long userId, UserQrStatusEnum qrStatus) {
-        this.userInfoService.updateUserQrByUserId(userId, qrStatus);
-    }
+
 
     private Optional<UserQrHistory> buildUserQrHistory(Long userId,
                                              UserQrStatusEnum qrStatusEnum,
@@ -321,11 +343,24 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
         query.setOrder("desc");
         query.setIsValid(YesOrNoEnum.YES.getCode());
 
-        UserQrStatusEnum qrStatusEnum = StreamEx.of(this.listPageByExample(query).getDatas())
-                .map(UserQrHistory::getQrStatus).map(UserQrStatusEnum::fromCode)
-                .filter(Optional::isPresent).map(Optional::get).findFirst().orElse(UserQrStatusEnum.BLACK);
+        UserQrHistory qrHistoryItem=StreamEx.of(this.listPageByExample(query).getDatas()).findFirst().orElse(null);
 
-        this.updateUserQrStatus(userId, qrStatusEnum);
+        if(qrHistoryItem==null){
+            return;
+        }
+
+        UserInfo userInfo=this.userInfoService.findByUserId(userId).stream().findFirst().orElse(null);
+        if(userInfo.getQrHistoryId()!=qrHistoryItem.getId()){
+
+            UserInfo u=new UserInfo();
+            u.setId(userInfo.getId());
+            u.setQrHistoryId(qrHistoryItem.getId());
+            u.setPreQrStatus(userInfo.getQrStatus());
+            u.setQrStatus(qrHistoryItem.getQrStatus());
+            u.setQrContent(qrHistoryItem.getContent());
+            this.userInfoService.updateSelective(u);
+
+        }
 
     }
 
