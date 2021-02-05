@@ -45,3 +45,7 @@ ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
 
 ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_id bigint(20) NULL COMMENT 'qr事件ID';
 ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';
+
+
+ALTER TABLE dili_trace.quality_trace_trade_bill_syncpoint DROP COLUMN order_version;
+ALTER TABLE dili_trace.quality_trace_trade_bill DROP COLUMN order_version;
