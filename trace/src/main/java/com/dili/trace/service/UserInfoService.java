@@ -2,9 +2,12 @@ package com.dili.trace.service;
 
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.UserInfo;
+import com.dili.trace.domain.UserQrHistory;
+import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
@@ -25,6 +28,13 @@ import java.util.Optional;
 public class UserInfoService extends TraceBaseService<UserInfo, Long> {
     @Autowired
     UserMapper userMapper;
+
+    public BasePage<UserInfo> selectUserInfoByQrHistory(UserQrHistoryQueryDto historyQueryDto) {
+        return super.buildQuery(historyQueryDto).listPageByFun(q -> {
+            return this.userMapper.selectUserInfoByQrHistory(q);
+        });
+
+    }
 
     /**
      * 根据userid查询 UserInfo

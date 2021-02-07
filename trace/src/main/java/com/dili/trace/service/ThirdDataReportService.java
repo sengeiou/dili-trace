@@ -1,8 +1,11 @@
 package com.dili.trace.service;
 
+import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserQrHistory;
+import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDetailDto;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserDto;
@@ -20,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +38,8 @@ import java.util.stream.Collectors;
 public class ThirdDataReportService {
     @Autowired
     UserInfoService userInfoService;
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
 
     @Value("${current.baseWebPath}")
     private String baseWebPath;
@@ -161,21 +168,33 @@ public class ThirdDataReportService {
     /**
      * reprocessUserQrCode
      *
-     * @param idUserQrHistoryMap
+     * @param createdStart
+     * @param pageNumber
      * @return
      */
-    public List<ReportQrCodeDto> reprocessUserQrCode(Map<Long, List<UserQrHistory>> idUserQrHistoryMap) {
-        List<Long> userInfoId = EntryStream.of(idUserQrHistoryMap).keys().toList();
-        if (userInfoId.isEmpty()) {
+    public List<ReportQrCodeDto> reprocessUserQrCode(java.util.Date createdStart, Integer pageNumber) {
+        UserQrHistoryQueryDto UserQrHistoryQueryDto = new UserQrHistoryQueryDto();
+        UserQrHistoryQueryDto.setCreatedStart(createdStart.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        UserQrHistoryQueryDto.setIsValid(YesOrNoEnum.YES.getCode());
+        UserQrHistoryQueryDto.setPage(pageNumber);
+
+        Map<Long, UserInfo> userInfoMap = StreamEx.of(this.userInfoService.selectUserInfoByQrHistory(UserQrHistoryQueryDto).getDatas()).mapToEntry(UserInfo::getId, Function.identity()).toMap();
+
+        if (userInfoMap.isEmpty()) {
             return Lists.newArrayList();
         }
-        UserQueryDto queryDto = new UserQueryDto();
-        queryDto.setUserInfoIdList(userInfoId);
-        Map<Long, UserInfo> userInfoMap = StreamEx.of(this.userInfoService.listByExample(queryDto)).mapToEntry(UserInfo::getId, Function.identity()).toMap();
-        Map<UserInfo, List<UserQrHistory>> dataMap = EntryStream.of(idUserQrHistoryMap).filterKeys(uid -> {
-            return userInfoMap.containsKey(uid);
-        }).mapToKey((k, v) -> userInfoMap.get(k)).toMap();
+        List<Long> userInfoIdList = EntryStream.of(userInfoMap).keys().toList();
+        UserQrHistoryQueryDto urq = new UserQrHistoryQueryDto();
+        UserQrHistoryQueryDto.setIsValid(YesOrNoEnum.YES.getCode());
+        UserQrHistoryQueryDto.setCreatedStart(createdStart.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        urq.setUserInfoIdList(userInfoIdList);
+        Map<UserInfo, List<UserQrHistory>> dataMap = StreamEx.of(this.userQrHistoryService.listByExample(urq)).mapToEntry(userQrHistory -> {
 
+            return userInfoMap.get(userQrHistory.getUserInfoId());
+        }, userQrHistory -> {
+            return userQrHistory;
+
+        }).grouping();
 
         return this.buildReportQrCodeDto(dataMap);
     }

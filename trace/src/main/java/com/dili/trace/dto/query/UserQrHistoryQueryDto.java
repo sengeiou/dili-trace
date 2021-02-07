@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserQrHistoryQueryDto extends UserQrHistory {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -22,10 +23,22 @@ public class UserQrHistoryQueryDto extends UserQrHistory {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private LocalDateTime createdEnd;
 
+    @Column(name = "`user_info_id`")
+    @Operator(Operator.IN)
+    private List<Long> userInfoIdList;
+
     @Transient
     private Long userId;
     @Transient
     private Long marketId;
+
+    public List<Long> getUserInfoIdList() {
+        return userInfoIdList;
+    }
+
+    public void setUserInfoIdList(List<Long> userInfoIdList) {
+        this.userInfoIdList = userInfoIdList;
+    }
 
     public Long getMarketId() {
         return marketId;

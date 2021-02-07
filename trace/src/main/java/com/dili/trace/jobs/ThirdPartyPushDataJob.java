@@ -416,7 +416,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
-    private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime, Market market) {
+    private void pushUserQrCode(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
         boolean newPushFlag = true;
         Integer isValidate = 1;
@@ -447,28 +447,24 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         UserQrHistoryQueryDto.setIsValid(YesOrNoEnum.YES.getCode());
         Map<Long, List<UserQrHistory>> userInfoIdMap = StreamEx.of(this.userQrHistoryService.listByExample(UserQrHistoryQueryDto)).groupingBy(UserQrHistory::getUserInfoId);
 
-        List<ReportQrCodeDto> pushList = this.thirdDataReportService.reprocessUserQrCode(userInfoIdMap);
-        logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
-        // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
-        BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = 100;
-        // 分批数
-        Integer part = pushList.size() / batchSize;
-        // 上报
-        for (int i = 0; i <= part; i++) {
-            Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
-            List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
-            if (CollectionUtils.isNotEmpty(partBills)) {
-                baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser, market);
+        Integer pageNumber=0;
+        while(true){
+            List<ReportQrCodeDto> pushList = this.thirdDataReportService.reprocessUserQrCode(updateTime,++pageNumber);
+            if(pushList.isEmpty()){
+                break;
+            }
+            logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
+            // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
+            BaseOutput baseOutput =  this.dataReportService.reportUserQrCode(pushList, optUser, market);
+
+            if (baseOutput.isSuccess()) {
+                this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+            } else {
+                logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
+                break;
             }
         }
 
-        if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
-        } else {
-            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
-        }
-        return baseOutput;
     }
 
 
