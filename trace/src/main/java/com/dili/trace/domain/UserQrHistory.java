@@ -30,14 +30,9 @@ public class UserQrHistory extends BaseDomain {
     /**
      * 业户主键
      */
-    @Column(name = "`user_id`")
-    private Long userId;
+    @Column(name = "`user_info_id`")
+    private Long userInfoId;
 
-    /**
-     * 二维码条目参数值（业户名称）
-     */
-    @Column(name = "`user_name`")
-    private String userName;
 
     /**
      * 二维码条目类型 {@link com.dili.trace.glossary.QrItemTypeEnum}
@@ -125,20 +120,6 @@ public class UserQrHistory extends BaseDomain {
     }
 
     /**
-     * @return Long return the userId
-     */
-    public Long getUserId() {
-        return userId;
-    }
-
-    /**
-     * @param userId the userId to set
-     */
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    /**
      * @return Date return the created
      */
     public Date getCreated() {
@@ -166,19 +147,7 @@ public class UserQrHistory extends BaseDomain {
         this.modified = modified;
     }
 
-    /**
-     * @return String return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
 
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     /**
      * @return Integer return the qrStatus
@@ -265,5 +234,13 @@ public class UserQrHistory extends BaseDomain {
 
     public void setQrHistoryEventType(Integer qrHistoryEventType) {
         this.qrHistoryEventType = qrHistoryEventType;
+    }
+
+    public Long getUserInfoId() {
+        return userInfoId;
+    }
+
+    public void setUserInfoId(Long userInfoId) {
+        this.userInfoId = userInfoId;
     }
 }

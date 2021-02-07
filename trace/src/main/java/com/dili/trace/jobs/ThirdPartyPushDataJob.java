@@ -6,6 +6,7 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.assets.sdk.rpc.CategoryRpc;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -18,6 +19,7 @@ import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.rpc.service.FirmRpcService;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -84,20 +87,23 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     FirmRpcService FirmRpcService;
     @Resource
     AssetsRpc assetsRpc;
+
     @Override
     public void run(String... args) throws Exception {
         pushData();
     }
+
     private boolean isCallDataSwitch() {
-        return sysConfigService.isCallDataSwitch(SysConfigTypeEnum.PUSH_DATA_SUBJECT.getCode(),SysConfigTypeEnum.PUSH_DATA_CATEGORY.getCode());
+        return sysConfigService.isCallDataSwitch(SysConfigTypeEnum.PUSH_DATA_SUBJECT.getCode(), SysConfigTypeEnum.PUSH_DATA_CATEGORY.getCode());
     }
+
     /**
      * 每五分钟提交一次数据
      */
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
-        if(isCallDataSwitch()){
-            if(logger.isInfoEnabled()){
+        if (isCallDataSwitch()) {
+            if (logger.isInfoEnabled()) {
                 logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
             }
             return;
@@ -123,7 +129,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                         //this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
                     }
                     // 水产等市场商品推送逻辑
-                    else  {
+                    else {
                         // 商品大类新增/修改
                         //this.pushBigCategory(optUser, market);
                         this.pushFruitsBigCategory(optUser, market);
@@ -165,8 +171,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushRegisterBillData() {
-        if(isCallDataSwitch()){
-            if(logger.isInfoEnabled()){
+        if (isCallDataSwitch()) {
+            if (logger.isInfoEnabled()) {
                 logger.info("=====>>>>>未配置上报开关，或上报开关已关闭");
             }
             return;
@@ -238,33 +244,33 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
-            HangGuoCategory category = new HangGuoCategory();
-            category.setLevel(fruitsBigCategory);
-            category.setMarketId(marketId);
-            if(Objects.nonNull(thirdPartyPushData)){
-                Date pushTime = thirdPartyPushData.getPushTime();
-                category.setMetadata(IDTO.AND_CONDITION_EXPR," modified > '" + DateUtils.format(pushTime)+"'");
+        HangGuoCategory category = new HangGuoCategory();
+        category.setLevel(fruitsBigCategory);
+        category.setMarketId(marketId);
+        if (Objects.nonNull(thirdPartyPushData)) {
+            Date pushTime = thirdPartyPushData.getPushTime();
+            category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified > '" + DateUtils.format(pushTime) + "'");
+        }
+        List<HangGuoCategory> categories = categoryService.listByExample(category);
+        if (CollectionUtils.isNotEmpty(categories)) {
+            List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
+                CategoryDto categoryDto = new CategoryDto();
+                categoryDto.setThirdBigClassName(c.getName());
+                categoryDto.setThirdBigClassId(String.valueOf(c.getId()));
+                categoryDto.setMarketId(String.valueOf(platformMarketId));
+                return categoryDto;
+            }).collect(Collectors.toList());
+            BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
+            if (baseOutput.isSuccess()) {
+                ThirdPartyPushData pushData = new ThirdPartyPushData();
+                pushData.setTableName(tableName);
+                pushData.setInterfaceName(interfaceName);
+                pushData.setMarketId(marketId);
+                this.thirdPartyPushDataService.updatePushTime(pushData);
+            } else {
+                logger.error("上报:杭果商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
             }
-            List<HangGuoCategory> categories = categoryService.listByExample(category);
-            if(CollectionUtils.isNotEmpty(categories)){
-                List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
-                    CategoryDto categoryDto = new CategoryDto();
-                    categoryDto.setThirdBigClassName(c.getName());
-                    categoryDto.setThirdBigClassId(String.valueOf(c.getId()));
-                    categoryDto.setMarketId(String.valueOf(platformMarketId));
-                    return categoryDto;
-                }).collect(Collectors.toList());
-                BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
-                if (baseOutput.isSuccess()) {
-                    ThirdPartyPushData pushData = new ThirdPartyPushData();
-                    pushData.setTableName(tableName);
-                    pushData.setInterfaceName(interfaceName);
-                    pushData.setMarketId(marketId);
-                    this.thirdPartyPushDataService.updatePushTime(pushData);
-                } else {
-                    logger.error("上报:杭果商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
-                }
-            }
+        }
     }
 
     /**
@@ -284,9 +290,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //TODO
         category.setLevel(level);
         category.setMarketId(marketId);
-        if(Objects.nonNull(thirdPartyPushData)){
+        if (Objects.nonNull(thirdPartyPushData)) {
             Date pushTime = thirdPartyPushData.getPushTime();
-            category.setMetadata(IDTO.AND_CONDITION_EXPR," modified > '" + DateUtils.format(pushTime)+"'");
+            category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified > '" + DateUtils.format(pushTime) + "'");
         }
         List<HangGuoCategory> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
@@ -297,12 +303,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
             for (HangGuoCategory td : categories) {
-                    CategorySecondDto categoryDto = new CategorySecondDto();
-                    categoryDto.setThirdSmallClassId(td.getId().toString());
-                    categoryDto.setSmallClassName(td.getName());
-                    categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
-                    categoryDto.setMarketId(String.valueOf(platformMarketId));
-                    categoryDtos.add(categoryDto);
+                CategorySecondDto categoryDto = new CategorySecondDto();
+                categoryDto.setThirdSmallClassId(td.getId().toString());
+                categoryDto.setSmallClassName(td.getName());
+                categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
+                categoryDto.setMarketId(String.valueOf(platformMarketId));
+                categoryDtos.add(categoryDto);
             }
             if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser, market);
@@ -315,12 +321,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                    GoodsDto categoryDto = new GoodsDto();
-                    categoryDto.setGoodsName(td.getName());
-                    categoryDto.setThirdGoodsId(td.getId().toString());
-                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
-                    categoryDto.setMarketId(String.valueOf(platformMarketId));
-                    categoryDtos.add(categoryDto);
+                GoodsDto categoryDto = new GoodsDto();
+                categoryDto.setGoodsName(td.getName());
+                categoryDto.setThirdGoodsId(td.getId().toString());
+                categoryDto.setThirdSmallClassId(td.getParentId().toString());
+                categoryDto.setMarketId(String.valueOf(platformMarketId));
+                categoryDtos.add(categoryDto);
             });
             if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser, market);
@@ -360,7 +366,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
             for (HangGuoCategory td : categories) {
                 //TODO
-                boolean needPush =true;
+                boolean needPush = true;
 /*                boolean needPush = thirdPartyPushData == null
                         || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
                         && td.getModified().compareTo(endTime) <= 0);*/
@@ -386,7 +392,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
                 //TODO
-                boolean needPush =true;
+                boolean needPush = true;
                 /*boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
                         && td.getModified().compareTo(endTime) <= 0);*/
                 if (needPush) {
@@ -434,27 +440,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         List<UserQrHistory> qrHistories = new ArrayList<>();
         List<UserQrHistory> allQrHistories = new ArrayList<>();
         Map<Long, String> userMap = new HashMap<>(16);
-        UserInfo user = new UserInfo();
-        user.setValidateState(ValidateStateEnum.PASSED.getCode());
-        user.setMarketId(marketId);
-
-        allQrHistories = userQrHistoryService.listByExample(null);
-        StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
-            userMap.put(u.getId(), u.getName());
-        });
-        StreamEx.ofNullable(allQrHistories).nonNull().flatCollection(Function.identity()).forEach(q -> {
-            if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
-                if (userMap.containsKey(q.getUserId())) {
-                    qrHistories.add(q);
-                }
-            }
-        });
-        //根据用户分组二维码
-
-        List<UserQrHistory> resultQrHisList = filterQrResultList(qrHistories, isValidate);
 
 
-        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(resultQrHisList, platformMarketId);
+        UserQrHistoryQueryDto UserQrHistoryQueryDto = new UserQrHistoryQueryDto();
+        UserQrHistoryQueryDto.setCreatedStart(updateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        UserQrHistoryQueryDto.setIsValid(YesOrNoEnum.YES.getCode());
+        Map<Long, List<UserQrHistory>> userInfoIdMap = StreamEx.of(this.userQrHistoryService.listByExample(UserQrHistoryQueryDto)).groupingBy(UserQrHistory::getUserInfoId);
+
+        List<ReportQrCodeDto> pushList = this.thirdDataReportService.reprocessUserQrCode(userInfoIdMap);
         logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
@@ -478,36 +471,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private List<UserQrHistory> filterQrResultList(List<UserQrHistory> qrHistories, Integer isValidate) {
-        List<UserQrHistory> resultQrHisList = new ArrayList<>();
-        Map<Long, List<UserQrHistory>> qrMap = StreamEx.of(qrHistories).nonNull().groupingBy(UserQrHistory::getUserId);
-        qrMap.entrySet().stream().forEach(qList -> {
-            //如果最新的一条记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
-            List<UserQrHistory> userQrHistories = qList.getValue();
-            Set<Long> userIdSet = new HashSet<>();
-            UserQrHistory latestQr = userQrHistories.stream().max(Comparator.comparing(UserQrHistory::getModified)).orElse(null);
-            if (isValidate.equals(latestQr.getIsValid())) {
-                resultQrHisList.add(latestQr);
-            } else {
-                userIdSet.add(latestQr.getUserId());
-            }
-
-            //如果最新记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
-            boolean onlyVoid = CollectionUtils.isNotEmpty(userIdSet) && userIdSet.size() == userQrHistories.size();
-            if (onlyVoid) {
-                Long userId = userIdSet.iterator().next();
-                UserQrHistory iteamQr = new UserQrHistory();
-                iteamQr.setIsValid(isValidate);
-                iteamQr.setUserId(userIdSet.iterator().next());
-                iteamQr.setMetadata(IDTO.AND_CONDITION_EXPR, " modified = (SELECT MAX(modified) FROM user_qr_history WHERE user_id ='"
-                        + userId + "' AND is_valid ='" + isValidate + "' )");
-                UserQrHistory addItem = userQrHistoryService.listByExample(iteamQr).get(0);
-                logger.info("时间段内最新食安码为作废记录，获取回滚记录" + JSON.toJSONString(addItem));
-                resultQrHisList.add(addItem);
-            }
-        });
-        return resultQrHisList;
-    }
 
     private BaseOutput pushUserSaveUpdate(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
@@ -705,7 +668,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     private void settingImageCerts(List<Long> billIdList, List<ReportRegisterBillDto> billList) {
-        Map<Long, List<ImageCert>> imageCertMap = this.imageCertService.findImageCertListByBillIdList(billIdList,BillTypeEnum.REGISTER_BILL)
+        Map<Long, List<ImageCert>> imageCertMap = this.imageCertService.findImageCertListByBillIdList(billIdList, BillTypeEnum.REGISTER_BILL)
                 .stream().collect(Collectors.groupingBy(ImageCert::getBillId));
         billList.forEach(bill -> {
             // 照片处理

@@ -32,18 +32,20 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
      * @param userId
      * @return
      */
-    public List<UserInfo> findByUserId(Long userId) {
-        if (userId == null) {
-            return Lists.newArrayList();
+    public Optional<UserInfo> findByUserId(Long userId, Long marketId) {
+        if (userId == null || marketId == null) {
+            return Optional.empty();
         }
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(userId);
-        return StreamEx.of(this.listByExample(userInfo)).toList();
+        userInfo.setMarketId(marketId);
+        return StreamEx.of(this.listByExample(userInfo)).findFirst();
     }
 
-    public Optional<UserInfo> selectByUserIdForUpdate(Long userId) {
-
-        return Optional.empty();
+    public Optional<UserInfo> selectByUserIdForUpdate(Long userInfoId) {
+        UserInfo q = new UserInfo();
+        q.setId(userInfoId);
+        return StreamEx.of(this.listByExample(q)).findFirst();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDetailDto;
@@ -8,15 +9,21 @@ import com.dili.trace.dto.thirdparty.report.ReportUserDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserImgDto;
 import com.dili.trace.enums.ReportInterfacePicEnum;
 import com.dili.trace.glossary.ColorEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.google.common.collect.Lists;
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +31,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ThirdDataReportService {
+    @Autowired
+    UserInfoService userInfoService;
 
     @Value("${current.baseWebPath}")
     private String baseWebPath;
@@ -32,7 +41,6 @@ public class ThirdDataReportService {
     private Integer userStatusDelete = -1;
 
     /**
-     *
      * @param info
      * @param platformMarketId
      * @return
@@ -80,8 +88,9 @@ public class ThirdDataReportService {
 
     /**
      * SB
+     *
      * @param info
-     * @return 
+     * @return
      */
     private List<ReportUserImgDto> getBlAccountImgList(UserInfo info) {
         List<ReportUserImgDto> userImgList = new ArrayList<>();
@@ -148,45 +157,69 @@ public class ThirdDataReportService {
         return userImgList;
     }
 
+
     /**
      * reprocessUserQrCode
+     *
+     * @param idUserQrHistoryMap
+     * @return
      */
-    public List<ReportQrCodeDto> reprocessUserQrCode(List<UserQrHistory> list, Long platformMarketId) {
-        Map<Long, List<UserQrHistory>> groupByPriceMap = StreamEx.of(list).nonNull().collect(Collectors.groupingBy(UserQrHistory::getUserId));
-        List<ReportQrCodeDto> qrCodeDtos = new ArrayList<>();
-        for (Map.Entry<Long, List<UserQrHistory>> map : groupByPriceMap.entrySet()) {
-            Long userId = map.getKey();
+    public List<ReportQrCodeDto> reprocessUserQrCode(Map<Long, List<UserQrHistory>> idUserQrHistoryMap) {
+        List<Long> userInfoId = EntryStream.of(idUserQrHistoryMap).keys().toList();
+        if (userInfoId.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        UserQueryDto queryDto = new UserQueryDto();
+        queryDto.setUserInfoIdList(userInfoId);
+        Map<Long, UserInfo> userInfoMap = StreamEx.of(this.userInfoService.listByExample(queryDto)).mapToEntry(UserInfo::getId, Function.identity()).toMap();
+        Map<UserInfo, List<UserQrHistory>> dataMap = EntryStream.of(idUserQrHistoryMap).filterKeys(uid -> {
+            return userInfoMap.containsKey(uid);
+        }).mapToKey((k, v) -> userInfoMap.get(k)).toMap();
+
+
+        return this.buildReportQrCodeDto(dataMap);
+    }
+
+    private List<ReportQrCodeDto> buildReportQrCodeDto(Map<UserInfo, List<UserQrHistory>> dataMap) {
+        List<ReportQrCodeDto> qrCodeDtos = EntryStream.of(dataMap).mapKeyValue((userInfo, qrHistoryList) -> {
+            Long userId = userInfo.getUserId();
             //二维码信息
             String codeContent = this.baseWebPath + "/user?userId=" + String.valueOf(userId);
 
             ReportQrCodeDto reportQrCodeDto = new ReportQrCodeDto();
             reportQrCodeDto.setThirdAccId(String.valueOf(userId));
             reportQrCodeDto.setCode(codeContent);
-            reportQrCodeDto.setMarketId(String.valueOf(platformMarketId));
+            reportQrCodeDto.setMarketId(String.valueOf(userInfo.getMarketId()));
 
-            List<UserQrHistory> sortQrList = map.getValue();
-            //按修改时间排序
-            sortQrList.sort((q1, q2) -> q2.getModified().compareTo(q1.getModified()));
-            UserQrHistory qrHistory = sortQrList.get(0);
-            //0-黑 1-绿 2-黄 3-红
-            Integer colorStatus = 0;
-            if (ColorEnum.GREEN.equalsCode(qrHistory.getQrStatus())) {
-                colorStatus = 1;
-            } else if (ColorEnum.YELLOW.equalsCode(qrHistory.getQrStatus())) {
-                colorStatus = 2;
-            } else if (ColorEnum.RED.equalsCode(qrHistory.getQrStatus())) {
-                colorStatus = 3;
-            }
-            reportQrCodeDto.setColor(colorStatus);
-            List<ReportQrCodeDetailDto> codeDetail = new ArrayList<>();
-            map.getValue().stream().forEach(c -> {
+            UserQrStatusEnum userQrStatusEnum = UserQrStatusEnum.fromCode(userInfo.getQrStatus()).orElse(UserQrStatusEnum.BLACK);
+            reportQrCodeDto.setColor(this.convertColorStatus(userQrStatusEnum));
+
+
+            List<ReportQrCodeDetailDto> codeDetail = StreamEx.of(qrHistoryList).map(qh -> {
                 ReportQrCodeDetailDto r = new ReportQrCodeDetailDto();
-                r.setCodeDetail(c.getContent());
-                codeDetail.add(r);
-            });
+                r.setCodeDetail(qh.getContent());
+                return r;
+
+            }).toList();
             reportQrCodeDto.setCodeDetailList(codeDetail);
-            qrCodeDtos.add(reportQrCodeDto);
-        }
+            return reportQrCodeDto;
+        }).toList();
+
+
         return qrCodeDtos;
+    }
+
+    private Integer convertColorStatus(UserQrStatusEnum userQrStatusEnum) {
+        //0-黑 1-绿 2-黄 3-红
+        if (UserQrStatusEnum.GREEN == userQrStatusEnum) {
+            return 1;
+        }
+        if (UserQrStatusEnum.YELLOW == userQrStatusEnum) {
+            return 2;
+        }
+        if (UserQrStatusEnum.RED == userQrStatusEnum) {
+            return 3;
+        }
+        return 0;
     }
 }

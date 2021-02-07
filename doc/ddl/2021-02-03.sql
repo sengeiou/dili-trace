@@ -39,13 +39,13 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_back_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 
 
-
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN user_id;
 ALTER TABLE dili_trace.user_qr_history DROP COLUMN bill_id;
 ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
 
 ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_id bigint(20) NULL COMMENT 'qr事件ID';
 ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';
-
+ALTER TABLE dili_trace.`user_qr_history` ADD user_info_id bigint(20) NULL COMMENT '市场ID';
 
 ALTER TABLE dili_trace.quality_trace_trade_bill_syncpoint DROP COLUMN order_version;
 ALTER TABLE dili_trace.quality_trace_trade_bill DROP COLUMN order_version;

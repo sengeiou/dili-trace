@@ -5,6 +5,7 @@ import com.dili.trace.domain.UserQrHistory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 
 public class UserQrHistoryQueryDto extends UserQrHistory {
@@ -21,6 +22,26 @@ public class UserQrHistoryQueryDto extends UserQrHistory {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private LocalDateTime createdEnd;
 
+    @Transient
+    private Long userId;
+    @Transient
+    private Long marketId;
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public LocalDateTime getCreatedStart() {
         return createdStart;

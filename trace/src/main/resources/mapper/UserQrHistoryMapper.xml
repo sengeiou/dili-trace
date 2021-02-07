@@ -6,15 +6,32 @@
     </resultMap>
     
 
-    <select id="selectUserIdWithoutHistory" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="java.lang.Long">
-      select user_id from `user` where user_id not in(
-            select user_id from user_qr_history uq
+    <select id="selectUserInfoIdWithoutHistory" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="java.lang.Long">
+      select id from `user` where id not in(
+            select user_info_id from user_qr_history uq
             where <![CDATA[AND ( uq.created >= #{createdStart} OR uq.created <= #{createdEnd})]]>
             and is_valid=#{isValid}
       )
       <![CDATA[AND qr_status<>#{qrStatus})]]>
-      <if test="userId != null">
-        AND user_id = #{userId}
+      <if test="userInfoId != null">
+        AND id = #{userInfoId}
       </if>
   </select>
+    <select id="listByExample" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="com.dili.trace.domain.UserQrHistory">
+        select * from `user_qr_history` where user_info_id in(
+            select id from `user` where user_id=#{userId} and market_id =#{marketId}
+        )
+        <if test="isValid!=null">
+            and is_valid=#{isValid}
+        </if>
+        <if test="createdStart!=null">
+            <![CDATA[AND created >= #{createdStart} ]]>
+        </if>
+        <if test="createdEnd!=null">
+            <![CDATA[AND created <= #{createdEnd}]]>
+        </if>
+
+    </select>
+
+
 </mapper>
