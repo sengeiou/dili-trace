@@ -23,22 +23,12 @@ public class FieldConfig extends BaseDomain {
     private Integer moduleType;
 
     /**
-     * 从哪个修改而来(保留修改历史)
-     */
-    @Column(name = "source_id")
-    private Long sourceId;
-
-    /**
      * 市场id
      */
     @Column(name = "market_id")
     private Long marketId;
 
-    /**
-     * 是否有效
-     */
-    @Column(name = "is_valid")
-    private Integer isValid;
+
 
     /**
      * 操作人ID
@@ -81,13 +71,6 @@ public class FieldConfig extends BaseDomain {
         this.marketId = marketId;
     }
 
-    public Integer getIsValid() {
-        return isValid;
-    }
-
-    public void setIsValid(Integer isValid) {
-        this.isValid = isValid;
-    }
 
     public Long getOperatorId() {
         return operatorId;
@@ -121,14 +104,6 @@ public class FieldConfig extends BaseDomain {
         this.modified = modified;
     }
 
-
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
 
     public Integer getModuleType() {
         return moduleType;

@@ -57,42 +57,41 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 /*====================*/
 
 CREATE TABLE `default_field_detail` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `module_type` int(11) NOT NULL COMMENT '模块',
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `module_type` int NOT NULL COMMENT '模块',
     `field_id` varchar(50)  NULL COMMENT '字段ID',
     `field_name` varchar(50) NOT  NULL COMMENT '字段名称',
-    `is_display` int(11) NOT NULL DEFAULT 0 COMMENT '是否显示',
-    `is_required` int(11) NOT NULL DEFAULT 0 COMMENT '是否必填',
+    `is_display` int NOT NULL DEFAULT 0 COMMENT '是否显示',
+    `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
     `default_value` varchar(50)  NULL  COMMENT '默认值',
     `created` datetime NOT NULL DEFAULT now(),
     `modified` datetime NOT NULL DEFAULT now(),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
-
 
 CREATE TABLE `field_config` (
-   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-   `module_type` int(11) NOT NULL COMMENT '模块',
-   `source_id` bigint(20)  NULL COMMENT '从哪个修改而来(保留修改历史)',
-   `market_id` bigint(20) NOT NULL COMMENT '市场id',
-   `is_valid` int(11)  NOT NULL COMMENT '是否有效',
-   `operator_id` bigint(20) NOT NULL COMMENT '操作人ID',
-   `operator_name` varchar(50) NOT NULL COMMENT '操作人姓名',
-   `created` datetime NOT NULL DEFAULT now(),
-   `modified` datetime NOT NULL DEFAULT now(),
-   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `field_config_detail` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `field_config_id` bigint(20) NOT NULL COMMENT '配置ID',
-    `default_field_detail_id` bigint(20) NOT NULL COMMENT '配置ID',
-    `is_display` int(11) NOT NULL DEFAULT 0 COMMENT '是否显示',
-    `is_required` int(11) NOT NULL DEFAULT 0 COMMENT '是否必填',
-    `default_value` varchar(50)  NULL  COMMENT '默认值',
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `module_type` int NOT NULL COMMENT '模块',
+    `market_id` bigint NOT NULL COMMENT '市场id',
+    `operator_id` bigint NOT NULL COMMENT '操作人ID',
+    `operator_name` varchar(50) NOT NULL COMMENT '操作人姓名',
     `created` datetime NOT NULL DEFAULT now(),
     `modified` datetime NOT NULL DEFAULT now(),
     PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+ALTER TABLE dili_trace.field_config ADD CONSTRAINT moduletype_market_unique UNIQUE KEY (module_type,market_id);
+
+CREATE TABLE `field_config_detail` (
+       `id` bigint NOT NULL AUTO_INCREMENT,
+       `field_config_id` bigint NOT NULL COMMENT '配置ID',
+       `default_field_detail_id` bigint NOT NULL COMMENT '配置ID',
+       `is_display` int NOT NULL DEFAULT 0 COMMENT '是否显示',
+       `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
+       `default_value` varchar(50)  NULL  COMMENT '默认值',
+       `is_valid` int  NOT NULL COMMENT '是否有效',
+       `created` datetime NOT NULL DEFAULT now(),
+       `modified` datetime NOT NULL DEFAULT now(),
+       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 

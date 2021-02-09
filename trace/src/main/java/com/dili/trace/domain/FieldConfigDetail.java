@@ -41,6 +41,13 @@ public class FieldConfigDetail extends BaseDomain {
      */
     @Column(name = "default_value")
     private String defaultValue;
+
+    /**
+     * 是否可用
+     */
+    @Column(name = "is_valid")
+    private Integer isValid;
+
     /**
      * 创建时间
      */
@@ -52,6 +59,7 @@ public class FieldConfigDetail extends BaseDomain {
      */
     @Column(name = "modified")
     private LocalDateTime modified;
+
 
     @Override
     public Long getId() {
@@ -118,5 +126,13 @@ public class FieldConfigDetail extends BaseDomain {
 
     public void setDefaultFieldDetailId(Long defaultFieldDetailId) {
         this.defaultFieldDetailId = defaultFieldDetailId;
+    }
+
+    public Integer getIsValid() {
+        return isValid;
+    }
+
+    public void setIsValid(Integer isValid) {
+        this.isValid = isValid;
     }
 }
