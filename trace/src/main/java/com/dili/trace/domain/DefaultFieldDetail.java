@@ -25,6 +25,11 @@ public class DefaultFieldDetail extends BaseDomain {
     @Column(name = "field_id")
     private String fieldId;
     /**
+     * field label
+     */
+    @Column(name = "field_label")
+    private String fieldLabel;
+    /**
      * field name
      */
     @Column(name = "field_name")
@@ -48,8 +53,8 @@ public class DefaultFieldDetail extends BaseDomain {
     /**
      * jsonPath
      */
-    @Column(name = "json_path")
-    private String jsonPath;
+    @Column(name = "x_path")
+    private String xPath;
     /**
      * 创建时间
      */
@@ -134,11 +139,19 @@ public class DefaultFieldDetail extends BaseDomain {
         this.moduleType = moduleType;
     }
 
-    public String getJsonPath() {
-        return jsonPath;
+    public String getxPath() {
+        return xPath;
     }
 
-    public void setJsonPath(String jsonPath) {
-        this.jsonPath = jsonPath;
+    public void setxPath(String xPath) {
+        this.xPath = xPath;
+    }
+
+    public String getFieldLabel() {
+        return fieldLabel;
+    }
+
+    public void setFieldLabel(String fieldLabel) {
+        this.fieldLabel = fieldLabel;
     }
 }

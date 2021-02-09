@@ -60,11 +60,12 @@ CREATE TABLE `default_field_detail` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `module_type` int NOT NULL COMMENT '模块',
     `field_id` varchar(50)  NULL COMMENT '字段ID',
+    `field_label` varchar(50) NOT  NULL COMMENT '字段Label',
     `field_name` varchar(50) NOT  NULL COMMENT '字段名称',
     `is_display` int NOT NULL DEFAULT 0 COMMENT '是否显示',
     `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
     `default_value` varchar(50)  NULL  COMMENT '默认值',
-    `json_path` varchar(50) NOT NULL  COMMENT 'jsonpath',
+    `x_path` varchar(50) NOT NULL  COMMENT 'xpath',
     `created` datetime NOT NULL DEFAULT now(),
     `modified` datetime NOT NULL DEFAULT now(),
     PRIMARY KEY (`id`)
