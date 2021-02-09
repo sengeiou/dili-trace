@@ -64,6 +64,7 @@ CREATE TABLE `default_field_detail` (
     `is_display` int NOT NULL DEFAULT 0 COMMENT '是否显示',
     `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
     `default_value` varchar(50)  NULL  COMMENT '默认值',
+    `json_path` varchar(50) NOT NULL  COMMENT 'jsonpath',
     `created` datetime NOT NULL DEFAULT now(),
     `modified` datetime NOT NULL DEFAULT now(),
     PRIMARY KEY (`id`)

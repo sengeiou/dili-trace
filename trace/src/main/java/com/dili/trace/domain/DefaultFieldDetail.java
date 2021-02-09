@@ -44,6 +44,12 @@ public class DefaultFieldDetail extends BaseDomain {
      */
     @Column(name = "default_value")
     private String defaultValue;
+
+    /**
+     * jsonPath
+     */
+    @Column(name = "json_path")
+    private String jsonPath;
     /**
      * 创建时间
      */
@@ -126,5 +132,13 @@ public class DefaultFieldDetail extends BaseDomain {
 
     public void setModuleType(Integer moduleType) {
         this.moduleType = moduleType;
+    }
+
+    public String getJsonPath() {
+        return jsonPath;
+    }
+
+    public void setJsonPath(String jsonPath) {
+        this.jsonPath = jsonPath;
     }
 }
