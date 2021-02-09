@@ -28,7 +28,14 @@ import java.util.Optional;
 public class UserInfoService extends TraceBaseService<UserInfo, Long> {
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
 
+    /**
+     * 查询信息
+     * @param historyQueryDto
+     * @return
+     */
     public BasePage<UserInfo> selectUserInfoByQrHistory(UserQrHistoryQueryDto historyQueryDto) {
         return super.buildQuery(historyQueryDto).listPageByFun(q -> {
             return this.userMapper.selectUserInfoByQrHistory(q);
@@ -52,6 +59,11 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
         return StreamEx.of(this.listByExample(userInfo)).findFirst();
     }
 
+    /**
+     * 查询并锁定
+     * @param userInfoId
+     * @return
+     */
     public Optional<UserInfo> selectByUserIdForUpdate(Long userInfoId) {
         UserInfo q = new UserInfo();
         q.setId(userInfoId);
@@ -135,7 +147,8 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             userInfo.setCreated(Date.from(extDto.getCreateTime().atZone(ZoneId.systemDefault()).toInstant()));
             userInfo.setModified(Date.from(extDto.getModifyTime().atZone(ZoneId.systemDefault()).toInstant()));
             userInfo.setState(extDto.getState());
-            return this.updateSelective(userInfo);
+            this.updateSelective(userInfo);
+            this.userQrHistoryService.createUserQrHistoryForUserRegist(this.get(userInfo.getId()),userInfo.getMarketId());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

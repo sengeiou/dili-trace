@@ -91,7 +91,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         inputBill.setHasDetectReport(0);
         inputBill.setHasOriginCertifiy(0);
         inputBill.setHasHandleResult(0);
-        inputBill.setVersion(1);
         inputBill.setCreated(new Date());
         inputBill.setModified(new Date());
         inputBill.setIsDeleted(YesOrNoEnum.NO.getCode());
@@ -705,7 +704,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (qualityTraceTradeBill == null) {
             return null;
         }
-        QualityTraceTradeBillOutDto dto = DTOUtils.newDTO(QualityTraceTradeBillOutDto.class);
+        QualityTraceTradeBillOutDto dto = new QualityTraceTradeBillOutDto();
         dto.setQualityTraceTradeBill(qualityTraceTradeBill);
 
         RegisterBill registerBill = new RegisterBill();
@@ -740,7 +739,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         }
         // 查询交易单信息
         // if(StringUtils.isNotBlank(registerBill.getCode())) {
-        // QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
+        // QualityTraceTradeBill example = new QualityTraceTradeBill();
         // example.setRegisterBillCode(registerBill.getCode());
         // List<QualityTraceTradeBill> qualityTraceTradeBillList =
         // this.qualityTraceTradeBillService
@@ -769,7 +768,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             BeanUtil.copyProperties(registerBill, outputDto);
         }
         // 查询交易单信息
-        QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
+        QualityTraceTradeBill example = new QualityTraceTradeBill();
         example.setRegisterBillCode(registerBill.getCode());
         List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
                 .listByExample(example);

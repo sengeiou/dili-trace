@@ -251,7 +251,7 @@ public class NewRegisterBillController {
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
-            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            QualityTraceTradeBill condition = new QualityTraceTradeBill();
             condition.setRegisterBillCode(registerBill.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
@@ -288,7 +288,7 @@ public class NewRegisterBillController {
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
-            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            QualityTraceTradeBill condition = new QualityTraceTradeBill();
             condition.setRegisterBillCode(registerBill.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
@@ -333,7 +333,7 @@ public class NewRegisterBillController {
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
-            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            QualityTraceTradeBill condition = new QualityTraceTradeBill();
             condition.setRegisterBillCode(registerBill.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
@@ -514,7 +514,7 @@ public class NewRegisterBillController {
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
-            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            QualityTraceTradeBill condition = new QualityTraceTradeBill();
             condition.setRegisterBillCode(item.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
@@ -893,7 +893,7 @@ public class NewRegisterBillController {
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
-            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            QualityTraceTradeBill condition = new QualityTraceTradeBill();
             condition.setRegisterBillCode(item.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }

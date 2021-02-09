@@ -186,12 +186,6 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`latest_pd_result`")
     private String latestPdResult;
 
-    /**
-     * 版本
-     */
-    @ApiModelProperty(value = "版本")
-    @Column(name = "`version`")
-    private Integer version;
 
     /**
      * 创建时间
@@ -1023,13 +1017,7 @@ public class RegisterBill extends BaseDomain {
         this.latestPdResult = latestPdResult;
     }
 
-    public Integer getVersion() {
-        return version;
-    }
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
 
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCreated() {

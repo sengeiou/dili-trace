@@ -130,7 +130,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 	}
 
 	private UserHistory buildUserHistory(UserInfo user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList) {
-		UserHistory history = DTOUtils.newDTO(UserHistory.class);
+		UserHistory history = new UserHistory();
 		history.setUserId(user.getId());
 		history.setAddr(user.getAddr());
 //		history.setBusinessLicenseUrl(user.getBusinessLicenseUrl());

@@ -197,7 +197,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         String code = uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL);
         logger.debug("registerBill.code={}", code);
         registerBill.setCode(code);
-        registerBill.setVersion(1);
         registerBill.setCreated(new Date());
 //        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
@@ -1029,7 +1028,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
         registerBill.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL));
-        registerBill.setVersion(1);
         registerBill.setCreated(new Date());
 //        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());

@@ -97,11 +97,10 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
     /**
      * createUserQrHistoryForUserRegist
      *
-     * @param userId
+     * @param userInfoItem
      * @param marketId
      */
-    public void createUserQrHistoryForUserRegist(Long userId, Long marketId) {
-        this.userInfoService.saveUserInfo(userId, marketId).ifPresent(userInfoItem -> {
+    public void createUserQrHistoryForUserRegist(UserInfo userInfoItem, Long marketId) {
 
             if (userInfoItem.getQrHistoryId() != null) {
                 return;
@@ -109,7 +108,7 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
             UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
             //插入qrhistory对象
             String content = "完成注册,默认为" + qrStatusEnum.getDesc() + "码";
-            this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null).ifPresent(userQrHistory -> {
+            this.buildUserQrHistory(userInfoItem.getId(), qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null).ifPresent(userQrHistory -> {
 
                 userQrHistory.setContent(content);
                 this.insertSelective(userQrHistory);
@@ -123,7 +122,6 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
                 userInfo.setQrContent(content);
                 this.userInfoService.updateSelective(userInfo);
             });
-        });
     }
 
     /**
@@ -272,6 +270,7 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
         userQrHistory.setCreated(new Date());
         userQrHistory.setModified(new Date());
         userQrHistory.setIsValid(YesOrNoEnum.YES.getCode());
+        userQrHistory.setQrHistoryEventId(qrHistoryEventId);
         userQrHistory.setQrHistoryEventType(historyEventTypeEnum.getCode());
         return userQrHistory;
 

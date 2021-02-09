@@ -37,16 +37,7 @@
     </select>
 
     <update id="batchUpdateUserByThirdCode" parameterType="java.util.List">
-        UPDATE user
-        SET card_no_front_url =
-        <foreach collection="list" item="user" index="index"
-                 separator=" " open="case third_party_code" close="end">
-            when #{user.thirdPartyCode} then #{user.cardNoFrontUrl}
-        </foreach>
-        WHERE third_party_code
-        <foreach collection="list" open=" IN (" close=")" item="u" separator=",">
-            #{u.thirdPartyCode}
-        </foreach>
+        UPDATE user SET id = id WHERE 0=1
     </update>
 
     <select id="getCategoryListByThirdCode" parameterType="java.util.List"

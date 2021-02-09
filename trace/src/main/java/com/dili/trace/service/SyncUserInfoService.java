@@ -17,8 +17,7 @@ public class SyncUserInfoService {
     UserInfoService userInfoService;
     @Autowired
     AsyncService asyncService;
-    @Autowired
-    UserQrHistoryService userQrHistoryService;
+
 
     /**
      * 保存并同步客户信息(客户登录或者管理员帮客户报备时调用此方法)
@@ -34,7 +33,6 @@ public class SyncUserInfoService {
             }
             this.asyncService.syncUserInfo(userInfo, customerExtendDto -> {
                 this.userInfoService.updateUserInfoByCustomerExtendDto(userInfo.getId(), customerExtendDto);
-                this.userQrHistoryService.createUserQrHistoryForUserRegist(userInfo.getUserId(),userInfo.getMarketId());
             });
             return userInfo;
         });

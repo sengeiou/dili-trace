@@ -28,8 +28,25 @@ ALTER TABLE dili_trace.category ADD CONSTRAINT category_market_unique UNIQUE KEY
 
 ALTER TABLE dili_trace.`user` ADD qr_content varchar(500) NULL COMMENT '最后的二维码变更内容';
 ALTER TABLE dili_trace.`user` ADD qr_history_id bigint(20) NULL COMMENT '最后的二维码变更历史ID';
+
+ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_id bigint(20) NULL COMMENT 'qr事件ID';
+ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';
+ALTER TABLE dili_trace.`user_qr_history` ADD user_info_id bigint(20) NULL COMMENT '市场ID';
+
 ALTER TABLE dili_trace.`user` DROP COLUMN `password`;
 ALTER TABLE dili_trace.`user` DROP COLUMN `version`;
+
+
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN user_id;
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN user_name;
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN bill_id;
+ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
+
+ALTER TABLE dili_trace.quality_trace_trade_bill_syncpoint DROP COLUMN order_version;
+ALTER TABLE dili_trace.quality_trace_trade_bill DROP COLUMN order_version;
+
+ALTER TABLE dili_trace.`register_bill` DROP COLUMN `version`;
+
 
 
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `password`;
@@ -37,15 +54,13 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `version`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_front_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_back_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
+/*====================*/
 
 
-ALTER TABLE dili_trace.user_qr_history DROP COLUMN user_id;
-ALTER TABLE dili_trace.user_qr_history DROP COLUMN bill_id;
-ALTER TABLE dili_trace.user_qr_history DROP COLUMN trade_request_id;
 
-ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_id bigint(20) NULL COMMENT 'qr事件ID';
-ALTER TABLE dili_trace.`user_qr_history` ADD qr_history_event_type INT NULL COMMENT 'qr事件类型';
-ALTER TABLE dili_trace.`user_qr_history` ADD user_info_id bigint(20) NULL COMMENT '市场ID';
 
-ALTER TABLE dili_trace.quality_trace_trade_bill_syncpoint DROP COLUMN order_version;
-ALTER TABLE dili_trace.quality_trace_trade_bill DROP COLUMN order_version;
+
+
+
+
+
