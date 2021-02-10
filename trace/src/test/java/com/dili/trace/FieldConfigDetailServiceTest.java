@@ -27,7 +27,7 @@ public class FieldConfigDetailServiceTest extends AutoWiredBaseTest {
 
         FieldConfigDetail fcd = new FieldConfigDetail();
         fcd.setDefaultFieldDetailId(1L);
-        fcd.setIsDisplay(YesOrNoEnum.YES.getCode());
+        fcd.setIsDisplayed(YesOrNoEnum.YES.getCode());
         fcd.setIsRequired(YesOrNoEnum.YES.getCode());
 
         List<FieldConfigDetail> fieldConfigDetailListInput = Lists.newArrayList(fcd);

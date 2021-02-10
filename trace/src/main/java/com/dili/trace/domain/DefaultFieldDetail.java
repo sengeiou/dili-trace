@@ -37,8 +37,8 @@ public class DefaultFieldDetail extends BaseDomain {
     /**
      * 是否显示
      */
-    @Column(name = "is_display")
-    private Integer isDisplay;
+    @Column(name = "is_displayed")
+    private Integer isDisplayed;
     /**
      * 是否必填
      */
@@ -51,10 +51,23 @@ public class DefaultFieldDetail extends BaseDomain {
     private String defaultValue;
 
     /**
-     * jsonPath
+     * 可选值范围
      */
-    @Column(name = "x_path")
-    private String xPath;
+    @Column(name = "available_values")
+    private String availableValues;
+
+
+    /**
+     * jsonpath
+     */
+    @Column(name = "json_path")
+    private String jsonPath;
+
+    /**
+     * jsonpath类型
+     */
+    @Column(name = "json_path_type")
+    private Integer jsonPathType;
     /**
      * 创建时间
      */
@@ -83,12 +96,12 @@ public class DefaultFieldDetail extends BaseDomain {
         this.fieldName = fieldName;
     }
 
-    public Integer getIsDisplay() {
-        return isDisplay;
+    public Integer getIsDisplayed() {
+        return isDisplayed;
     }
 
-    public void setIsDisplay(Integer isDisplay) {
-        this.isDisplay = isDisplay;
+    public void setIsDisplayed(Integer isDisplayed) {
+        this.isDisplayed = isDisplayed;
     }
 
     public Integer getIsRequired() {
@@ -139,19 +152,35 @@ public class DefaultFieldDetail extends BaseDomain {
         this.moduleType = moduleType;
     }
 
-    public String getxPath() {
-        return xPath;
-    }
-
-    public void setxPath(String xPath) {
-        this.xPath = xPath;
-    }
-
     public String getFieldLabel() {
         return fieldLabel;
     }
 
     public void setFieldLabel(String fieldLabel) {
         this.fieldLabel = fieldLabel;
+    }
+
+    public String getJsonPath() {
+        return jsonPath;
+    }
+
+    public void setJsonPath(String jsonPath) {
+        this.jsonPath = jsonPath;
+    }
+
+    public Integer getJsonPathType() {
+        return jsonPathType;
+    }
+
+    public void setJsonPathType(Integer jsonPathType) {
+        this.jsonPathType = jsonPathType;
+    }
+
+    public String getAvailableValues() {
+        return availableValues;
+    }
+
+    public void setAvailableValues(String availableValues) {
+        this.availableValues = availableValues;
     }
 }

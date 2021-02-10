@@ -29,8 +29,8 @@ public class FieldConfigDetail extends BaseDomain {
     /**
      * 是否显示
      */
-    @Column(name = "is_display")
-    private Integer isDisplay;
+    @Column(name = "is_displayed")
+    private Integer isDisplayed;
     /**
      * 是否必填
      */
@@ -80,12 +80,12 @@ public class FieldConfigDetail extends BaseDomain {
     }
 
 
-    public Integer getIsDisplay() {
-        return isDisplay;
+    public Integer getIsDisplayed() {
+        return isDisplayed;
     }
 
-    public void setIsDisplay(Integer isDisplay) {
-        this.isDisplay = isDisplay;
+    public void setIsDisplayed(Integer isDisplayed) {
+        this.isDisplayed = isDisplayed;
     }
 
     public Integer getIsRequired() {
