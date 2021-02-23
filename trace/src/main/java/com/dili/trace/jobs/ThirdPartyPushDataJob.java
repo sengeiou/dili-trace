@@ -15,7 +15,6 @@ import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
-import com.dili.trace.domain.hangguo.HangGuoCategory;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
@@ -244,14 +243,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
-        HangGuoCategory category = new HangGuoCategory();
+        Category category = new Category();
         category.setLevel(fruitsBigCategory);
         category.setMarketId(marketId);
         if (Objects.nonNull(thirdPartyPushData)) {
             Date pushTime = thirdPartyPushData.getPushTime();
             category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified > '" + DateUtils.format(pushTime) + "'");
         }
-        List<HangGuoCategory> categories = categoryService.listByExample(category);
+        List<Category> categories = categoryService.listByExample(category);
         if (CollectionUtils.isNotEmpty(categories)) {
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -286,7 +285,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        HangGuoCategory category = new HangGuoCategory();
+        Category category = new Category();
         //TODO
         category.setLevel(level);
         category.setMarketId(marketId);
@@ -294,7 +293,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             Date pushTime = thirdPartyPushData.getPushTime();
             category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified > '" + DateUtils.format(pushTime) + "'");
         }
-        List<HangGuoCategory> categories = categoryService.listByExample(category);
+        List<Category> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -302,7 +301,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-            for (HangGuoCategory td : categories) {
+            for (Category td : categories) {
                 CategorySecondDto categoryDto = new CategorySecondDto();
                 categoryDto.setThirdSmallClassId(td.getId().toString());
                 categoryDto.setSmallClassName(td.getName());
@@ -352,11 +351,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        HangGuoCategory category = new HangGuoCategory();
+        Category category = new Category();
         //TODO
         category.setLevel(level);
         category.setMarketId(marketId);
-        List<HangGuoCategory> categories = categoryService.listByExample(category);
+        List<Category> categories = categoryService.listByExample(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -364,7 +363,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-            for (HangGuoCategory td : categories) {
+            for (Category td : categories) {
                 //TODO
                 boolean needPush = true;
 /*                boolean needPush = thirdPartyPushData == null

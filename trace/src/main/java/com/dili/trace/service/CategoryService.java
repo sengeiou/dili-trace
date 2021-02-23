@@ -7,7 +7,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.UserInfo;
-import com.dili.trace.domain.hangguo.HangGuoCategory;
+import com.dili.trace.domain.Category;
 import com.dili.trace.dto.query.CategoryQueryDto;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import one.util.streamex.StreamEx;
@@ -21,7 +21,7 @@ import java.util.Date;
  * @author asa.lee
  */
 @Service
-public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
+public class CategoryService extends BaseServiceImpl<Category, Long> {
     @Autowired
     HangGuoDataMapper hangGuoDataMapper;
 
@@ -32,13 +32,13 @@ public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
      * @param marektId
      * @return
      */
-    public HangGuoCategory saveCategory(Long categoryId, Long marektId) {
+    public Category saveCategory(Long categoryId, Long marektId) {
         LOGGER.debug("saveCategory categoryId={},marketId={}", categoryId, marektId);
         if (categoryId == null || marektId == null) {
             return null;
         }
         try {
-            HangGuoCategory category = new HangGuoCategory();
+            Category category = new Category();
             category.setCategoryId(categoryId);
             category.setMarketId(marektId);
             category.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
@@ -70,7 +70,7 @@ public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
         }
 
         try {
-            HangGuoCategory updatableCategory = new HangGuoCategory();
+            Category updatableCategory = new Category();
             updatableCategory.setId(id);
             updatableCategory.setCreated(categoryDTO.getCreateTime());
             updatableCategory.setModified(categoryDTO.getModifyTime());

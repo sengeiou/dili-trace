@@ -1,4 +1,4 @@
-package com.dili.trace.domain.hangguo;
+package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "`category`")
-public class HangGuoCategory extends BaseDomain {
+public class Category extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")

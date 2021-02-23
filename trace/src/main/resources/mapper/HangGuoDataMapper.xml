@@ -10,7 +10,7 @@
         </foreach>
     </insert>
 
-    <update id="updateHangGuoCommodityParent" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory">
+    <update id="updateHangGuoCommodityParent" parameterType="com.dili.trace.domain.Category">
 
                UPDATE category c,category c2
                 SET c2.parent_id=c.id
@@ -41,7 +41,7 @@
     </update>
 
     <select id="getCategoryListByThirdCode" parameterType="java.util.List"
-            resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+            resultType="com.dili.trace.domain.Category">
         select
         id,
         parent_id,
@@ -361,8 +361,8 @@
         </foreach>
     </update>
 
-    <select id="getCategoryFaultList" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory"
-            resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+    <select id="getCategoryFaultList" parameterType="com.dili.trace.domain.Category"
+            resultType="com.dili.trace.domain.Category">
                 SELECT
                     c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
                  FROM category c
@@ -371,7 +371,7 @@
                  and c.market_id=#{marketId}
 
     </select>
-    <select id="getCategoryByThirdCode" resultType="com.dili.trace.domain.hangguo.HangGuoCategory">
+    <select id="getCategoryByThirdCode" resultType="com.dili.trace.domain.Category">
         SELECT
             c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
          FROM category c
@@ -392,7 +392,7 @@
     </update>
 
 
-    <update id="updateParentByUapId" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory">
+    <update id="updateParentByUapId" parameterType="com.dili.trace.domain.Category">
        UPDATE category ca_1,category ca_2
         SET ca_1.parent_id = ca_2.id
         WHERE ca_1.uap_parent_id = ca_2.uap_id
@@ -400,7 +400,7 @@
         AND DATE(ca_1.modified)=DATE(#{modified})
     </update>
 
-    <insert id="insertIgnoreCategory" parameterType="com.dili.trace.domain.hangguo.HangGuoCategory" >
+    <insert id="insertIgnoreCategory" parameterType="com.dili.trace.domain.Category" >
       INSERT ignore into `category`
       (category_id,market_id,last_sync_success)
       values(#{categoryId},#{marketId},#{lastSyncSuccess});
