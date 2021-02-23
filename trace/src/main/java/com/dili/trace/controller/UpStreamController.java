@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/upStream")
 public class UpStreamController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpStreamController.class);
-    @Resource
+    @Autowired
     private UserRpc userRpc;
     @Autowired
     private UpStreamService upStreamService;

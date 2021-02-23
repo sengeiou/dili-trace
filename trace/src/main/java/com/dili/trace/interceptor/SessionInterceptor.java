@@ -44,7 +44,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserUrlRedis userUrlRedis;
     @Autowired
     SyncUserInfoService syncUserInfoService;
-    @Resource
+    @Autowired
     RedisUtil redisUtil;
     private ObjectMapper mapper = new ObjectMapper();
 

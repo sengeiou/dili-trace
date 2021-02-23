@@ -85,6 +85,13 @@ class ImplE implements E {
 var e2=new ImplE();
 e2.name="ss";
 
+type sss={name:string,age:number};
+let ss:sss={name:'',age:34};
+
+let n:{name:string,age:number}={age:23,name:''};
+
+
+
 // e2.age=44; error
 
 console.info("abcd")

@@ -42,7 +42,7 @@ import java.util.List;
 public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoTraceabilityDataJob.class);
 
-    @Resource
+    @Autowired
     RegisterBillMapper registerBillMapper;
     @Autowired
     HangGuoDataUtil hangGuoDataUtil;

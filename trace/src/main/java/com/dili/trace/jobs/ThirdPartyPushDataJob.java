@@ -54,9 +54,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyPushDataJob.class);
     @Autowired
     DataReportService dataReportService;
-    @Resource
+    @Autowired
     RegisterBillMapper registerBillMapper;
-    @Resource
+    @Autowired
     TradeRequestMapper tradeRequestMapper;
     @Autowired
     private CategoryService categoryService;
@@ -81,11 +81,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private String baseWebPath;
     @Value("${push.batch.size}")
     private Integer pushBatchSize;
-    @Resource
+    @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
-    @Resource
+    @Autowired
     FirmRpcService FirmRpcService;
-    @Resource
+    @Autowired
     AssetsRpc assetsRpc;
 
     @Override

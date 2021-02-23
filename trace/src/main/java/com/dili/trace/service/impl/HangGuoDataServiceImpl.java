@@ -38,7 +38,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
      * 最大处理条数，超出的则在下一次执行job中再处理
      */
     private Integer maxPageCountSize = 15000;
-    @Resource
+    @Autowired
     private HangGuoDataMapper hangGuoDataMapper;
 
     @Override

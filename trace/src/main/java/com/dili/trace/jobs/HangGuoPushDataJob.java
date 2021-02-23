@@ -43,7 +43,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoPushDataJob.class);
     @Autowired
     DataReportService dataReportService;
-    @Resource
+    @Autowired
     RegisterBillMapper registerBillMapper;
     @Autowired
     private MarketService marketService;

@@ -46,7 +46,7 @@ public class HangGuoDataUtil {
     private UserExtService userExtService;
     @Autowired
     private HangGuoDataService hangGuoDataService;
-    @Resource
+    @Autowired
     private UidRestfulRpcService uidRestfulRpcService;
     @Autowired
     private TradeOrderService tradeOrderService;

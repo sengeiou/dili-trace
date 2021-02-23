@@ -33,9 +33,9 @@ public class TradeInfoController {
 
     @Autowired
     private CustomerRpcService customerRpcService;
-    @Resource
+    @Autowired
     private UserService userService;
-    @Resource
+    @Autowired
     private UserPlateService userPlateService;
     @Autowired
     UapRpcService uapRpcService;

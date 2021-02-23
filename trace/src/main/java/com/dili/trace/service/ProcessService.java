@@ -28,14 +28,14 @@ import java.util.Optional;
 public class ProcessService {
     private static final Logger logger= LoggerFactory.getLogger(ProcessService.class);
 
-    @Resource
+    @Autowired
     ProductRpcService productRpcService;
-    @Resource
+    @Autowired
     BillService billService;
 
-    @Resource
+    @Autowired
     private MarketService marketService;
-    @Resource
+    @Autowired
     CheckinOutRecordService checkinOutRecordService;
 
     @Autowired

@@ -71,13 +71,13 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     DetectTaskService detectTaskService;
     @Autowired
     BillService billService;
-    @Resource
+    @Autowired
     RegisterBillMapper billMapper;
     @Autowired
     ImageCertService imageCertService;
     @Autowired
     DetectRequestService detectRequestService;
-    @Resource
+    @Autowired
     RegisterBillService registerBillService;
 
     @Transactional

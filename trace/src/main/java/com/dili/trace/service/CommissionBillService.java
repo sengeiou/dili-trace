@@ -39,7 +39,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
     BillService billService;
     @Autowired
     DetectRequestService detectRequestService;
-    @Resource
+    @Autowired
     RegisterBillMapper billMapper;
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
