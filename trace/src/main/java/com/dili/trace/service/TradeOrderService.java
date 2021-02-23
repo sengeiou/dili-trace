@@ -122,6 +122,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             if (notBelongToSeller) {
                 throw new TraceBizException("参数不匹配:有批次不属于当前卖家");
             }
+
         }
         LOGGER.debug("sellerId={},batchStockIdList={}", sellerId, batchStockIdList);
         if (TradeOrderTypeEnum.NONE != tradeDto.getTradeOrderType()) {
@@ -130,6 +131,13 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                     .map(ProductStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
             if (notSellerOwnedBatchBlock) {
                 throw new TraceBizException("参数不匹配:有库存不属于当前卖家");
+            }
+
+            // 判断是否全部是卖家当前市场
+            boolean notSellerOwnedMarket = StreamEx.of(this.productStockService.findByIdList(batchStockIdList))
+                    .map(ProductStock::getMarketId).distinct().anyMatch(mid -> !mid.equals(tradeDto.getMarketId()));
+            if (notSellerOwnedMarket) {
+                throw new TraceBizException("参数不匹配:有库存不属于当前卖家市场");
             }
         }
 
@@ -624,6 +632,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         }
         ProductStock psQuery = new ProductStock();
         psQuery.setUserId(userId);
+        psQuery.setMarketId(registerBill.getMarketId());
         // query.setPreserveType(tradeDetailItem.getPreserveType());
         psQuery.setProductId(registerBill.getProductId());
         psQuery.setWeightUnit(registerBill.getWeightUnit());
@@ -634,6 +643,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         ProductStock batchStockItem = StreamEx.of(this.productStockService.listByExample(psQuery)).findFirst().orElseGet(() -> {
             //创建初始BatchStock
             ProductStock batchStock = new ProductStock();
+            batchStock.setMarketId(registerBill.getMarketId());
             batchStock.setUserId(userId);
             batchStock.setUserName(userName);
             batchStock.setPreserveType(registerBill.getPreserveType());
