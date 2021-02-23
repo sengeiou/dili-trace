@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.UserQueryDto;
@@ -83,6 +84,21 @@ public class CategoryService extends BaseServiceImpl<HangGuoCategory, Long> {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 查询数量
+     *
+     * @param query
+     * @return
+     */
+    public Integer count(CusCategoryQuery query) {
+        if (query == null) {
+            return 0;
+        }
+
+        return this.hangGuoDataMapper.selectCountByExample(query);
+
     }
 
 }

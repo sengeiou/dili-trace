@@ -2,6 +2,7 @@ package com.dili.trace.jobs;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.dili.trace.dto.query.UserQrHistoryQueryDto;
@@ -30,7 +31,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = this.start(now);
         LocalDateTime end = this.end(now);
-        // logger.info("开始执行任务: 根据 {}-{} 之内报备单数据更新用户颜色码",DateFormatUtils.format(start, "yyyy-MM-dd HH:mm:ss"),DateFormatUtils.format(end, "yyyy-MM-dd HH:mm:ss") );
+        logger.info("开始执行任务: 根据 {}-{} 之内报备单数据更新用户颜色码",start.format(DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss")),end.format(DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss")) );
         try {
             UserQrHistoryQueryDto historyQueryDto=new UserQrHistoryQueryDto();
             historyQueryDto.setCreatedStart(start);

@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  * @author asa.lee, alvin, lily
  */
-@Component
+//@Component
 public class ThirdPartyPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyPushDataJob.class);
     @Autowired

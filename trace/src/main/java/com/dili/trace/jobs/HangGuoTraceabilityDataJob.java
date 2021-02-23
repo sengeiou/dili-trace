@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author asa.lee
  */
-@Component
+//@Component
 public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoTraceabilityDataJob.class);
 

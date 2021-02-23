@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  *
  * @author asa.lee
  */
-@Component
+//@Component
 public class HangGuoPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoPushDataJob.class);
     @Autowired
