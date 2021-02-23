@@ -67,6 +67,7 @@ public class ClientProductStockApi {
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
+			condition.setMarketId(sessionData.getMarketId());
 			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBizException e) {
@@ -94,6 +95,7 @@ public class ClientProductStockApi {
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
+			condition.setMarketId(sessionData.getMarketId());
 			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBizException e) {
