@@ -42,6 +42,19 @@
                 </div>
             </div>
 
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="measureType">
+                <div class="form-group col">
+                    <label for="">计量方式</label>
+                </div>
+                <%for(mt:measureTypes){%>
+                    <input type="checkbox" name="isDisplayed" value="true">
+                <%}%>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
 
             <div class="row row-cols-3">
                 <input type="hidden" name="fieldName" value="pieceNum">

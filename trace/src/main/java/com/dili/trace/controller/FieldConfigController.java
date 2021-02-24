@@ -69,6 +69,8 @@ public class FieldConfigController {
     public String bill(ModelMap modelMap) {
         Firm currentFirm=this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
         modelMap.put("currentFirm",currentFirm);
+        modelMap.put("measureTypes",Arrays.asList(MeasureTypeEnum.values()));
+
         return "fieldConfig/bill";
     }
 
