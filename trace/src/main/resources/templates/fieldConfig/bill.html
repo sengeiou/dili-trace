@@ -1,0 +1,272 @@
+<#bs4Body>
+
+<div class="container-fluid pb-5" id="app">
+    <form id="saveForm" role="form" novalidate>
+        <div class="" style="width: 500px">
+            <div class="row row-cols-1">
+                <div class="form-group col">
+                    <label for="firmName">管理员所属市场</label>
+                    <input type="text" class="form-control" id="firmName" name="firmName" value="${currentFirm.name}" readonly />
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="truckTareWeight">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">皮重</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="truckType">
+                <input type="hidden" name="fieldName" value="plate">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">是否拼车/车牌号</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="pieceNum">
+                <input type="hidden" name="fieldName" value="pieceWeight">
+                <input type="hidden" name="fieldName" value="weight">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">商品件数/件重/合计</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="unitPrice">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">商品单价</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="specName">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">商品规格</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldName" value="brandName">
+                <div class="form-group col">
+                    <input type="checkbox" name="isDisplayed" value="true">
+                    <label for="">品牌</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="true">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="isRequired" value="false">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">品牌</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">产地</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">上游企业</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">到场时间</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">检测报告</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">产地证明</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">检疫合格证</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">购货凭证</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">报关单</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">采购协议</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="form-group col">
+                    <input type="checkbox">
+                    <label for="">其他</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+</#bs4Body>

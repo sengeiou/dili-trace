@@ -141,7 +141,19 @@ public class NewRegisterBillController {
         RegisterBill registerBill = registerBillService.findHighLightBill(dto);
         return BaseOutput.success().setData(registerBill);
     }
+    /**
+     * 登记单录入页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/add.html")
+    public String createBill(ModelMap modelMap) {
+        modelMap.put("tradeTypes", tradeTypeService.findAll());
+        modelMap.put("citys", this.queryCitys());
 
+        return "new-registerBill/add";
+    }
     /**
      * 登记单录入页面
      *

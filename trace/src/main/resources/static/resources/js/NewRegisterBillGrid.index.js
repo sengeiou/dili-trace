@@ -470,7 +470,7 @@ class NewRegisterBillGrid extends ListPage {
         });
     }
     openCreatePage() {
-        let url = this.toUrl("/newRegisterBill/create.html");
+        let url = this.toUrl("/newRegisterBill/add.html");
         var createDia = bs4pop.dialog({
             title: '新增报备单',
             content: url,
@@ -510,6 +510,8 @@ class NewRegisterBillGrid extends ListPage {
         try {
             var billIdList = _.chain(rows).map(v => v.id).value();
             var resp = await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'), billIdList);
+            console.info(resp);
+            debugger;
             resp.forEach(btnid => { $('#' + btnid).show(); });
         }
         catch (e) {
