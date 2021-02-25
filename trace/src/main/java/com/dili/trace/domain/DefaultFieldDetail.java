@@ -34,16 +34,7 @@ public class DefaultFieldDetail extends BaseDomain {
      */
     @Column(name = "field_name")
     private String fieldName;
-    /**
-     * 是否显示
-     */
-    @Column(name = "is_displayed")
-    private Integer isDisplayed;
-    /**
-     * 是否必填
-     */
-    @Column(name = "is_required")
-    private Integer isRequired;
+
     /**
      * 默认值
      */
@@ -51,11 +42,10 @@ public class DefaultFieldDetail extends BaseDomain {
     private String defaultValue;
 
     /**
-     * 可选值范围
+     * 显示field条件值
      */
-    @Column(name = "available_values")
-    private String availableValues;
-
+    @Column(name = "displayed_condition_values")
+    private String displayedConditionValues;
 
     /**
      * jsonpath
@@ -94,22 +84,6 @@ public class DefaultFieldDetail extends BaseDomain {
 
     public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
-    }
-
-    public Integer getIsDisplayed() {
-        return isDisplayed;
-    }
-
-    public void setIsDisplayed(Integer isDisplayed) {
-        this.isDisplayed = isDisplayed;
-    }
-
-    public Integer getIsRequired() {
-        return isRequired;
-    }
-
-    public void setIsRequired(Integer isRequired) {
-        this.isRequired = isRequired;
     }
 
     public String getDefaultValue() {
@@ -176,11 +150,11 @@ public class DefaultFieldDetail extends BaseDomain {
         this.jsonPathType = jsonPathType;
     }
 
-    public String getAvailableValues() {
-        return availableValues;
+    public String getDisplayedConditionValues() {
+        return displayedConditionValues;
     }
 
-    public void setAvailableValues(String availableValues) {
-        this.availableValues = availableValues;
+    public void setDisplayedConditionValues(String displayedConditionValues) {
+        this.displayedConditionValues = displayedConditionValues;
     }
 }

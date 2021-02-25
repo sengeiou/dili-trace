@@ -23,19 +23,19 @@ public class FieldConfigDetail extends BaseDomain {
     /**
      * field id
      */
-    @Column(name = "default_field_detail_id")
-    private Long defaultFieldDetailId;
+    @Column(name = "default_id")
+    private Long defaultId;
 
     /**
      * 是否显示
      */
-    @Column(name = "is_displayed")
-    private Integer isDisplayed;
+    @Column(name = "displayed")
+    private Integer displayed;
     /**
      * 是否必填
      */
-    @Column(name = "is_required")
-    private Integer isRequired;
+    @Column(name = "required")
+    private Integer required;
     /**
      * 默认值
      */
@@ -80,20 +80,20 @@ public class FieldConfigDetail extends BaseDomain {
     }
 
 
-    public Integer getIsDisplayed() {
-        return isDisplayed;
+    public Integer getDisplayed() {
+        return displayed;
     }
 
-    public void setIsDisplayed(Integer isDisplayed) {
-        this.isDisplayed = isDisplayed;
+    public void setDisplayed(Integer displayed) {
+        this.displayed = displayed;
     }
 
-    public Integer getIsRequired() {
-        return isRequired;
+    public Integer getRequired() {
+        return required;
     }
 
-    public void setIsRequired(Integer isRequired) {
-        this.isRequired = isRequired;
+    public void setRequired(Integer required) {
+        this.required = required;
     }
 
     public String getDefaultValue() {
@@ -120,12 +120,12 @@ public class FieldConfigDetail extends BaseDomain {
         this.modified = modified;
     }
 
-    public Long getDefaultFieldDetailId() {
-        return defaultFieldDetailId;
+    public Long getDefaultId() {
+        return defaultId;
     }
 
-    public void setDefaultFieldDetailId(Long defaultFieldDetailId) {
-        this.defaultFieldDetailId = defaultFieldDetailId;
+    public void setDefaultId(Long defaultId) {
+        this.defaultId = defaultId;
     }
 
     public Integer getIsValid() {

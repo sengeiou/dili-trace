@@ -8,6 +8,8 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
+import com.dili.trace.dto.input.FieldConfigInputDto;
+import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.trace.glossary.*;
@@ -22,6 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +41,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -67,47 +71,41 @@ public class FieldConfigController {
      */
     @RequestMapping(value = "/bill.html", method = RequestMethod.GET)
     public String bill(ModelMap modelMap) {
-        Firm currentFirm=this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
-        modelMap.put("currentFirm",currentFirm);
-        modelMap.put("measureTypes",Arrays.asList(MeasureTypeEnum.values()));
+        Integer moduleType=1;
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        modelMap.put("currentFirm", currentFirm);
+        Map<String, Long> defaultFieldNameIdMap = StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleType)).toMap(DefaultFieldDetail::getFieldName, DefaultFieldDetail::getId);
+        modelMap.put("defaultFieldNameIdMap", defaultFieldNameIdMap);
+        Map<String,Integer>defaultFiledNameIndexMap= StreamEx.of(defaultFieldNameIdMap.keySet()).zipWith(IntStream.range(0, defaultFieldNameIdMap.size())).toMap();
+        modelMap.put("defaultFiledNameIndexMap", defaultFiledNameIndexMap);
+
+
+        Map<String,FieldConfigDetailRetDto>filedNameRetMap=   StreamEx.of(  this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(),moduleType))
+                .toMap(item->item.getDefaultFieldDetail().getFieldName(),Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
 
         return "fieldConfig/bill";
     }
 
     /**
-     * 跳转到RegisterBill页面
-     *
-     * @param modelMap
-     * @return
-     */
-    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap, Integer module) {
-        return "fieldConfig/index";
-    }
-
-
-    /**
-     * 跳转到RegisterBill页面
-     *
-     * @param modelMap
-     * @return
-     */
-    @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-    public String edit(ModelMap modelMap, Integer module) {
-        return "fieldConfig/edit";
-    }
-    /**
      * 更新
      *
-     * @param id
-     * @param verifyStatus
+     * @param input
      * @return
      */
-    @RequestMapping(value = "/doUpdate.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doUpdate.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput doUpdate(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "verifyStatus", required = true) Integer verifyStatus) {
+    BaseOutput doUpdate(@RequestBody FieldConfigInputDto input) {
+        try {
+            this.fieldConfigDetailService.doUpdate(input);
+            return BaseOutput.success("操作成功");
+        }catch (TraceBizException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return BaseOutput.failure("保存出错");
+        }
 
-        return BaseOutput.success("操作成功");
     }
 
 }

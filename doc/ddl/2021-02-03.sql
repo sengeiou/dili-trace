@@ -62,8 +62,7 @@ CREATE TABLE `default_field_detail` (
     `field_id` varchar(50)  NULL COMMENT '字段ID',
     `field_label` varchar(50) NOT  NULL COMMENT '字段Label',
     `field_name` varchar(50) NOT  NULL COMMENT '字段名称',
-    `is_displayed` int NOT NULL DEFAULT 0 COMMENT '是否显示',
-    `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
+    `displayed_condition_values`  varchar(50) NULL DEFAULT '' COMMENT '显示field条件值',
     `default_value` varchar(50)  NULL  COMMENT '默认值',
     `json_path` varchar(50) NOT NULL  COMMENT 'jsonpath',
     `json_path_type` int NOT NULL  COMMENT 'jsonpath类型',
@@ -71,6 +70,19 @@ CREATE TABLE `default_field_detail` (
     `modified` datetime NOT NULL DEFAULT now(),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+INSERT `default_field_detail`(
+`module_type` ,
+`field_label`,
+`field_name`,
+`json_path`,
+`json_path_type`
+)values(1,'皮重','truckTareWeight','$.truckTareWeight',1),
+(1,'是否拼车','truckType','$.truckType',1),
+(1,'车牌号','plate','$.plate',1),
+(1,'商品单价','unitPrice','$.unitPrice',1),
+(1,'商品规格','specName','$.specName',1),
+(1,'品牌','brandName','$.brandName',1);
 
 CREATE TABLE `field_config` (
     `id` bigint NOT NULL AUTO_INCREMENT,
@@ -87,9 +99,9 @@ ALTER TABLE dili_trace.field_config ADD CONSTRAINT moduletype_market_unique UNIQ
 CREATE TABLE `field_config_detail` (
        `id` bigint NOT NULL AUTO_INCREMENT,
        `field_config_id` bigint NOT NULL COMMENT '配置ID',
-       `default_field_detail_id` bigint NOT NULL COMMENT '配置ID',
-       `is_displayed` int NOT NULL DEFAULT 0 COMMENT '是否显示',
-       `is_required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
+       `default_id` bigint NOT NULL COMMENT '配置ID',
+       `displayed` int NOT NULL DEFAULT 0 COMMENT '显示',
+       `required` int NOT NULL DEFAULT 0 COMMENT '是否必填',
        `default_value` varchar(50)  NULL  COMMENT '默认值',
        `is_valid` int  NOT NULL COMMENT '是否有效',
        `created` datetime NOT NULL DEFAULT now(),

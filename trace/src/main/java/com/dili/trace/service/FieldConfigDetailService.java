@@ -6,15 +6,17 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.DefaultFieldDetail;
 import com.dili.trace.domain.FieldConfig;
 import com.dili.trace.domain.FieldConfigDetail;
+import com.dili.trace.dto.input.FieldConfigInputDto;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import one.util.streamex.StreamEx;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +33,38 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
 
     @Autowired
     FieldConfigService fieldConfigService;
+
+    /**
+     * 更新(保存)
+     * @param input
+     * @return
+     */
+    public int doUpdate(FieldConfigInputDto input){
+        if(input==null||input.getMarketId()==null||input.getModuleType()==null||input.getFieldConfigDetailList()==null){
+            throw new TraceBizException("参数错误");
+        }
+        FieldConfig fc= this.fieldConfigService.saveOrFind(input.getMarketId(),input.getModuleType());
+        FieldConfigDetail fcd=new FieldConfigDetail();
+        fcd.setDefaultId(fc.getId());
+        this.deleteByExample(fcd);
+
+
+
+        List<FieldConfigDetail>fieldConfigDetailList=StreamEx.of(input.getFieldConfigDetailList()).nonNull().map(fcdInput->{
+            fcdInput.setId(null);
+            fcdInput.setFieldConfigId(fc.getId());
+            fcdInput.setIsValid(YesOrNoEnum.YES.getCode());
+            fcdInput.setCreated(LocalDateTime.now());
+            this.insertSelective(fcdInput);
+            return fcdInput;
+        }).toList();
+        if(fieldConfigDetailList.isEmpty()){
+            throw new TraceBizException("参数错误");
+        }
+
+        return fieldConfigDetailList.size();
+
+    }
 
     /**
      * 转换为json
@@ -100,15 +134,15 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             String jsonPath = defaultFieldDetail.getJsonPath();
             Integer xpathType = defaultFieldDetail.getJsonPathType();
 
-            boolean isRequired = YesOrNoEnum.YES.getCode().equals(defaultFieldDetail.getIsRequired());
-            boolean isDisplayed = YesOrNoEnum.YES.getCode().equals(defaultFieldDetail.getIsDisplayed());
+            boolean isRequired = true;
+            boolean isDisplayed = true;
             String defaultValue = defaultFieldDetail.getDefaultValue();
             String fieldLabel = defaultFieldDetail.getFieldLabel();
-            List<String> availableValues = StreamEx.ofNullable(StringUtils.split(defaultFieldDetail.getAvailableValues(), ","))
+            List<String> availableValues = StreamEx.ofNullable(StringUtils.split("", ","))
                     .flatArray(Function.identity()).nonNull().map(String::valueOf).toList();
             if (fcd.getId() != null) {
-                isRequired = YesOrNoEnum.YES.getCode().equals(fcd.getIsRequired());
-                isDisplayed = YesOrNoEnum.YES.getCode().equals(fcd.getIsDisplayed());
+                isRequired = YesOrNoEnum.YES.getCode().equals(fcd.getRequired());
+                isDisplayed = YesOrNoEnum.YES.getCode().equals(fcd.getDisplayed());
             }
 
             if (xpathType == 0) {
@@ -192,7 +226,7 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             q.setFieldConfigId(fc.getId());
             q.setIsValid(YesOrNoEnum.YES.getCode());
             return this.listByExample(q);
-        }).flatCollection(Function.identity()).mapToEntry(FieldConfigDetail::getDefaultFieldDetailId, Function.identity()).toMap();
+        }).flatCollection(Function.identity()).mapToEntry(FieldConfigDetail::getDefaultId, Function.identity()).toMap();
 
 
         return StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleType)).map(df -> {
@@ -201,7 +235,10 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
 
             FieldConfigDetailRetDto ret = new FieldConfigDetailRetDto();
             if (fd != null) {
-                BeanUtils.copyProperties(df, ret);
+                try {
+                    BeanUtils.copyProperties(ret,fd);
+                } catch (Exception e) {
+                }
             }
             ret.setDefaultFieldDetail(df);
             return ret;

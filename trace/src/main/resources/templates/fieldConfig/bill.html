@@ -2,284 +2,163 @@
 
 <div class="container-fluid pb-5" id="app">
     <form id="saveForm" role="form" novalidate>
+        <input type="hidden" name="moduleType" value="1">
+
         <div class="" style="width: 500px">
             <div class="row row-cols-1">
                 <div class="form-group col">
                     <label for="firmName">管理员所属市场</label>
-                    <input type="text" class="form-control" id="firmName" name="firmName" value="${currentFirm.name}" readonly />
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="truckTareWeight">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">皮重</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
+                    <input type="text" class="form-control" id="firmName" name="firmName" value="${currentFirm.name}" data-value-type="skip" readonly />
+                    <input type="hidden" class="form-control"  name="marketId" value="${currentFirm.id}"   />
 
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="truckType">
-                <input type="hidden" name="fieldName" value="plate">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">是否拼车/车牌号</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
                 </div>
             </div>
+            <%if (@defaultFieldNameIdMap.containsKey('truckTareWeight')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][fieldName]" value="truckTareWeight">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][jsonPath]" value="$.truckTareWeight">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][defaultId]" value="${defaultFieldNameIdMap['truckTareWeight']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][displayed]" value="1" <%if(filedNameRetMap['truckTareWeight'].displayed!1==1){%>checked<%}%> >
+                        <label for="">皮重</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckTareWeight']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
+                </div>
+            <%}%>
 
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="measureType">
-                <div class="form-group col">
-                    <label for="">计量方式</label>
+            <%if (@defaultFieldNameIdMap.containsKey('truckType')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][fieldName]" value="truckType">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][jsonPath]" value="$.truckType">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][defaultId]" value="${defaultFieldNameIdMap['truckType']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][displayed]" value="1" <%if(filedNameRetMap['truckType'].displayed!1==1){%>checked<%}%> >
+                        <label for="">是否拼车</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
                 </div>
-                <%for(mt:measureTypes){%>
-                    <input type="checkbox" name="isDisplayed" value="true">
-                <%}%>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="pieceNum">
-                <input type="hidden" name="fieldName" value="pieceWeight">
-                <input type="hidden" name="fieldName" value="weight">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">商品件数/件重/合计</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="unitPrice">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">商品单价</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="specName">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">商品规格</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
+            <%}%>
 
 
-            <div class="row row-cols-3">
-                <input type="hidden" name="fieldName" value="brandName">
-                <div class="form-group col">
-                    <input type="checkbox" name="isDisplayed" value="true">
-                    <label for="">品牌</label>
+            <%if (@defaultFieldNameIdMap.containsKey('plate')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][fieldName]" value="plate">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][jsonPath]" value="$.plate">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][defaultId]" value="${defaultFieldNameIdMap['plate']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][displayed]" value="1" <%if(filedNameRetMap['plate'].displayed!1==1){%>checked<%}%> >
+                        <label for="">车牌号</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
                 </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="true">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio"  name="isRequired" value="false">
-                    <label for="">非必填</label>
-                </div>
-            </div>
+            <%}%>
 
 
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">品牌</label>
+
+
+            <%if (@defaultFieldNameIdMap.containsKey('unitPrice')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][fieldName]" value="unitPrice">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][jsonPath]" value="$.unitPrice">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][defaultId]" value="${defaultFieldNameIdMap['unitPrice']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][displayed]" value="1" <%if(filedNameRetMap['unitPrice'].displayed!1==1){%>checked<%}%> >
+                        <label for="">商品单价</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['unitPrice']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
                 </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
+            <%}%>
+
+            <%if (@defaultFieldNameIdMap.containsKey('specName')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][fieldName]" value="specName">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][jsonPath]" value="$.specName">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][defaultId]" value="${defaultFieldNameIdMap['specName']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][displayed]" value="1" <%if(filedNameRetMap['specName'].displayed!1==1){%>checked<%}%> >
+                        <label for="">商品规格</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['specName']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
                 </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
+            <%}%>
+
+
+            <%if (@defaultFieldNameIdMap.containsKey('brandName')){%>
+                <div class="row row-cols-3">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][fieldName]" value="brandName">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][jsonPath]" value="$.brandName">
+                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][defaultId]" value="${defaultFieldNameIdMap['brandName']}">
+                    <div class="form-group col">
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][displayed]" value="1" <%if(filedNameRetMap['brandName'].displayed!1==1){%>checked<%}%> >
+                        <label for="">品牌</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][required]" value="1" checked>
+                        <label for="">必填</label>
+                    </div>
+                    <div class="form-group col">
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['brandName']}][required]" value="0">
+                        <label for="">非必填</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">产地</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">上游企业</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">到场时间</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">检测报告</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">产地证明</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">检疫合格证</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">购货凭证</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">报关单</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">采购协议</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="form-group col">
-                    <input type="checkbox">
-                    <label for="">其他</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">必填</label>
-                </div>
-                <div class="form-group col">
-                    <input type="radio">
-                    <label for="">非必填</label>
-                </div>
-            </div>
+            <%}%>
+
+
+
         </div>
     </form>
 </div>
+<div class="text-center">
+    <button class="btn-main2 btn-sm" onclick="save()">保存</button>&nbsp;&nbsp;
+</div>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script>
+    async function save(){
+        var data=$('#saveForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        console.info(data);
+        var url="${contextPath!}/fieldConfig/doUpdate.action";
+        let resp=await jq.postJsonWithProcessing(url,data);
+        console.info(resp);
+    }
 
+
+
+</script>
 </#bs4Body>
