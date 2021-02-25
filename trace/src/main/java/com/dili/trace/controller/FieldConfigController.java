@@ -71,7 +71,7 @@ public class FieldConfigController {
      */
     @RequestMapping(value = "/bill.html", method = RequestMethod.GET)
     public String bill(ModelMap modelMap) {
-        Integer moduleType=1;
+        FieldConfigModuleTypeEnum moduleType=FieldConfigModuleTypeEnum.REGISTER;
         Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
         modelMap.put("currentFirm", currentFirm);
         Map<String, Long> defaultFieldNameIdMap = StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleType)).toMap(DefaultFieldDetail::getFieldName, DefaultFieldDetail::getId);

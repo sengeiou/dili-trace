@@ -8,6 +8,7 @@ import com.dili.trace.domain.FieldConfig;
 import com.dili.trace.domain.FieldConfigDetail;
 import com.dili.trace.dto.input.FieldConfigInputDto;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
+import com.dili.trace.enums.FieldConfigModuleTypeEnum;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import one.util.streamex.StreamEx;
@@ -36,21 +37,21 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
 
     /**
      * 更新(保存)
+     *
      * @param input
      * @return
      */
-    public int doUpdate(FieldConfigInputDto input){
-        if(input==null||input.getMarketId()==null||input.getModuleType()==null||input.getFieldConfigDetailList()==null){
+    public int doUpdate(FieldConfigInputDto input) {
+        if (input == null || input.getMarketId() == null || input.getModuleType() == null || input.getFieldConfigDetailList() == null) {
             throw new TraceBizException("参数错误");
         }
-        FieldConfig fc= this.fieldConfigService.saveOrFind(input.getMarketId(),input.getModuleType());
-        FieldConfigDetail fcd=new FieldConfigDetail();
+        FieldConfig fc = this.fieldConfigService.saveOrFind(input.getMarketId(), input.getModuleType());
+        FieldConfigDetail fcd = new FieldConfigDetail();
         fcd.setDefaultId(fc.getId());
         this.deleteByExample(fcd);
 
 
-
-        List<FieldConfigDetail>fieldConfigDetailList=StreamEx.of(input.getFieldConfigDetailList()).nonNull().map(fcdInput->{
+        List<FieldConfigDetail> fieldConfigDetailList = StreamEx.of(input.getFieldConfigDetailList()).nonNull().map(fcdInput -> {
             fcdInput.setId(null);
             fcdInput.setFieldConfigId(fc.getId());
             fcdInput.setIsValid(YesOrNoEnum.YES.getCode());
@@ -58,7 +59,7 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             this.insertSelective(fcdInput);
             return fcdInput;
         }).toList();
-        if(fieldConfigDetailList.isEmpty()){
+        if (fieldConfigDetailList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
 
@@ -119,7 +120,7 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
      * @param <T>
      * @return
      */
-    public <T> T checkAndSetValues(T object, Long marketId, Integer moduleType) {
+    public <T> T checkAndSetValues(T object, Long marketId, FieldConfigModuleTypeEnum moduleType) {
         if (object == null) {
             return object;
         }
@@ -213,15 +214,16 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
         return this.fieldConfigService.updateSelective(updatableFieldConfig);
     }
 
+
     /**
      * 查询字段配置详情
      *
      * @param marketId
-     * @param moduleType
+     * @param moduleTypeEnum
      * @return
      */
-    public List<FieldConfigDetailRetDto> findByMarketIdAndModuleType(Long marketId, Integer moduleType) {
-        Map<Long, FieldConfigDetail> fieldConfigDetailMap = StreamEx.of(this.fieldConfigService.findByMarketIdAndModuleType(marketId, moduleType)).map(fc -> {
+    public List<FieldConfigDetailRetDto> findByMarketIdAndModuleType(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum) {
+        Map<Long, FieldConfigDetail> fieldConfigDetailMap = StreamEx.of(this.fieldConfigService.findByMarketIdAndModuleType(marketId, moduleTypeEnum)).map(fc -> {
             FieldConfigDetail q = new FieldConfigDetail();
             q.setFieldConfigId(fc.getId());
             q.setIsValid(YesOrNoEnum.YES.getCode());
@@ -229,14 +231,14 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
         }).flatCollection(Function.identity()).mapToEntry(FieldConfigDetail::getDefaultId, Function.identity()).toMap();
 
 
-        return StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleType)).map(df -> {
+        return StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleTypeEnum)).map(df -> {
 
             FieldConfigDetail fd = fieldConfigDetailMap.get(df.getId());
 
             FieldConfigDetailRetDto ret = new FieldConfigDetailRetDto();
             if (fd != null) {
                 try {
-                    BeanUtils.copyProperties(ret,fd);
+                    BeanUtils.copyProperties(ret, fd);
                 } catch (Exception e) {
                 }
             }

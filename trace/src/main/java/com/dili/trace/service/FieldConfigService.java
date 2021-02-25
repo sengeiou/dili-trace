@@ -4,6 +4,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.dao.FieldConfigMapper;
 import com.dili.trace.domain.FieldConfig;
+import com.dili.trace.enums.FieldConfigModuleTypeEnum;
 import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,16 @@ public class FieldConfigService extends TraceBaseService<FieldConfig, Long> {
      * 查询字段配置信息
      *
      * @param marketId
-     * @param moduleType
+     * @param moduleTypeEnum
      * @return
      */
-    public Optional<FieldConfig> findByMarketIdAndModuleType(Long marketId, Integer moduleType) {
-        if (marketId == null || moduleType == null) {
+    public Optional<FieldConfig> findByMarketIdAndModuleType(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum) {
+        if (marketId == null || moduleTypeEnum == null) {
             return Optional.empty();
         }
         FieldConfig q = new FieldConfig();
         q.setMarketId(marketId);
-        q.setModuleType(moduleType);
+        q.setModuleType(moduleTypeEnum.getCode());
         return StreamEx.of(this.listByExample(q)).findFirst();
     }
 
