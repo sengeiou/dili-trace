@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -16,6 +17,7 @@ import com.dili.trace.glossary.*;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -81,6 +83,10 @@ public class NewRegisterBillController {
     @Autowired
     ProcessService processService;
 
+    @Autowired
+    FieldConfigDetailService fieldConfigDetailService;
+
+
     /**
      * 跳转到RegisterBill页面
      *
@@ -141,6 +147,7 @@ public class NewRegisterBillController {
         RegisterBill registerBill = registerBillService.findHighLightBill(dto);
         return BaseOutput.success().setData(registerBill);
     }
+
     /**
      * 登记单录入页面
      *
@@ -148,12 +155,38 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/add.html")
-    public String createBill(ModelMap modelMap) {
+    public String add(ModelMap modelMap) {
         modelMap.put("tradeTypes", tradeTypeService.findAll());
         modelMap.put("citys", this.queryCitys());
 
+
+        modelMap.put("registTypeEnumList", StreamEx.of(RegistTypeEnum.values()).toList());
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
         return "new-registerBill/add";
     }
+
+    /**
+     * 新增
+     *
+     * @return
+     */
+    @RequestMapping(value = "/doAdd.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doAdd(@RequestBody CreateListBillParam input) {
+        try {
+
+        } catch (Exception e) {
+
+        }
+        return BaseOutput.success();
+    }
+
     /**
      * 登记单录入页面
      *
@@ -214,7 +247,7 @@ public class NewRegisterBillController {
         if (registerBill == null) {
             return "";
         }
-        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id,BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null)));
+        registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null)));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setSourceName(firstTallyAreaNo);
@@ -541,17 +574,17 @@ public class NewRegisterBillController {
         modelMap.put("detectRequest", detectRequest);
         if (null != registerBill.getPieceNum()) {
             modelMap.put("pieceNum", registerBill.getPieceNum().setScale(0, BigDecimal.ROUND_DOWN));
-        }else{
+        } else {
             modelMap.put("pieceNum", null);
         }
         if (null != registerBill.getPieceWeight()) {
             modelMap.put("pieceWeight", registerBill.getPieceWeight().setScale(0, BigDecimal.ROUND_DOWN));
-        }else{
+        } else {
             modelMap.put("pieceWeight", null);
         }
         if (null != registerBill.getTruckTareWeight()) {
             modelMap.put("truckTareWeight", registerBill.getTruckTareWeight().setScale(0, BigDecimal.ROUND_DOWN));
-        }else{
+        } else {
             modelMap.put("truckTareWeight", null);
         }
         if (null != registerBill.getUpStreamId()) {
@@ -567,6 +600,7 @@ public class NewRegisterBillController {
 
     /**
      * 构建报备信息
+     *
      * @param billId
      * @return
      */
