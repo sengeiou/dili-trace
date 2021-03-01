@@ -17,6 +17,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
+import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -29,6 +30,9 @@ import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -96,6 +100,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
     SyncUserInfoService syncUserInfoService;
     @Autowired
     SyncCategoryService syncCategoryService;
+
+    @Autowired
+    FieldConfigDetailService fieldConfigDetailService;
 
     /**
      * 返回mapper
@@ -174,7 +181,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
                 registerBill.setThirdPartyCode(card.getPrintingCard());
             });
             registerBill.setImageCertList(dto.getImageCertList());
-            Long billId = this.createRegisterBill(registerBill, operatorUser);
+
+            List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
+            Long billId = this.createRegisterBill(registerBill,fieldConfigDetailRetDtoList, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
 //            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
@@ -211,9 +220,22 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
      * @param registerBill
      * @return
      */
-    @Transactional
-    public Long createRegisterBill(RegisterBill registerBill,
-                                   Optional<OperatorUser> operatorUser) {
+    private Long createRegisterBill(RegisterBill registerBill
+            ,List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList,
+            Optional<OperatorUser> operatorUser) {
+
+        Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL);
+
+        String json=JSON.toJSONString(registerBill);
+
+        StreamEx.of(fieldConfigDetailRetDtoList).forEach(fcd->{
+            String jsonPath=fcd.getDefaultFieldDetail().getJsonPath();
+            if(StringUtils.isBlank(jsonPath)){
+                return;
+            }
+            Object jsonValue = JsonPath.using(conf).parse(json).read(jsonPath.trim());
+            logger.debug("jsonpath={},jsonvalue={}",jsonPath,jsonValue);
+        });
         this.checkBill(registerBill);
 
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
