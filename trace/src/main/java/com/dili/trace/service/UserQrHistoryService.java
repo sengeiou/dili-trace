@@ -79,7 +79,7 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
                 UserQrHistory uqItem=StreamEx.of(this.listPageByExample(uq).getDatas()).findFirst().orElse(new UserQrHistory());
 
                 //新注册用户七天内不更新二维码信息
-                if(QrHistoryEventTypeEnum.NEW_USER.equalsToCode(uqItem.getQrHistoryEventType())){
+                if(QrHistoryEventTypeEnum.NEW_USER.equalsToCode(uqItem.getQrHistoryEventType())&&uqItem.getCreated()!=null){
                     LocalDateTime created=uqItem.getCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                     LocalDateTime now=LocalDateTime.now().minusDays(7);
                     if(created.isAfter(now)){
