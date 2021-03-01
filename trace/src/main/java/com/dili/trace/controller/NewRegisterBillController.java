@@ -1,5 +1,7 @@
 package com.dili.trace.controller;
 
+import com.dili.common.entity.SessionData;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
@@ -55,7 +57,9 @@ public class NewRegisterBillController {
     @Autowired
     BillService billService;
     @Autowired
-    SgRegisterBillService registerBillService;
+    RegisterBillService registerBillService;
+    @Autowired
+    SgRegisterBillService sgRegisterBillService;
     @Autowired
     TradeTypeService tradeTypeService;
     @Autowired
@@ -127,7 +131,7 @@ public class NewRegisterBillController {
         billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
         billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
         registerBill.setBillTypes(billTypes);
-        return registerBillService.listBasePageByExample(registerBill);
+        return sgRegisterBillService.listBasePageByExample(registerBill);
         // return registerBillService.listPage(registerBill);
     }
 
@@ -144,7 +148,7 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/findHighLightBill.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     Object findHighLightBill(RegisterBillDto dto) throws Exception {
-        RegisterBill registerBill = registerBillService.findHighLightBill(dto);
+        RegisterBill registerBill = sgRegisterBillService.findHighLightBill(dto);
         return BaseOutput.success().setData(registerBill);
     }
 
@@ -179,10 +183,21 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/doAdd.action", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput doAdd(@RequestBody CreateListBillParam input) {
+        Firm firm=this.uapRpcService.getCurrentFirm().orElse(null);
+        if(firm==null){
+            return BaseOutput.failure("未登录");
+        }
         try {
 
-        } catch (Exception e) {
-
+            registerBillService.createBillList(firm.getId(),input.getRegisterBills()
+                    , input.getUserId()
+                    , this.uapRpcService.getCurrentOperator()
+                    , CreatorRoleEnum.MANAGER);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return BaseOutput.failure("服务端出错");
         }
         return BaseOutput.success();
     }
@@ -425,7 +440,7 @@ public class NewRegisterBillController {
             if (billVerifyStatusEnum == null) {
                 return BaseOutput.failure("审核状态错误");
             }
-            registerBillService.auditRegisterBill(id, billVerifyStatusEnum);
+            sgRegisterBillService.auditRegisterBill(id, billVerifyStatusEnum);
             if (BillVerifyStatusEnum.PASSED == billVerifyStatusEnum) {
                 Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
                 processService.afterBillPassed(id, marketId, this.uapRpcService.getCurrentOperator());
@@ -451,7 +466,7 @@ public class NewRegisterBillController {
         if (CollectionUtils.isEmpty(idList)) {
             return BaseOutput.failure("参数错误");
         }
-        return this.registerBillService.doBatchAutoCheck(idList);
+        return this.sgRegisterBillService.doBatchAutoCheck(idList);
     }
 
     /**
@@ -468,7 +483,7 @@ public class NewRegisterBillController {
         if (CollectionUtils.isEmpty(idList)) {
             return BaseOutput.failure("参数错误");
         }
-        return this.registerBillService.doBatchUndo(idList);
+        return this.sgRegisterBillService.doBatchUndo(idList);
     }
 
     /**
@@ -486,7 +501,7 @@ public class NewRegisterBillController {
         if (CollectionUtils.isEmpty(idList)) {
             return BaseOutput.failure("参数错误");
         }
-        return this.registerBillService.doBatchSamplingCheck(idList);
+        return this.sgRegisterBillService.doBatchSamplingCheck(idList);
     }
 
     /**
@@ -510,7 +525,7 @@ public class NewRegisterBillController {
         }
         batchAuditDto.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         batchAuditDto.setRegisterBillIdList(idList);
-        return this.registerBillService.doBatchAudit(batchAuditDto);
+        return this.sgRegisterBillService.doBatchAudit(batchAuditDto);
     }
 
     /**
@@ -523,7 +538,7 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput doUndo(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.undoRegisterBill(id);
+            sgRegisterBillService.undoRegisterBill(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -608,7 +623,7 @@ public class NewRegisterBillController {
         RegisterBill item = billService.get(billId);
         RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        List<ImageCert> imageCerts = this.sgRegisterBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCertList(imageCerts);
         return registerBill;
     }
@@ -623,7 +638,7 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput doAutoCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.autoCheckRegisterBill(id);
+            sgRegisterBillService.autoCheckRegisterBill(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -640,7 +655,7 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput doSamplingCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.samplingCheckRegisterBill(id);
+            sgRegisterBillService.samplingCheckRegisterBill(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -657,7 +672,7 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput doReviewCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.reviewCheckRegisterBill(id);
+            sgRegisterBillService.reviewCheckRegisterBill(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -676,7 +691,7 @@ public class NewRegisterBillController {
         try {
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCertList(imageCertList);
-            Long id = this.registerBillService.doUploadHandleResult(input);
+            Long id = this.sgRegisterBillService.doUploadHandleResult(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -695,7 +710,7 @@ public class NewRegisterBillController {
         try {
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCertList(imageCertList);
-            Long id = this.registerBillService.doUploadOrigincertifiy(input);
+            Long id = this.sgRegisterBillService.doUploadOrigincertifiy(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
@@ -719,7 +734,7 @@ public class NewRegisterBillController {
         try {
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCertList(imageCertList);
-            Long id = this.registerBillService.doUploadDetectReport(input);
+            Long id = this.sgRegisterBillService.doUploadDetectReport(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
@@ -759,7 +774,7 @@ public class NewRegisterBillController {
     public BaseOutput<?> doRemoveReportAndCertifiy(@RequestBody ReportAndCertifiyRemoveDto removeDto) {
         try {
 //			Long id = this.registerBillService.doUploadDetectReport(input);
-            return this.registerBillService.doRemoveReportAndCertifiy(removeDto.getId(), removeDto.getDeleteType());
+            return this.sgRegisterBillService.doRemoveReportAndCertifiy(removeDto.getId(), removeDto.getDeleteType());
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
@@ -780,7 +795,7 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doAuditWithoutDetect(RegisterBill input) {
         try {
-            Long id = this.registerBillService.doAuditWithoutDetect(input);
+            Long id = this.sgRegisterBillService.doAuditWithoutDetect(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
@@ -802,7 +817,7 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doEdit(RegisterBill input) {
         try {
-            Long id = this.registerBillService.doEdit(input);
+            Long id = this.sgRegisterBillService.doEdit(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
@@ -886,7 +901,7 @@ public class NewRegisterBillController {
                 }).toList();
         try {
             OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().get();
-            this.registerBillService.createRegisterBillList(billList, operatorUser);
+            this.sgRegisterBillService.createRegisterBillList(billList, operatorUser);
             return BaseOutput.success("新增成功").setData(billList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -948,7 +963,7 @@ public class NewRegisterBillController {
         modelMap.put("displayWeight", displayWeight);
         RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        List<ImageCert> imageCerts = this.sgRegisterBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCertList(imageCerts);
         modelMap.put("registerBill", registerBill);
         return "new-registerBill/update_image";
@@ -965,7 +980,7 @@ public class NewRegisterBillController {
     public @ResponseBody
     BaseOutput updateImage(@RequestBody RegisterBill registerBill) {
         try {
-            this.registerBillService.doUpdateImage(registerBill);
+            this.sgRegisterBillService.doUpdateImage(registerBill);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
@@ -1053,7 +1068,7 @@ public class NewRegisterBillController {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
 
-        return this.registerBillService.listStaticsPage(registerBill);
+        return this.sgRegisterBillService.listStaticsPage(registerBill);
     }
 
     /**
@@ -1085,7 +1100,7 @@ public class NewRegisterBillController {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
         registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
-        RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
+        RegisterBillStaticsDto staticsDto = this.sgRegisterBillService.groupByState(registerBill);
         return BaseOutput.success().setData(staticsDto);
     }
 
@@ -1191,7 +1206,7 @@ public class NewRegisterBillController {
         }
         list.add(RegisterBillMessageEvent.DETAIL);
         if (billIdList.size() == 1) {
-            return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
+            return StreamEx.of(this.sgRegisterBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
         } else {
@@ -1215,7 +1230,7 @@ public class NewRegisterBillController {
             return Lists.newArrayList();
         }
         Map<RegisterBillMessageEvent, Boolean> eventCount = StreamEx.ofNullable(idList).flatCollection(Function.identity()).nonNull().flatMap(bid -> {
-            return StreamEx.of(this.registerBillService.queryEvents(bid));
+            return StreamEx.of(this.sgRegisterBillService.queryEvents(bid));
         }).distinct().mapToEntry(v -> v, v -> v).collapseKeys().mapValues(v -> v.size() > 0).toMap();
 
         List<RegisterBillMessageEvent> batchEventList = Lists.newLinkedList();

@@ -60,8 +60,6 @@ public class CheckSheetController {
     @Autowired
     BillService billService;
     @Autowired
-    SgRegisterBillService registerBillService;
-    @Autowired
     ApproverInfoService approverInfoService;
     @Autowired
     CheckSheetDetailService checkSheetDetailService;

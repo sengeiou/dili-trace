@@ -83,10 +83,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public Long createRegisterBill(RegisterBill inputBill) {
-//        BaseOutput recheck = checkBill(registerBill);
-//        if (!recheck.isSuccess()) {
-//            throw new TraceBizException(recheck.getMessage());
-//        }
 
         inputBill.setHasDetectReport(0);
         inputBill.setHasOriginCertifiy(0);
