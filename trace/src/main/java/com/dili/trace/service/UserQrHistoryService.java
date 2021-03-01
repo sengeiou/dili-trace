@@ -67,10 +67,17 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
         StreamEx.of(userInfoIdList).forEach(userInfoId -> {
             //锁定对应的userinfo对象
             this.userInfoService.selectByUserIdForUpdate(userInfoId).ifPresent(userInfoItem -> {
-                historyQueryDto.setUserInfoId(userInfoId);
-                //再次查询确认是否符合条件
-                boolean isUpdateQr = this.qrHistoryMapper.selectUserInfoIdWithoutHistory(historyQueryDto).contains(userInfoId);
-                if (!isUpdateQr) {
+
+                UserQrHistoryQueryDto uq=new UserQrHistoryQueryDto();
+                uq.setUserInfoId(userInfoId);
+                uq.setIsValid(YesOrNoEnum.YES.getCode());
+                uq.setSort("id");
+                uq.setOrder("desc");
+                uq.setPage(1);
+                uq.setRows(1);
+
+                UserQrHistory uqItem=StreamEx.of(this.listPageByExample(uq).getDatas()).findFirst().orElse(new UserQrHistory());
+                if(QrHistoryEventTypeEnum.NO_DATA.equalsToCode(uqItem.getQrHistoryEventType())){
                     return;
                 }
                 //插入qrhistory对象
