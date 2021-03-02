@@ -1,83 +1,117 @@
 <#bs4Body>
-
 <div class="container-fluid pb-5" id="app">
     <form id="saveForm" role="form">
-        <div>
-            <label>
-                单据类型
-            </label>
-            <select name="">
-                <%for(registType:registTypeEnumList){%>
-                    <option value="${registType.code}">${registType.name}</option>
-                <%}%>
-            </select>
-        </div>
+        <div class="row row-cols-1">
+            <div class="form-group col">
+                <label for="">单据类型</label>
+                <select id="" name="carTypeId" class="form-control"></select>
+                <#bcomboProvider _id="" _provider="" _value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">卖家姓名</label>
+                <#bautoCompleteProvider _hiddenDomainId="" _hiddenDomainName="" _displayDomainId=""
+                _displayDomainName="" _placeholder="" _validatorMethod="isSelected" _optionVariable="" _required="" />
+            </div>
+            <div class="form-group col">
+                <label for="">是否拼车</label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="" value="">
+                        <label class="form-check-label" for="">是</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="" value="">
+                        <label class="form-check-label" for="">否</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col">
+                <label for="">车牌号</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">商品品类</label>
+                <!--<select id="categorys" name="categorys" multiple>
+                    <%
+                    if(isNotEmpty(assetsRental.categoryId)){
+                    var categoryIds = strutil.split (assetsRental.categoryId,",");
+                    var categoryNames = strutil.split (assetsRental.categoryName,",");
+                    for(cid in categoryIds){
+                    %>
+                    <option value="${cid}">${categoryNames[cidLP.index-1]}</option>
+                    <%  }} %>
+                </select>
+                <#bselect2 _id="categorys" _mode="remote" _optionVariable="categoryAutoCompleteOption" _value="[${assetsRental.categoryId!}]"/>-->
 
-        <div>
-            <label>卖家姓名</label>
-            <input type="text">
+            </div>
+            <div class="form-group col">
+                <label for=""></label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="" value="">
+                        <label class="form-check-label" for="">计重</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="" value="">
+                        <label class="form-check-label" for="">计件</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col">
+                <label for="">商品重量</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
         </div>
-
-        <div>
-            <label>是否拼车</label>
-            <input type="radio" name="">
-            <input type="radio" name="">
+        <div class="row row-cols-1">
+            <div class="form-group col">
+                <label for="">商品件数</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">件重</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">合计</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
         </div>
-
-        <div>
-            <label>车牌号</label>
-            <input type="text">
+        <div class="row row-cols-1">
+            <div class="form-group col">
+                <label for="">商品规格</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">品牌</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">产地</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">上游企业</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">皮重</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">到场时间</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
+            <div class="form-group col">
+                <label for="">上传证明</label>
+                <input type="text" class="form-control" id="" name="" value=""/>
+            </div>
         </div>
-
-        <div>
-            <label>商品品类</label>
-            <input type="text">
+        <div class="modal-footer-wrap">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary px-5" id="" >取消</button>
+                <button type="button" class="btn btn-primary px-5" id="">确认新增</button>
+            </div>
         </div>
-
-        <div>
-            <label>计重</label>
-            <input type="radio" name="">
-            <label>计件</label>
-            <input type="radio" name="">
-        </div>
-
-        <div>
-            <label>商品规格</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>品牌</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>产地</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>上游企业</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>皮重</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>到场时间</label>
-            <input type="text">
-        </div>
-
-        <div>
-            <label>上传证明</label>
-            <input type="text">
-        </div>
-
-        <button id="saveBtn">取消</button>
-        <button>确认新增</button>
     </form>
 </div>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
@@ -86,8 +120,6 @@
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/NewRegisterBill.add.js"></script>
 <script>
-    $(function () {
-        new NewRegisterBillAdd($('#saveForm'),$('#saveBtn'));
-    });
+
 </script>
 </#bs4Body>
