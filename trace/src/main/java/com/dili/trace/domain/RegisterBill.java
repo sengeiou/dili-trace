@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -492,6 +493,36 @@ public class RegisterBill extends BaseDomain {
      */
     @Column(name = "`return_reason`")
     private String returnReason;
+
+
+    /**
+     * 到场时间
+     */
+    @Column(name = "`arrival_datetime`")
+    private LocalDateTime arrivalDatetime;
+
+
+    /**
+     * 到货摊位
+     */
+    @Column(name = "`arrival_tallyno`")
+    private String arrivalTallyno;
+
+    public LocalDateTime getArrivalDatetime() {
+        return arrivalDatetime;
+    }
+
+    public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+        this.arrivalDatetime = arrivalDatetime;
+    }
+
+    public String getArrivalTallyno() {
+        return arrivalTallyno;
+    }
+
+    public void setArrivalTallyno(String arrivalTallyno) {
+        this.arrivalTallyno = arrivalTallyno;
+    }
 
     public String getReturnReason() {
         return returnReason;

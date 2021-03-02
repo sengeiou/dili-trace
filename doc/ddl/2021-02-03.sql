@@ -54,6 +54,10 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `version`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_front_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_back_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
+
+ALTER TABLE dili_trace.`register_bill` ADD arrival_datetime datetime NULL COMMENT '到场时间';
+ALTER TABLE dili_trace.`register_bill` ADD arrival_tallyno varchar(50) NULL COMMENT '到货摊位';
+
 /*====================*/
 
 CREATE TABLE `default_field_detail` (

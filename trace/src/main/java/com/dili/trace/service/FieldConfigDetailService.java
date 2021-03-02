@@ -241,6 +241,11 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
                     BeanUtils.copyProperties(ret, fd);
                 } catch (Exception e) {
                 }
+            }else{
+                ret.setDisplayed(YesOrNoEnum.YES.getCode());
+                ret.setRequired(YesOrNoEnum.YES.getCode());
+                ret.setDefaultId(df.getId());
+                ret.setIsValid(YesOrNoEnum.YES.getCode());
             }
             ret.setDefaultFieldDetail(df);
             return ret;
