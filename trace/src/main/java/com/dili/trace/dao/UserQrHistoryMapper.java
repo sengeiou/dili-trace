@@ -12,6 +12,6 @@ public interface UserQrHistoryMapper extends MyMapper<UserQrHistory> {
 
     public List<Long> selectUserInfoIdWithoutHistory(UserQrHistoryQueryDto historyQueryDto);
 
-    public List<UserQrHistory> listByExample(UserQrHistoryQueryDto historyQueryDto);
+    public List<UserQrHistory> listPageByUserQrHistoryQuery(UserQrHistoryQueryDto historyQueryDto);
 
 }

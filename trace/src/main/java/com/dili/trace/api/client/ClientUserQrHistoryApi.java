@@ -61,7 +61,7 @@ public class ClientUserQrHistoryApi {
             condition.setSort("created");
             condition.setOrder("desc");
             condition.setIsValid(YesOrNoEnum.YES.getCode());
-            BasePage<UserQrHistory> data = this.userQrHistoryService.listPageByExample(condition);
+            BasePage<UserQrHistory> data = this.userQrHistoryService.listPageByUserQrHistoryQuery(condition);
             return BaseOutput.success().setData(data);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

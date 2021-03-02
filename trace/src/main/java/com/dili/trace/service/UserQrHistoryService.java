@@ -48,9 +48,9 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
      * @param domain
      * @return
      */
-    public BasePage<UserQrHistory> listPageByExample(UserQrHistoryQueryDto domain){
+    public BasePage<UserQrHistory> listPageByUserQrHistoryQuery(UserQrHistoryQueryDto domain){
         return super.buildQuery(domain).listPageByFun(q->{
-            return this.qrHistoryMapper.listByExample(q);
+            return this.qrHistoryMapper.listPageByUserQrHistoryQuery(q);
         });
     }
     /**

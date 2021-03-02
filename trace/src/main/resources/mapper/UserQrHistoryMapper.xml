@@ -19,7 +19,7 @@
         AND id = #{userInfoId}
       </if>
   </select>
-    <select id="listByExample" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="com.dili.trace.domain.UserQrHistory">
+    <select id="listPageByUserQrHistoryQuery" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="com.dili.trace.domain.UserQrHistory">
         select * from `user_qr_history` where user_info_id in(
             select id from `user` where user_id=#{userId} and market_id =#{marketId}
         )
