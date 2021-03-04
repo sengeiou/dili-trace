@@ -458,8 +458,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         // 计重类型，把件数和件重置空
         if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerBill.getMeasureType())) {
-            registerBill.setPieceNum(null);
-            registerBill.setPieceWeight(null);
+            registerBill.setPieceNum(BigDecimal.ZERO);
+            registerBill.setPieceWeight(BigDecimal.ZERO);
         }
 
         // 计件类型，校验件数和件重
