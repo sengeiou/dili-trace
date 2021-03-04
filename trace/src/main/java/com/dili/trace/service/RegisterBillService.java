@@ -369,19 +369,30 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (registerBill.getMarketId() == null) {
             throw new TraceBizException("登记单市场不存在");
         }
-        if (registerBill.getWeight() == null) {
+        BigDecimal weight=registerBill.getWeight();
+        if (weight == null) {
             logger.error("商品重量不能为空");
             throw new TraceBizException("商品重量不能为空");
         }
 
-        if (BigDecimal.ZERO.compareTo(registerBill.getWeight()) >= 0) {
+        if (!NumUtils.isIntegerValue(weight)) {
+            logger.error("商品重量必须为整数");
+            throw new TraceBizException("商品重量必须为整数");
+        }
+
+        if (BigDecimal.ZERO.compareTo(weight) >= 0) {
             logger.error("商品重量不能小于0");
             throw new TraceBizException("商品重量不能小于0");
         }
 
-        if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getWeight()) < 0) {
+        if (NumUtils.MAX_WEIGHT.compareTo(weight) < 0) {
             logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+
+        if (registerBill.getWeightUnit() == null) {
+            logger.error("重量单位不能为空");
+            throw new TraceBizException("重量单位不能为空");
         }
 
         if (StringUtils.isBlank(registerBill.getProductName()) || registerBill.getProductId() == null) {
@@ -389,6 +400,15 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("商品名称不能为空");
         }
 
+        //客户相关字段
+        if (StringUtils.isBlank(registerBill.getName())) {
+            logger.error("业户姓名不能为空");
+            throw new TraceBizException("业户姓名不能为空");
+        }
+        if (registerBill.getUserId() == null) {
+            logger.error("业户ID不能为空");
+            throw new TraceBizException("业户ID不能为空");
+        }
 
         //登记单类型字段
         if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
@@ -424,12 +444,32 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         }
 
 
-        //车牌字段
+        //皮重字段
+        if (registerBill.getTruckTareWeight()==null) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getTruckTareWeight).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("皮重不能为空");
+            }
+        }
+        if (registerBill.getTruckTareWeight() != null) {
+            if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getTruckTareWeight()) < 0) {
+                logger.error("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
+                throw new TraceBizException("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
+            }
+
+            if (!NumUtils.isIntegerValue(registerBill.getTruckTareWeight())) {
+                logger.error("车辆皮重必须为整数");
+                throw new TraceBizException("车辆皮重必须为整数");
+            }
+        }
+
+        //是否拼车/车牌字段
         if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getTruckType).getName();
             FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
             if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
-                throw new TraceBizException("");
+                throw new TraceBizException("是否拼车不能为空");
             }
             registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
         }
@@ -440,21 +480,68 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             }
         }
 
-        //客户相关字段
-        if (StringUtils.isBlank(registerBill.getName())) {
-            logger.error("业户姓名不能为空");
-            throw new TraceBizException("业户姓名不能为空");
+        //商品单价
+        if (registerBill.getUnitPrice()==null) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getUnitPrice).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("商品单价不能为空");
+            }
+            registerBill.setUnitPrice(BigDecimal.ZERO);
         }
-        if (registerBill.getUserId() == null) {
-            logger.error("业户ID不能为空");
-            throw new TraceBizException("业户ID不能为空");
+
+        //商品规格
+        if (StringUtils.isBlank(registerBill.getSpecName())) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getSpecName).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("商品规格不能为空");
+            }
+        }
+        String specName = registerBill.getSpecName();
+        if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
+            throw new TraceBizException("规格名称包含非法字符");
         }
 
 
-        if (!NumUtils.isIntegerValue(registerBill.getWeight())) {
-            logger.error("商品重量必须为整数");
-            throw new TraceBizException("商品重量必须为整数");
+
+        //品牌
+        if (StringUtils.isBlank(registerBill.getBrandName())) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getBrandName).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("品牌不能为空");
+            }
         }
+
+
+        //上游企业
+        if (registerBill.getUpStreamId()==null) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getUpStreamId).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("上游企业不能为空");
+            }
+        }
+
+        //到场时间
+        if (registerBill.getArrivalDatetime()==null) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalDatetime).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("到场时间不能为空");
+            }
+        }
+
+        //到货摊位
+        if (StringUtils.isBlank(registerBill.getArrivalTallyno())) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalTallyno).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("到货摊位不能为空");
+            }
+        }
+
 
         // 计重类型，把件数和件重置空
         if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerBill.getMeasureType())) {
@@ -501,17 +588,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             }
         }
 
-        if (registerBill.getTruckTareWeight() != null) {
-            if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getTruckTareWeight()) < 0) {
-                logger.error("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
-                throw new TraceBizException("车辆皮重不能大于" + NumUtils.MAX_WEIGHT.toString());
-            }
 
-            if (!NumUtils.isIntegerValue(registerBill.getTruckTareWeight())) {
-                logger.error("车辆皮重必须为整数");
-                throw new TraceBizException("车辆皮重必须为整数");
-            }
-        }
 
 
         if (Objects.nonNull(registerBill.getUnitPrice())
@@ -520,18 +597,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("商品单价不能大于" + NumUtils.MAX_UNIT_PRICE.toString());
         }
 
-        if (registerBill.getWeightUnit() == null) {
-            logger.error("重量单位不能为空");
-            throw new TraceBizException("重量单位不能为空");
-        }
-
-        if (registerBill.getMarketId() == null) {
-            throw new TraceBizException("市场不能为空");
-        }
-        String specName = registerBill.getSpecName();
-        if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
-            throw new TraceBizException("规格名称包含非法字符");
-        }
 
         return registerBill;
     }

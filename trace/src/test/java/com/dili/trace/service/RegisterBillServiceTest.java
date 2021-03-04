@@ -1,8 +1,6 @@
 package com.dili.trace.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -34,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @EnableDiscoveryClient
 public class RegisterBillServiceTest extends AutoWiredBaseTest {
     @Autowired
@@ -50,13 +51,12 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     @Test
     public void createRegisterBillList() {
         CreateRegisterBillInputDto inputDto = new CreateRegisterBillInputDto();
-        inputDto.setProductId(1L);
-        inputDto.setProductName("白菜");
         inputDto.setRegistType(RegistTypeEnum.NONE.getCode());
         inputDto.setPlate("川A12345");
         inputDto.setBrandName("好巴适");
         inputDto.setArrivalTallyno("123");
         inputDto.setArrivalDatetime(LocalDateTime.now());
+
         Long marketId = 8L;
         List<CreateRegisterBillInputDto> inputBillDtoList = Lists.newArrayList(inputDto);
 
@@ -70,6 +70,44 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         Optional<OperatorUser> operatorUser = Optional.empty();
         CreatorRoleEnum creatorRoleEnum = CreatorRoleEnum.MANAGER;
 
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(),"商品重量不能为空");
+        }
+        try {
+            inputDto.setWeight(BigDecimal.valueOf(-1));
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(),"商品重量不能小于0");
+        }
+
+        try {
+            inputDto.setWeight(BigDecimal.valueOf(99999999L+1));
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(),"商品重量不能大于99999999");
+        }
+
+
+        inputDto.setWeight(BigDecimal.TEN);
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(),"商品产地不能为空");
+        }
+
+        inputDto.setProductId(1L);
+        inputDto.setProductName("白菜");
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(),"商品产地不能为空");
+        }
+
+        inputDto.setOriginId(2L);
+        inputDto.setOriginName("四川成都");
         List<Long> idList = this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         assertNotNull(idList);
         System.out.println(idList);
