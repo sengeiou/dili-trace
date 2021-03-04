@@ -186,24 +186,19 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
     }
 
     private UserQrStatusEnum getUserQrStatusEnum(BillVerifyStatusEnum billVerifyStatusEnum) {
-        UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
         switch (billVerifyStatusEnum) {
             case PASSED:
-                userQrStatus = UserQrStatusEnum.GREEN;
-                break;
+                return UserQrStatusEnum.GREEN;
             case NO_PASSED:
-                userQrStatus = UserQrStatusEnum.RED;
-                break;
+                return UserQrStatusEnum.RED;
             case RETURNED:
-                userQrStatus = UserQrStatusEnum.YELLOW;
-                break;
+                return UserQrStatusEnum.YELLOW;
             case WAIT_AUDIT:
-                userQrStatus = UserQrStatusEnum.YELLOW;
-                break;
+                return UserQrStatusEnum.YELLOW;
             default:
-                throw new TraceBizException("错误");
+                return UserQrStatusEnum.BLACK;
         }
-        return userQrStatus;
+
     }
 
     /**
