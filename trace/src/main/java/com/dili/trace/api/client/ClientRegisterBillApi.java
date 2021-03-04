@@ -91,7 +91,7 @@ public class ClientRegisterBillApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
-            List<Long> idList = this.registerBillService.createBillList(sessionData.getMarketId(),createListBillParam.getRegisterBills(),
+            List<Long> idList = this.registerBillService.createRegisterBillList(sessionData.getMarketId(),createListBillParam.getRegisterBills(),
                     sessionData.getUserId(), sessionData.getOptUser(), CreatorRoleEnum.CUSTOMER);
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {

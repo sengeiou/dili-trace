@@ -163,8 +163,6 @@ public class NewRegisterBillController {
         modelMap.put("tradeTypes", tradeTypeService.findAll());
         modelMap.put("citys", this.queryCitys());
 
-
-        modelMap.put("registTypeEnumList", StreamEx.of(RegistTypeEnum.values()).toList());
         Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
 
@@ -180,7 +178,7 @@ public class NewRegisterBillController {
      *
      * @return
      */
-    @RequestMapping(value = "/doAdd.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doAdd.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doAdd(@RequestBody CreateListBillParam input) {
         Firm firm=this.uapRpcService.getCurrentFirm().orElse(null);
@@ -189,7 +187,7 @@ public class NewRegisterBillController {
         }
         try {
 
-            registerBillService.createBillList(firm.getId(),input.getRegisterBills()
+            registerBillService.createRegisterBillList(firm.getId(),input.getRegisterBills()
                     , input.getUserId()
                     , this.uapRpcService.getCurrentOperator()
                     , CreatorRoleEnum.MANAGER);

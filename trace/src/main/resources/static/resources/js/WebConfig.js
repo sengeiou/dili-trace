@@ -40,7 +40,7 @@ class WebConfig {
         $(self).data('oldvalue', suggestion.value);
         var v = $(self).valid();
     }
-    initAutoComplete(selector, lookupFun, onSelect = this.onselectFun) {
+    initTraceAutoComplete(selector, lookupFun, onSelect = this.onselectFun) {
         $(selector).keydown(function (e) {
             if (e.keyCode == 13) {
             }
@@ -65,6 +65,10 @@ class WebConfig {
             autoFocus: true,
             onSelect: onSelect
         });
+    }
+    serializeJSON(form) {
+        let data = form.serializeJSON({ useIntKeysAsArrayIndex: true });
+        return data;
     }
 }
 class ListPage extends WebConfig {

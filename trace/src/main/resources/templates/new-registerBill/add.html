@@ -9,8 +9,6 @@
             </div>
             <div class="form-group col">
                 <label for="">卖家姓名</label>
-                <#bautoCompleteProvider _hiddenDomainId="" _hiddenDomainName="" _displayDomainId=""
-                _displayDomainName="" _placeholder="" _validatorMethod="isSelected" _optionVariable="" _required="" />
             </div>
             <div class="form-group col">
                 <label for="">是否拼车</label>
@@ -31,18 +29,12 @@
             </div>
             <div class="form-group col">
                 <label for="">商品品类</label>
-                <!--<select id="categorys" name="categorys" multiple>
-                    <%
-                    if(isNotEmpty(assetsRental.categoryId)){
-                    var categoryIds = strutil.split (assetsRental.categoryId,",");
-                    var categoryNames = strutil.split (assetsRental.categoryName,",");
-                    for(cid in categoryIds){
-                    %>
-                    <option value="${cid}">${categoryNames[cidLP.index-1]}</option>
-                    <%  }} %>
-                </select>
-                <#bselect2 _id="categorys" _mode="remote" _optionVariable="categoryAutoCompleteOption" _value="[${assetsRental.categoryId!}]"/>-->
-
+                <input type="text"
+                       class="form-control input-sm "
+                       data-rule-depends="input[name='productName'],input[name='productId']"
+                       name="categoryInput" required />
+                <input type="hidden" name="productName" required>
+                <input type="hidden" name="productId" required>
             </div>
             <div class="form-group col">
                 <label for=""></label>
@@ -109,17 +101,36 @@
         <div class="modal-footer-wrap">
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary px-5" id="" >取消</button>
-                <button type="button" class="btn btn-primary px-5" id="">确认新增</button>
+                <button type="button" class="btn btn-primary px-5" id="saveBtn">确认新增</button>
             </div>
         </div>
     </form>
 </div>
+<#webGlobalConfig/>
+<script src="${contextPath!}/resources/assets/dep/jquery/jquery.validate.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/NewRegisterBill.add.js"></script>
-<script>
+<script src="${contextPath!}/resources/js/CategoryController.js"></script>
+<script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        jQuery.validator.addMethod("depends", function (t, a) {
+            let selector=$(a).data('rule-depends');
+            return this.optional(a) || $(a).siblings('input').val()?true:false
+        }, "请选择下拉框选项");
+        new NewRegisterBillAdd($('#saveForm'),$('#saveBtn'));
+    });
+
+    /*lay('.laydatetime').each(function(){
+        laydate.render({
+            elem: this
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+    });*/
 
 </script>
 </#bs4Body>

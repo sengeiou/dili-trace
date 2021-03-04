@@ -10,7 +10,9 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CreateRegisterBillInputDto {
@@ -215,6 +217,33 @@ public class CreateRegisterBillInputDto {
      * 企业名
      */
     private String corporateName;
+
+
+    /**
+     * 到场时间
+     */
+    private LocalDateTime arrivalDatetime;
+
+    /**
+     * 到货摊位
+     */
+    private String arrivalTallyno;
+
+    public LocalDateTime getArrivalDatetime() {
+        return arrivalDatetime;
+    }
+
+    public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+        this.arrivalDatetime = arrivalDatetime;
+    }
+
+    public String getArrivalTallyno() {
+        return arrivalTallyno;
+    }
+
+    public void setArrivalTallyno(String arrivalTallyno) {
+        this.arrivalTallyno = arrivalTallyno;
+    }
 
     public String getName() {
         return name;

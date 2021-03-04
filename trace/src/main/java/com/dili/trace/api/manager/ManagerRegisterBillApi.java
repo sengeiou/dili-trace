@@ -107,7 +107,7 @@ public class ManagerRegisterBillApi {
         try {
 
             logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
-            List<Long> idList = this.registerBillService.createBillList(sessionData.getMarketId(),input.getRegisterBills(), input.getUserId()
+            List<Long> idList = this.registerBillService.createRegisterBillList(sessionData.getMarketId(),input.getRegisterBills(), input.getUserId()
                     , sessionData.getOptUser(),
                     CreatorRoleEnum.MANAGER);
             return BaseOutput.success().setData(idList);

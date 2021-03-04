@@ -6,8 +6,8 @@ class NewRegisterBillGrid extends ListPage {
         this.uid = _.uniqueId("trace_id_");
         let categoryController = new CategoryController();
         let cityController = new CityController();
-        this.initAutoComplete($("[name='productName']"), function (query, done) { categoryController.lookupCategories(query, done); });
-        this.initAutoComplete($("[name='originName']"), function (query, done) { cityController.lookupCities(query, done); });
+        this.initTraceAutoComplete($("[name='productName']"), function (query, done) { categoryController.lookupCategories(query, done); });
+        this.initTraceAutoComplete($("[name='originName']"), function (query, done) { cityController.lookupCities(query, done); });
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
@@ -510,8 +510,6 @@ class NewRegisterBillGrid extends ListPage {
         try {
             var billIdList = _.chain(rows).map(v => v.id).value();
             var resp = await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'), billIdList);
-            console.info(resp);
-            debugger;
             resp.forEach(btnid => { $('#' + btnid).show(); });
         }
         catch (e) {

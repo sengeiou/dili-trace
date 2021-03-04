@@ -48,7 +48,8 @@ class WebConfig{
         var v=$(self).valid();
 
     }
-    public initAutoComplete(selector,lookupFun:Function,onSelect:Function=this.onselectFun){
+
+    public initTraceAutoComplete(selector,lookupFun:Function,onSelect:Function=this.onselectFun){
         $(selector).keydown(function (e){
             if(e.keyCode == 13){
                 // $(selector).data('keycode',e.keyCode);
@@ -79,6 +80,10 @@ class WebConfig{
             autoFocus: true,
             onSelect: onSelect
         });
+    }
+    public serializeJSON(form:JQuery):JSON{
+        let data = (form as any).serializeJSON({useIntKeysAsArrayIndex: true});
+        return data;
     }
 
 }

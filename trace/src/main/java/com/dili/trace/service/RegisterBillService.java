@@ -12,7 +12,6 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
-import com.dili.trace.api.input.UserQueryDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
@@ -21,20 +20,18 @@ import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
-import com.dili.trace.service.*;
 import com.dili.trace.util.NumUtils;
 import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
+import de.cronn.reflection.util.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,7 +50,7 @@ import java.util.stream.Stream;
  */
 @Service
 @Transactional
-public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
+public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillService.class);
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
@@ -106,6 +103,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 返回mapper
+     *
      * @return
      */
     public RegisterBillMapper getActualDao() {
@@ -152,18 +150,21 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
      * @param operatorUser
      * @return
      */
-    public List<Long> createBillList(Long marketId,List<CreateRegisterBillInputDto> inputBillDtoList, Long customerId,
-                                     Optional<OperatorUser> operatorUser, CreatorRoleEnum creatorRoleEnum) {
+    public List<Long> createRegisterBillList(Long marketId, List<CreateRegisterBillInputDto> inputBillDtoList, Long customerId,
+                                             Optional<OperatorUser> operatorUser, CreatorRoleEnum creatorRoleEnum) {
         List<CreateRegisterBillInputDto> registerBills = StreamEx.ofNullable(inputBillDtoList).flatCollection(Function.identity())
                 .nonNull().toList();
         if (registerBills.isEmpty()) {
             throw new TraceBizException("没有登记单");
         }
-
+        CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
+        String printingCard = this.findPrintingCard(user, marketId).orElse(null);
+        List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
+        Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap=StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item->item.getDefaultFieldDetail().getFieldName(),Function.identity());
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             dto.setMarketId(marketId);
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-            CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, dto.getMarketId());
+
             RegisterBill registerBill = dto.build(user, dto.getMarketId());
             if (StringUtils.isNotBlank(registerBill.getPlate())) {
                 if (!RegUtils.isPlate(registerBill.getPlate().trim())) {
@@ -172,18 +173,11 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
             }
 
             registerBill.setCreatorRole(creatorRoleEnum.getCode());
-
-            CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(registerBill.getUserId(), dto.getMarketId());
-
-            Customer cq = new Customer();
-            cq.setCustomerId(customer.getCode());
-            this.clientRpcService.findCustomer(cq, dto.getMarketId()).ifPresent(card -> {
-                registerBill.setThirdPartyCode(card.getPrintingCard());
-            });
+            registerBill.setThirdPartyCode(printingCard);
             registerBill.setImageCertList(dto.getImageCertList());
 
-            List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
-            Long billId = this.createRegisterBill(registerBill,fieldConfigDetailRetDtoList, operatorUser);
+
+            Long billId = this.createRegisterBill(registerBill, fieldConfigDetailRetDtoMap, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
 //            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
@@ -215,28 +209,42 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
     }
 
     /**
+     * 查询卡号
+     *
+     * @param user
+     * @param marketId
+     * @return
+     */
+    private Optional<String> findPrintingCard(CustomerExtendDto user, Long marketId) {
+        Customer cq = new Customer();
+        cq.setCustomerId(user.getCode());
+        return this.clientRpcService.findCustomer(cq, marketId).map(Customer::getPrintingCard);
+    }
+
+    /**
      * 创建单个报备单
      *
      * @param registerBill
      * @return
      */
     private Long createRegisterBill(RegisterBill registerBill
-            ,List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList,
-            Optional<OperatorUser> operatorUser) {
+            , Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap,
+                                    Optional<OperatorUser> operatorUser) {
 
-        Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL);
+        Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL);
 
-        String json=JSON.toJSONString(registerBill);
+        String json = JSON.toJSONString(registerBill);
+//        StreamEx.of(fieldConfigDetailRetDtoList).forEach(fcd -> {
+//            String jsonPath = fcd.getDefaultFieldDetail().getJsonPath();
+//            if (StringUtils.isBlank(jsonPath)) {
+//                return;
+//            }
+//            Object jsonValue = JsonPath.using(conf).parse(json).read(jsonPath.trim());
+//            logger.debug("jsonpath={},jsonvalue={}", jsonPath, jsonValue);
+//        });
+        this.checkAndSetDefaultValue(registerBill,fieldConfigDetailRetDtoMap);
 
-        StreamEx.of(fieldConfigDetailRetDtoList).forEach(fcd->{
-            String jsonPath=fcd.getDefaultFieldDetail().getJsonPath();
-            if(StringUtils.isBlank(jsonPath)){
-                return;
-            }
-            Object jsonValue = JsonPath.using(conf).parse(json).read(jsonPath.trim());
-            logger.debug("jsonpath={},jsonvalue={}",jsonPath,jsonValue);
-        });
-        this.checkBill(registerBill);
+
 
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
@@ -277,11 +285,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
         // 保存车牌
 //        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
-        // 重构版本建单不允许没有市场
-        if (Objects.isNull(registerBill.getMarketId())) {
-            logger.error("登记单市场不存在！" + JSON.toJSONString(registerBill));
-            throw new TraceBizException("登记单市场不存在");
-        }
+
         if (registerBill.getPreserveType() == null) {
             registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
         }
@@ -361,45 +365,10 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
      * @param registerBill
      * @return
      */
-    private BaseOutput checkBill(RegisterBill registerBill) {
-
-        if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
-            throw new TraceBizException("单据类型错误");
+    private RegisterBill checkAndSetDefaultValue(RegisterBill registerBill,Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap) {
+        if (registerBill.getMarketId() == null) {
+            throw new TraceBizException("登记单市场不存在");
         }
-        if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
-            throw new TraceBizException("装车类型错误");
-        }
-//        if (registerBill.getUpStreamId() == null) {
-//            throw new TraceBizException("上游企业不能为空");
-//        }
-        if (TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())) {
-            if (StringUtils.isBlank(registerBill.getPlate())) {
-                throw new TraceBizException("车牌不能为空");
-            }
-        }
-//        if (!OrderTypeEnum.REGISTER_FORM_BILL.getCode().equals(registerBill.getOrderType())) {
-//            if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
-//                throw new TraceBusinessException("商品类型错误");
-//            }
-//        }
-        if (StringUtils.isBlank(registerBill.getName())) {
-            logger.error("业户姓名不能为空");
-            throw new TraceBizException("业户姓名不能为空");
-        }
-        if (registerBill.getUserId() == null) {
-            logger.error("业户ID不能为空");
-            throw new TraceBizException("业户ID不能为空");
-        }
-
-        if (StringUtils.isBlank(registerBill.getProductName()) || registerBill.getProductId() == null) {
-            logger.error("商品名称不能为空");
-            throw new TraceBizException("商品名称不能为空");
-        }
-        if (StringUtils.isBlank(registerBill.getOriginName()) || registerBill.getOriginId() == null) {
-            logger.error("商品产地不能为空");
-            throw new TraceBizException("商品产地不能为空");
-        }
-
         if (registerBill.getWeight() == null) {
             logger.error("商品重量不能为空");
             throw new TraceBizException("商品重量不能为空");
@@ -414,6 +383,73 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
             logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
+
+        if (StringUtils.isBlank(registerBill.getProductName()) || registerBill.getProductId() == null) {
+            logger.error("商品名称不能为空");
+            throw new TraceBizException("商品名称不能为空");
+        }
+
+
+        //登记单类型字段
+        if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getBillType).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("登记单类型不能为空");
+            }
+            registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+        }
+
+
+        //产地字段
+        if (StringUtils.isBlank(registerBill.getOriginName()) || registerBill.getOriginId() == null) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getOriginId).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("商品产地不能为空");
+            }
+        }
+
+        //备注字段
+        if (StringUtils.isBlank(registerBill.getRemark())) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getRemark).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("备注不能为空");
+            }
+        }
+        String remark = registerBill.getRemark();
+        if (StringUtils.isNotBlank(remark) && !RegUtils.isValidInput(remark)) {
+            throw new TraceBizException("备注包含非法字符");
+        }
+
+
+        //车牌字段
+        if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getTruckType).getName();
+            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
+            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+                throw new TraceBizException("");
+            }
+            registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
+        }
+
+        if (TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())) {
+            if (StringUtils.isBlank(registerBill.getPlate())) {
+                throw new TraceBizException("车牌不能为空");
+            }
+        }
+
+        //客户相关字段
+        if (StringUtils.isBlank(registerBill.getName())) {
+            logger.error("业户姓名不能为空");
+            throw new TraceBizException("业户姓名不能为空");
+        }
+        if (registerBill.getUserId() == null) {
+            logger.error("业户ID不能为空");
+            throw new TraceBizException("业户ID不能为空");
+        }
+
 
         if (!NumUtils.isIntegerValue(registerBill.getWeight())) {
             logger.error("商品重量必须为整数");
@@ -496,11 +532,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
         if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
             throw new TraceBizException("规格名称包含非法字符");
         }
-        String remark = registerBill.getRemark();
-        if (StringUtils.isNotBlank(remark) && !RegUtils.isValidInput(remark)) {
-            throw new TraceBizException("备注包含非法字符");
-        }
-        return BaseOutput.success();
+
+        return registerBill;
     }
 
     /**
@@ -521,6 +554,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 查询当前登录用户
+     *
      * @return
      */
     private UserTicket getOptUser() {
@@ -660,6 +694,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 预处理dto
+     *
      * @param dto
      * @return
      */
@@ -733,6 +768,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 增加动态条件
+     *
      * @param registerBill
      * @return
      */
@@ -774,6 +810,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
         addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode(), billItem.getMarketId());
         return billItem.getId();
     }
+
     /**
      * 进门后审核
      *
@@ -810,6 +847,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 增加站内信
+     *
      * @param billItem
      * @param messageType
      * @param businessType
@@ -849,6 +887,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 构造短信数据
+     *
      * @param billItem
      * @return
      */
@@ -863,6 +902,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 审核
+     *
      * @param billItem
      * @param toVerifyState
      * @param reason
@@ -920,7 +960,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
 
     }
-
 
 
     /**
@@ -1001,6 +1040,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 查询进门数据
+     *
      * @param query
      * @return
      */
@@ -1054,6 +1094,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 查询详情
+     *
      * @param inputDto
      * @return
      */
@@ -1104,6 +1145,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 增加like查询参数
+     *
      * @param query
      * @return
      */
@@ -1119,6 +1161,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 增加动态参数
+     *
      * @param query
      * @return
      */
@@ -1139,6 +1182,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 增加动态参数
+     *
      * @param query
      * @return
      */
@@ -1157,6 +1201,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 处理统计数据
+     *
      * @param query
      * @return
      */
@@ -1171,290 +1216,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
             }
             return dto;
         }).toList();
-    }
-
-    /**
-     * 创建多个进门登记单
-     *
-     * @param registerBills
-     * @param customerId
-     * @param operatorUser
-     * @param marketId
-     * @return
-     */
-    public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
-                                                         Optional<OperatorUser> operatorUser, Long marketId) {
-        CustomerExtendDto customer = this.clientRpcService.findCustomerById(customerId, marketId).orElseThrow(() -> {
-            return new TraceBizException("查询客户信息失败");
-        });
-        return StreamEx.of(registerBills).nonNull().map(dto -> {
-            logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
-            RegisterBill registerBill = dto.build(customer, marketId);
-            registerBill.setMarketId(marketId);
-//            registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
-            return this.createRegisterFormBill(registerBill, dto.getImageCertList(), operatorUser);
-        }).toList();
-    }
-
-    /**
-     * 创建单个报备单
-     *
-     * @param registerBill
-     * @param imageCertList
-     * @param operatorUser
-     * @return
-     */
-    @Transactional
-    public RegisterBill createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList,
-                                               Optional<OperatorUser> operatorUser) {
-        this.checkBill(registerBill);
-
-        registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
-        registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
-//        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
-        registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
-        registerBill.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL));
-        registerBill.setCreated(new Date());
-//        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
-        registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
-        registerBill.setIsPrintCheckSheet(YesOrNoEnum.NO.getCode());
-        operatorUser.ifPresent(op -> {
-            registerBill.setOperatorName(op.getName());
-            registerBill.setOperatorId(op.getId());
-            registerBill.setOperationTime(new Date());
-
-            registerBill.setCreateUser(op.getName());
-        });
-        registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
-        // 车牌转大写
-        String plate = StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
-                .map(String::toUpperCase).findFirst().orElse(null);
-        registerBill.setPlate(plate);
-        registerBill.setModified(new Date());
-
-        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
-        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
-//            registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
-            registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        } else {
-//            registerBill.setIsCheckin(YesOrNoEnum.YES.getCode());
-            registerBill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        }
-        if (BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())) {
-            registerBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
-        }
-
-        if (registerBill.getRegisterSource() == null) {
-            // 默认理货区
-            registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-        }
-
-        // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
-
-        // 保存进门登记单
-        int result = super.saveOrUpdate(registerBill);
-        if (result == 0) {
-            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
-            throw new TraceBizException("创建失败");
-        }
-        // 创建审核历史数据
-        this.registerBillHistoryService.createHistory(registerBill.getBillId());
-        // 保存图片
-        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
-            throw new TraceBizException("请上传凭证");
-        }
-        imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
-
-        // 创建/更新品牌信息并更新brandId字段值
-        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
-                .ifPresent(brandId -> {
-                    RegisterBill bill = new RegisterBill();
-                    bill.setBrandId(brandId);
-                    bill.setId(registerBill.getId());
-                    this.updateSelective(bill);
-                });
-        this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
-
-        //更新主台账单剩余重量
-        if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
-            RegisterHead rhq = new RegisterHead();
-            rhq.setCode(registerBill.getRegisterHeadCode());
-            RegisterHead registerHeadItem = StreamEx.of(registerHeadService.listByExample(rhq)).findFirst().orElseThrow(() -> {
-                return new TraceBizException("未找到主台账单");
-            });
-
-            //主台账单的剩余重量小于进门登记单的总重量时给出提示
-            BigDecimal remianWeight = registerHeadItem.getRemainWeight();
-            BigDecimal billWeight = registerBill.getWeight();
-            if (remianWeight == null || (remianWeight != null && remianWeight.compareTo(billWeight) == -1)) {
-                throw new TraceBizException("进门登记单的总重量大于主台账单的剩余重量，不可新增");
-            }
-            registerHeadItem.setRemainWeight(remianWeight.subtract(billWeight));
-            if (registerBill.getOriginId() != registerHeadItem.getOriginId()
-                    || registerBill.getProductId() != registerHeadItem.getProductId()) {
-                throw new TraceBizException("分批进场登记单信息不能进行修改");
-            }
-
-
-            registerHeadService.updateSelective(registerHeadItem);
-        }
-
-        //进门登记单新增消息
-        /*Integer businessType=MessageStateEnum.BUSINESS_TYPE_FORM_BILL.getCode();
-        if(BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())){
-            businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
-        }
-        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());*/
-        return registerBill;
-    }
-    /**
-     * 修改单个进门登记单
-     *
-     * @param input
-     * @param imageCertList
-     * @param operatorUser
-     * @return
-     */
-    @Transactional
-    public Long doEditFormBill(RegisterBill input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
-        if (input == null || input.getId() == null) {
-            throw new TraceBizException("参数错误");
-        }
-        RegisterBill billItem = this.getAndCheckById(input.getId())
-                .orElseThrow(() -> new TraceBizException("数据不存在"));
-
-        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())
-                || BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
-            // 待审核，或者已退回状态可以进行数据修改
-        } else {
-            throw new TraceBizException("当前状态不能修改数据");
-        }
-
-        // 车牌转大写
-        String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
-                .findFirst().orElse(null);
-        input.setPlate(plate);
-        // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
-        input.setModified(new Date());
-
-        input.setOperatorName(null);
-        input.setOperatorId(null);
-        input.setOperationTime(null);
-        // input.setReason("");
-        operatorUser.ifPresent(op -> {
-            input.setOperatorName(op.getName());
-            input.setOperatorId(op.getId());
-            input.setOperationTime(new Date());
-        });
-
-        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
-        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(input.getVerifyStatus())) {
-//            input.setIsCheckin(YesOrNoEnum.NO.getCode());
-            input.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        } else {
-//            input.setIsCheckin(YesOrNoEnum.YES.getCode());
-            input.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        }
-        if (BillVerifyStatusEnum.PASSED.equalsToCode(input.getVerifyStatus())) {
-            input.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
-        }
-
-        this.updateSelective(input);
-        this.registerBillHistoryService.createHistory(billItem.getBillId());
-
-        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(input.getVerifyStatus())) {
-            throw new TraceBizException("请上传凭证");
-        }
-        // 保存图片
-        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_BILL.getCode());
-
-        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId(), input.getMarketId());
-        this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
-        return input.getId();
-    }
-
-    /**
-     * 进门登记单审核(通过/进门/不通过/退回/进门待检)
-     *
-     * @param input
-     * @param operatorUser
-     * @return
-     */
-    @Transactional
-    public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser) {
-        if (input == null || input.getId() == null) {
-            throw new TraceBizException("参数错误");
-        }
-        RegisterBill billItem = this.getAndCheckById(input.getId())
-                .orElseThrow(() -> new TraceBizException("数据不存在"));
-
-        this.doVerifyForm(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
-        //新增消息
-        //addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
-        return billItem.getId();
-    }
-
-    /**
-     * 审核
-     * @param billItem
-     * @param verifyStatus
-     * @param reason
-     * @param operatorUser
-     */
-    private void doVerifyForm(RegisterBill billItem, Integer verifyStatus, String reason,
-                              Optional<OperatorUser> operatorUser) {
-        BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
-                .orElseThrow(() -> new TraceBizException("数据错误"));
-
-        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(verifyStatus)
-                .orElseThrow(() -> new TraceBizException("参数错误"));
-
-        logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
-                toVerifyState.getName());
-        if (!BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
-            throw new TraceBizException("当前状态不能进行数据操作");
-        }
-        if (BillVerifyStatusEnum.WAIT_AUDIT == toVerifyState) {
-            throw new TraceBizException("不支持的操作");
-        }
-        if (fromVerifyState == toVerifyState) {
-            throw new TraceBizException("状态不能相同");
-        }
-
-        // 更新当前报务单数据
-        RegisterBill bill = new RegisterBill();
-        bill.setId(billItem.getId());
-        bill.setVerifyStatus(toVerifyState.getCode());
-        operatorUser.ifPresent(op -> {
-            bill.setOperatorId(op.getId());
-            bill.setOperatorName(op.getName());
-            bill.setOperationTime(new Date());
-        });
-
-        bill.setReason(StringUtils.trimToEmpty(reason));
-        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
-        if (BillVerifyStatusEnum.NO_PASSED == toVerifyState) {
-//            bill.setIsCheckin(YesOrNoEnum.NO.getCode());
-            bill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        } else {
-//            bill.setIsCheckin(YesOrNoEnum.YES.getCode());
-            bill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        }
-        if (BillVerifyStatusEnum.PASSED == toVerifyState) {
-            bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
-        }
-        bill.setModified(new Date());
-        this.updateSelective(bill);
-        // 创建审核历史数据
-        this.registerBillHistoryService.createHistory(billItem.getId());
-
-        // 更新用户颜色码
-        this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
     }
 
     /**
@@ -1476,6 +1237,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 构造Like查询
+     *
      * @param query
      * @return
      */
@@ -1549,6 +1311,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long>   {
 
     /**
      * 构造动态查询
+     *
      * @param query
      * @return
      */
