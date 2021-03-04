@@ -364,6 +364,9 @@ public class CreateRegisterBillInputDto {
 //        registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 //        registerBill.setOrderType(this.getOrderType());
+
+        registerBill.setArrivalTallyno(this.getArrivalTallyno());
+        registerBill.setArrivalDatetime(this.getArrivalDatetime());
         return registerBill;
     }
 

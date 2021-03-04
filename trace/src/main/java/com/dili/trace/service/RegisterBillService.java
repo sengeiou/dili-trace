@@ -345,7 +345,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                     bill.setId(registerBill.getId());
                     this.updateSelective(bill);
                 });
-        this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
+
 
         //报备单新增消息
         Integer businessType = MessageStateEnum.BUSINESS_TYPE_BILL.getCode();
@@ -356,6 +356,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //同步uap商品、经营户
         this.syncCategoryService.saveAndSyncGoodInfo(registerBill.getProductId(), registerBill.getMarketId());
         this.syncUserInfoService.saveAndSyncUserInfo(registerBill.getUserId(), registerBill.getMarketId());
+        this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
         return registerBill.getId();
     }
 
@@ -487,7 +488,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
                 throw new TraceBizException("商品单价不能为空");
             }
-            registerBill.setUnitPrice(BigDecimal.ZERO);
         }
 
         //商品规格

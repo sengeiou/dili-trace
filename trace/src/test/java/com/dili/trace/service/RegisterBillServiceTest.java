@@ -52,10 +52,6 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     public void createRegisterBillList() {
         CreateRegisterBillInputDto inputDto = new CreateRegisterBillInputDto();
         inputDto.setRegistType(RegistTypeEnum.NONE.getCode());
-        inputDto.setPlate("川A12345");
-        inputDto.setBrandName("好巴适");
-        inputDto.setArrivalTallyno("123");
-        inputDto.setArrivalDatetime(LocalDateTime.now());
 
         Long marketId = 8L;
         List<CreateRegisterBillInputDto> inputBillDtoList = Lists.newArrayList(inputDto);
@@ -70,44 +66,126 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         Optional<OperatorUser> operatorUser = Optional.empty();
         CreatorRoleEnum creatorRoleEnum = CreatorRoleEnum.MANAGER;
 
+
         try {
             this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         } catch (TraceBizException e) {
-            assertEquals(e.getMessage(),"商品重量不能为空");
+            assertEquals(e.getMessage(), "商品重量不能为空");
+        }
+        try {
+            inputDto.setWeight(BigDecimal.valueOf(1.23D));
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "商品重量必须为整数");
         }
         try {
             inputDto.setWeight(BigDecimal.valueOf(-1));
             this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         } catch (TraceBizException e) {
-            assertEquals(e.getMessage(),"商品重量不能小于0");
+            assertEquals(e.getMessage(), "商品重量不能小于0");
         }
 
         try {
-            inputDto.setWeight(BigDecimal.valueOf(99999999L+1));
+            inputDto.setWeight(BigDecimal.valueOf(99999999L + 1));
             this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         } catch (TraceBizException e) {
-            assertEquals(e.getMessage(),"商品重量不能大于99999999");
+            assertEquals(e.getMessage(), "商品重量不能大于99999999");
         }
-
-
         inputDto.setWeight(BigDecimal.TEN);
         try {
             this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         } catch (TraceBizException e) {
-            assertEquals(e.getMessage(),"商品产地不能为空");
+            assertEquals(e.getMessage(), "重量单位不能为空");
         }
 
-        inputDto.setProductId(1L);
-        inputDto.setProductName("白菜");
+        inputDto.setWeightUnit(WeightUnitEnum.KILO.getCode());
 
         try {
             this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         } catch (TraceBizException e) {
-            assertEquals(e.getMessage(),"商品产地不能为空");
+            assertEquals(e.getMessage(), "商品名称不能为空");
         }
+        inputDto.setProductId(1L);
+        inputDto.setProductName("白菜");
 
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "商品产地不能为空");
+        }
         inputDto.setOriginId(2L);
         inputDto.setOriginName("四川成都");
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "备注不能为空");
+        }
+        inputDto.setRemark("备注信息");
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "皮重不能为空");
+        }
+        inputDto.setTruckTareWeight(BigDecimal.ONE);
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "是否拼车不能为空");
+        }
+        inputDto.setTruckType(TruckTypeEnum.POOL.getCode());
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "车牌不能为空");
+        }
+
+        inputDto.setPlate("川A12345");
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "商品单价不能为空");
+        }
+
+        inputDto.setUnitPrice(BigDecimal.ONE);
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "商品规格不能为空");
+        }
+
+        inputDto.setSpecName("箱子");
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "品牌不能为空");
+        }
+
+        inputDto.setBrandName("好巴适");
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "上游企业不能为空");
+        }
+
+        inputDto.setUpStreamId(10L);
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "到场时间不能为空");
+        }
+        inputDto.setArrivalDatetime(LocalDateTime.now());
+
+        try {
+            this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
+        } catch (TraceBizException e) {
+            assertEquals(e.getMessage(), "到货摊位不能为空");
+        }
+        inputDto.setArrivalTallyno("222");
         List<Long> idList = this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         assertNotNull(idList);
         System.out.println(idList);

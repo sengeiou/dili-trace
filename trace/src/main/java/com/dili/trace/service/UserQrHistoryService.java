@@ -271,7 +271,7 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
                                                        UserQrStatusEnum qrStatusEnum,
                                                        QrHistoryEventTypeEnum historyEventTypeEnum,
                                                        Long qrHistoryEventId) {
-        return StreamEx.of(this.userInfoService.get(userInfoId)).map(userItem -> {
+        return StreamEx.of(this.userInfoService.get(userInfoId)).nonNull().map(userItem -> {
             return this.buildUserQrHistory(userItem, qrStatusEnum, historyEventTypeEnum, qrHistoryEventId);
         }).findFirst();
 
