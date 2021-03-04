@@ -162,12 +162,12 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
 
         this.userInfoService.saveUserInfo(userId, billItem.getMarketId()).ifPresent(userInfoItem -> {
 
-            if (userInfoItem.getQrHistoryId() != null) {
-                return;
-            }
+//            if (userInfoItem.getQrHistoryId() != null) {
+//                return;
+//            }
             UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
             //插入qrhistory对象
-            this.buildUserQrHistory(userId, qrStatusEnum, QrHistoryEventTypeEnum.REGISTER_BILL, billItem.getId()).ifPresent(userQrHistory -> {
+            this.buildUserQrHistory(userInfoItem.getId(), qrStatusEnum, QrHistoryEventTypeEnum.REGISTER_BILL, billItem.getId()).ifPresent(userQrHistory -> {
 
                 userQrHistory.setContent(content);
                 this.insertSelective(userQrHistory);
