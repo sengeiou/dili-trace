@@ -2,10 +2,13 @@ package com.dili.trace.service;
 
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.CheckinOutRecord;
+import com.dili.trace.domain.ProcessConfig;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.MarketEnum;
 import com.dili.trace.rpc.service.ProductRpcService;
@@ -41,14 +44,32 @@ public class ProcessService {
     @Autowired
     TradeDetailService tradeDetailService;
 
+    @Autowired
+    ProcessConfigService processConfigService;
+    @Autowired
+    BillVerifyHistoryService billVerifyHistoryService;
+
     /**
      * 创建报备之后
      *
      * @param billId
      * @param marketId
      */
-    public void afterCreateBill(Long billId, Long marketId) {
-
+    public void afterCreateBill(Long billId, Long marketId,Optional<OperatorUser>operatorUser) {
+        ProcessConfig processConfig=this.processConfigService.findByMarketId(marketId);
+        if(YesOrNoEnum.NO.getCode().equals(processConfig.getIsAuditAfterRegist())){
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(billId);
+            updatableBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+            this.billService.updateSelective(updatableBill);
+            this.billVerifyHistoryService.createVerifyHistory(Optional.empty(),billId,operatorUser);
+        }
+        if(YesOrNoEnum.NO.getCode().equals(processConfig.getIsWeightBeforeCheckin())){
+            RegisterBill updatableBill=new RegisterBill();
+            updatableBill.setId(billId);
+            updatableBill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+            this.billService.updateSelective(updatableBill);
+        }
     }
 
     /**

@@ -163,7 +163,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
         String printingCard = this.findPrintingCard(user, marketId).orElse(null);
         List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
-        Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap=StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item->item.getDefaultFieldDetail().getFieldName(),Function.identity());
+        Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap = StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             dto.setMarketId(marketId);
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
@@ -231,7 +231,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @return
      */
     private Long createRegisterBill(RegisterBill registerBill
-            , Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap,
+            , Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap,
                                     Optional<OperatorUser> operatorUser) {
 
         Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL);
@@ -245,8 +245,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 //            Object jsonValue = JsonPath.using(conf).parse(json).read(jsonPath.trim());
 //            logger.debug("jsonpath={},jsonvalue={}", jsonPath, jsonValue);
 //        });
-        this.checkAndSetDefaultValue(registerBill,fieldConfigDetailRetDtoMap);
-
+        this.checkAndSetDefaultValue(registerBill, fieldConfigDetailRetDtoMap);
 
 
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
@@ -318,13 +317,15 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             registerHead.setRemainWeight(remianWeight.subtract(billWeight));
             registerHeadService.updateSelective(registerHead);
         }
+
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
         if (result == 0) {
             logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
             throw new TraceBizException("创建失败");
         }
-        this.registerTallyAreaNoService.insertTallyAreaNoList(registerBill.getArrivalTallynos(),registerBill.getBillId(),BillTypeEnum.REGISTER_BILL);
+        this.processService.afterCreateBill(registerBill.getId(),registerBill.getMarketId(),operatorUser);
+        this.registerTallyAreaNoService.insertTallyAreaNoList(registerBill.getArrivalTallynos(), registerBill.getBillId(), BillTypeEnum.REGISTER_BILL);
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
         // 保存图片
@@ -356,6 +357,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         this.syncCategoryService.saveAndSyncGoodInfo(registerBill.getProductId(), registerBill.getMarketId());
         this.syncUserInfoService.saveAndSyncUserInfo(registerBill.getUserId(), registerBill.getMarketId());
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
+
+
         return registerBill.getId();
     }
 
@@ -365,11 +368,11 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
      * @param registerBill
      * @return
      */
-    private RegisterBill checkAndSetDefaultValue(RegisterBill registerBill,Map<String,FieldConfigDetailRetDto>fieldConfigDetailRetDtoMap) {
+    private RegisterBill checkAndSetDefaultValue(RegisterBill registerBill, Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap) {
         if (registerBill.getMarketId() == null) {
             throw new TraceBizException("登记单市场不存在");
         }
-        BigDecimal weight=registerBill.getWeight();
+        BigDecimal weight = registerBill.getWeight();
         if (weight == null) {
             logger.error("商品重量不能为空");
             throw new TraceBizException("商品重量不能为空");
@@ -413,8 +416,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //登记单类型字段
         if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getBillType).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("登记单类型不能为空");
             }
             registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
@@ -424,8 +427,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //产地字段
         if (StringUtils.isBlank(registerBill.getOriginName()) || registerBill.getOriginId() == null) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getOriginId).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("商品产地不能为空");
             }
         }
@@ -433,8 +436,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //备注字段
         if (StringUtils.isBlank(registerBill.getRemark())) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getRemark).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("备注不能为空");
             }
         }
@@ -445,10 +448,10 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
 
         //皮重字段
-        if (registerBill.getTruckTareWeight()==null) {
+        if (registerBill.getTruckTareWeight() == null) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getTruckTareWeight).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("皮重不能为空");
             }
         }
@@ -467,8 +470,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //是否拼车/车牌字段
         if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getTruckType).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("是否拼车不能为空");
             }
             registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
@@ -481,10 +484,10 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         }
 
         //商品单价
-        if (registerBill.getUnitPrice()==null) {
+        if (registerBill.getUnitPrice() == null) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getUnitPrice).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("商品单价不能为空");
             }
         }
@@ -492,8 +495,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         //商品规格
         if (StringUtils.isBlank(registerBill.getSpecName())) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getSpecName).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("商品规格不能为空");
             }
         }
@@ -503,41 +506,40 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         }
 
 
-
         //品牌
         if (StringUtils.isBlank(registerBill.getBrandName())) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getBrandName).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("品牌不能为空");
             }
         }
 
 
         //上游企业
-        if (registerBill.getUpStreamId()==null) {
+        if (registerBill.getUpStreamId() == null) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getUpStreamId).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("上游企业不能为空");
             }
         }
 
         //到场时间
-        if (registerBill.getArrivalDatetime()==null) {
+        if (registerBill.getArrivalDatetime() == null) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalDatetime).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("到场时间不能为空");
             }
         }
 
         //到货摊位
-        List<String>arrivalTallynos=StreamEx.ofNullable(registerBill.getArrivalTallynos()).flatCollection(Function.identity()).filter(StringUtils::isNotBlank).toList();
+        List<String> arrivalTallynos = StreamEx.ofNullable(registerBill.getArrivalTallynos()).flatCollection(Function.identity()).filter(StringUtils::isNotBlank).toList();
         if (arrivalTallynos.isEmpty()) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalTallynos).getName();
-            FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
-            if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
+            FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+            if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("到货摊位不能为空");
             }
         }
@@ -587,8 +589,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                 throw new TraceBizException("商品件重必须为整数");
             }
         }
-
-
 
 
         if (Objects.nonNull(registerBill.getUnitPrice())
@@ -1014,7 +1014,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         this.updateSelective(bill);
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(billItem.getId());
-        this.billVerifyHistoryService.createVerifyHistory(fromVerifyState, bill.getBillId(), operatorUser);
+        this.billVerifyHistoryService.createVerifyHistory(Optional.of(fromVerifyState), bill.getBillId(), operatorUser);
 
         // 创建相关的tradeDetail及batchStock数据
 
