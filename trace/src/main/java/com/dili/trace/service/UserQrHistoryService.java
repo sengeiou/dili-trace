@@ -60,37 +60,12 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
      */
     public void updateUserQrForExpire(UserQrHistoryQueryDto historyQueryDto) {
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
-        historyQueryDto.setQrStatus(qrStatusEnum.getCode());
         //查询出符合条件的userid
-        List<Long> userInfoIdList = this.qrHistoryMapper.selectUserInfoIdWithoutHistory(historyQueryDto);
+        List<Long> userInfoIdList = this.qrHistoryMapper.selectUserInfoIdWithoutHistory(historyQueryDto.getCreatedStart(),historyQueryDto.getCreatedEnd(),YesOrNoEnum.YES.getCode());
 
         StreamEx.of(userInfoIdList).forEach(userInfoId -> {
             //锁定对应的userinfo对象
             this.userInfoService.selectByUserIdForUpdate(userInfoId).ifPresent(userInfoItem -> {
-
-                UserQrHistoryQueryDto uq=new UserQrHistoryQueryDto();
-                uq.setUserInfoId(userInfoId);
-                uq.setIsValid(YesOrNoEnum.YES.getCode());
-                uq.setSort("id");
-                uq.setOrder("desc");
-                uq.setPage(1);
-                uq.setRows(1);
-
-                UserQrHistory uqItem=StreamEx.of(this.listPageByExample(uq).getDatas()).findFirst().orElse(new UserQrHistory());
-
-                //新注册用户七天内不更新二维码信息
-                if(QrHistoryEventTypeEnum.NEW_USER.equalsToCode(uqItem.getQrHistoryEventType())&&uqItem.getCreated()!=null){
-                    LocalDateTime created=uqItem.getCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                    LocalDateTime now=LocalDateTime.now().minusDays(7);
-                    if(created.isAfter(now)){
-                        return;
-                    }
-                }
-
-                //如果最后一条是无交易二维码信息，则不更新
-                if(QrHistoryEventTypeEnum.NO_DATA.equalsToCode(uqItem.getQrHistoryEventType())){
-                    return;
-                }
                 //插入qrhistory对象
                 String content = "最近七天无报备且无交易单" + ",变为" + qrStatusEnum.getDesc() + "码";
                 this.buildUserQrHistory(userInfoId, qrStatusEnum, QrHistoryEventTypeEnum.NO_DATA, null).ifPresent(userQrHistory -> {

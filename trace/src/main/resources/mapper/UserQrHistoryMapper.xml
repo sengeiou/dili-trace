@@ -6,18 +6,13 @@
     </resultMap>
     
 
-    <select id="selectUserInfoIdWithoutHistory" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="java.lang.Long">
+    <select id="selectUserInfoIdWithoutHistory"  resultType="java.lang.Long">
       select id from `user`
       where id not in(
-            select user_info_id from user_qr_history uq
-            where <![CDATA[( uq.created >= #{createdStart} OR uq.created <= #{createdEnd})
-                    AND qr_status<>#{qrStatus}
-                ]]>
+                select user_info_id from user_qr_history uq
+                where <![CDATA[( uq.created >= #{createdStart} and uq.created <= #{createdEnd})]]>
                 AND is_valid=#{isValid}
             )
-      <if test="userInfoId != null">
-        AND id = #{userInfoId}
-      </if>
   </select>
     <select id="listPageByUserQrHistoryQuery" parameterType="com.dili.trace.dto.query.UserQrHistoryQueryDto" resultType="com.dili.trace.domain.UserQrHistory">
         select * from `user_qr_history` where user_info_id in(
