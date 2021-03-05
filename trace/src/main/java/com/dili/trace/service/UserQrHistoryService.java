@@ -45,14 +45,16 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
 
     /**
      * 分页查询数据
+     *
      * @param domain
      * @return
      */
-    public BasePage<UserQrHistory> listPageByUserQrHistoryQuery(UserQrHistoryQueryDto domain){
-        return super.buildQuery(domain).listPageByFun(q->{
+    public BasePage<UserQrHistory> listPageByUserQrHistoryQuery(UserQrHistoryQueryDto domain) {
+        return super.buildQuery(domain).listPageByFun(q -> {
             return this.qrHistoryMapper.listPageByUserQrHistoryQuery(q);
         });
     }
+
     /**
      * 更新过期用户的状态
      *
@@ -61,7 +63,7 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
     public void updateUserQrForExpire(UserQrHistoryQueryDto historyQueryDto) {
         UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
         //查询出符合条件的userid
-        List<Long> userInfoIdList = this.qrHistoryMapper.selectUserInfoIdWithoutHistory(historyQueryDto.getCreatedStart(),historyQueryDto.getCreatedEnd(),YesOrNoEnum.YES.getCode());
+        List<Long> userInfoIdList = this.qrHistoryMapper.selectUserInfoIdWithoutHistory(historyQueryDto.getCreatedStart(), historyQueryDto.getCreatedEnd(), YesOrNoEnum.YES.getCode());
 
         StreamEx.of(userInfoIdList).forEach(userInfoId -> {
             //锁定对应的userinfo对象
@@ -95,26 +97,41 @@ public class UserQrHistoryService extends TraceBaseService<UserQrHistory, Long> 
      */
     public void createUserQrHistoryForUserRegist(UserInfo userInfoItem, Long marketId) {
 
-            if (userInfoItem.getQrHistoryId() != null) {
-                return;
-            }
-            UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
-            //插入qrhistory对象
-            String content = "完成注册,默认为" + qrStatusEnum.getDesc() + "码";
-            this.buildUserQrHistory(userInfoItem.getId(), qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null).ifPresent(userQrHistory -> {
+        if (userInfoItem.getQrHistoryId() != null) {
+            return;
+        }
+        UserQrStatusEnum qrStatusEnum = UserQrStatusEnum.BLACK;
+        //插入qrhistory对象
+        String content = "完成注册,默认为" + qrStatusEnum.getDesc() + "码";
+        this.buildUserQrHistory(userInfoItem.getId(), qrStatusEnum, QrHistoryEventTypeEnum.NEW_USER, null).ifPresent(userQrHistory -> {
 
-                userQrHistory.setContent(content);
-                this.insertSelective(userQrHistory);
+            userQrHistory.setContent(content);
+            this.insertSelective(userQrHistory);
 
-                //更新userinfo的qr信息
-                UserInfo userInfo = new UserInfo();
-                userInfo.setId(userInfoItem.getId());
-                userInfo.setQrHistoryId(userQrHistory.getId());
-                userInfo.setPreQrStatus(userInfoItem.getQrStatus());
-                userInfo.setQrStatus(qrStatusEnum.getCode());
-                userInfo.setQrContent(content);
-                this.userInfoService.updateSelective(userInfo);
-            });
+            //更新userinfo的qr信息
+            UserInfo userInfo = new UserInfo();
+            userInfo.setId(userInfoItem.getId());
+            userInfo.setQrHistoryId(userQrHistory.getId());
+            userInfo.setPreQrStatus(userInfoItem.getQrStatus());
+            userInfo.setQrStatus(qrStatusEnum.getCode());
+            userInfo.setQrContent(content);
+            this.userInfoService.updateSelective(userInfo);
+        });
+    }
+
+    /**
+     * createUserQrHistoryForVerifyBill
+     *
+     * @param billId
+     */
+    public void createUserQrHistoryForVerifyBill(Long billId) {
+        RegisterBill billItem = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
+            return new TraceBizException("登记单不存在");
+        });
+        if (billItem == null) {
+            return;
+        }
+        this.createUserQrHistoryForVerifyBill(billItem, billItem.getUserId());
     }
 
     /**
