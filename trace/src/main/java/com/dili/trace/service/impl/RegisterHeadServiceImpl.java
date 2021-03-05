@@ -68,6 +68,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     SyncUserInfoService syncUserInfoService;
     @Autowired
     SyncCategoryService syncCategoryService;
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
 
 
     public RegisterHeadMapper getActualDao() {
@@ -158,7 +160,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         //同步uap商品、经营户
         this.syncCategoryService.saveAndSyncGoodInfo(registerHead.getProductId(), registerHead.getMarketId());
         this.syncUserInfoService.saveAndSyncUserInfo(registerHead.getUserId(), registerHead.getMarketId());
-
+        this.registerTallyAreaNoService.insertTallyAreaNoList(registerHead.getArrivalTallynos(),registerHead.getId(),BillTypeEnum.MASTER_BILL);
         return registerHead.getId();
     }
 

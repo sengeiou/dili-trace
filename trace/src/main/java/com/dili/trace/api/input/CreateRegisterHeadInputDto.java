@@ -156,6 +156,12 @@ public class CreateRegisterHeadInputDto {
 	 */
 	private List<ImageCert> imageCertList;
 
+
+	/**
+	 * 到货摊位
+	 */
+	private List<String> arrivalTallynos;
+
 	public RegisterHead build(CustomerExtendDto user) {
 		RegisterHead registerHead = new RegisterHead();
 		registerHead.setId(this.getId());
@@ -184,7 +190,16 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setActive(this.getActive());
 		registerHead.setUnitPrice(this.getUnitPrice());
 		registerHead.setTruckType(this.getTruckType());
+		registerHead.setArrivalTallynos(this.getArrivalTallynos());
 		return registerHead;
+	}
+
+	public List<String> getArrivalTallynos() {
+		return arrivalTallynos;
+	}
+
+	public void setArrivalTallynos(List<String> arrivalTallynos) {
+		this.arrivalTallynos = arrivalTallynos;
 	}
 
 	public Integer getTruckType() {
