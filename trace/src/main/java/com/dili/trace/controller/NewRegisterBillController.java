@@ -69,8 +69,6 @@ public class NewRegisterBillController {
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
-    UserService userService;
-    @Autowired
     UserPlateService userPlateService;
     @Autowired
     UsualAddressService usualAddressService;
@@ -1121,20 +1119,7 @@ public class NewRegisterBillController {
      */
     private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
         UserInfoDto userInfoDto = new UserInfoDto();
-        if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-            // 理货区
-            UserInfo user = userService.findByTallyAreaNo(firstTallyAreaNo, this.uapRpcService.getCurrentFirm().get().getId());
 
-            if (user != null) {
-                userInfoDto.setUserId(String.valueOf(user.getId()));
-                userInfoDto.setName(user.getName());
-                userInfoDto.setIdCardNo(user.getCardNo());
-                userInfoDto.setPhone(user.getPhone());
-                userInfoDto.setAddr(user.getAddr());
-
-            }
-
-        } else {
 
             Customer condition = new Customer();
             condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
@@ -1149,7 +1134,6 @@ public class NewRegisterBillController {
                 userInfoDto.setPrintingCard(customer.getPrintingCard());
             }
 
-        }
         return userInfoDto;
     }
 

@@ -5,6 +5,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -33,10 +34,10 @@ public class RegisterHeadController {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterHeadController.class);
 
 	@Autowired
+	private CustomerRpcService customerRpcService;
+	@Autowired
 	RegisterHeadService registerHeadService;
 
-	@Autowired
-	UserService userService;
 
 	/**
 	 * 跳转到RegisterHead页面
@@ -96,14 +97,11 @@ public class RegisterHeadController {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		for (RegisterHead registerHead : registerHeads) {
 
-			UserInfo user = userService.get(registerHead.getUserId());
-			if (user == null) {
-				return BaseOutput.failure("用户不存在");
-			}
-			registerHead.setName(user.getName());
-			registerHead.setIdCardNo(user.getCardNo());
-			registerHead.setAddr(user.getAddr());
-			registerHead.setUserId(user.getId());
+			com.dili.customer.sdk.domain.Customer cust=this.customerRpcService.findCustByIdOrEx(registerHead.getUserId());
+			registerHead.setName(cust.getName());
+			registerHead.setIdCardNo(cust.getCertificateNumber());
+			registerHead.setAddr(cust.getCertificateAddr());
+			registerHead.setUserId(cust.getId());
 			try {
 				Long billId = registerHeadService.createRegisterHead(registerHead, new ArrayList<ImageCert>(),
 						Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));

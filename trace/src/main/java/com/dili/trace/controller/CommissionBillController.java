@@ -56,8 +56,6 @@ public class CommissionBillController {
     @Autowired
     TradeTypeService tradeTypeService;
     @Autowired
-    UserService userService;
-    @Autowired
     UserPlateService userPlateService;
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
