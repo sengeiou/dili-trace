@@ -292,12 +292,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (registerBill.getPreserveType() == null) {
             registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
         }
-        if (registerBill.getTruckTareWeight() == null) {
-            registerBill.setTruckTareWeight(BigDecimal.ZERO);
-        }
-        if (registerBill.getUnitPrice() == null) {
-            registerBill.setUnitPrice(BigDecimal.ZERO);
-        }
+
         logger.debug("判断是否是分批进场:registType={}", registerBill.getRegistType());
         //更新主台账单剩余重量
         if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
