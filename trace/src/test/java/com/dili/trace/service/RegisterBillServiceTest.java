@@ -182,7 +182,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
                 () -> {
                     this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
                 }, "到货摊位不能为空");
-        inputDto.setArrivalTallyno("222");
+        inputDto.setArrivalTallynos(Lists.newArrayList("222"));
         List<Long> idList = this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
         assertNotNull(idList);
         System.out.println(idList);

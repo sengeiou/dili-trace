@@ -227,7 +227,7 @@ public class CreateRegisterBillInputDto {
     /**
      * 到货摊位
      */
-    private String arrivalTallyno;
+    private List<String> arrivalTallynos;
 
     public LocalDateTime getArrivalDatetime() {
         return arrivalDatetime;
@@ -237,12 +237,12 @@ public class CreateRegisterBillInputDto {
         this.arrivalDatetime = arrivalDatetime;
     }
 
-    public String getArrivalTallyno() {
-        return arrivalTallyno;
+    public List<String> getArrivalTallynos() {
+        return arrivalTallynos;
     }
 
-    public void setArrivalTallyno(String arrivalTallyno) {
-        this.arrivalTallyno = arrivalTallyno;
+    public void setArrivalTallynos(List<String> arrivalTallynos) {
+        this.arrivalTallynos = arrivalTallynos;
     }
 
     public String getName() {
@@ -365,7 +365,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 //        registerBill.setOrderType(this.getOrderType());
 
-        registerBill.setArrivalTallyno(this.getArrivalTallyno());
+        registerBill.setArrivalTallynos(this.getArrivalTallynos());
         registerBill.setArrivalDatetime(this.getArrivalDatetime());
         return registerBill;
     }

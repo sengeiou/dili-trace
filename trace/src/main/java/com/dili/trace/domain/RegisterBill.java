@@ -505,8 +505,8 @@ public class RegisterBill extends BaseDomain {
     /**
      * 到货摊位
      */
-    @Column(name = "`arrival_tallyno`")
-    private String arrivalTallyno;
+    @Transient
+    private List<String> arrivalTallynos;
 
     public LocalDateTime getArrivalDatetime() {
         return arrivalDatetime;
@@ -516,13 +516,7 @@ public class RegisterBill extends BaseDomain {
         this.arrivalDatetime = arrivalDatetime;
     }
 
-    public String getArrivalTallyno() {
-        return arrivalTallyno;
-    }
 
-    public void setArrivalTallyno(String arrivalTallyno) {
-        this.arrivalTallyno = arrivalTallyno;
-    }
 
     public String getReturnReason() {
         return returnReason;
@@ -1563,5 +1557,13 @@ public class RegisterBill extends BaseDomain {
     @Transient
     public String getCheckInStatusName(){
         return CheckinStatusEnum.ALLOWED.equalsToCode(this.getCheckinStatus())?"是":"否";
+    }
+
+    public List<String> getArrivalTallynos() {
+        return arrivalTallynos;
+    }
+
+    public void setArrivalTallynos(List<String> arrivalTallynos) {
+        this.arrivalTallynos = arrivalTallynos;
     }
 }

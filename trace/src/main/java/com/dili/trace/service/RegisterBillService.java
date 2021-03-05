@@ -101,6 +101,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     @Autowired
     FieldConfigDetailService fieldConfigDetailService;
 
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
+
     /**
      * 返回mapper
      *
@@ -326,6 +329,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
             throw new TraceBizException("创建失败");
         }
+        this.registerTallyAreaNoService.insertTallyAreaNoList(registerBill.getArrivalTallynos(),registerBill.getBillId(),BillTypeEnum.REGISTER_BILL);
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
         // 保存图片
@@ -534,8 +538,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         }
 
         //到货摊位
-        if (StringUtils.isBlank(registerBill.getArrivalTallyno())) {
-            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalTallyno).getName();
+        List<String>arrivalTallynos=StreamEx.ofNullable(registerBill.getArrivalTallynos()).flatCollection(Function.identity()).filter(StringUtils::isNotBlank).toList();
+        if (arrivalTallynos.isEmpty()) {
+            String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getArrivalTallynos).getName();
             FieldConfigDetailRetDto retDto= fieldConfigDetailRetDtoMap.getOrDefault(propName,null);
             if(retDto!=null&&YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed())&&YesOrNoEnum.YES.getCode().equals(retDto.getRequired())){
                 throw new TraceBizException("到货摊位不能为空");

@@ -56,7 +56,6 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `card_no_back_url`;
 ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 
 ALTER TABLE dili_trace.`register_bill` ADD arrival_datetime datetime NULL COMMENT '到场时间';
-ALTER TABLE dili_trace.`register_bill` ADD arrival_tallyno varchar(50) NULL COMMENT '到货摊位';
 
 /*====================*/
 
@@ -114,3 +113,24 @@ CREATE TABLE `field_config_detail` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
+
+CREATE TABLE `process_config` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `market_id` int NOT NULL COMMENT '模块',
+      `is_audit_after_regist` int NOT NULL DEFAULT 1 COMMENT '是否登记审核',
+      `is_weight_before_checkin` int NOT NULL DEFAULT 1 COMMENT '是否进门称重',
+      `is_audit_before_checkin` int NOT NULL DEFAULT 1 COMMENT '是否进门审核',
+      `created` datetime NOT NULL DEFAULT now(),
+      `modified` datetime NOT NULL DEFAULT now(),
+      PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `register_tallyarea_no` (
+      `id` bigint NOT NULL AUTO_INCREMENT,
+      `bill_id` bigint NOT NULL COMMENT '报备ID',
+      `bill_type` int NOT NULL COMMENT '类型',
+      `tallyarea_no` varchar(50)  NULL COMMENT '摊位号',
+      `created` datetime NOT NULL DEFAULT now(),
+      PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
