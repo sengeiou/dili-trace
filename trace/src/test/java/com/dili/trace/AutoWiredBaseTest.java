@@ -30,13 +30,7 @@ import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.service.AssetsRpcService;
-import com.dili.trace.service.CheckinOutRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.TradeDetailService;
-import com.dili.trace.service.TradeRequestService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
+import com.dili.trace.service.*;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -54,6 +48,8 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	protected RegisterBillService registerBillService;
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
+	@Autowired
+	ProcessService processService;
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -154,7 +150,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		CheckInApiInput input = new CheckInApiInput();
 		input.setBillIdList(Lists.newArrayList(billId));
 		input.setCheckinStatus(checkinStatusEnum.getCode());
-		List<CheckinOutRecord> list = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")), input.getBillIdList(),CheckinStatusEnum.ALLOWED);
+		List<CheckinOutRecord> list = this.processService.doCheckIn(Optional.ofNullable(new OperatorUser(1L, "test")), input.getBillIdList(),CheckinStatusEnum.ALLOWED);
 		assertNotNull(list);
 		assertTrue(list.size() == 1);
 		CheckinOutRecord record=list.get(0);

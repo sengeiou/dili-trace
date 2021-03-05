@@ -143,7 +143,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return StreamEx.of(billIdList).nonNull().map(billId -> {
 			return this.registerBillService.get(billId);
 		}).nonNull().map(bill -> {
-			return this.checkin(bill.getId(), checkinStatusEnum, operateUser);
+			return this.doOneCheckin(bill.getId(), checkinStatusEnum, operateUser);
 
 		}).nonNull().toList();
 	}
@@ -156,7 +156,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * @param operateUser
 	 * @return
 	 */
-	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum,
+	public CheckinOutRecord doOneCheckin(Long billId, CheckinStatusEnum checkinStatusEnum,
 			Optional<OperatorUser> operateUser) {
 		RegisterBill billItem =registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBizException("数据不存在"));
 

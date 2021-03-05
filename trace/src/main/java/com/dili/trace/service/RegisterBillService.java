@@ -899,7 +899,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("补单或已进门报备单,才能场内审核");
         }
         if (BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)) {
-            this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()),
+            this.processService.doCheckIn(operatorUser, Lists.newArrayList(billItem.getBillId()),
                     CheckinStatusEnum.ALLOWED);
         }
         this.doVerify(billItem, toVerifyState, reason, operatorUser);

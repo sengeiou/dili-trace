@@ -12,6 +12,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.uap.sdk.domain.Firm;
 import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,29 @@ public class ProcessService {
     }
 
     /**
+     * 进门
+     * @param operateUser
+     * @param billIdList
+     * @param checkinStatusEnum
+     * @return
+     */
+    public List<CheckinOutRecord>  doCheckIn(Optional<OperatorUser> operateUser, List<Long> billIdList,
+                         CheckinStatusEnum checkinStatusEnum){
+        if (billIdList == null) {
+            throw new TraceBizException("参数错误");
+        }
+
+        if (checkinStatusEnum == null) {
+            throw new TraceBizException("参数错误");
+        }
+        return StreamEx.of(billIdList).nonNull().map(billId -> {
+            return this.billService.get(billId);
+        }).nonNull().map(bill -> {
+            return this.checkinOutRecordService.doOneCheckin(bill.getId(), checkinStatusEnum, operateUser);
+
+        }).nonNull().toList();
+    }
+    /**
      * 更新状态到进门
      *
      * @param billId
@@ -78,8 +102,11 @@ public class ProcessService {
 
         RegisterBill updatableBill = new RegisterBill();
         updatableBill.setId(billId);
-        updatableBill.setCheckinStatus(checkinStatusEnum.getCode());
-
+        if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+            updatableBill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+        } else {
+            updatableBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+        }
         if (BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())) {
             if (CheckinStatusEnum.ALLOWED==checkinStatusEnum) {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
@@ -90,6 +117,7 @@ public class ProcessService {
 
         this.billService.updateSelective(updatableBill);
 
+
 //        CheckinOutRecord crq=new CheckinOutRecord();
 //        crq.setInout(CheckinOutTypeEnum.IN.getCode());
 //        crq.setBillId(billId);
@@ -97,8 +125,10 @@ public class ProcessService {
 //        crq.setStatus(checkinStatusEnum.getCode());
 //        boolean notHaveRecord=this.checkinOutRecordService.listByExample(crq).isEmpty();
 //        if(notHaveRecord){
-        this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billId), checkinStatusEnum);
+        this.checkinOutRecordService.doOneCheckin(billId,checkinStatusEnum,operatorUser);
 //        }
+
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),operatorUser);
 
 
         return 1;
