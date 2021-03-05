@@ -42,6 +42,10 @@ public class RegisterTallyAreaNoService extends TraceBaseService<RegisterTallyAr
         if (noList.isEmpty()) {
             return 0;
         }
+        RegisterTallyAreaNo dq=new RegisterTallyAreaNo();
+        dq.setBillType(billTypeEnum.getCode());
+        dq.setBillId(billId);
+        this.deleteByExample(dq);
         return this.batchInsert(noList);
     }
 }
