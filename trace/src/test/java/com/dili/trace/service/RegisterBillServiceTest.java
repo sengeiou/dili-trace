@@ -47,6 +47,8 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
     @SpyBean
     CustomerRpcService clientRpcService;
+    @Autowired
+    ProcessService processService;
 
 
     @Test
@@ -217,7 +219,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         CheckInApiInput checkInApiInput = new CheckInApiInput();
         checkInApiInput.setBillIdList(Lists.newArrayList(input.getId()));
         checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        List<CheckinOutRecord> checkInList = this.checkinOutRecordService.doCheckin(
+        List<CheckinOutRecord> checkInList = this.processService.doCheckIn(
                 Optional.ofNullable(new OperatorUser(1L, "test")), checkInApiInput.getBillIdList(),
                 CheckinStatusEnum.ALLOWED);
         assertTrue(checkInList.size() == 1);

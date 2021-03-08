@@ -122,31 +122,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return Optional.ofNullable(user);
 	}
 
-	/**
-	 * 批量进门
-	 * 
-	 * @param operateUser
-	 * @param billIdList
-	 * @param checkinStatusEnum
-	 * @return
-	 */
-	@Transactional
-	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList,
-			CheckinStatusEnum checkinStatusEnum) {
-		if (billIdList == null) {
-			throw new TraceBizException("参数错误");
-		}
-
-		if (checkinStatusEnum == null) {
-			throw new TraceBizException("参数错误");
-		}
-		return StreamEx.of(billIdList).nonNull().map(billId -> {
-			return this.registerBillService.get(billId);
-		}).nonNull().map(bill -> {
-			return this.doOneCheckin(bill.getId(), checkinStatusEnum, operateUser);
-
-		}).nonNull().toList();
-	}
 
 	/**
 	 * 单个进门

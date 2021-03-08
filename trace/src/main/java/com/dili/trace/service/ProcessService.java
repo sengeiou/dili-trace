@@ -36,6 +36,8 @@ public class ProcessService {
     ProductRpcService productRpcService;
     @Autowired
     BillService billService;
+    @Autowired
+    RegisterBillService registerBillService;
 
     @Autowired
     private MarketService marketService;
@@ -87,7 +89,7 @@ public class ProcessService {
         return StreamEx.of(billIdList).nonNull().map(billId -> {
             return this.billService.get(billId);
         }).nonNull().map(bill -> {
-            return this.checkinOutRecordService.doOneCheckin(bill.getId(), checkinStatusEnum, operateUser);
+            return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operateUser);
 
         }).nonNull().toList();
     }
@@ -97,8 +99,16 @@ public class ProcessService {
      * @param billId
      * @return
      */
-    private int updateCheckinstatus(Long billId, CheckinStatusEnum checkinStatusEnum, Optional<OperatorUser> operatorUser) {
-        RegisterBill billItem = this.billService.get(billId);
+    private CheckinOutRecord updateCheckinstatus(Long billId, CheckinStatusEnum checkinStatusEnum, Optional<OperatorUser> operatorUser) {
+
+        if (CheckinStatusEnum.NONE == checkinStatusEnum) {
+            throw new TraceBizException("参数错误");
+        }
+        if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
+            return null;
+        }
+
+        RegisterBill billItem =this.registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBizException("数据不存在"));
 
         RegisterBill updatableBill = new RegisterBill();
         updatableBill.setId(billId);
@@ -114,24 +124,42 @@ public class ProcessService {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
             }
         }
-
         this.billService.updateSelective(updatableBill);
+        if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+            CheckinOutRecord item=new CheckinOutRecord();
+//				item.setId(cin.getId());
+            item.setStatus(checkinStatusEnum.getCode());
+            operatorUser.ifPresent(op -> {
+                // item.setOperatorId(op.getId());
+                // item.setOperatorName(op.getName());
+            });
+            item.setModified(new Date());
+            item.setProductName(billItem.getProductName());
+            item.setInoutWeight(billItem.getWeight());
+            item.setWeightUnit(billItem.getWeightUnit());
+            item.setUserName(billItem.getName());
+            item.setUserId(billItem.getUserId());
+            item.setBillType(billItem.getBillType());
+            // item.setVerifyStatus(billItem.getVerifyStatus());
+            item.setBillId(billItem.getBillId());
+            item.setInout(CheckinOutTypeEnum.IN.getCode());
+//				item.setTradeDetailId(tradeDetailItem.getId());
+//				this.updateSelective(item);
+//				return this.get(item.getId());
+            this.checkinOutRecordService.insertSelective(item);
+//			}).orElseGet(()->{
+//				 return this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
+//			});
 
 
-//        CheckinOutRecord crq=new CheckinOutRecord();
-//        crq.setInout(CheckinOutTypeEnum.IN.getCode());
-//        crq.setBillId(billId);
-//        crq.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-//        crq.setStatus(checkinStatusEnum.getCode());
-//        boolean notHaveRecord=this.checkinOutRecordService.listByExample(crq).isEmpty();
-//        if(notHaveRecord){
-        this.checkinOutRecordService.doOneCheckin(billId,checkinStatusEnum,operatorUser);
-//        }
-
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),operatorUser);
 
 
-        return 1;
+            this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),
+                    operatorUser);
+            return item;
+        }
+        return null;
+
     }
 
     /**
