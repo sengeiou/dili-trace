@@ -10,25 +10,23 @@ class NewRegisterBillAdd extends WebConfig {
         super();
         this.form = form;
         this.submitBtn=submitBtn;
-
         this.submitBtn.on('click',async ()=>this.doAdd());
         let categoryController:CategoryController=new CategoryController();
         super.initTraceAutoComplete($("[name='categoryInput']"), function (query, done){ categoryController.lookupCategories(query,done)},function(suggestion){
-
-            // var self = this;
-            // var forId=$(self).attr("for");
-            // if(!_.isEmpty(forId)){
-            //     var idField = $('#'+forId);
-            //     idField.val(suggestion.id);
-            // }
-            // $(self).val(suggestion.value.trim());
-            // $(self).data('oldvalue',suggestion.value);
-            // //@ts-ignore
-            // var v=$(self).valid();
             $(this).val(suggestion.value);
             $('[name="productId"]').val(suggestion.id);
             $('[name="productName"]').val(suggestion.value);
+            //@ts-ignore
+            $(this).valid();
+        });
 
+        let cityController:CityController=new CityController();
+        super.initTraceAutoComplete($("[name='originInput']"), function (query, done){ cityController.lookupCities(query,done)},function(suggestion){
+            $(this).val(suggestion.value);
+            $('[name="originId"]').val(suggestion.id);
+            $('[name="originName"]').val(suggestion.value);
+            //@ts-ignore
+            $(this).valid();
         });
     }
 

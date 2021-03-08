@@ -9,6 +9,14 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).val(suggestion.value);
             $('[name="productId"]').val(suggestion.id);
             $('[name="productName"]').val(suggestion.value);
+            $(this).valid();
+        });
+        let cityController = new CityController();
+        super.initTraceAutoComplete($("[name='originInput']"), function (query, done) { cityController.lookupCities(query, done); }, function (suggestion) {
+            $(this).val(suggestion.value);
+            $('[name="originId"]').val(suggestion.id);
+            $('[name="originName"]').val(suggestion.value);
+            $(this).valid();
         });
     }
     async doAdd() {

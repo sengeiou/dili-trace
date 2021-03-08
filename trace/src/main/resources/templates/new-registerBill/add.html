@@ -4,35 +4,38 @@
         <div class="row row-cols-1">
             <div class="form-group col">
                 <label for="">单据类型</label>
-                <select id="carTypeId" name="carTypeId" class="form-control"></select>
-                <#bcomboProvider _id="carTypeId" _provider="registTypeProvider" _value=""/>
+                <select id="registType" name="registType" class="form-control" required></select>
+                <#bcomboProvider _id="registType" _provider="registTypeProvider" _value=""/>
             </div>
             <div class="form-group col">
                 <label for="">卖家姓名</label>
+                <input type="text"
+                       class="form-control input-sm "
+                       name="userInput" data-value-type="skip" required />
             </div>
             <div class="form-group col">
                 <label for="">是否拼车</label>
                 <div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="" value="">
+                        <input class="form-check-input" type="radio" name="truckType" value="${@com.dili.trace.enums.TruckTypeEnum.POOL.getCode()}">
                         <label class="form-check-label" for="">是</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="" value="" checked>
+                        <input class="form-check-input" type="radio" name="truckType" value="${@com.dili.trace.enums.TruckTypeEnum.FULL.getCode()}" checked>
                         <label class="form-check-label" for="">否</label>
                     </div>
                 </div>
             </div>
             <div class="form-group col" id="plateGroupDiv">
                 <label for="">车牌号</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="plate" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">商品品类</label>
                 <input type="text"
                        class="form-control input-sm "
                        data-rule-depends="input[name='productName'],input[name='productId']"
-                       name="categoryInput" required />
+                       name="categoryInput" data-value-type="skip" required />
                 <input type="hidden" name="productName" required>
                 <input type="hidden" name="productId" required>
             </div>
@@ -40,58 +43,63 @@
                 <label for=""></label>
                 <div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="" value="">
+                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()}">
                         <label class="form-check-label" for="">计重</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="" value="">
+                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()}">
                         <label class="form-check-label" for="">计件</label>
                     </div>
                 </div>
             </div>
             <div class="form-group col">
                 <label for="">商品重量</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="weight" value=""/>
             </div>
         </div>
         <div class="row row-cols-1">
             <div class="form-group col">
                 <label for="">商品件数</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">件重</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">合计</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="" value=""/>
             </div>
         </div>
         <div class="row row-cols-1">
             <div class="form-group col">
                 <label for="">商品规格</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">品牌</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">产地</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text"
+                       class="form-control input-sm "
+                       data-rule-depends="input[name='originId'],input[name='originName']"
+                       name="originInput" data-value-type="skip" required />
+                <input type="hidden" name="originId" required>
+                <input type="hidden" name="originName" required>
             </div>
             <div class="form-group col">
                 <label for="">上游企业</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="upStreamId" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">皮重</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="truckTareWeight" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">到场时间</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <input type="text" class="form-control" name="arrivalDatetime" value=""/>
             </div>
             <div class="form-group col">
                 <label for="">上传证明</label>
@@ -113,14 +121,22 @@
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CategoryController.js"></script>
+<script src="${contextPath!}/resources/js/CityController.js"></script>
 <script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-
         jQuery.validator.addMethod("depends", function (t, a) {
             let selector=$(a).data('rule-depends');
-            return this.optional(a) || $(a).siblings('input').val()?true:false
+            let isAnyEmpty=_.chain($(selector)).map(item=>{return $(item).val();}).any(_.isEmpty).value()
+            return !isAnyEmpty;
         }, "请选择下拉框选项");
+        $('input[name="truckType"]').on('change',function(){
+            if($(this).val()=='${@com.dili.trace.enums.TruckTypeEnum.POOL.getCode()}'){
+
+            }else{
+                $('input[name="plate"]').attr('required','required')
+            }
+        });
         new NewRegisterBillAdd($('#saveForm'),$('#saveBtn'));
     });
 
