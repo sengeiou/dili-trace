@@ -18,9 +18,9 @@ public class ProcessConfigServiceTest extends AutoWiredBaseTest {
     @Test
     public void findByMarketId() {
         ProcessConfig processConfig = new ProcessConfig();
-        processConfig.setIsAuditAfterRegist(YesOrNoEnum.NO.getCode());
-        processConfig.setIsAuditBeforeCheckin(YesOrNoEnum.NO.getCode());
-        processConfig.setIsWeightBeforeCheckin(YesOrNoEnum.NO.getCode());
+        processConfig.setCanDoCheckInWithoutWeight(YesOrNoEnum.NO.getCode());
+        processConfig.setIsManullyCheckIn(YesOrNoEnum.NO.getCode());
+        processConfig.setIsAutoVerifyPassed(YesOrNoEnum.NO.getCode());
         processConfig.setMarketId(8L);
         Mockito.doReturn(processConfig).when(this.processConfigService).findByMarketId(Mockito.anyLong());
 

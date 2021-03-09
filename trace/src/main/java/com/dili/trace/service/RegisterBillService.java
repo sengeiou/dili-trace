@@ -274,15 +274,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         registerBill.setModified(new Date());
 //        registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-
-        // 补单直接进门状态
-        if (RegistTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getRegistType())) {
-//            registerBill.setIsCheckin(YesOrNoEnum.YES.getCode());
-            registerBill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        } else {
-//            registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
-            registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        }
+        registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 
         // 保存车牌
 //        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
@@ -324,10 +316,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
             throw new TraceBizException("创建失败");
         }
-        this.processService.afterCreateBill(registerBill.getId(),registerBill.getMarketId(),operatorUser);
         this.registerTallyAreaNoService.insertTallyAreaNoList(registerBill.getArrivalTallynos(), registerBill.getBillId(), BillTypeEnum.REGISTER_BILL);
-        // 创建审核历史数据
-        this.registerBillHistoryService.createHistory(registerBill.getBillId());
+
+
         // 保存图片
         List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
         if (!imageCertList.isEmpty()) {
@@ -335,6 +326,11 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             //更新报备单上图片标志位
             this.billService.updateHasImage(registerBill.getBillId(), imageCertList);
         }
+
+        this.processService.afterCreateBill(registerBill.getId(),registerBill.getMarketId(),operatorUser);
+
+        // 创建审核历史数据
+        this.registerBillHistoryService.createHistory(registerBill.getBillId());
 
 
         // 创建/更新品牌信息并更新brandId字段值
@@ -599,22 +595,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
 
         return registerBill;
-    }
-
-    /**
-     * 通过登记单查找
-     *
-     * @param code
-     * @return
-     */
-    public RegisterBill findByCode(String code) {
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setCode(code);
-        List<RegisterBill> list = list(registerBill);
-        if (list != null && list.size() > 0) {
-            return list.get(0);
-        }
-        return null;
     }
 
     /**

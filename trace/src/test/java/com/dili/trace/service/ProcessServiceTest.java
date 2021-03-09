@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @EnableDiscoveryClient
 public class ProcessServiceTest extends AutoWiredBaseTest {
-    @Autowired
+    @SpyBean
     ProcessService processService;
     @Autowired
     BillService billService;
@@ -26,12 +26,15 @@ public class ProcessServiceTest extends AutoWiredBaseTest {
     @Test
     public void afterCreateBill() {
 
+        Mockito.doNothing().when(this.processService).afterCreateBill(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
         Mockito.doAnswer((InvocationOnMock invocation) -> {
             Long marketId = invocation.getArgument(0);
             ProcessConfig processConfig = new ProcessConfig();
-            processConfig.setIsAuditAfterRegist(YesOrNoEnum.NO.getCode());
-            processConfig.setIsAuditBeforeCheckin(YesOrNoEnum.NO.getCode());
-            processConfig.setIsWeightBeforeCheckin(YesOrNoEnum.NO.getCode());
+            processConfig.setIsAutoVerifyPassed(YesOrNoEnum.NO.getCode());
+            processConfig.setIsManullyCheckIn(YesOrNoEnum.YES.getCode());
+
+            processConfig.setCanDoCheckInWithoutWeight(YesOrNoEnum.NO.getCode());
+
             processConfig.setMarketId(marketId);
             return processConfig;
         }).when(this.processConfigService).findByMarketId(Mockito.anyLong());
@@ -39,7 +42,7 @@ public class ProcessServiceTest extends AutoWiredBaseTest {
         Long billId = super.baseCreateRegisterBill();
         RegisterBill bill = this.billService.get(billId);
 
-
+        Mockito.doCallRealMethod().when(this.processService).afterCreateBill(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
         this.processService.afterCreateBill(billId, bill.getMarketId(), Optional.empty());
     }
 }

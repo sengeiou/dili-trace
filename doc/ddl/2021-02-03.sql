@@ -117,9 +117,9 @@ CREATE TABLE `field_config_detail` (
 CREATE TABLE `process_config` (
       `id` bigint NOT NULL AUTO_INCREMENT,
       `market_id` int NOT NULL COMMENT '模块',
-      `is_audit_after_regist` int NOT NULL DEFAULT 1 COMMENT '是否登记审核',
-      `is_weight_before_checkin` int NOT NULL DEFAULT 1 COMMENT '是否进门称重',
-      `is_audit_before_checkin` int NOT NULL DEFAULT 1 COMMENT '是否进门审核',
+      `is_autoverify_passed` int NOT NULL DEFAULT 1 COMMENT '是否登记审核',
+      `can_docheckin_without_weight` int NOT NULL DEFAULT 1 COMMENT '是否进门称重',
+      `is_manully_checkIn` int NOT NULL DEFAULT 1 COMMENT '是否进门审核',
       `created` datetime NOT NULL DEFAULT now(),
       `modified` datetime NOT NULL DEFAULT now(),
       PRIMARY KEY (`id`)

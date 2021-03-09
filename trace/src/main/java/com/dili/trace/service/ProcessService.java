@@ -61,24 +61,37 @@ public class ProcessService {
      * @param marketId
      */
     public void afterCreateBill(Long billId, Long marketId, Optional<OperatorUser> operatorUser) {
+        RegisterBill billItem = this.registerBillService.getAndCheckById(billId).orElseThrow(() -> new TraceBizException("数据不存在"));
+
+
+        RegisterBill updatableBill = new RegisterBill();
+        updatableBill.setId(billId);
+        // 补单直接进门状态
+        if (RegistTypeEnum.SUPPLEMENT.equalsToCode(billItem.getRegistType())) {
+            updatableBill.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+        } else {
+            updatableBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+        }
+        this.billService.updateSelective(updatableBill);
+
         ProcessConfig processConfig = this.processConfigService.findByMarketId(marketId);
-        if (YesOrNoEnum.NO.getCode().equals(processConfig.getIsAuditAfterRegist())) {
+        if (YesOrNoEnum.YES.getCode().equals(processConfig.getIsAutoVerifyPassed())) {
             this.updateVerifyStatus(billId, BillVerifyStatusEnum.PASSED, Optional.empty(), operatorUser);
         }
-        if (YesOrNoEnum.NO.getCode().equals(processConfig.getIsWeightBeforeCheckin())) {
-            this.updateCheckinstatus(billId, CheckinStatusEnum.ALLOWED, operatorUser);
-        }
+
     }
+
 
     /**
      * 进门
-     * @param operateUser
+     *
+     * @param operatorUser
      * @param billIdList
      * @param checkinStatusEnum
      * @return
      */
-    public List<CheckinOutRecord>  doCheckIn(Optional<OperatorUser> operateUser, List<Long> billIdList,
-                         CheckinStatusEnum checkinStatusEnum){
+    public List<CheckinOutRecord> doCheckIn(Optional<OperatorUser> operatorUser, List<Long> billIdList,
+                                            CheckinStatusEnum checkinStatusEnum) {
         if (billIdList == null) {
             throw new TraceBizException("参数错误");
         }
@@ -89,17 +102,26 @@ public class ProcessService {
         return StreamEx.of(billIdList).nonNull().map(billId -> {
             return this.billService.get(billId);
         }).nonNull().map(bill -> {
-            return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operateUser);
+            ProcessConfig processConfig = this.processConfigService.findByMarketId(bill.getMarketId());
+            if (YesOrNoEnum.YES.getCode().equals(processConfig.getCanDoCheckInWithoutWeight())) {
+                return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operatorUser).orElse(null);
+            } else {
+//                bill.getBillId()
+                //TODO check is weight
+                return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operatorUser).orElse(null);
+
+            }
 
         }).nonNull().toList();
     }
+
     /**
      * 更新状态到进门
      *
      * @param billId
      * @return
      */
-    private CheckinOutRecord updateCheckinstatus(Long billId, CheckinStatusEnum checkinStatusEnum, Optional<OperatorUser> operatorUser) {
+    private Optional<CheckinOutRecord> updateCheckinstatus(Long billId, CheckinStatusEnum checkinStatusEnum, Optional<OperatorUser> operatorUser) {
 
         if (CheckinStatusEnum.NONE == checkinStatusEnum) {
             throw new TraceBizException("参数错误");
@@ -108,7 +130,7 @@ public class ProcessService {
             return null;
         }
 
-        RegisterBill billItem =this.registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBizException("数据不存在"));
+        RegisterBill billItem = this.registerBillService.getAndCheckById(billId).orElseThrow(() -> new TraceBizException("数据不存在"));
 
         RegisterBill updatableBill = new RegisterBill();
         updatableBill.setId(billId);
@@ -118,15 +140,28 @@ public class ProcessService {
             updatableBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         }
         if (BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())) {
-            if (CheckinStatusEnum.ALLOWED==checkinStatusEnum) {
+            if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
             } else {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
             }
         }
         this.billService.updateSelective(updatableBill);
+        return this.createCheckInRecord(billId, checkinStatusEnum, operatorUser);
+    }
+
+    /**
+     * 创建进门记录,并创建进门库存
+     *
+     * @param billId
+     * @param checkinStatusEnum
+     * @param operatorUser
+     * @return
+     */
+    private Optional<CheckinOutRecord> createCheckInRecord(Long billId, CheckinStatusEnum checkinStatusEnum, Optional<OperatorUser> operatorUser) {
+        RegisterBill billItem = this.billService.get(billId);
         if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-            CheckinOutRecord item=new CheckinOutRecord();
+            CheckinOutRecord item = new CheckinOutRecord();
 //				item.setId(cin.getId());
             item.setStatus(checkinStatusEnum.getCode());
             operatorUser.ifPresent(op -> {
@@ -147,18 +182,12 @@ public class ProcessService {
 //				this.updateSelective(item);
 //				return this.get(item.getId());
             this.checkinOutRecordService.insertSelective(item);
-//			}).orElseGet(()->{
-//				 return this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
-//			});
-
-
-
-
-            this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),
+            // 创建相关的tradeDetail及batchStock数据
+            this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId,
                     operatorUser);
-            return item;
+            return Optional.of(item);
         }
-        return null;
+        return Optional.empty();
 
     }
 
@@ -170,7 +199,6 @@ public class ProcessService {
      * @return
      */
     private int updateVerifyStatus(Long billId, BillVerifyStatusEnum toVerifyStatusEnum, Optional<String> reason, Optional<OperatorUser> operatorUser) {
-
 
 
         RegisterBill updatableBill = new RegisterBill();
@@ -186,8 +214,9 @@ public class ProcessService {
             updatableBill.setReason(StringUtils.trimToEmpty(rs));
         });
         RegisterBill billItem = this.billService.get(billId);
+        CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(billItem.getCheckinStatus());
         if (BillVerifyStatusEnum.PASSED == toVerifyStatusEnum) {
-            if (CheckinStatusEnum.ALLOWED.equalsToCode(billItem.getCheckinStatus())) {
+            if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
             } else {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
@@ -196,11 +225,13 @@ public class ProcessService {
         updatableBill.setModified(new Date());
         this.billService.updateSelective(updatableBill);
 
+        if (BillVerifyStatusEnum.PASSED == toVerifyStatusEnum) {
+            this.createCheckInRecord(billId, checkinStatusEnum, operatorUser);
+        }
+
+
         this.billVerifyHistoryService.createVerifyHistory(Optional.of(toVerifyStatusEnum), billId, operatorUser);
 
-        // 创建相关的tradeDetail及batchStock数据
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId,
-                operatorUser);
 
         // 更新用户颜色码
         this.userQrHistoryService.createUserQrHistoryForVerifyBill(billId);
@@ -232,29 +263,4 @@ public class ProcessService {
 //            logger.debug("其他市场状态不变");
 //        }
     }
-
-
-    /**
-     * 进门之后
-     *
-     * @param billId
-     * @param marketId
-     */
-//    public void afterCheckIn(Long billId, Long marketId,Optional<OperatorUser> optUser ) {
-//        RegisterBill registerBill = billService.get(billId);
-//
-//        // 进门之后向 UAP 同步库存
-//        productRpcService.create(registerBill, optUser);
-//    }
-
-    /**
-     * 交易之后
-     * @param buyerDetailList
-     * @param sellerDetailList
-     * @param marketId
-     */
-//    public void afterTrade(List<TradeDetail> buyerDetailList, List<TradeDetail> sellerDetailList, Long marketId, Optional<OperatorUser> optUser) {
-//        // 交易之后向 UAP 同步库存
-//        productRpcService.handleTradeStocks(buyerDetailList, sellerDetailList, optUser, marketId);
-//    }
 }

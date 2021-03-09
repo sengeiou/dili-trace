@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.RegisterTallyAreaNo;
 import com.dili.trace.enums.BillTypeEnum;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -42,10 +43,28 @@ public class RegisterTallyAreaNoService extends TraceBaseService<RegisterTallyAr
         if (noList.isEmpty()) {
             return 0;
         }
-        RegisterTallyAreaNo dq=new RegisterTallyAreaNo();
+        RegisterTallyAreaNo dq = new RegisterTallyAreaNo();
         dq.setBillType(billTypeEnum.getCode());
         dq.setBillId(billId);
         this.deleteByExample(dq);
         return this.batchInsert(noList);
+    }
+
+    /**
+     * 根据billId和billType查询到货摊位号
+     *
+     * @param billId
+     * @param billTypeEnum
+     * @return
+     */
+    public List<RegisterTallyAreaNo> findTallyAreaNoByBillIdAndType(Long billId, BillTypeEnum billTypeEnum) {
+        if (billId == null || billTypeEnum == null) {
+            return Lists.newArrayList();
+        }
+        RegisterTallyAreaNo dq = new RegisterTallyAreaNo();
+        dq.setBillType(billTypeEnum.getCode());
+        dq.setBillId(billId);
+        return this.listByExample(dq);
+
     }
 }

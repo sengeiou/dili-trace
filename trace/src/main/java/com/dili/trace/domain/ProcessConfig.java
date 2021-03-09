@@ -23,20 +23,20 @@ public class ProcessConfig extends BaseDomain {
      * 是否登记审核
      */
 
-    @Column(name = "`is_audit_after_regist`")
-    private Integer isAuditAfterRegist;
+    @Column(name = "`is_autoverify_passed`")//is_audit_after_regist
+    private Integer isAutoVerifyPassed;
 
     /**
-     * 是否进门称重
+     * 称重后自动进门
      */
-    @Column(name = "`is_weight_before_checkin`")
-    private Integer isWeightBeforeCheckin;
+    @Column(name = "`can_docheckin_without_weight`")//is_weight_before_checkin
+    private Integer canDoCheckInWithoutWeight;
 
     /**
      * 是否进门审核
      */
-    @Column(name = "`is_audit_before_checkin`")
-    private Integer isAuditBeforeCheckin;
+    @Column(name = "`is_manully_checkIn`")//is_audit_before_checkin
+    private Integer isManullyCheckIn;
 
     @Override
     public Long getId() {
@@ -56,27 +56,27 @@ public class ProcessConfig extends BaseDomain {
         this.marketId = marketId;
     }
 
-    public Integer getIsAuditAfterRegist() {
-        return isAuditAfterRegist;
+    public Integer getIsAutoVerifyPassed() {
+        return isAutoVerifyPassed;
     }
 
-    public void setIsAuditAfterRegist(Integer isAuditAfterRegist) {
-        this.isAuditAfterRegist = isAuditAfterRegist;
+    public void setIsAutoVerifyPassed(Integer isAutoVerifyPassed) {
+        this.isAutoVerifyPassed = isAutoVerifyPassed;
     }
 
-    public Integer getIsWeightBeforeCheckin() {
-        return isWeightBeforeCheckin;
+    public Integer getCanDoCheckInWithoutWeight() {
+        return canDoCheckInWithoutWeight;
     }
 
-    public void setIsWeightBeforeCheckin(Integer isWeightBeforeCheckin) {
-        this.isWeightBeforeCheckin = isWeightBeforeCheckin;
+    public void setCanDoCheckInWithoutWeight(Integer canDoCheckInWithoutWeight) {
+        this.canDoCheckInWithoutWeight = canDoCheckInWithoutWeight;
     }
 
-    public Integer getIsAuditBeforeCheckin() {
-        return isAuditBeforeCheckin;
+    public Integer getIsManullyCheckIn() {
+        return isManullyCheckIn;
     }
 
-    public void setIsAuditBeforeCheckin(Integer isAuditBeforeCheckin) {
-        this.isAuditBeforeCheckin = isAuditBeforeCheckin;
+    public void setIsManullyCheckIn(Integer isManullyCheckIn) {
+        this.isManullyCheckIn = isManullyCheckIn;
     }
 }
