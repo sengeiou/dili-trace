@@ -67,6 +67,8 @@ public class ClientRegisterHeadApi {
 
     @Autowired
     UpStreamService upStreamService;
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
 
     /**
      * 获取进门主台账单列表
@@ -296,6 +298,11 @@ public class ClientRegisterHeadApi {
             registerBill.setRegisterHeadCode(registerHead.getCode());
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             registerHead.setRegisterBills(registerBills);
+
+            List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerBill.getBillId(), BillTypeEnum.MASTER_BILL);
+            registerHead.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+
+
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
