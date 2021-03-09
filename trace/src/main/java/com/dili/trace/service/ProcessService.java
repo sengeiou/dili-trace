@@ -60,7 +60,7 @@ public class ProcessService {
      * @param billId
      * @param marketId
      */
-    public void afterCreateBill(Long billId, Long marketId, Optional<OperatorUser> operatorUser) {
+    public void afterCreateBill(Long billId, Long marketId, ProcessConfig processConfig, Optional<OperatorUser> operatorUser) {
         RegisterBill billItem = this.registerBillService.getAndCheckById(billId).orElseThrow(() -> new TraceBizException("数据不存在"));
 
 
@@ -74,7 +74,6 @@ public class ProcessService {
         }
         this.billService.updateSelective(updatableBill);
 
-        ProcessConfig processConfig = this.processConfigService.findByMarketId(marketId);
         if (YesOrNoEnum.YES.getCode().equals(processConfig.getIsAutoVerifyPassed())) {
             this.updateVerifyStatus(billId, BillVerifyStatusEnum.PASSED, Optional.empty(), operatorUser);
         }

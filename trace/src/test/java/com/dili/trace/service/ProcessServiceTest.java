@@ -26,23 +26,18 @@ public class ProcessServiceTest extends AutoWiredBaseTest {
     @Test
     public void afterCreateBill() {
 
-        Mockito.doNothing().when(this.processService).afterCreateBill(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
-        Mockito.doAnswer((InvocationOnMock invocation) -> {
-            Long marketId = invocation.getArgument(0);
-            ProcessConfig processConfig = new ProcessConfig();
-            processConfig.setIsAutoVerifyPassed(YesOrNoEnum.NO.getCode());
-            processConfig.setIsManullyCheckIn(YesOrNoEnum.YES.getCode());
+        ProcessConfig processConfig = new ProcessConfig();
+        processConfig.setIsAutoVerifyPassed(YesOrNoEnum.NO.getCode());
+        processConfig.setIsManullyCheckIn(YesOrNoEnum.YES.getCode());
 
-            processConfig.setCanDoCheckInWithoutWeight(YesOrNoEnum.NO.getCode());
+        processConfig.setCanDoCheckInWithoutWeight(YesOrNoEnum.NO.getCode());
 
-            processConfig.setMarketId(marketId);
-            return processConfig;
-        }).when(this.processConfigService).findByMarketId(Mockito.anyLong());
+        Mockito.doNothing().when(this.processService).afterCreateBill(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(),Mockito.any());
+
 
         Long billId = super.baseCreateRegisterBill();
         RegisterBill bill = this.billService.get(billId);
 
-        Mockito.doCallRealMethod().when(this.processService).afterCreateBill(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
-        this.processService.afterCreateBill(billId, bill.getMarketId(), Optional.empty());
+        this.processService.afterCreateBill(billId, bill.getMarketId(),processConfig, Optional.empty());
     }
 }

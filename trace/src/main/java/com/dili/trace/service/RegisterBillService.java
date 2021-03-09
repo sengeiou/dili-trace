@@ -103,6 +103,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
     @Autowired
     RegisterTallyAreaNoService registerTallyAreaNoService;
+    @Autowired
+    ProcessConfigService processConfigService;
+
 
     /**
      * 返回mapper
@@ -160,6 +163,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (registerBills.isEmpty()) {
             throw new TraceBizException("没有登记单");
         }
+        ProcessConfig processConfig = this.processConfigService.findByMarketId(marketId);
         CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
         String printingCard = this.findPrintingCard(user, marketId).orElse(null);
         List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
@@ -180,7 +184,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             registerBill.setImageCertList(dto.getImageCertList());
 
 
-            Long billId = this.createRegisterBill(registerBill, fieldConfigDetailRetDtoMap, operatorUser);
+            Long billId = this.createRegisterBill(registerBill, fieldConfigDetailRetDtoMap, processConfig, operatorUser);
 
             // 寿光管理端，新增完报备单的同时新增检测请求
 //            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
@@ -225,13 +229,33 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     }
 
     /**
+     * 为进门称重创建报备单
+     *
+     * @param registerBill
+     * @param operatorUser
+     * @return
+     */
+    public Long createWeightingRegisterBill(RegisterBill registerBill,
+                                            Optional<OperatorUser> operatorUser) {
+        Long marketId = registerBill.getMarketId();
+        List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, FieldConfigModuleTypeEnum.REGISTER);
+        Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap = StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+
+        ProcessConfig processConfig = this.processConfigService.findByMarketId(marketId);
+        processConfig.setIsAutoVerifyPassed(YesOrNoEnum.YES.getCode());
+        Long billId = this.createRegisterBill(registerBill, fieldConfigDetailRetDtoMap, processConfig, operatorUser);
+
+        return billId;
+    }
+
+    /**
      * 创建单个报备单
      *
      * @param registerBill
      * @return
      */
     private Long createRegisterBill(RegisterBill registerBill
-            , Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap,
+            , Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap, ProcessConfig processConfig,
                                     Optional<OperatorUser> operatorUser) {
 
         Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL);
@@ -327,7 +351,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             this.billService.updateHasImage(registerBill.getBillId(), imageCertList);
         }
 
-        this.processService.afterCreateBill(registerBill.getId(),registerBill.getMarketId(),operatorUser);
+        this.processService.afterCreateBill(registerBill.getId(), registerBill.getMarketId(), processConfig, operatorUser);
 
         // 创建审核历史数据
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
