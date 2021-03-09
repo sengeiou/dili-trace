@@ -57,7 +57,7 @@ ALTER TABLE dili_trace.`user_history` DROP COLUMN `business_license_url`;
 
 ALTER TABLE dili_trace.`register_bill` ADD arrival_datetime datetime NULL COMMENT '到场时间';
 
-/*====================*/
+ALTER TABLE dili_trace.`register_bill` ADD weighting_bill_id bigint NULL COMMENT '称重单ID';
 
 CREATE TABLE `default_field_detail` (
     `id` bigint NOT NULL AUTO_INCREMENT,

@@ -723,6 +723,12 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`detect_request_id`")
     private Long detectRequestId;
 
+    /**
+     * 称重单ID
+     */
+    @Column(name = "`weighting_bill_id`")
+    private Long weightingBillId;
+
     @Transient
     private DetectRequest detectRequest;
 
@@ -1565,5 +1571,13 @@ public class RegisterBill extends BaseDomain {
 
     public void setArrivalTallynos(List<String> arrivalTallynos) {
         this.arrivalTallynos = arrivalTallynos;
+    }
+
+    public Long getWeightingBillId() {
+        return weightingBillId;
+    }
+
+    public void setWeightingBillId(Long weightingBillId) {
+        this.weightingBillId = weightingBillId;
     }
 }

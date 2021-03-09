@@ -103,13 +103,11 @@ public class ProcessService {
             return this.billService.get(billId);
         }).nonNull().map(bill -> {
             ProcessConfig processConfig = this.processConfigService.findByMarketId(bill.getMarketId());
-            if (YesOrNoEnum.YES.getCode().equals(processConfig.getCanDoCheckInWithoutWeight())) {
+            Long weightingBillId = bill.getWeightingBillId();
+            if (YesOrNoEnum.YES.getCode().equals(processConfig.getCanDoCheckInWithoutWeight()) || weightingBillId != null) {
                 return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operatorUser).orElse(null);
             } else {
-//                bill.getBillId()
-                //TODO check is weight
-                return this.updateCheckinstatus(bill.getId(), checkinStatusEnum, operatorUser).orElse(null);
-
+                throw new TraceBizException("未称重的登记单,不能进门");
             }
 
         }).nonNull().toList();
