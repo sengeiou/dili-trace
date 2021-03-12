@@ -42,12 +42,6 @@ public class DefaultFieldDetail extends BaseDomain {
     private String defaultValue;
 
     /**
-     * 显示field条件值
-     */
-    @Column(name = "available_value_list")
-    private String availableValueList;
-
-    /**
      * jsonpath
      */
     @Column(name = "json_path")
@@ -150,11 +144,5 @@ public class DefaultFieldDetail extends BaseDomain {
         this.jsonPathType = jsonPathType;
     }
 
-    public String getAvailableValueList() {
-        return availableValueList;
-    }
 
-    public void setAvailableValueList(String availableValueList) {
-        this.availableValueList = availableValueList;
-    }
 }

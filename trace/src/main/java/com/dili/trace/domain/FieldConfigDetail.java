@@ -1,6 +1,8 @@
 package com.dili.trace.domain;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseDomain;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -61,15 +63,23 @@ public class FieldConfigDetail extends BaseDomain {
     @Column(name = "modified")
     private LocalDateTime modified;
 
-    @Transient
-    private List<String> availableValueList;
+    /**
+     * 显示field条件值
+     */
+    @Column(name = "available_values")
+    private String availableValues;
 
-    public List<String> getAvailableValueList() {
-        return availableValueList;
+
+    public String getAvailableValues() {
+        return availableValues;
     }
 
-    public void setAvailableValueList(List<String> availableValueList) {
-        this.availableValueList = availableValueList;
+    public void setAvailableValues(String availableValues) {
+        this.availableValues = availableValues;
+    }
+    @Transient
+    public List<Object> getAvailableValueList() {
+        return JSON.parseArray(StringUtils.trimToNull(this.availableValues));
     }
 
     @Override
