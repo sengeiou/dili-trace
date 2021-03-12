@@ -4,6 +4,7 @@ import com.dili.ss.domain.BaseDomain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "field_config_detail")
 public class FieldConfigDetail extends BaseDomain {
@@ -60,6 +61,16 @@ public class FieldConfigDetail extends BaseDomain {
     @Column(name = "modified")
     private LocalDateTime modified;
 
+    @Transient
+    private List<String> availableValueList;
+
+    public List<String> getAvailableValueList() {
+        return availableValueList;
+    }
+
+    public void setAvailableValueList(List<String> availableValueList) {
+        this.availableValueList = availableValueList;
+    }
 
     @Override
     public Long getId() {

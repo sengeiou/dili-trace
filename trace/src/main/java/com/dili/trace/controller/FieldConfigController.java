@@ -83,6 +83,8 @@ public class FieldConfigController {
         Map<String,FieldConfigDetailRetDto>filedNameRetMap=   StreamEx.of(  this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(),moduleType))
                 .toMap(item->item.getDefaultFieldDetail().getFieldName(),Function.identity());
         modelMap.put("filedNameRetMap", filedNameRetMap);
+        modelMap.put("imageCertTypeList", ImageCertTypeEnum.values());
+
 
         return "fieldConfig/bill";
     }

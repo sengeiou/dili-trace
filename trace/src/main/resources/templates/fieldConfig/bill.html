@@ -161,6 +161,9 @@
                 <div class="form-group col">
                     <label for="">可用值</label>
                     <select  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValueList]">
+                        <%for(certType in imageCertTypeList){%>
+                        <option value="${certType.code}">${certType.name}</option>
+                        <%}%>
                     </select>
                 </div>
             </div>
