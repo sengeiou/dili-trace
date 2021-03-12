@@ -39,6 +39,7 @@
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][jsonPath]" value="$.truckType">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][defaultId]" value="${defaultFieldNameIdMap['truckType']}">
                     <div class="form-group col">
+                        <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][displayed]" value="0">
                         <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][displayed]" value="1" <%if(filedNameRetMap['truckType'].displayed!1==1){%>checked<%}%> >
                         <label for="">是否拼车</label>
                     </div>
@@ -64,7 +65,7 @@
                         <label for="">车牌号</label>
                     </div>
                     <div class="form-group col">
-                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][required]" value="1" checked>
+                        <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][required]" value="1"  checked>
                         <label for="">必填</label>
                     </div>
                     <div class="form-group col">
@@ -139,6 +140,33 @@
             <%}%>
 
 
+            <%if (@defaultFieldNameIdMap.containsKey('imageCertList')){%>
+            <div class="row row-cols-3">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][fieldName]" value="imageCertList">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][jsonPath]" value="$.imageCertList.certType">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][defaultId]" value="${defaultFieldNameIdMap['imageCertList']}">
+                <div class="form-group col">
+                    <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][displayed]" value="1" <%if(filedNameRetMap['imageCertList'].displayed!1==1){%>checked<%}%> >
+                    <label for="">产地证明</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][required]" value="1" checked>
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][required]" value="0">
+                    <label for="">非必填</label>
+                </div>
+
+                <div class="form-group col">
+                    <label for="">可用值</label>
+                    <select multiple="multiple" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValueList]" multiple>
+                    </select>
+                </div>
+            </div>
+            <%}%>
+
+
 
         </div>
     </form>
@@ -148,6 +176,7 @@
 </div>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/assets/dep/readonly/readonly.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script>
     async function save(){
@@ -157,6 +186,31 @@
         let resp=await jq.postJsonWithProcessing(url,data);
         console.info(resp);
     }
+
+    $(function () {
+
+        $('input[name*="fieldName"][value*="imageCertList"]').siblings()
+            .children('select[name*="availableValueList"]');
+
+        $('input[name*="fieldName"][value*="plate"]')
+            .siblings().children('input[name*="displayed"],input[name*="required"]')
+            .readonly(true);
+        $('input[name*="fieldName"][value*="truckType"]').siblings().children('input[name*="displayed"]').on('click',function(){
+            var isDisplayed=$(this).is(":checked");
+            var plate=$('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"]');
+            if(isDisplayed==true){
+                plate.attr('checked','checked')
+            }else{
+                plate.removeAttr('checked');
+            }
+        });
+
+        $('input[name*="fieldName"][value*="truckType"]').siblings().children('input[name*="required"]').on('click',function(){
+            var isRequired=$(this).val();
+            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"]').prop("checked", false);
+            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"][value='+isRequired+']').prop("checked", true);
+        });
+    });
 
 
 

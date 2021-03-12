@@ -44,8 +44,8 @@ public class DefaultFieldDetail extends BaseDomain {
     /**
      * 显示field条件值
      */
-    @Column(name = "displayed_condition_values")
-    private String displayedConditionValues;
+    @Column(name = "available_value_list")
+    private String availableValueList;
 
     /**
      * jsonpath
@@ -150,11 +150,11 @@ public class DefaultFieldDetail extends BaseDomain {
         this.jsonPathType = jsonPathType;
     }
 
-    public String getDisplayedConditionValues() {
-        return displayedConditionValues;
+    public String getAvailableValueList() {
+        return availableValueList;
     }
 
-    public void setDisplayedConditionValues(String displayedConditionValues) {
-        this.displayedConditionValues = displayedConditionValues;
+    public void setAvailableValueList(String availableValueList) {
+        this.availableValueList = availableValueList;
     }
 }

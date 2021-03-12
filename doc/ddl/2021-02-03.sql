@@ -66,7 +66,7 @@ CREATE TABLE `default_field_detail` (
     `field_label` varchar(50) NOT  NULL COMMENT '字段Label',
     `field_name` varchar(50) NOT  NULL COMMENT '字段名称',
     `displayed_condition_values`  varchar(50) NULL DEFAULT '' COMMENT '显示field条件值',
-    `default_value` varchar(50)  NULL  COMMENT '默认值',
+    `available_value_list` json  NULL  COMMENT '可用值',
     `json_path` varchar(50) NOT NULL  COMMENT 'jsonpath',
     `json_path_type` int NOT NULL  COMMENT 'jsonpath类型',
     `created` datetime NOT NULL DEFAULT now(),
