@@ -181,11 +181,9 @@
 <script>
     async function save(){
         let data=$('#saveForm').serializeJSON({useIntKeysAsArrayIndex:true});
-        console.info(data);
         let url="${contextPath!}/fieldConfig/doUpdate.action";
         try{
             let resp=await jq.postJsonWithProcessing(url,data);
-            console.info(resp);
             if(!resp.success){
                 //@ts-ignore
                 bs4pop.alert(resp.message, {type: 'error'});
