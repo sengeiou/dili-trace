@@ -61,7 +61,7 @@
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][jsonPath]" value="$.plate">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][defaultId]" value="${defaultFieldNameIdMap['plate']}">
                     <div class="form-group col">
-                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][displayed]" value="1" <%if(filedNameRetMap['plate'].displayed!1==1){%>checked<%}%> >
+                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][displayed]" disabled value="1" <%if(filedNameRetMap['plate'].displayed!1==1){%>checked<%}%> >
                         <label for="">车牌号</label>
                     </div>
                     <div class="form-group col">
@@ -160,7 +160,7 @@
 
                 <div class="form-group col">
                     <label for="">可用值</label>
-                    <select multiple="multiple" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValueList]" multiple>
+                    <select  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValueList]">
                     </select>
                 </div>
             </div>
@@ -180,11 +180,24 @@
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script>
     async function save(){
-        var data=$('#saveForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        let data=$('#saveForm').serializeJSON({useIntKeysAsArrayIndex:true});
         console.info(data);
-        var url="${contextPath!}/fieldConfig/doUpdate.action";
-        let resp=await jq.postJsonWithProcessing(url,data);
-        console.info(resp);
+        let url="${contextPath!}/fieldConfig/doUpdate.action";
+        try{
+            let resp=await jq.postJsonWithProcessing(url,data);
+            console.info(resp);
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            debugger
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+
     }
 
     $(function () {
@@ -197,11 +210,13 @@
             .readonly(true);
         $('input[name*="fieldName"][value*="truckType"]').siblings().children('input[name*="displayed"]').on('click',function(){
             var isDisplayed=$(this).is(":checked");
-            var plate=$('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"]');
+            var plate=$('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="checkbox"]');
             if(isDisplayed==true){
-                plate.attr('checked','checked')
+                plate.attr('checked','checked');
+                $('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="hidden"]').removeAttr('disabled');
             }else{
                 plate.removeAttr('checked');
+                $('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="hidden"]').attr('disabled','disabled');
             }
         });
 

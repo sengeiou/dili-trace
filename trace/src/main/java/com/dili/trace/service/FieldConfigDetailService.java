@@ -47,7 +47,7 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
         }
         FieldConfig fc = this.fieldConfigService.saveOrFind(input.getMarketId(), input.getModuleType());
         FieldConfigDetail fcd = new FieldConfigDetail();
-        fcd.setDefaultId(fc.getId());
+        fcd.setFieldConfigId(fc.getId());
         this.deleteByExample(fcd);
 
 
@@ -56,6 +56,9 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             fcdInput.setFieldConfigId(fc.getId());
             fcdInput.setIsValid(YesOrNoEnum.YES.getCode());
             fcdInput.setCreated(LocalDateTime.now());
+            if(fcdInput.getDisplayed()==null){
+                fcdInput.setDisplayed(YesOrNoEnum.NO.getCode());
+            }
             this.insertSelective(fcdInput);
             return fcdInput;
         }).toList();
