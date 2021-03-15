@@ -51,6 +51,13 @@
                         <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][required]" value="0">
                         <label for="">非必填</label>
                     </div>
+                    <div class="form-group col-6">
+                        <select class="form-control" <%if(filedNameRetMap['truckType'].displayed!1==1){%>required<%}%> multiple="multiple"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][availableValues][]">
+                        <%for(truckType in truckTypeEnumList){%>
+                        <option value="${truckType.code}" <%if(@filedNameRetMap.get('truckType').getAvailableValueList().contains(truckType.code+'')){%>selected<%}%>>${truckType.name}</option>
+                        <%}%>
+                        </select>
+                    </div>
                 </div>
             <%}%>
 
@@ -163,7 +170,6 @@
                         <%for(certType in imageCertTypeList){%>
                             <option value="${certType.code}" <%if(@filedNameRetMap.get('imageCertList').getAvailableValueList().contains(certType.code+'')){%>selected<%}%>>${certType.name}</option>
                         <%}%>
-                        <option value="100">-100-</option>
                     </select>
                 </div>
             </div>
@@ -233,16 +239,37 @@
             }
         });
 
-          /*  .on("change",function(e){
-            var selectObj=$('[name="'+$(this).attr('name')+'"]');
-            selectObj.find('option').removeAttr("selected");
-            selectObj.val($(this).val())
 
-            $.each($(this).val(),function(i,v){
-                selectObj.find('option[value="'+v+'"]').attr("selected", true);
-            })
-           // $('#my_select2').select2('val', ["value1", "value2", "value3"]);
-        });*/
+        var truckTypeDisplayed= $('input[name*="fieldName"][value*="truckType"]').siblings()
+            .children('[name*="displayed"]')
+        var truckTypeAvailableValues= $('input[name*="fieldName"][value*="truckType"]').siblings()
+            .children('select[name*="availableValues"]');
+
+        truckTypeAvailableValues.select2({
+            placeholder: '-- 可用值 --'
+        });
+
+        truckTypeDisplayed.on('click',function(){
+            var isDisplayed=$(this).is(":checked");
+            if(isDisplayed==true){
+                truckTypeAvailableValues.attr('required','required')
+            }else{
+                truckTypeAvailableValues.removeAttr('required')
+                truckTypeAvailableValues.valid();
+            }
+
+        });
+
+        /*  .on("change",function(e){
+          var selectObj=$('[name="'+$(this).attr('name')+'"]');
+          selectObj.find('option').removeAttr("selected");
+          selectObj.val($(this).val())
+
+          $.each($(this).val(),function(i,v){
+              selectObj.find('option[value="'+v+'"]').attr("selected", true);
+          })
+         // $('#my_select2').select2('val', ["value1", "value2", "value3"]);
+      });*/
 
         $('input[name*="fieldName"][value*="plate"]')
             .siblings().children('input[name*="displayed"],input[name*="required"]')

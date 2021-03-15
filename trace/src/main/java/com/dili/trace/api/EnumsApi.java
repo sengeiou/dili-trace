@@ -2,15 +2,24 @@ package com.dili.trace.api;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.KeyTextPair;
 import com.dili.trace.enums.*;
 
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.service.FieldConfigDetailService;
+import de.cronn.reflection.util.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +33,10 @@ import one.util.streamex.StreamEx;
 @RequestMapping(value = "/api/enums")
 @AppAccess(role = Role.ANY)
 public class EnumsApi {
+    @Autowired
+    FieldConfigDetailService fieldConfigDetailService;
+    @Autowired
+    LoginSessionContext loginSessionContext;
 
     /**
      * 上游类型枚举查询
@@ -195,18 +208,33 @@ public class EnumsApi {
     @RequestMapping(value = "/listTruckType.api", method = RequestMethod.POST)
     public BaseOutput<List<KeyTextPair>> listTruckType() {
         try {
+            SessionData sessionData = loginSessionContext.getSessionData();
+            Set<String> valueSet = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(sessionData.getMarketId(), FieldConfigModuleTypeEnum.REGISTER))
+                    .filter(dto -> {
+                        return YesOrNoEnum.YES.equals(dto.getDisplayed());
+                    }).filter(dto -> {
+                        String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getTruckType).getName();
+                        return dto.getDefaultFieldDetail().getFieldName().equalsIgnoreCase(propName);
+                    }).flatCollection(dto -> {
+                        return dto.getAvailableValueList();
+                    }).nonNull().map(String::valueOf).map(StringUtils::trimToNull).nonNull().toSet();
+
             List<KeyTextPair> list = StreamEx.of(TruckTypeEnum.values()).map(e -> {
+                if (!valueSet.contains(String.valueOf(e.getCode()))) {
+                    return null;
+                }
                 KeyTextPair p = new KeyTextPair();
                 p.setKey(e.getCode());
                 p.setText(e.getName());
                 return p;
-            }).toList();
+            }).nonNull().toList();
 
             return BaseOutput.success().setData(list);
         } catch (Exception e) {
             return BaseOutput.failure(e.getMessage());
         }
     }
+
     /**
      * 重量单位型枚举查询
      */

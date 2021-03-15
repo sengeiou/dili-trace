@@ -85,6 +85,8 @@ public class FieldConfigController {
         modelMap.put("filedNameRetMap", filedNameRetMap);
         modelMap.put("imageCertTypeList", ImageCertTypeEnum.values());
 
+        modelMap.put("truckTypeEnumList", TruckTypeEnum.values());
+
 
         return "fieldConfig/bill";
     }

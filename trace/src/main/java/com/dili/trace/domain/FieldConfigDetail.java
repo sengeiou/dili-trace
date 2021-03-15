@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "field_config_detail")
@@ -79,7 +80,11 @@ public class FieldConfigDetail extends BaseDomain {
     }
     @Transient
     public List<Object> getAvailableValueList() {
-        return JSON.parseArray(StringUtils.trimToNull(this.availableValues));
+        List<Object>list=JSON.parseArray(StringUtils.trimToNull(this.availableValues));
+        if(list==null){
+            return new ArrayList<>();
+        }
+        return list;
     }
 
     @Override
