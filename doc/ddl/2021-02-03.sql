@@ -59,9 +59,8 @@ ALTER TABLE dili_trace.`register_bill` ADD arrival_datetime datetime NULL COMMEN
 ALTER TABLE dili_trace.`register_bill` ADD weighting_bill_id bigint NULL COMMENT '称重单ID';
 
 ALTER TABLE dili_trace.`register_head` ADD arrival_datetime datetime NULL COMMENT '到场时间';
-
 ALTER TABLE dili_trace.`register_head` ADD truck_tare_weight decimal(11, 3) NULL COMMENT '车辆皮重';
-
+ALTER TABLE dili_trace.register_head DROP COLUMN plate;
 
 
 

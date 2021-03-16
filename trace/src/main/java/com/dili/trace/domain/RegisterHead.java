@@ -92,9 +92,9 @@ public class RegisterHead extends BaseDomain {
     /**
      * 车牌号
      */
-    @ApiModelProperty(value = "车牌号")
-    @Column(name = "`plate`")
-    private String plate;
+//    @ApiModelProperty(value = "车牌号")
+//    @Column(name = "`plate`")
+//    private String plate;
 
     /**
      * 商品ID
@@ -443,13 +443,13 @@ public class RegisterHead extends BaseDomain {
         this.phone = phone;
     }
 
-    public String getPlate() {
-        return plate;
-    }
-
-    public void setPlate(String plate) {
-        this.plate = plate;
-    }
+//    public String getPlate() {
+//        return plate;
+//    }
+//
+//    public void setPlate(String plate) {
+//        this.plate = plate;
+//    }
 
     public Long getProductId() {
         return productId;
