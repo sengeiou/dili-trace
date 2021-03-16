@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -155,6 +156,11 @@ public class CreateRegisterHeadInputDto {
 	 * 图片证明列表
 	 */
 	private List<ImageCert> imageCertList;
+	/**
+	 * 到场时间
+	 */
+
+	private LocalDateTime arrivalDatetime;
 
 
 	/**
@@ -190,6 +196,7 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setActive(this.getActive());
 		registerHead.setUnitPrice(this.getUnitPrice());
 		registerHead.setTruckType(this.getTruckType());
+		registerHead.setArrivalDatetime(this.getArrivalDatetime());
 		registerHead.setArrivalTallynos(this.getArrivalTallynos());
 		return registerHead;
 	}
@@ -384,5 +391,13 @@ public class CreateRegisterHeadInputDto {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public LocalDateTime getArrivalDatetime() {
+		return arrivalDatetime;
+	}
+
+	public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+		this.arrivalDatetime = arrivalDatetime;
 	}
 }

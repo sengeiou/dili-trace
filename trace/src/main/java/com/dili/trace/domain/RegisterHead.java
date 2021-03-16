@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -321,6 +322,12 @@ public class RegisterHead extends BaseDomain {
     private String billTypeName;
 
     /**
+     * 到场时间
+     */
+    @Column(name = "`arrival_datetime`")
+    private LocalDateTime arrivalDatetime;
+
+    /**
      * 到货摊位
      */
     @Transient
@@ -332,6 +339,14 @@ public class RegisterHead extends BaseDomain {
 
     public void setArrivalTallynos(List<String> arrivalTallynos) {
         this.arrivalTallynos = arrivalTallynos;
+    }
+
+    public LocalDateTime getArrivalDatetime() {
+        return arrivalDatetime;
+    }
+
+    public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+        this.arrivalDatetime = arrivalDatetime;
     }
 
     @Override
