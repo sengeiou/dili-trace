@@ -149,9 +149,9 @@ public class CreateRegisterHeadInputDto {
      */
     private Integer truckType;
     /**
-     * 备注
+     * 皮重
      */
-
+    private BigDecimal truckTareWeight;
 
     /**
      * 图片证明列表
@@ -206,6 +206,7 @@ public class CreateRegisterHeadInputDto {
         registerHead.setArrivalDatetime(this.getArrivalDatetime());
         registerHead.setArrivalTallynos(this.getArrivalTallynos());
         registerHead.setPlateList(this.getPlateList());
+        registerHead.setTruckTareWeight(this.getTruckTareWeight());
         return registerHead;
     }
 
@@ -415,5 +416,13 @@ public class CreateRegisterHeadInputDto {
 
     public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
         this.arrivalDatetime = arrivalDatetime;
+    }
+
+    public BigDecimal getTruckTareWeight() {
+        return truckTareWeight;
+    }
+
+    public void setTruckTareWeight(BigDecimal truckTareWeight) {
+        this.truckTareWeight = truckTareWeight;
     }
 }

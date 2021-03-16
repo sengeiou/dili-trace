@@ -60,6 +60,10 @@ ALTER TABLE dili_trace.`register_bill` ADD weighting_bill_id bigint NULL COMMENT
 
 ALTER TABLE dili_trace.`register_head` ADD arrival_datetime datetime NULL COMMENT '到场时间';
 
+ALTER TABLE dili_trace.`register_head` ADD truck_tare_weight decimal(11, 3) NULL COMMENT '车辆皮重';
+
+
+
 
 CREATE TABLE `register_head_plate` (
             `id` bigint NOT NULL AUTO_INCREMENT,

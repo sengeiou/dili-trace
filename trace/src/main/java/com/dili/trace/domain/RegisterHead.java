@@ -328,6 +328,12 @@ public class RegisterHead extends BaseDomain {
     private LocalDateTime arrivalDatetime;
 
     /**
+     * 车辆皮重
+     */
+    @Column(name = "`truck_tare_weight`")
+    private BigDecimal truckTareWeight;
+
+    /**
      * 到货摊位
      */
     @Transient
@@ -720,5 +726,13 @@ public class RegisterHead extends BaseDomain {
     @Transient
     public String getTradePrintingCard() {
         return this.thirdPartyCode;
+    }
+
+    public BigDecimal getTruckTareWeight() {
+        return truckTareWeight;
+    }
+
+    public void setTruckTareWeight(BigDecimal truckTareWeight) {
+        this.truckTareWeight = truckTareWeight;
     }
 }

@@ -67,6 +67,8 @@ public class ManagerRegisterHeadApi {
     UpStreamService upStreamService;
     @Autowired
     RegisterHeadPlateService registerHeadPlateService;
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
 
     /**
      * 获取进门主台账单列表
@@ -362,6 +364,10 @@ public class ManagerRegisterHeadApi {
             registerHead.setRegisterBills(registerBills);
             List<String>plateList=StreamEx.of(this.registerHeadPlateService.findHeadPlateByHeadId(registerHead.getId())).map(RegisterHeadPlate::getPlate).toList();
             registerHead.setPlateList(plateList);
+
+            List<RegisterTallyAreaNo>registerTallyAreaNoList=this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerHead.getId(),BillTypeEnum.MASTER_BILL);
+            registerHead.setArrivalTallynos(StreamEx.of(registerTallyAreaNoList).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
