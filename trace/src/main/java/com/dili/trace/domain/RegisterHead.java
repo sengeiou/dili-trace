@@ -333,6 +333,20 @@ public class RegisterHead extends BaseDomain {
     @Transient
     private List<String> arrivalTallynos;
 
+    /**
+     * 车牌号
+     */
+    @Transient
+    private List<String> plateList;
+
+    public List<String> getPlateList() {
+        return plateList;
+    }
+
+    public void setPlateList(List<String> plateList) {
+        this.plateList = plateList;
+    }
+
     public List<String> getArrivalTallynos() {
         return arrivalTallynos;
     }
