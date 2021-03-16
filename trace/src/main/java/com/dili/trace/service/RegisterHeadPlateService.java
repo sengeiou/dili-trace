@@ -7,6 +7,7 @@ import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class RegisterHeadPlateService extends BaseServiceImpl<RegisterHeadPlate,
             RegisterHeadPlate headPlate = new RegisterHeadPlate();
             headPlate.setPlate(plate);
             headPlate.setRegisterHeadId(registerHeadId);
+            headPlate.setCreated(LocalDateTime.now());
+            headPlate.setModified(LocalDateTime.now());
             return headPlate;
         }).toList();
         if (headPlateList.isEmpty()) {
