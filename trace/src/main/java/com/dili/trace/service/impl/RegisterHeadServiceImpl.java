@@ -373,6 +373,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId(), input.getMarketId());
+        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(),input.getId(), BillTypeEnum.MASTER_BILL);
+        this.registerHeadPlateService.deleteAndInsertPlateList(input.getId(), plateList);
         return input.getId();
     }
 

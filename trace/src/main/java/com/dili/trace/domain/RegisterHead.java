@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -325,6 +326,7 @@ public class RegisterHead extends BaseDomain {
      * 到场时间
      */
     @Column(name = "`arrival_datetime`")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivalDatetime;
 
     /**
