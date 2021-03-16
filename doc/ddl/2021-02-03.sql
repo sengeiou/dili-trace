@@ -60,6 +60,17 @@ ALTER TABLE dili_trace.`register_bill` ADD weighting_bill_id bigint NULL COMMENT
 
 ALTER TABLE dili_trace.`register_head` ADD arrival_datetime datetime NULL COMMENT '到场时间';
 
+
+CREATE TABLE `register_head_plate` (
+            `id` bigint NOT NULL AUTO_INCREMENT,
+            `register_head_id` bigint NOT NULL COMMENT '台账ID',
+            `plate` varchar(50)  NULL COMMENT '车牌',
+            `created` datetime NOT NULL DEFAULT now(),
+            `modified` datetime NOT NULL DEFAULT now(),
+            PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+
 CREATE TABLE `default_field_detail` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `module_type` int NOT NULL COMMENT '模块',

@@ -13,20 +13,14 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.CreateListRegisterHeadParam;
 import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.ImageCertService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.RegisterHeadService;
-import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -71,6 +65,8 @@ public class ManagerRegisterHeadApi {
 
     @Autowired
     UpStreamService upStreamService;
+    @Autowired
+    RegisterHeadPlateService registerHeadPlateService;
 
     /**
      * 获取进门主台账单列表
@@ -364,6 +360,8 @@ public class ManagerRegisterHeadApi {
                 });
             }
             registerHead.setRegisterBills(registerBills);
+            List<String>plateList=StreamEx.of(this.registerHeadPlateService.findHeadPlateByHeadId(registerHead.getId())).map(RegisterHeadPlate::getPlate).toList();
+            registerHead.setPlateList(plateList);
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

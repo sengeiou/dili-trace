@@ -70,6 +70,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     SyncCategoryService syncCategoryService;
     @Autowired
     RegisterTallyAreaNoService registerTallyAreaNoService;
+    @Autowired
+    RegisterHeadPlateService registerHeadPlateService;
 
 
     public RegisterHeadMapper getActualDao() {
@@ -160,7 +162,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         //同步uap商品、经营户
         this.syncCategoryService.saveAndSyncGoodInfo(registerHead.getProductId(), registerHead.getMarketId());
         this.syncUserInfoService.saveAndSyncUserInfo(registerHead.getUserId(), registerHead.getMarketId());
-        this.registerTallyAreaNoService.insertTallyAreaNoList(registerHead.getArrivalTallynos(),registerHead.getId(),BillTypeEnum.MASTER_BILL);
+        this.registerTallyAreaNoService.insertTallyAreaNoList(registerHead.getArrivalTallynos(), registerHead.getId(), BillTypeEnum.MASTER_BILL);
+        this.registerHeadPlateService.deleteAndInsertPlateList(registerHead.getId(), registerHead.getPlateList());
         return registerHead.getId();
     }
 
@@ -283,18 +286,18 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("重量单位错误");
             return new TraceBizException("重量单位错误");
         });
-        if(StringUtils.isNotBlank(registerHead.getPlate())){
-            if(!RegUtils.isPlate(registerHead.getPlate().trim())){
+        if (StringUtils.isNotBlank(registerHead.getPlate())) {
+            if (!RegUtils.isPlate(registerHead.getPlate().trim())) {
                 throw new TraceBizException("车牌格式错误");
             }
         }
 
-        String specName=registerHead.getSpecName();
-        if(StringUtils.isNotBlank(specName)&&!RegUtils.isValidInput(specName)) {
+        String specName = registerHead.getSpecName();
+        if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
             throw new TraceBizException("规格名称包含非法字符");
         }
-        String remark=registerHead.getRemark();
-        if(StringUtils.isNotBlank(remark)&&!RegUtils.isValidInput(remark)) {
+        String remark = registerHead.getRemark();
+        if (StringUtils.isNotBlank(remark) && !RegUtils.isValidInput(remark)) {
             throw new TraceBizException("备注包含非法字符");
         }
         return BaseOutput.success();
@@ -319,19 +322,19 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
-        RegisterBill rbq=new RegisterBill();
+        RegisterBill rbq = new RegisterBill();
         rbq.setRegisterHeadCode(headItem.getCode());
         rbq.setIsDeleted(YesOrNoEnum.NO.getCode());
-        boolean hasBill=this.billService.listByExample(rbq).size()>0;
-        if(hasBill){
+        boolean hasBill = this.billService.listByExample(rbq).size() > 0;
+        if (hasBill) {
             throw new TraceBizException("已有相关报备单，不能修改");
         }
 
         // 车牌转大写
         String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
                 .findFirst().orElse(null);
-        if(plate!=null){
-            if(!RegUtils.isPlate(plate)){
+        if (plate != null) {
+            if (!RegUtils.isPlate(plate)) {
                 throw new TraceBizException("车牌格式错误");
             }
         }
@@ -347,8 +350,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         input.setRemainWeight(input.getWeight());
 
         this.updateSelective(input);
-
-
 
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
