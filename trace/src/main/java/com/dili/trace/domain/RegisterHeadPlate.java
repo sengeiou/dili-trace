@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.util.Date;
 
-@Table(name = "`register_head`")
+@Table(name = "`register_head_plate`")
 public class RegisterHeadPlate extends BaseDomain {
     /**
      * ID
