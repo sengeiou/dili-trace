@@ -26,22 +26,14 @@ public class EnumService {
 
     /**
      * 查询图片凭证类型
+     *
      * @param marketId
      * @param moduleTypeEnum
      * @return
      */
     public List<ImageCertTypeEnum> listImageCertType(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum) {
-        Set<String> valueSet = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, moduleTypeEnum))
-                .filter(dto -> {
-                    return YesOrNoEnum.YES.equals(dto.getDisplayed());
-                }).filter(dto -> {
-                    String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getImageCertList).getName();
-                    return dto.getDefaultFieldDetail().getFieldName().equalsIgnoreCase(propName);
-                }).flatCollection(dto -> {
-                    return dto.getAvailableValueList();
-                }).nonNull().map(String::valueOf).map(StringUtils::trimToNull).nonNull().toSet();
-
-
+        String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getImageCertList).getName();
+        Set<String> valueSet = this.selectAvailableValueList(marketId, moduleTypeEnum, propName);
         return StreamEx.of(ImageCertTypeEnum.values()).filter(e -> {
             return valueSet.contains(String.valueOf(e.getCode()));
         }).nonNull().toList();
@@ -49,21 +41,14 @@ public class EnumService {
 
     /**
      * 查询接车
+     *
      * @param marketId
      * @param moduleTypeEnum
      * @return
      */
     public List<TruckTypeEnum> listTruckType(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum) {
-        Set<String> valueSet = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, moduleTypeEnum))
-                .filter(dto -> {
-                    return YesOrNoEnum.YES.equals(dto.getDisplayed());
-                }).filter(dto -> {
-                    String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getTruckType).getName();
-                    return dto.getDefaultFieldDetail().getFieldName().equalsIgnoreCase(propName);
-                }).flatCollection(dto -> {
-                    return dto.getAvailableValueList();
-                }).nonNull().map(String::valueOf).map(StringUtils::trimToNull).nonNull().toSet();
-
+        String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getTruckType).getName();
+        Set<String> valueSet = this.selectAvailableValueList(marketId, moduleTypeEnum, propName);
 
         return StreamEx.of(TruckTypeEnum.values()).filter(e -> {
             return valueSet.contains(String.valueOf(e.getCode()));
@@ -72,24 +57,36 @@ public class EnumService {
 
     /**
      * 查询计重方式
+     *
      * @param marketId
      * @param moduleTypeEnum
      * @return
      */
     public List<MeasureTypeEnum> listMeasureType(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum) {
+        String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getMeasureType).getName();
+        Set<String> valueSet = this.selectAvailableValueList(marketId, moduleTypeEnum, propName);
+        return StreamEx.of(MeasureTypeEnum.values()).filter(e -> {
+            return valueSet.contains(String.valueOf(e.getCode()));
+        }).nonNull().toList();
+    }
+
+    /**
+     * 查询 可用值
+     * @param marketId
+     * @param moduleTypeEnum
+     * @param propName
+     * @return
+     */
+    private Set<String> selectAvailableValueList(Long marketId, FieldConfigModuleTypeEnum moduleTypeEnum, String propName) {
         Set<String> valueSet = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(marketId, moduleTypeEnum))
                 .filter(dto -> {
-                    return YesOrNoEnum.YES.equals(dto.getDisplayed());
-                }).filter(dto -> {
-                    String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getMeasureType).getName();
                     return dto.getDefaultFieldDetail().getFieldName().equalsIgnoreCase(propName);
+                }).filter(dto -> {
+                    return YesOrNoEnum.YES.getCode().equals(dto.getDisplayed());
                 }).flatCollection(dto -> {
                     return dto.getAvailableValueList();
                 }).nonNull().map(String::valueOf).map(StringUtils::trimToNull).nonNull().toSet();
 
-
-        return StreamEx.of(MeasureTypeEnum.values()).filter(e -> {
-            return valueSet.contains(String.valueOf(e.getCode()));
-        }).nonNull().toList();
+        return valueSet;
     }
 }
