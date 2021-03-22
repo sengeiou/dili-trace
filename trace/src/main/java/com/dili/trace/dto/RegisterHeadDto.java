@@ -35,6 +35,10 @@ public class RegisterHeadDto extends RegisterHead {
     @Column(name = "`remain_weight`")
     @Operator(Operator.GREAT_THAN)
     private BigDecimal minRemainWeight;
+
+    @Column(name = "`id`")
+    @Operator(Operator.IN)
+    private List<Long> idList;
     /**
      * 查询关键字
      */
@@ -47,6 +51,14 @@ public class RegisterHeadDto extends RegisterHead {
      */
     @Transient
     private String marketName;
+
+    public List<Long> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<Long> idList) {
+        this.idList = idList;
+    }
 
     public String getCreatedStart() {
         return createdStart;
