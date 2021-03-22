@@ -185,10 +185,10 @@ public class NewRegisterBillController {
         }
         try {
 
-            registerBillService.createRegisterBillList(firm.getId(),input.getRegisterBills()
+            /*registerBillService.createRegisterBillList(firm.getId(),input.getRegisterBills()
                     , input.getUserId()
                     , this.uapRpcService.getCurrentOperator()
-                    , CreatorRoleEnum.MANAGER);
+                    , CreatorRoleEnum.MANAGER);*/
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){

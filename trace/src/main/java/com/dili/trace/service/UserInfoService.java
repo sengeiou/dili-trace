@@ -146,7 +146,7 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             userInfo.setLastSyncTime(new Date());
             userInfo.setCreated(Date.from(extDto.getCreateTime().atZone(ZoneId.systemDefault()).toInstant()));
             userInfo.setModified(Date.from(extDto.getModifyTime().atZone(ZoneId.systemDefault()).toInstant()));
-            userInfo.setState(extDto.getState());
+            userInfo.setState(extDto.getCustomerMarket() != null ? extDto.getCustomerMarket().getState() : null);
             this.updateSelective(userInfo);
             this.userQrHistoryService.createUserQrHistoryForUserRegist(this.get(userInfo.getId()),userInfo.getMarketId());
         } catch (Exception e) {

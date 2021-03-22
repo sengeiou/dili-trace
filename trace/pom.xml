@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>customer-sdk</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.3.5-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
