@@ -18,6 +18,31 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="originName"]').val(suggestion.value);
             $(this).valid();
         });
+        this.initRegistType();
+    }
+    initRegistType() {
+        var registerHeadCodeInput = $('input[name="registerHeadCodeInput"]');
+        let registerHeadController = new RegisterHeadController();
+        super.initTraceAutoComplete(registerHeadCodeInput, function (query, done) {
+            $.extend(query, { userId: $('input[name="userId"]').val() });
+            registerHeadController.lookupRegisterHead(query, done);
+        }, async (suggestion, a, b) => {
+            debugger;
+            $(this).val(suggestion.value);
+            let registerHeadCode = suggestion.item.code;
+            $('[name="registerHeadCode"]').val(registerHeadCode);
+            let plateList = suggestion.item.plateList;
+            let arrivalTallynos = suggestion.item.arrivalTallynos;
+            debugger;
+            $(this).valid();
+        });
+        $('#registType').on('change', async (e) => {
+            if (30 != $(e.target).val()) {
+                registerHeadCodeInput.parent('div').hide();
+                return;
+            }
+            registerHeadCodeInput.parent('div').show();
+        });
     }
     async doAdd() {
         bs4pop.removeAll();

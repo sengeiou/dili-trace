@@ -28,6 +28,43 @@ class NewRegisterBillAdd extends WebConfig {
             //@ts-ignore
             $(this).valid();
         });
+
+
+
+        this.initRegistType();
+
+
+
+    }
+    private initRegistType(){
+        var registerHeadCodeInput=$('input[name="registerHeadCodeInput"]');
+
+        let registerHeadController:RegisterHeadController=new RegisterHeadController();
+        super.initTraceAutoComplete(registerHeadCodeInput, function (query, done){
+            $.extend(query,{userId:$('input[name="userId"]').val()})
+            registerHeadController.lookupRegisterHead(query,done)},async(suggestion,a,b)=>{
+            debugger
+            $(this).val(suggestion.value);
+            let registerHeadCode=suggestion.item.code;
+
+            $('[name="registerHeadCode"]').val(registerHeadCode);
+
+            let plateList=suggestion.item.plateList;
+            let arrivalTallynos=suggestion.item.arrivalTallynos;
+
+            debugger
+
+            //@ts-ignore
+            $(this).valid();
+        });
+
+        $('#registType').on('change',async (e)=>{
+            if(RegistTypeEnum.PARTIAL!=$(e.target).val()){
+                registerHeadCodeInput.parent('div').hide();
+                return;
+            }
+            registerHeadCodeInput.parent('div').show();
+        });
     }
 
     public async doAdd() {

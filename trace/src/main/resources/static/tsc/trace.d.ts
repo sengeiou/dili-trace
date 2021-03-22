@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2021-03-22 14:30:30.
+// Generated using typescript-generator version 2.27.744 on 2021-03-22 15:11:52.
 
 interface Market {
     id: number;
@@ -48,4 +48,10 @@ declare const enum DetectTypeEnum {
     RECHECK = 30,
     SPOT_CHECK = 40,
     OTHERS = 9999,
+}
+
+declare const enum RegistTypeEnum {
+    NONE = 10,
+    SUPPLEMENT = 20,
+    PARTIAL = 30,
 }

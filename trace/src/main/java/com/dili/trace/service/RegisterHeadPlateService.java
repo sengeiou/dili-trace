@@ -2,13 +2,17 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterHeadPlate;
+import com.dili.trace.dto.query.RegisterHeadPlateQueryDto;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 台账车牌
@@ -58,5 +62,19 @@ public class RegisterHeadPlateService extends BaseServiceImpl<RegisterHeadPlate,
         RegisterHeadPlate q = new RegisterHeadPlate();
         q.setRegisterHeadId(registerHeadId);
         return this.listByExample(q);
+    }
+
+    /**
+     * 根据id查询车牌号
+     * @param registerHeadIdList
+     * @return
+     */
+    public Map<Long, List<String>> findPlateByRegisterHeadIdList(List<Long> registerHeadIdList) {
+        if (CollectionUtils.isEmpty(registerHeadIdList)) {
+            return Maps.newHashMap();
+        }
+        RegisterHeadPlateQueryDto q = new RegisterHeadPlateQueryDto();
+        q.setRegisterHeadIdList(registerHeadIdList);
+        return StreamEx.of(this.listByExample(q)).mapToEntry(RegisterHeadPlate::getRegisterHeadId,RegisterHeadPlate::getPlate).grouping();
     }
 }

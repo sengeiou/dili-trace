@@ -99,8 +99,8 @@ public class ManagerRegisterHeadApi {
             input.setMarketId(sessionData.getMarketId());
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
             List<Long> registerHeadIdList = StreamEx.of(registerHeadBasePage.getDatas()).map(RegisterHead::getId).toList();
-            Map<Long, List<String>>plateListMap=   this.findPlateByRegisterHeadIdList(registerHeadIdList);
-            Map<Long, List<String>>tallyAreaNoListMap=this. findTallyAreaNoByRegisterHeadIdList(registerHeadIdList);
+            Map<Long, List<String>>plateListMap=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(registerHeadIdList);
+            Map<Long, List<String>>tallyAreaNoListMap=this.registerTallyAreaNoService. findTallyAreaNoByRegisterHeadIdList(registerHeadIdList);
 
 
             BasePage<RegisterHeadDto> registerHeadDtoBasePage = new BasePage<>();
@@ -326,10 +326,10 @@ public class ManagerRegisterHeadApi {
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             registerHead.setRegisterBills(registerBills);
 
-            List<String>plateList=   this.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            List<String>plateList=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
             registerHead.setPlateList(plateList);
 
-            List<String> registerTallyAreaNoList = this.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            List<String> registerTallyAreaNoList = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
             registerHead.setArrivalTallynos(registerTallyAreaNoList);
 
 
@@ -386,10 +386,10 @@ public class ManagerRegisterHeadApi {
             registerHead.setRegisterBills(registerBills);
 
 
-            List<String>plateList=   this.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            List<String>plateList=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
             registerHead.setPlateList(plateList);
 
-            List<String> registerTallyAreaNoList = this.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            List<String> registerTallyAreaNoList = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
             registerHead.setArrivalTallynos(registerTallyAreaNoList);
 
             return BaseOutput.success().setData(registerHead);
@@ -415,32 +415,6 @@ public class ManagerRegisterHeadApi {
         return new BigDecimal(weightString.substring(0, weightString.indexOf(".")));
     }
 
-    /**
-     * 根据id查询摊位号
-     * @param billIdList
-     * @return
-     */
-    private Map<Long, List<String>> findTallyAreaNoByRegisterHeadIdList(List<Long> billIdList) {
-        if (CollectionUtils.isEmpty(billIdList)) {
-            return Maps.newHashMap();
-        }
-        TallyAreaNoQueryDto q=new TallyAreaNoQueryDto();
-        q.setBillIdList(billIdList);
-        q.setBillType(BillTypeEnum.MASTER_BILL.getCode());
-        return StreamEx.of(this.registerTallyAreaNoService.listByExample(q)).mapToEntry(RegisterTallyAreaNo::getBillId,RegisterTallyAreaNo::getTallyareaNo).grouping();
-    }
 
-    /**
-     * 根据id查询车牌号
-     * @param registerHeadIdList
-     * @return
-     */
-    private Map<Long, List<String>> findPlateByRegisterHeadIdList(List<Long> registerHeadIdList) {
-        if (CollectionUtils.isEmpty(registerHeadIdList)) {
-            return Maps.newHashMap();
-        }
-        RegisterHeadPlateQueryDto q = new RegisterHeadPlateQueryDto();
-        q.setRegisterHeadIdList(registerHeadIdList);
-        return StreamEx.of(this.registerHeadPlateService.listByExample(q)).mapToEntry(RegisterHeadPlate::getRegisterHeadId,RegisterHeadPlate::getPlate).grouping();
-    }
+
 }

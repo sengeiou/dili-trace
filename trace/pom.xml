@@ -487,6 +487,7 @@
 						<class>com.dili.trace.enums.DetectStatusEnum</class>
 						<class>com.dili.trace.enums.DetectResultEnum</class>
 						<class>com.dili.trace.enums.DetectTypeEnum</class>
+						<class>com.dili.trace.enums.RegistTypeEnum</class>
 					</classes>
 					<outputKind>global</outputKind>
 					<outputFile>src/main/resources/static/tsc/trace.d.ts</outputFile>
