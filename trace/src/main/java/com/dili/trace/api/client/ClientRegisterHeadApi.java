@@ -23,6 +23,7 @@ import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -34,9 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 进门主台账单相关接口
@@ -67,6 +66,9 @@ public class ClientRegisterHeadApi {
 
     @Autowired
     UpStreamService upStreamService;
+
+    @Autowired
+    RegisterHeadPlateService registerHeadPlateService;
     @Autowired
     RegisterTallyAreaNoService registerTallyAreaNoService;
 
@@ -90,6 +92,10 @@ public class ClientRegisterHeadApi {
 //            input.setMinRemainWeight(BigDecimal.ZERO);
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
 
+            List<Long> registerHeadIdList = StreamEx.of(registerHeadBasePage.getDatas()).map(RegisterHead::getId).toList();
+            Map<Long, List<String>> plateListMap=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(registerHeadIdList);
+            Map<Long, List<String>>tallyAreaNoListMap=this.registerTallyAreaNoService. findTallyAreaNoByRegisterHeadIdList(registerHeadIdList);
+
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
                 registerHeadBasePage.getDatas().forEach(e -> {
                     e.setWeightUnitName(WeightUnitEnum.toName(e.getWeightUnit()));
@@ -99,6 +105,8 @@ public class ClientRegisterHeadApi {
                         e.setUpStreamName(upStream.getName());
                     }
                     e.setImageCertList(imageCertService.findImageCertListByBillId(e.getId(), BillTypeEnum.MASTER_BILL));
+                    e.setPlateList(plateListMap.getOrDefault(e.getId(), Lists.newArrayList()));
+                    e.setArrivalTallynos( tallyAreaNoListMap.getOrDefault(e.getId(),Lists.newArrayList()));
                 });
             }
 
@@ -299,9 +307,11 @@ public class ClientRegisterHeadApi {
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             registerHead.setRegisterBills(registerBills);
 
-            List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerBill.getBillId(), BillTypeEnum.MASTER_BILL);
-            registerHead.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+            List<String>plateList=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            registerHead.setPlateList(plateList);
 
+            List<String> registerTallyAreaNoList = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            registerHead.setArrivalTallynos(registerTallyAreaNoList);
 
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
@@ -354,6 +364,12 @@ public class ClientRegisterHeadApi {
                 });
             }
             registerHead.setRegisterBills(registerBills);
+            List<String>plateList=   this.registerHeadPlateService.findPlateByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            registerHead.setPlateList(plateList);
+
+            List<String> registerTallyAreaNoList = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(Arrays.asList(registerHead.getId())).getOrDefault(registerHead.getId(), Lists.newArrayList());
+            registerHead.setArrivalTallynos(registerTallyAreaNoList);
+
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
