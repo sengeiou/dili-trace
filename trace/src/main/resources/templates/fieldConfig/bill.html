@@ -34,7 +34,7 @@
             <%}%>
 
             <%if (@defaultFieldNameIdMap.containsKey('truckType')){%>
-                <div class="row row-cols-12">
+                <div class="row row-cols-12" id="truckTypeDiv">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][fieldName]" value="truckType">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][jsonPath]" value="$.truckType">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][defaultId]" value="${defaultFieldNameIdMap['truckType']}">
@@ -63,7 +63,7 @@
 
 
             <%if (@defaultFieldNameIdMap.containsKey('plate')){%>
-                <div class="row row-cols-12">
+                <div class="row row-cols-12" id="plateDiv">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][fieldName]" value="plate">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][jsonPath]" value="$.plate">
                     <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['plate']}][defaultId]" value="${defaultFieldNameIdMap['plate']}">
@@ -148,7 +148,7 @@
 
 
             <%if (@defaultFieldNameIdMap.containsKey('imageCertList')){%>
-            <div class="row row-cols-12">
+            <div class="row row-cols-12" id="imageCertListDiv">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][fieldName]" value="imageCertList">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][jsonPath]" value="$.imageCertList.certType">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][defaultId]" value="${defaultFieldNameIdMap['imageCertList']}">
@@ -177,7 +177,7 @@
 
 
             <%if (@defaultFieldNameIdMap.containsKey('measureType')){%>
-            <div class="row row-cols-12">
+            <div class="row row-cols-12" id="measureTypeDiv">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][fieldName]" value="measureType">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][jsonPath]" value="$.measureType">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][defaultId]" value="${defaultFieldNameIdMap['measureType']}">
@@ -209,137 +209,20 @@
     </form>
 </div>
 <div class="text-center">
-    <button class="btn-main2 btn-sm" onclick="save()">保存</button>&nbsp;&nbsp;
+    <button class="btn-main2 btn-sm" id="saveBtn" onclick="save()">保存</button>&nbsp;&nbsp;
 </div>
+<#webGlobalConfig/>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/assets/dep/readonly/readonly.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/FieldConfig-Bill.js?v=${v}"></script>
 <script>
-    async function save(){
-        if($('#saveForm').validate().form() != true){
-            return;
-        }
-        let data=$('#saveForm').serializeJSON({useIntKeysAsArrayIndex:true
 
-            ,customTypes: {
-                alwaysBoo: (strVal) => {
-                    debugger
-                    return "1"; },
-
-            }
-        });
-        let url="${contextPath!}/fieldConfig/doUpdate.action";
-        try{
-            let resp=await jq.postJsonWithProcessing(url,data);
-            if(!resp.success){
-                //@ts-ignore
-                bs4pop.alert(resp.message, {type: 'error'});
-                return;
-            }
-            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
-        }catch (e){
-            debugger
-            //@ts-ignore
-            bs4pop.alert('远程访问失败', {type: 'error'});
-        }
-
-    }
 
     $(function () {
-
-        var imageCertListDisplayed= $('input[name*="fieldName"][value*="imageCertList"]').siblings()
-            .children('[name*="displayed"]')
-
-       var imageCertListAvailableValues= $('input[name*="fieldName"][value*="imageCertList"]').siblings()
-            .children('select[name*="availableValues"]');
-
-        imageCertListAvailableValues.select2({
-            placeholder: '-- 可用值 --'
-        });
-
-        imageCertListDisplayed.on('click',function(){
-            var isDisplayed=$(this).is(":checked");
-            if(isDisplayed==true){
-                imageCertListAvailableValues.attr('required','required')
-            }else{
-                imageCertListAvailableValues.removeAttr('required')
-            }
-        });
-
-
-        var truckTypeDisplayed= $('input[name*="fieldName"][value*="truckType"]').siblings()
-            .children('[name*="displayed"]')
-        var truckTypeAvailableValues= $('input[name*="fieldName"][value*="truckType"]').siblings()
-            .children('select[name*="availableValues"]');
-
-        truckTypeAvailableValues.select2({
-            placeholder: '-- 可用值 --'
-        });
-
-        truckTypeDisplayed.on('click',function(){
-            var isDisplayed=$(this).is(":checked");
-            if(isDisplayed==true){
-                truckTypeAvailableValues.attr('required','required')
-            }else{
-                truckTypeAvailableValues.removeAttr('required')
-                truckTypeAvailableValues.valid();
-            }
-
-        });
-
-
-
-        var measureTypeDisplayed= $('input[name*="fieldName"][value*="measureType"]').siblings()
-            .children('[name*="displayed"]')
-        var measureTypeAvailableValues= $('input[name*="fieldName"][value*="measureType"]').siblings()
-            .children('select[name*="availableValues"]');
-
-        measureTypeAvailableValues.select2({
-            placeholder: '-- 可用值 --'
-        });
-
-        measureTypeDisplayed.on('click',function(){
-            var isDisplayed=$(this).is(":checked");
-            if(isDisplayed==true){
-                measureTypeAvailableValues.attr('required','required')
-            }else{
-                measureTypeAvailableValues.removeAttr('required')
-                measureTypeAvailableValues.valid();
-            }
-
-        });
-        /*  .on("change",function(e){
-          var selectObj=$('[name="'+$(this).attr('name')+'"]');
-          selectObj.find('option').removeAttr("selected");
-          selectObj.val($(this).val())
-
-          $.each($(this).val(),function(i,v){
-              selectObj.find('option[value="'+v+'"]').attr("selected", true);
-          })
-         // $('#my_select2').select2('val', ["value1", "value2", "value3"]);
-      });*/
-
-        $('input[name*="fieldName"][value*="plate"]')
-            .siblings().children('input[name*="displayed"],input[name*="required"]')
-            .readonly(true);
-        $('input[name*="fieldName"][value*="truckType"]').siblings().children('input[name*="displayed"]').on('click',function(){
-            var isDisplayed=$(this).is(":checked");
-            var plate=$('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="checkbox"]');
-            if(isDisplayed==true){
-                plate.attr('checked','checked');
-                $('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="hidden"]').removeAttr('disabled');
-            }else{
-                plate.removeAttr('checked');
-                $('input[name*="fieldName"][value*="plate"]').siblings().children('input[name*="displayed"][type="hidden"]').attr('disabled','disabled');
-            }
-        });
-
-        $('input[name*="fieldName"][value*="truckType"]').siblings().children('input[name*="required"]').on('click',function(){
-            var isRequired=$(this).val();
-            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"]').prop("checked", false);
-            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"][value='+isRequired+']').prop("checked", true);
-        });
+        new FieldConfigBill($('#saveForm'),$('#saveBtn'));
     });
 
 

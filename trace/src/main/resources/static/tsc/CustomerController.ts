@@ -2,9 +2,9 @@ class CustomerController extends WebConfig {
 
     public async listSeller(query: any): Promise<any> {
 
-        var url = await super.toUrl("/api/client/clientTradeRequestApi/listSeller.api");
+        var url = await super.toUrl("/customer/listSeller.action");
         let resp = await jq.postJson(url, query);
-        if (resp.code == '200') {
+        if (resp.code === '200') {
             return resp.data;
         } else {
             throw new Error(resp.message);
@@ -16,7 +16,7 @@ class CustomerController extends WebConfig {
             let data = await this.listSeller(query);
 
             return _.chain(data).map(item => {
-                return {"id": item.id, "value": item.name, "item":item};
+                return { "id": item.id, "value": item.name + ' | ' + item.phone + ' | ' + item.tradePrintingCard + ' | ' + item.marketName, "item": item };
             }).value();
         } catch (e) {
             console.error(e);
