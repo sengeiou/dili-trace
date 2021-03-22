@@ -4,9 +4,10 @@ import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@Table(name = "`register_head`")
+@Table(name = "`register_head_plate`")
 public class RegisterHeadPlate extends BaseDomain {
     /**
      * ID
@@ -32,14 +33,14 @@ public class RegisterHeadPlate extends BaseDomain {
      */
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
-    private Date created;
+    private LocalDateTime created;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
-    private Date modified;
+    private LocalDateTime modified;
 
     @Override
     public Long getId() {
@@ -67,19 +68,19 @@ public class RegisterHeadPlate extends BaseDomain {
         this.plate = plate;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
-    public Date getModified() {
+    public LocalDateTime getModified() {
         return modified;
     }
 
-    public void setModified(Date modified) {
+    public void setModified(LocalDateTime modified) {
         this.modified = modified;
     }
 }

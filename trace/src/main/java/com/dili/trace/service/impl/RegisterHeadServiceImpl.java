@@ -126,13 +126,13 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         registerHead.setIdCardNo(StringUtils.trimToEmpty(registerHead.getIdCardNo()).toUpperCase());
         // 车牌转大写
-        String plate = StreamEx.ofNullable(registerHead.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
-                .map(String::toUpperCase).findFirst().orElse(null);
-        registerHead.setPlate(plate);
+//        String plate = StreamEx.ofNullable(registerHead.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
+//                .map(String::toUpperCase).findFirst().orElse(null);
+//        registerHead.setPlate(plate);
         registerHead.setCreated(new Date());
         registerHead.setModified(new Date());
-        // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(registerHead.getUserId(), plate);
+//        // 保存车牌
+//        this.userPlateService.checkAndInsertUserPlate(registerHead.getUserId(), plate);
 
         // 保存报备单
         int result = super.saveOrUpdate(registerHead);
@@ -243,6 +243,14 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             }
         }
 
+
+        // 车牌转大写
+        List<String> plateList = registerHead.getPlateList();
+        boolean inValidPlate = StreamEx.of(plateList).anyMatch(plate -> !RegUtils.isPlate(plate));
+        if (inValidPlate) {
+            throw new TraceBizException("车牌格式错误");
+        }
+
         // 商品重量校验
         if (registerHead.getWeight() == null) {
             logger.error("商品重量不能为空");
@@ -286,11 +294,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("重量单位错误");
             return new TraceBizException("重量单位错误");
         });
-        if (StringUtils.isNotBlank(registerHead.getPlate())) {
-            if (!RegUtils.isPlate(registerHead.getPlate().trim())) {
-                throw new TraceBizException("车牌格式错误");
-            }
-        }
+//        if (StringUtils.isNotBlank(registerHead.getPlate())) {
+//            if (!RegUtils.isPlate(registerHead.getPlate().trim())) {
+//                throw new TraceBizException("车牌格式错误");
+//            }
+//        }
 
         String specName = registerHead.getSpecName();
         if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
@@ -329,18 +337,23 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (hasBill) {
             throw new TraceBizException("已有相关报备单，不能修改");
         }
-
-        // 车牌转大写
-        String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
-                .findFirst().orElse(null);
-        if (plate != null) {
-            if (!RegUtils.isPlate(plate)) {
-                throw new TraceBizException("车牌格式错误");
-            }
+        List<String> plateList = StreamEx.ofNullable(input.getPlateList()).flatCollection(Function.identity())
+                .filter(StringUtils::isNotBlank).map(p -> p.toUpperCase()).toList();
+        boolean inValidPlate = StreamEx.of(plateList).anyMatch(plate -> !RegUtils.isPlate(plate));
+        if (inValidPlate) {
+            throw new TraceBizException("车牌格式错误");
         }
-        input.setPlate(plate);
+//        // 车牌转大写
+//        String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
+//                .findFirst().orElse(null);
+//        if (plate != null) {
+//            if (!RegUtils.isPlate(plate)) {
+//                throw new TraceBizException("车牌格式错误");
+//            }
+//        }
+//        input.setPlate(plate);
         // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
+//        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
 
         input.setReason("");
         operatorUser.ifPresent(op -> {
@@ -360,6 +373,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId(), input.getMarketId());
+        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(),input.getId(), BillTypeEnum.MASTER_BILL);
+        this.registerHeadPlateService.deleteAndInsertPlateList(input.getId(), plateList);
         return input.getId();
     }
 

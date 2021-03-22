@@ -311,6 +311,14 @@ public class ManagerRegisterHeadApi {
             registerBill.setRegisterHeadCode(registerHead.getCode());
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             registerHead.setRegisterBills(registerBills);
+
+            List<String>plateList=StreamEx.of(this.registerHeadPlateService.findHeadPlateByHeadId(registerHead.getId())).map(RegisterHeadPlate::getPlate).toList();
+            registerHead.setPlateList(plateList);
+
+            List<RegisterTallyAreaNo>registerTallyAreaNoList=this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerHead.getId(),BillTypeEnum.MASTER_BILL);
+            registerHead.setArrivalTallynos(StreamEx.of(registerTallyAreaNoList).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+
+
             return BaseOutput.success().setData(registerHead);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

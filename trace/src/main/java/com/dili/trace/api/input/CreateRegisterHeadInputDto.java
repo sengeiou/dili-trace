@@ -5,6 +5,7 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import io.swagger.annotations.ApiModelProperty;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
@@ -12,6 +13,7 @@ import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * 进门主台账单参数接收类
@@ -112,8 +114,8 @@ public class CreateRegisterHeadInputDto {
     /**
      * 车牌
      */
-    @ApiModelProperty(value = "车牌")
-    private String plate;
+//    @ApiModelProperty(value = "车牌")
+//    private String plate;
 
     /**
      * 备注
@@ -198,14 +200,18 @@ public class CreateRegisterHeadInputDto {
         registerHead.setSpecName(StringUtils.trim(this.getSpecName()));
         registerHead.setBrandId(this.getBrandId());
         registerHead.setBrandName(StringUtils.trim(this.getBrandName()));
-        registerHead.setPlate(this.getPlate());
+//        registerHead.setPlate(this.getPlate());
         registerHead.setRemark(this.getRemark());
         registerHead.setActive(this.getActive());
         registerHead.setUnitPrice(this.getUnitPrice());
         registerHead.setTruckType(this.getTruckType());
         registerHead.setArrivalDatetime(this.getArrivalDatetime());
         registerHead.setArrivalTallynos(this.getArrivalTallynos());
-        registerHead.setPlateList(this.getPlateList());
+
+        // 车牌转大写
+        List<String> plateList = StreamEx.ofNullable(this.getPlateList()).flatCollection(Function.identity())
+                .filter(StringUtils::isNotBlank).map(p -> p.toUpperCase()).toList();
+        registerHead.setPlateList(plateList);
         registerHead.setTruckTareWeight(this.getTruckTareWeight());
         return registerHead;
     }
@@ -362,13 +368,13 @@ public class CreateRegisterHeadInputDto {
         this.brandId = brandId;
     }
 
-    public String getPlate() {
-        return plate;
-    }
-
-    public void setPlate(String plate) {
-        this.plate = plate;
-    }
+//    public String getPlate() {
+//        return plate;
+//    }
+//
+//    public void setPlate(String plate) {
+//        this.plate = plate;
+//    }
 
     public String getRemark() {
         return remark;
