@@ -12,6 +12,19 @@ public class RegisterHeadPlateQueryDto extends RegisterHeadPlate {
     @Operator(Operator.IN)
     private List<Long> idList;
 
+
+    @Column(name = "`registerHeadId`")
+    @Operator(Operator.IN)
+    private List<Long> registerHeadIdList;
+
+    public List<Long> getRegisterHeadIdList() {
+        return registerHeadIdList;
+    }
+
+    public void setRegisterHeadIdList(List<Long> registerHeadIdList) {
+        this.registerHeadIdList = registerHeadIdList;
+    }
+
     public List<Long> getIdList() {
         return idList;
     }

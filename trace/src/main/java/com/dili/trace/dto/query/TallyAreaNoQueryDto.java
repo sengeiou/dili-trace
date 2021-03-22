@@ -12,6 +12,19 @@ public class TallyAreaNoQueryDto extends RegisterTallyAreaNo {
     @Operator(Operator.IN)
     private List<Long> idList;
 
+
+    @Column(name = "`bill_id`")
+    @Operator(Operator.IN)
+    private List<Long> billIdList;
+
+    public List<Long> getBillIdList() {
+        return billIdList;
+    }
+
+    public void setBillIdList(List<Long> billIdList) {
+        this.billIdList = billIdList;
+    }
+
     public List<Long> getIdList() {
         return idList;
     }

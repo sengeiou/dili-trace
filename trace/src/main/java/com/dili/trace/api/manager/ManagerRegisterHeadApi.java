@@ -417,30 +417,30 @@ public class ManagerRegisterHeadApi {
 
     /**
      * 根据id查询摊位号
-     * @param idList
+     * @param billIdList
      * @return
      */
-    private Map<Long, List<String>> findTallyAreaNoByRegisterHeadIdList(List<Long> idList) {
-        if (CollectionUtils.isEmpty(idList)) {
+    private Map<Long, List<String>> findTallyAreaNoByRegisterHeadIdList(List<Long> billIdList) {
+        if (CollectionUtils.isEmpty(billIdList)) {
             return Maps.newHashMap();
         }
         TallyAreaNoQueryDto q=new TallyAreaNoQueryDto();
-        q.setIdList(idList);
+        q.setBillIdList(billIdList);
         q.setBillType(BillTypeEnum.MASTER_BILL.getCode());
         return StreamEx.of(this.registerTallyAreaNoService.listByExample(q)).mapToEntry(RegisterTallyAreaNo::getBillId,RegisterTallyAreaNo::getTallyareaNo).grouping();
     }
 
     /**
      * 根据id查询车牌号
-     * @param idList
+     * @param registerHeadIdList
      * @return
      */
-    private Map<Long, List<String>> findPlateByRegisterHeadIdList(List<Long> idList) {
-        if (CollectionUtils.isEmpty(idList)) {
+    private Map<Long, List<String>> findPlateByRegisterHeadIdList(List<Long> registerHeadIdList) {
+        if (CollectionUtils.isEmpty(registerHeadIdList)) {
             return Maps.newHashMap();
         }
         RegisterHeadPlateQueryDto q = new RegisterHeadPlateQueryDto();
-        q.setIdList(idList);
+        q.setRegisterHeadIdList(registerHeadIdList);
         return StreamEx.of(this.registerHeadPlateService.listByExample(q)).mapToEntry(RegisterHeadPlate::getRegisterHeadId,RegisterHeadPlate::getPlate).grouping();
     }
 }
