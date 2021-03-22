@@ -149,14 +149,29 @@
                 <label for="">皮重</label>
                 <input type="text" class="form-control" name="truckTareWeight" value=""/>
             </div>
-            <div class="form-group col">
+
+            <% if (@filedNameRetMap.containsKey('arrivalDatetime') && @filedNameRetMap.get('arrivalDatetime').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+            <div class="form-group col" id="arrivalDatetimeDiv">
                 <label for="">到场时间</label>
-                <input type="text" class="form-control" name="arrivalDatetime" value=""/>
+                <% if (@filedNameRetMap.get('arrivalDatetime').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="arrivalDatetime" required/>
+                <% } else { %>
+                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="arrivalDatetime"/>
+                <% } %>
             </div>
+            <% } %>
+
+
+            <% if (@filedNameRetMap.containsKey('imageCertList') && @filedNameRetMap.get('imageCertList').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">上传证明</label>
-                <input type="text" class="form-control" id="" name="" value=""/>
+                <% if (@filedNameRetMap.get('imageCertList').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="imageCertList" required/>
+                <% } else { %>
+                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="imageCertList"/>
+                <% } %>
             </div>
+            <% } %>
         </div>
         <div class="modal-footer-wrap">
             <div class="modal-footer">

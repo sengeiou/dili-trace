@@ -205,6 +205,48 @@
             <%}%>
 
 
+
+            <%if (@defaultFieldNameIdMap.containsKey('arrivalDatetime')){%>
+            <div class="row row-cols-12">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][fieldName]" value="arrivalDatetime">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][jsonPath]" value="$.arrivalDatetime">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][defaultId]" value="${defaultFieldNameIdMap['arrivalDatetime']}">
+                <div class="form-group col-2">
+                    <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][displayed]" value="1" <%if(filedNameRetMap['arrivalDatetime'].displayed!1==1){%>checked<%}%> >
+                    <label for="">到场时间</label>
+                </div>
+                <div class="form-group col-1">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][required]" value="1" checked>
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col-1">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalDatetime']}][required]" value="0">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <%}%>
+
+
+            <%if (@defaultFieldNameIdMap.containsKey('arrivalTallynos')){%>
+            <div class="row row-cols-12">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][fieldName]" value="arrivalTallynos">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][jsonPath]" value="$.arrivalTallynos">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][defaultId]" value="${defaultFieldNameIdMap['arrivalTallynos']}">
+                <div class="form-group col-2">
+                    <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][displayed]" value="1" <%if(filedNameRetMap['arrivalTallynos'].displayed!1==1){%>checked<%}%> >
+                    <label for="">到货摊位</label>
+                </div>
+                <div class="form-group col-1">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][required]" value="1" checked>
+                    <label for="">必填</label>
+                </div>
+                <div class="form-group col-1">
+                    <input type="radio"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['arrivalTallynos']}][required]" value="0">
+                    <label for="">非必填</label>
+                </div>
+            </div>
+            <%}%>
+
         </div>
     </form>
 </div>
@@ -224,8 +266,6 @@
     $(function () {
         new FieldConfigBill($('#saveForm'),$('#saveBtn'));
     });
-
-
 
 </script>
 </#bs4Body>

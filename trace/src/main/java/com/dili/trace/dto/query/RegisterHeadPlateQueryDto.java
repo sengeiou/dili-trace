@@ -13,7 +13,7 @@ public class RegisterHeadPlateQueryDto extends RegisterHeadPlate {
     private List<Long> idList;
 
 
-    @Column(name = "`registerHeadId`")
+    @Column(name = "`register_head_id`")
     @Operator(Operator.IN)
     private List<Long> registerHeadIdList;
 

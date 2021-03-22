@@ -15,6 +15,7 @@ import com.dili.trace.dto.KeyTextPair;
 import com.dili.trace.enums.*;
 
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.service.EnumService;
 import com.dili.trace.service.FieldConfigDetailService;
 import de.cronn.reflection.util.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,8 @@ public class EnumsApi {
     FieldConfigDetailService fieldConfigDetailService;
     @Autowired
     LoginSessionContext loginSessionContext;
+    @Autowired
+    EnumService enumService;
 
     /**
      * 上游类型枚举查询
@@ -117,12 +120,16 @@ public class EnumsApi {
     @RequestMapping(value = "/listImageCertType.api", method = RequestMethod.POST)
     public BaseOutput<List<KeyTextPair>> listImageCertType() {
         try {
-            List<KeyTextPair> list = StreamEx.of(ImageCertTypeEnum.values()).map(e -> {
+            SessionData sessionData = loginSessionContext.getSessionData();
+            List<KeyTextPair> list = StreamEx.of(this.enumService.listImageCertType(sessionData.getMarketId(), FieldConfigModuleTypeEnum.REGISTER)).map(e -> {
+
                 KeyTextPair p = new KeyTextPair();
                 p.setKey(e.getCode());
                 p.setText(e.getName());
                 return p;
+
             }).toList();
+
             return BaseOutput.success().setData(list);
         } catch (Exception e) {
             return BaseOutput.failure(e.getMessage());
@@ -209,25 +216,14 @@ public class EnumsApi {
     public BaseOutput<List<KeyTextPair>> listTruckType() {
         try {
             SessionData sessionData = loginSessionContext.getSessionData();
-            Set<String> valueSet = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(sessionData.getMarketId(), FieldConfigModuleTypeEnum.REGISTER))
-                    .filter(dto -> {
-                        return YesOrNoEnum.YES.equals(dto.getDisplayed());
-                    }).filter(dto -> {
-                        String propName = PropertyUtils.getPropertyDescriptor(RegisterBill.class, RegisterBill::getTruckType).getName();
-                        return dto.getDefaultFieldDetail().getFieldName().equalsIgnoreCase(propName);
-                    }).flatCollection(dto -> {
-                        return dto.getAvailableValueList();
-                    }).nonNull().map(String::valueOf).map(StringUtils::trimToNull).nonNull().toSet();
+            List<KeyTextPair> list = StreamEx.of(this.enumService.listTruckType(sessionData.getMarketId(), FieldConfigModuleTypeEnum.REGISTER)).map(e -> {
 
-            List<KeyTextPair> list = StreamEx.of(TruckTypeEnum.values()).map(e -> {
-                if (!valueSet.contains(String.valueOf(e.getCode()))) {
-                    return null;
-                }
                 KeyTextPair p = new KeyTextPair();
                 p.setKey(e.getCode());
                 p.setText(e.getName());
                 return p;
-            }).nonNull().toList();
+
+            }).toList();
 
             return BaseOutput.success().setData(list);
         } catch (Exception e) {
@@ -252,4 +248,26 @@ public class EnumsApi {
             return BaseOutput.failure(e.getMessage());
         }
     }
+    /**
+     * 计重类型查询
+     */
+    @RequestMapping(value = "/listMeasureType.api", method = RequestMethod.POST)
+    public BaseOutput<List<KeyTextPair>> listMeasureType() {
+        try {
+            SessionData sessionData = loginSessionContext.getSessionData();
+            List<KeyTextPair> list = StreamEx.of(this.enumService.listMeasureType(sessionData.getMarketId(), FieldConfigModuleTypeEnum.REGISTER)).map(e -> {
+
+                KeyTextPair p = new KeyTextPair();
+                p.setKey(e.getCode());
+                p.setText(e.getName());
+                return p;
+
+            }).toList();
+
+            return BaseOutput.success().setData(list);
+        } catch (Exception e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+
 }
