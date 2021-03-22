@@ -90,6 +90,36 @@ public class FieldConfigController {
 
         return "fieldConfig/bill";
     }
+    /**
+     * 跳转到检测配置页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/detectrequest.html", method = RequestMethod.GET)
+    public String detectrequest(ModelMap modelMap) {
+
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        modelMap.put("currentFirm", currentFirm);
+
+        FieldConfigModuleTypeEnum moduleType=FieldConfigModuleTypeEnum.DETECT_REQUEST;
+        Map<String, Long> defaultFieldNameIdMap = StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleType)).toMap(DefaultFieldDetail::getFieldName, DefaultFieldDetail::getId);
+        modelMap.put("defaultFieldNameIdMap", defaultFieldNameIdMap);
+        Map<String,Integer>defaultFiledNameIndexMap= StreamEx.of(defaultFieldNameIdMap.keySet()).zipWith(IntStream.range(0, defaultFieldNameIdMap.size())).toMap();
+        modelMap.put("defaultFiledNameIndexMap", defaultFiledNameIndexMap);
+
+
+        Map<String,FieldConfigDetailRetDto>filedNameRetMap=   StreamEx.of(  this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(),moduleType))
+                .toMap(item->item.getDefaultFieldDetail().getFieldName(),Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
+        modelMap.put("imageCertTypeList", ImageCertTypeEnum.values());
+
+        modelMap.put("truckTypeEnumList", TruckTypeEnum.values());
+        modelMap.put("measureTypeEnumList", MeasureTypeEnum.values());
+
+        return "fieldConfig/detectrequest";
+    }
 
     /**
      * 更新

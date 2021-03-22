@@ -2,7 +2,7 @@
 
 <div class="container-fluid pb-5" id="app">
     <form id="saveForm" role="form" novalidate>
-        <input type="hidden" name="moduleType" value="${@com.dili.trace.enums.REGISTER.getCode()}}">
+        <input type="hidden" name="moduleType" value="${@com.dili.trace.enums.DETECT_REQUEST.getCode()}}">
 
         <div class="">
             <div class="row row-cols-12">
@@ -259,12 +259,12 @@
 <script src="${contextPath!}/resources/assets/dep/readonly/readonly.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/FieldConfig-Bill.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/FieldConfig-DetectRequest.js?v=${v}"></script>
 <script>
 
 
     $(function () {
-        new FieldConfigBill($('#saveForm'),$('#saveBtn'));
+        new FieldConfigDetectRequest($('#saveForm'),$('#saveBtn'));
     });
 
 </script>

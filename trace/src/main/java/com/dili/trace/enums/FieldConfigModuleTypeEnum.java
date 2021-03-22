@@ -15,6 +15,11 @@ public enum FieldConfigModuleTypeEnum {
      * 报备单(台账)
      */
     REGISTER(1, "报备单(台账)"),
+
+    /**
+     * 检测单
+     */
+    DETECT_REQUEST(2, "检测单"),
     ;
     private String name;
     private Integer code;
