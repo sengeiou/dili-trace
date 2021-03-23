@@ -50,6 +50,9 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
         this.initRegistType();
+        this.form.find('select[multiple]').select2({
+            placeholder: '-- 查询选择或输入新增 --'
+        });
     }
     initRegistType() {
         var registerHeadCodeInput = $('input[name="registerHeadCodeInput"]');

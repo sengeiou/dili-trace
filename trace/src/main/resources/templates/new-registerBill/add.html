@@ -215,10 +215,23 @@
             </div>
             <% } %>
 
+            <% if (@filedNameRetMap.containsKey('arrivalTallynos') && @filedNameRetMap.get('arrivalTallynos').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+            <div class="form-group col">
+                <label>到货摊位</label>
+                <% if (@filedNameRetMap.get('arrivalTallynos').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+                <select class="form-control" multiple="multiple" name="arrivalTallynos"  required>
+                </select>
+                <% } else { %>
+                <select class="form-control" multiple="multiple" name="arrivalTallynos"  required>
+                </select>
+                <% } %>
+            </div>
+            <% } %>
+
 
             <% if (@filedNameRetMap.containsKey('imageCertList') && @filedNameRetMap.get('imageCertList').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
-                <label for="">上传证明</label>
+                <label>上传证明</label>
                 <% if (@filedNameRetMap.get('imageCertList').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text" class="form-control" minlength="7" maxlength="8" name="imageCertList" required/>
                 <% } else { %>

@@ -72,7 +72,10 @@ class NewRegisterBillAdd extends WebConfig {
 
         this.initRegistType();
 
-
+        //@ts-ignore
+        this.form.find('select[multiple]').select2({
+            placeholder: '-- 查询选择或输入新增 --'
+        });
     }
 
     private initRegistType() {
