@@ -1,4 +1,18 @@
 <#bs4Body>
+<style>
+    .layui-laydate-content>.layui-laydate-list {
+        padding-bottom: 0px;
+        overflow: hidden;
+    }
+    .layui-laydate-content>.layui-laydate-list>li{
+        width:50%
+    }
+
+    .merge-box .scrollbox .merge-list {
+        padding-bottom: 5px;
+    }
+
+</style>
 <div class="container-fluid pb-5" id="app">
     <form id="saveForm" role="form">
         <div class="row row-cols-1">
@@ -132,15 +146,11 @@
             <div class="form-group col">
                 <label for="">品牌</label>
                 <% if (@filedNameRetMap.get('brandName').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control" name="brandInput" maxlength="50"
-                       data-rule-depends="input[name='brandId'],input[name='brandName']"
-                       data-value-type="skip" required />
+                <input type="text" class="form-control" name="brandName" maxlength="50" required />
                 <% } else { %>
-                <input type="text" class="form-control" name="brandInput" maxlength="50"
-                       data-value-type="skip" />
+                <input type="text" class="form-control" name="brandName" maxlength="50"/>
                 <% } %>
                 <input type="hidden" name="brandId"/>
-                <input type="hidden" name="brandName"/>
             </div>
             <% } %>
 
@@ -169,10 +179,17 @@
             <div class="form-group col">
                 <label for="">上游企业</label>
                 <% if (@filedNameRetMap.get('upStreamId').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control" minlength="7" maxlength="8" name="upStreamId" required/>
+                <input type="text"
+                       class="form-control input-sm "
+                       data-rule-depends="input[name='upStreamId']"
+                       name="upStreamName" data-value-type="skip" required />
                 <% } else { %>
-                <input type="text" class="form-control" minlength="7" maxlength="8" name="upStreamId"/>
+                <input type="text"
+                       class="form-control input-sm "
+                       data-rule-depends="input[name='upStreamId']"
+                       name="upStreamName" data-value-type="skip"/>
                 <% } %>
+                <input type="hidden" class="form-control" minlength="7" maxlength="8" name="upStreamId"/>
             </div>
             <% } %>
 
@@ -180,9 +197,9 @@
             <div class="form-group col">
                 <label for="">皮重</label>
                 <% if (@filedNameRetMap.get('truckTareWeight').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control" minlength="7" maxlength="8" name="truckTareWeight" required/>
+                <input type="text" class="form-control isNaturalNum"  name="truckTareWeight" maxlength="6"  range="0 999999"  required/>
                 <% } else { %>
-                <input type="text" class="form-control" minlength="7" maxlength="8" name="truckTareWeight"/>
+                <input type="text" class="form-control isNaturalNum"  name="truckTareWeight" maxlength="6"  range="0 999999"/>
                 <% } %>
             </div>
             <% } %>
@@ -191,9 +208,9 @@
             <div class="form-group col" id="arrivalDatetimeDiv">
                 <label for="">到场时间</label>
                 <% if (@filedNameRetMap.get('arrivalDatetime').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="arrivalDatetime" required/>
+                <input type="text" class="form-control laydatetime"  name="arrivalDatetime:hmcustFun" required/>
                 <% } else { %>
-                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="arrivalDatetime"/>
+                <input type="text" class="form-control laydatetime" name="arrivalDatetime:hmcustFun"/>
                 <% } %>
             </div>
             <% } %>
@@ -203,9 +220,9 @@
             <div class="form-group col">
                 <label for="">上传证明</label>
                 <% if (@filedNameRetMap.get('imageCertList').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="imageCertList" required/>
+                <input type="text" class="form-control" minlength="7" maxlength="8" name="imageCertList" required/>
                 <% } else { %>
-                <input type="text" class="form-control isWord" minlength="7" maxlength="8" name="imageCertList"/>
+                <input type="text" class="form-control" minlength="7" maxlength="8" name="imageCertList"/>
                 <% } %>
             </div>
             <% } %>
@@ -223,10 +240,12 @@
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
-<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js?v=${v}"></script>
 <script src="${contextPath!}/resources/js/CategoryController.js"></script>
 <script src="${contextPath!}/resources/js/CityController.js"></script>
-<script src="${contextPath!}/resources/js/CustomerController.js"></script>
+<script src="${contextPath!}/resources/js/BrandController.js"></script>
+<script src="${contextPath!}/resources/js/UpStreamController.js"></script>
+<script src="${contextPath!}/resources/js/CustomerController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/js/RegisterHeadController.js"></script>
 <script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
 <script type="text/javascript">
@@ -236,6 +255,28 @@
             let isAnyEmpty=_.chain($(selector)).map(item=>{return $(item).val();}).any(_.isEmpty).value();
             return !isAnyEmpty;
         }, "请选择下拉框选项");
+
+        function  formatminutes(date) {
+            var aa = $(".laydate-time-list li ol")[1];
+            var showtime = $($(".laydate-time-list li ol")[1]).find("li");
+            for (var i = 0; i < showtime.length; i++) {
+                var t00 = showtime[i].innerText;
+                if (t00 != "00" && t00 != "20" && t00 != "30" && t00 != "40" && t00 != "50") {
+                    showtime[i].remove()
+                }
+            }
+            $($(".laydate-time-list li ol")[2]).find("li").remove();  //清空秒
+        }
+
+        lay('.laydatetime').each(function() {
+            laydate.render({
+                elem: this
+                ,type: 'datetime'
+                ,format: 'yyyy-MM-dd HH:mm'
+                ,trigger: 'click'
+                ,ready: formatminutes
+            });
+        });
 
         //是否拼车radio事件处理
         $('input[name="truckType"]').on("change", function() {

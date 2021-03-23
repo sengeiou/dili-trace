@@ -5,17 +5,48 @@ class NewRegisterBillAdd extends WebConfig {
         this.submitBtn = submitBtn;
         this.submitBtn.on('click', async () => this.doAdd());
         let categoryController = new CategoryController();
-        super.initTraceAutoComplete($("[name='categoryInput']"), function (query, done) { categoryController.lookupCategories(query, done); }, function (suggestion) {
+        super.initTraceAutoComplete($("[name='categoryInput']"), function (query, done) {
+            categoryController.lookupCategories(query, done);
+        }, function (suggestion) {
             $(this).val(suggestion.value);
             $('[name="productId"]').val(suggestion.id);
             $('[name="productName"]').val(suggestion.value);
             $(this).valid();
         });
         let cityController = new CityController();
-        super.initTraceAutoComplete($("[name='originInput']"), function (query, done) { cityController.lookupCities(query, done); }, function (suggestion) {
+        super.initTraceAutoComplete($("[name='originInput']"), function (query, done) {
+            cityController.lookupCities(query, done);
+        }, function (suggestion) {
             $(this).val(suggestion.value);
             $('[name="originId"]').val(suggestion.id);
             $('[name="originName"]').val(suggestion.value);
+            $(this).valid();
+        });
+        let customerController = new CustomerController();
+        super.initTraceAutoComplete($("[name='userInput']"), function (query, done) {
+            customerController.lookupSeller(query, done);
+        }, function (suggestion) {
+            $(this).data('select-text', suggestion.value);
+            $(this).val(suggestion.value);
+            $('[name="userId"]').val(suggestion.id);
+            $('[name="name"]').val(suggestion.item.name);
+            $(this).valid();
+        });
+        let upstreamController = new UpStreamController();
+        super.initTraceAutoComplete($("[name='upStreamName']"), function (query, done) {
+            let userId = $('#userId').val();
+            upstreamController.lookupUpStreams(query, userId, done);
+        }, function (suggestion) {
+            $(this).val(suggestion.value);
+            $('[name="upStreamId"]').val(suggestion.id);
+            $(this).valid();
+        });
+        let brandController = new BrandController();
+        super.initTraceAutoComplete($("[name='brandName']"), function (query, done) {
+            brandController.lookupBrands(query, done);
+        }, function (suggestion) {
+            $(this).val(suggestion.value);
+            $('[name="upStreamId"]').val(suggestion.id);
             $(this).valid();
         });
         this.initRegistType();
@@ -52,7 +83,16 @@ class NewRegisterBillAdd extends WebConfig {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
             return;
         }
-        let registerBill = super.serializeJSON(this.form);
+        let registerBill = super.serializeJSON(this.form, {
+            customTypes: {
+                hmcustFun: function (strVal, el) {
+                    if ($.trim(strVal) != '') {
+                        return strVal + ':00';
+                    }
+                    return strVal;
+                }
+            }
+        });
         try {
             let resp = await jq.postJsonWithProcessing(url, { registerBills: [registerBill] });
             if (!resp.success) {

@@ -9,10 +9,12 @@ class NewRegisterBillAdd extends WebConfig {
     constructor(form: JQuery, submitBtn: JQuery) {
         super();
         this.form = form;
-        this.submitBtn=submitBtn;
-        this.submitBtn.on('click',async ()=>this.doAdd());
-        let categoryController:CategoryController=new CategoryController();
-        super.initTraceAutoComplete($("[name='categoryInput']"), function (query, done){ categoryController.lookupCategories(query,done)},function(suggestion){
+        this.submitBtn = submitBtn;
+        this.submitBtn.on('click', async () => this.doAdd());
+        let categoryController: CategoryController = new CategoryController();
+        super.initTraceAutoComplete($("[name='categoryInput']"), function (query, done) {
+            categoryController.lookupCategories(query, done)
+        }, function (suggestion) {
             $(this).val(suggestion.value);
             $('[name="productId"]').val(suggestion.id);
             $('[name="productName"]').val(suggestion.value);
@@ -20,8 +22,10 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
 
-        let cityController:CityController=new CityController();
-        super.initTraceAutoComplete($("[name='originInput']"), function (query, done){ cityController.lookupCities(query,done)},function(suggestion){
+        let cityController: CityController = new CityController();
+        super.initTraceAutoComplete($("[name='originInput']"), function (query, done) {
+            cityController.lookupCities(query, done)
+        }, function (suggestion) {
             $(this).val(suggestion.value);
             $('[name="originId"]').val(suggestion.id);
             $('[name="originName"]').val(suggestion.value);
@@ -29,28 +33,64 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
 
+        let customerController: CustomerController = new CustomerController();
 
+        super.initTraceAutoComplete($("[name='userInput']"), function (query, done) {
+            customerController.lookupSeller(query, done)
+        }, function (suggestion) {
+
+            $(this).data('select-text', suggestion.value);
+            $(this).val(suggestion.value);
+            $('[name="userId"]').val(suggestion.id);
+            $('[name="name"]').val(suggestion.item.name);
+            //@ts-ignore
+            $(this).valid();
+        });
+
+        let upstreamController: UpStreamController = new UpStreamController();
+
+        super.initTraceAutoComplete($("[name='upStreamName']"), function (query, done) {
+            let userId = $('#userId').val() as number;
+            upstreamController.lookupUpStreams(query, userId, done)
+        }, function (suggestion) {
+            $(this).val(suggestion.value);
+            $('[name="upStreamId"]').val(suggestion.id);
+            //@ts-ignore
+            $(this).valid();
+        });
+
+
+        let brandController: BrandController = new BrandController();
+        super.initTraceAutoComplete($("[name='brandName']"), function (query, done) {
+            brandController.lookupBrands(query, done)
+        }, function (suggestion) {
+            $(this).val(suggestion.value);
+            $('[name="upStreamId"]').val(suggestion.id);
+            //@ts-ignore
+            $(this).valid();
+        });
 
         this.initRegistType();
 
 
-
     }
-    private initRegistType(){
-        var registerHeadCodeInput=$('input[name="registerHeadCodeInput"]');
 
-        let registerHeadController:RegisterHeadController=new RegisterHeadController();
-        super.initTraceAutoComplete(registerHeadCodeInput, function (query, done){
-            $.extend(query,{userId:$('input[name="userId"]').val()})
-            registerHeadController.lookupRegisterHead(query,done)},async(suggestion,a,b)=>{
+    private initRegistType() {
+        var registerHeadCodeInput = $('input[name="registerHeadCodeInput"]');
+
+        let registerHeadController: RegisterHeadController = new RegisterHeadController();
+        super.initTraceAutoComplete(registerHeadCodeInput, function (query, done) {
+            $.extend(query, {userId: $('input[name="userId"]').val()})
+            registerHeadController.lookupRegisterHead(query, done)
+        }, async (suggestion, a, b) => {
             debugger
             $(this).val(suggestion.value);
-            let registerHeadCode=suggestion.item.code;
+            let registerHeadCode = suggestion.item.code;
 
             $('[name="registerHeadCode"]').val(registerHeadCode);
 
-            let plateList=suggestion.item.plateList;
-            let arrivalTallynos=suggestion.item.arrivalTallynos;
+            let plateList = suggestion.item.plateList;
+            let arrivalTallynos = suggestion.item.arrivalTallynos;
 
             debugger
 
@@ -58,8 +98,8 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
 
-        $('#registType').on('change',async (e)=>{
-            if(RegistTypeEnum.PARTIAL!=$(e.target).val()){
+        $('#registType').on('change', async (e) => {
+            if (RegistTypeEnum.PARTIAL != $(e.target).val()) {
                 registerHeadCodeInput.parent('div').hide();
                 return;
             }
@@ -80,9 +120,18 @@ class NewRegisterBillAdd extends WebConfig {
             bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
             return;
         }
-        let registerBill = super.serializeJSON(this.form);
+        let registerBill = super.serializeJSON(this.form, {
+            customTypes: {
+                hmcustFun: function (strVal, el) {
+                    if ($.trim(strVal) != '') {
+                        return strVal + ':00';
+                    }
+                    return strVal;
+                }
+            }
+        });
         try {
-            let resp = await jq.postJsonWithProcessing(url, {registerBills:[registerBill]});
+            let resp = await jq.postJsonWithProcessing(url, {registerBills: [registerBill]});
             if (!resp.success) {
                 //@ts-ignore
                 bs4pop.alert(resp.message, {type: 'error'});
