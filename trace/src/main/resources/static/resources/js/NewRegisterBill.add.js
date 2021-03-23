@@ -22,6 +22,10 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="originName"]').val(suggestion.value);
             $(this).valid();
         });
+        let arrivalTallynosSelect2 = this.form.find('select[name="arrivalTallynos"][multiple]').select2({
+            placeholder: '-- 请选择 --',
+            language: "zh-CN",
+        });
         let customerController = new CustomerController();
         super.initTraceAutoComplete($("[name='userInput']"), function (query, done) {
             customerController.lookupSeller(query, done);
@@ -31,6 +35,21 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="userId"]').val(suggestion.id);
             $('[name="name"]').val(suggestion.item.name);
             $(this).valid();
+            (async () => {
+                try {
+                    arrivalTallynosSelect2.html('');
+                    arrivalTallynosSelect2.val(null).trigger('change');
+                    let dataList = await customerController.listSellerTallaryNoByUserId(suggestion.id);
+                    $.each(dataList, async (i, v) => {
+                        var tallaryNo = v['assetsName'];
+                        var newOption = new Option(tallaryNo, tallaryNo, false, false);
+                        arrivalTallynosSelect2.append(newOption).trigger('change');
+                    });
+                }
+                catch (e) {
+                    console.error(e);
+                }
+            })();
         });
         let upstreamController = new UpStreamController();
         super.initTraceAutoComplete($("[name='upStreamName']"), function (query, done) {
@@ -50,9 +69,6 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
         this.initRegistType();
-        this.form.find('select[multiple]').select2({
-            placeholder: '-- 查询选择或输入新增 --'
-        });
     }
     initRegistType() {
         var registerHeadCodeInput = $('input[name="registerHeadCodeInput"]');

@@ -1,4 +1,14 @@
 class CustomerController extends WebConfig {
+    async listSellerTallaryNoByUserId(userId) {
+        var url = await super.toUrl("/customer/listSellerTallaryNoByUserId.action");
+        let resp = await jq.postJson(url, { userId: userId });
+        if (resp.code === '200') {
+            return resp.data;
+        }
+        else {
+            throw new Error(resp.message);
+        }
+    }
     async listSeller(query) {
         var url = await super.toUrl("/customer/listSeller.action");
         let resp = await jq.postJson(url, query);
@@ -13,7 +23,11 @@ class CustomerController extends WebConfig {
         try {
             let data = await this.listSeller(query);
             return _.chain(data).map(item => {
-                return { "id": item.id, "value": item.name + ' | ' + item.phone + ' | ' + item.tradePrintingCard + ' | ' + item.marketName, "item": item };
+                let cardNo = item.tradePrintingCard;
+                if (_.isUndefined(cardNo) || $.trim(cardNo) == '') {
+                    cardNo = '--';
+                }
+                return { "id": item.id, "value": item.name + ' | ' + item.phone + ' | ' + cardNo + ' | ' + item.marketName, "item": item };
             }).value();
         }
         catch (e) {

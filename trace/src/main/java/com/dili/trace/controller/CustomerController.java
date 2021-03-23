@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
@@ -12,6 +13,7 @@ import com.dili.trace.rpc.dto.CardResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.Firm;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +80,32 @@ public class CustomerController {
         //转换并查询卡号
         List<CustomerExtendOutPutDto> items = convertWithCardInfo(firm, pageOutput.getData());
         return BaseOutput.success().setData(items);
+    }
+
+    /**
+     * 查询经营户并带出卡号
+     * @param query
+     * @return
+     */
+    @RequestMapping(value = "/listSellerTallaryNoByUserId.action")
+    @ResponseBody
+    public BaseOutput<List<TallyingArea>> listSellerTallaryNoByUserId(@RequestBody CustomerQueryInput query) {
+        if (query.getId()==null) {
+            return BaseOutput.success().setData(new ArrayList<>(0));
+        }
+        Firm firm = uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        query.setPage(1);
+        query.setRows(50);
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query, firm.getId());
+        if (!pageOutput.isSuccess()) {
+            return BaseOutput.failure(pageOutput.getMessage());
+        }
+        return StreamEx.of(pageOutput.getData()).findFirst().map(item->{
+            return BaseOutput.success().setData(item.getTallyingAreaList());
+        }).orElseGet(()->{
+            return BaseOutput.successData(Lists.newArrayList());
+        });
+
     }
 
     /**

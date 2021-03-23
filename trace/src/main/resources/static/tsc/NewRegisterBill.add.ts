@@ -33,6 +33,12 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
 
+        //@ts-ignore
+        let arrivalTallynosSelect2 = this.form.find('select[name="arrivalTallynos"][multiple]').select2({
+            placeholder: '-- 请选择 --',
+            language:"zh-CN",
+        });
+
         let customerController: CustomerController = new CustomerController();
 
         super.initTraceAutoComplete($("[name='userInput']"), function (query, done) {
@@ -45,6 +51,22 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="name"]').val(suggestion.item.name);
             //@ts-ignore
             $(this).valid();
+            (async() =>{
+                try {
+                    arrivalTallynosSelect2.html('');
+                    arrivalTallynosSelect2.val(null).trigger('change');
+                    let dataList = await customerController.listSellerTallaryNoByUserId(suggestion.id);
+                    $.each(dataList, async (i, v) => {
+                        var tallaryNo = v['assetsName']
+                        var newOption = new Option(tallaryNo, tallaryNo, false, false);
+                        arrivalTallynosSelect2.append(newOption).trigger('change');
+                    })
+                } catch (e) {
+                    console.error(e)
+                }
+            })();
+
+
         });
 
         let upstreamController: UpStreamController = new UpStreamController();
@@ -71,11 +93,6 @@ class NewRegisterBillAdd extends WebConfig {
         });
 
         this.initRegistType();
-
-        //@ts-ignore
-        this.form.find('select[multiple]').select2({
-            placeholder: '-- 查询选择或输入新增 --'
-        });
     }
 
     private initRegistType() {

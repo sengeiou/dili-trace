@@ -119,6 +119,7 @@
           b.spec_name,
           b.latest_detect_record_id,
           b.source_name tallyAreaNo,
+          b.arrivalDatetime,
           up.name upStreamName,
           d.*
         FROM
