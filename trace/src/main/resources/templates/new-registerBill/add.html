@@ -1,4 +1,5 @@
 <#bs4Body>
+<#vueElm />
 <style>
     .layui-laydate-content>.layui-laydate-list {
         padding-bottom: 0px;
@@ -237,6 +238,55 @@
                 <% } %>
             </div>
             <% } %>
+
+            <%for(imageCertType in imageCertTypeEnumList){%>
+                <h4 class="form-item-title">${imageCertType.name}:${item.groupedImageCertList[imageCertType].~size}</h4>
+            <%}%>
+
+
+            <div class="container-fluid" id="form">
+                <el-form ref="form" label-width="150px" >
+                    <input type="hidden" id="marketId" name="marketId" v-model="form.marketId">
+                    <div v-for="fileData in fileDataList" :key="fileData.code"  >
+                        <el-form-item :label="fileData.value" >
+                            <el-upload multiple
+                                       action="/action/imageApi/uploadImage.action"
+                                       ref="upload"
+                                       list-type="picture-card"
+                                       :limit="10"
+                                       :data="{type: fileData.type}"
+                                       :file-list="fileDataList"
+                                       :on-preview="handlePreview"
+                                       :on-success="handleSuccess"
+                                       :before-upload="handleBeforeUpload"
+                                       :on-exceed="handleExceed"
+                                       :on-remove="handleRemove">
+                                <i slot="default" class="el-icon-plus"></i>
+                            </el-upload>
+                            <el-dialog :visible.sync="upload.dialogVisible">
+                                <img width="100%" :src="upload.dialogImageUrl" alt="">
+                            </el-dialog>
+                        </el-form-item>
+                    </div>
+                </el-form>
+            </div>
+
+            <div class="form-item-group" style="display: none" >
+                <h4 class="form-item-title">其他</h4>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="imageCertList[0][uid]" value="">
+                    <input type="hidden" name="imageCertList[0][certType]" value="">
+                    <img class="magnifying" style="display: block" src="">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete" style="display: none">删除</span>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-footer-wrap">
             <div class="modal-footer">
@@ -247,6 +297,7 @@
     </form>
 </div>
 <#webGlobalConfig/>
+
 <script src="${contextPath!}/resources/assets/dep/jquery/jquery.validate.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
@@ -260,6 +311,71 @@
 <script src="${contextPath!}/resources/js/RegisterHeadController.js"></script>
 <script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
 <script type="text/javascript">
+
+    var fileUpload = new Vue({
+        el: '#form',
+        data() {
+                return {
+                    fileDataList:  [],
+                    upload: {
+                        dialogImageUrl: '',
+                        dialogVisible: false,
+                        disabled: false,
+                        type: 1,
+                    },
+                    form: {},
+                }
+        },
+        methods: {
+            handlePreview (file){
+                this.upload.dialogImageUrl = file.uid;
+                this.upload.dialogVisible = true;
+            },
+            handleSuccess(res, file, fileList){
+                if(res.success){
+                    this.fileDataList.push({
+                        type: res.data.type,
+                        uid: res.data.uid
+                    })
+                }
+            },
+            handleExceed(files, fileList) {
+                this.$message({
+                    message: '最多添加 10 张图片',
+                    type: 'warning'
+                });
+            },
+            handleRemove(file, fileList){
+
+               let newFileDataList= this.fileDataList.filter(async (v,i)=>{
+                    return v.uid!=file.uid;
+                })
+                debugger
+                this.fileDataList=newFileDataList;
+            },
+            handleBeforeUpload(file) {
+                const isLt1M = file.size / 1024 / 1024 < 10
+                const isIMAGE = (file.type === 'image/jpeg' ||file.type === 'image/jpg' || file.type === 'image/png'|| file.type === 'image/gif');
+
+                if (!isIMAGE) {
+                    this.$message({
+                        message: '上传文件只能是图片格式!',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+                if (!isLt1M) {
+                    this.$message({
+                        message: '上传文件大小不能超过 10MB!',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+            }
+        },
+
+    })
+
     $(function () {
         jQuery.validator.addMethod("depends", function (t, a) {
             let selector=$(a).data('rule-depends');
@@ -288,6 +404,8 @@
                 ,ready: formatminutes
             });
         });
+
+
 
         //是否拼车radio事件处理
         $('input[name="truckType"]').on("change", function() {
@@ -329,6 +447,7 @@
         }
         $('input[name="pieceNum"]').on("input", countTotalWeight);
         $('input[name="pieceWeight"]').on("input", countTotalWeight);
+
 
         new NewRegisterBillAdd($('#saveForm'), $('#saveBtn'));
     });

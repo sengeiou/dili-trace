@@ -87,6 +87,8 @@ public class NewRegisterBillController {
 
     @Autowired
     FieldConfigDetailService fieldConfigDetailService;
+    @Autowired
+    EnumService enumService;
 
 
     /**
@@ -168,6 +170,9 @@ public class NewRegisterBillController {
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
+        List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
+        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
+        modelMap.put("item", new RegisterBillOutputDto());
         return "new-registerBill/add";
     }
 
@@ -179,8 +184,8 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/doAdd.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doAdd(@RequestBody CreateListBillParam input) {
-        Firm firm=this.uapRpcService.getCurrentFirm().orElse(null);
-        if(firm==null){
+        Firm firm = this.uapRpcService.getCurrentFirm().orElse(null);
+        if (firm == null) {
             return BaseOutput.failure("未登录");
         }
         try {
@@ -191,8 +196,8 @@ public class NewRegisterBillController {
                     , CreatorRoleEnum.MANAGER);*/
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
-        }catch (Exception e){
-            logger.error(e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return BaseOutput.failure("服务端出错");
         }
         return BaseOutput.success();
@@ -1121,18 +1126,18 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
 
 
-            Customer condition = new Customer();
-            condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
-            condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-            Customer customer = this.customerService.findCustomer(condition, this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
-            if (customer != null) {
-                userInfoDto.setUserId(customer.getCustomerId());
-                userInfoDto.setName(customer.getName());
-                userInfoDto.setIdCardNo(customer.getIdNo());
-                userInfoDto.setPhone(customer.getPhone());
-                userInfoDto.setAddr(customer.getAddress());
-                userInfoDto.setPrintingCard(customer.getPrintingCard());
-            }
+        Customer condition = new Customer();
+        condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
+        condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
+        Customer customer = this.customerService.findCustomer(condition, this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
+        if (customer != null) {
+            userInfoDto.setUserId(customer.getCustomerId());
+            userInfoDto.setName(customer.getName());
+            userInfoDto.setIdCardNo(customer.getIdNo());
+            userInfoDto.setPhone(customer.getPhone());
+            userInfoDto.setAddr(customer.getAddress());
+            userInfoDto.setPrintingCard(customer.getPrintingCard());
+        }
 
         return userInfoDto;
     }

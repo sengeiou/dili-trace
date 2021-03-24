@@ -33,12 +33,12 @@ class NewRegisterBillAdd extends WebConfig {
             $(this).valid();
         });
 
+
         //@ts-ignore
         let arrivalTallynosSelect2 = this.form.find('select[name="arrivalTallynos"][multiple]').select2({
             placeholder: '-- 请选择 --',
             language:"zh-CN",
         });
-
         let customerController: CustomerController = new CustomerController();
 
         super.initTraceAutoComplete($("[name='userInput']"), function (query, done) {
