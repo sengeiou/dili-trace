@@ -127,10 +127,9 @@ class NewRegisterBillAdd extends WebConfig {
     public async doAdd() {
         //@ts-ignore
         bs4pop.removeAll();
-
         let url = super.toUrl("/newRegisterBill/doAdd.action");
-
-
+        let arr = [];
+        imageCertList = Object.values(imageCertListTemp).reduce((arr, item) => arr.concat(item));
         //@ts-ignore
         // if (!this.form.validate().form()) {
         //     //@ts-ignore
