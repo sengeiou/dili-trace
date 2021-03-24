@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class CreateRegisterBillInputDto {
@@ -222,18 +223,18 @@ public class CreateRegisterBillInputDto {
     /**
      * 到场时间
      */
-    private LocalDateTime arrivalDatetime;
+    private Date arrivalDatetime;
 
     /**
      * 到货摊位
      */
     private List<String> arrivalTallynos;
 
-    public LocalDateTime getArrivalDatetime() {
+    public Date getArrivalDatetime() {
         return arrivalDatetime;
     }
 
-    public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+    public void setArrivalDatetime(Date arrivalDatetime) {
         this.arrivalDatetime = arrivalDatetime;
     }
 

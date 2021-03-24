@@ -500,7 +500,7 @@ public class RegisterBill extends BaseDomain {
      */
     @Column(name = "`arrival_datetime`")
     @JSONField(format = "yyyy-MM-dd HH:mm")
-    private LocalDateTime arrivalDatetime;
+    private Date arrivalDatetime;
 
 
     /**
@@ -509,15 +509,13 @@ public class RegisterBill extends BaseDomain {
     @Transient
     private List<String> arrivalTallynos;
 
-    public LocalDateTime getArrivalDatetime() {
+    public Date getArrivalDatetime() {
         return arrivalDatetime;
     }
 
-    public void setArrivalDatetime(LocalDateTime arrivalDatetime) {
+    public void setArrivalDatetime(Date arrivalDatetime) {
         this.arrivalDatetime = arrivalDatetime;
     }
-
-
 
     public String getReturnReason() {
         return returnReason;

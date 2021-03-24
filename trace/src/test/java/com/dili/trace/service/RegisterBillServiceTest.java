@@ -2,10 +2,7 @@ package com.dili.trace.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
@@ -178,7 +175,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
                 () -> {
                     this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
                 }, "到场时间不能为空");
-        inputDto.setArrivalDatetime(LocalDateTime.now());
+        inputDto.setArrivalDatetime(new Date());
 
         assertThrows(TraceBizException.class,
                 () -> {

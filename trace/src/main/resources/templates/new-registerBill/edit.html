@@ -217,9 +217,9 @@
             <div class="form-group col" id="arrivalDatetimeDiv">
                 <label for="">到场时间</label>
                 <% if (@filedNameRetMap.get('arrivalDatetime').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="text" class="form-control laydatetime"  name="arrivalDatetime:hmcustFun" value="${item.arrivalDatetime}" required/>
+                <input type="text" class="form-control laydatetime"  name="arrivalDatetime:hmcustFun" value="${item.arrivalDatetime,dateFormat='yyyy-MM-dd HH:mm'}" required/>
                 <% } else { %>
-                <input type="text" class="form-control laydatetime" name="arrivalDatetime:hmcustFun"  value="${item.arrivalDatetime}"/>
+                <input type="text" class="form-control laydatetime" name="arrivalDatetime:hmcustFun"  value="${item.arrivalDatetime,dateFormat='yyyy-MM-dd HH:mm'}" />
                 <% } %>
             </div>
             <% } %>
@@ -292,10 +292,11 @@
     groupedImageCertList.push({
     'certType':'${imageCertType.code}',
                 'certTypeName':'${imageCertType.name}',
-                fileList:${json(item.groupedImageUidList[imageCertType])}
+                fileList:${json(item.groupedImageCertList[imageCertType])}
             })
           imageCertListTemp['${imageCertType.code}']=[];
     <%}%>
+    console.info(groupedImageCertList)
     var fileUpload = new Vue({
         el: '#app',
         data() {
@@ -312,7 +313,7 @@
         },
         methods: {
             handlePreview (file){
-                this.upload.dialogImageUrl = file.uid;
+                this.upload.dialogImageUrl ='${imageViewPathPrefix}/'+file.uid;
                 this.upload.dialogVisible = true;
             },
             handleSuccess(res, file, fileList){
@@ -425,7 +426,20 @@
                 $('#countUnitMeasureTypeDiv input').prop("disabled", false).val('');
             }
         });
-        $('input[name="measureType"]').trigger("change");
+
+        let val = $('input[name="measureType"]:checked').val();
+        if (val === '${@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()}') {
+                $('#countWeightMeasureTypeDiv').removeClass("d-none");
+                $('#countWeightMeasureTypeDiv input').prop("disabled", false);
+                $('#countUnitMeasureTypeDiv').addClass("d-none");
+                $('#countUnitMeasureTypeDiv input').prop("disabled", true);
+            } else if(val === '${@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()}'){
+                $('#countWeightMeasureTypeDiv').addClass("d-none");
+                $('#countWeightMeasureTypeDiv input').prop("disabled", true)
+                $('#countUnitMeasureTypeDiv').removeClass("d-none");
+                $('#countUnitMeasureTypeDiv input').prop("disabled", false);
+            }
+
 
         //件数、件重输入事件处理
         function countTotalWeight() {

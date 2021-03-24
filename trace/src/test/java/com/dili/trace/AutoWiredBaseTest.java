@@ -2,6 +2,7 @@ package com.dili.trace;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import one.util.streamex.StreamEx;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import static com.dili.ss.metadata.FieldEditor.Date;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -146,7 +148,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 
 
         inputDto.setUpStreamId(10L);
-        inputDto.setArrivalDatetime(LocalDateTime.now());
+        inputDto.setArrivalDatetime(new Date());
 
         inputDto.setArrivalTallynos(Lists.newArrayList("222"));
         List<Long> idList = this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, customerId, operatorUser, creatorRoleEnum);
