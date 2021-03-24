@@ -130,13 +130,13 @@ class NewRegisterBillAdd extends WebConfig {
 
         let url = super.toUrl("/newRegisterBill/doAdd.action");
 
-        debugger
+
         //@ts-ignore
-        if (!this.form.validate().form()) {
-            //@ts-ignore
-            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-            return;
-        }
+        // if (!this.form.validate().form()) {
+        //     //@ts-ignore
+        //     bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+        //     return;
+        // }
         let registerBill = super.serializeJSON(this.form, {
             customTypes: {
                 hmcustFun: function (strVal, el) {
@@ -147,6 +147,8 @@ class NewRegisterBillAdd extends WebConfig {
                 }
             }
         });
+        debugger
+        return
         try {
             let resp = await jq.postJsonWithProcessing(url, {registerBills: [registerBill]});
             if (!resp.success) {

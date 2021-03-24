@@ -97,11 +97,6 @@ class NewRegisterBillAdd extends WebConfig {
     async doAdd() {
         bs4pop.removeAll();
         let url = super.toUrl("/newRegisterBill/doAdd.action");
-        debugger;
-        if (!this.form.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
-            return;
-        }
         let registerBill = super.serializeJSON(this.form, {
             customTypes: {
                 hmcustFun: function (strVal, el) {
@@ -112,6 +107,8 @@ class NewRegisterBillAdd extends WebConfig {
                 }
             }
         });
+        debugger;
+        return;
         try {
             let resp = await jq.postJsonWithProcessing(url, { registerBills: [registerBill] });
             if (!resp.success) {

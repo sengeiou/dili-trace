@@ -15,7 +15,7 @@
 
 </style>
 <div class="container-fluid pb-5" id="app">
-    <form id="saveForm" role="form">
+    <el-form ref="app"  id="saveForm" label-width="150px" >
         <div class="row row-cols-1">
             <div class="form-group col">
                 <label for="">单据类型</label>
@@ -239,23 +239,17 @@
             </div>
             <% } %>
 
-            <%for(imageCertType in imageCertTypeEnumList){%>
-                <h4 class="form-item-title">${imageCertType.name}:${item.groupedImageCertList[imageCertType].~size}</h4>
-            <%}%>
 
-
-            <div class="container-fluid" id="form">
-                <el-form ref="form" label-width="150px" >
-                    <input type="hidden" id="marketId" name="marketId" v-model="form.marketId">
-                    <div v-for="fileData in fileDataList" :key="fileData.code"  >
-                        <el-form-item :label="fileData.value" >
+            <div class="container-fluid">
+                    <div v-for="fileData in groupedImageCertList" :key="fileData.certType"  >
+                        <el-form-item :label="fileData.certTypeName" >
                             <el-upload multiple
                                        action="/action/imageApi/uploadImage.action"
                                        ref="upload"
                                        list-type="picture-card"
                                        :limit="10"
-                                       :data="{type: fileData.type}"
-                                       :file-list="fileDataList"
+                                       :data="{type: fileData.certType}"
+                                       :file-list="fileData.fileList"
                                        :on-preview="handlePreview"
                                        :on-success="handleSuccess"
                                        :before-upload="handleBeforeUpload"
@@ -268,25 +262,10 @@
                             </el-dialog>
                         </el-form-item>
                     </div>
-                </el-form>
+
             </div>
 
-            <div class="form-item-group" style="display: none" >
-                <h4 class="form-item-title">其他</h4>
-                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
-                    <span class="fileimg-plus-icon" style="display: none" >+</span>
-                    <span class="fileimg-des" style="display: none" >点击上传</span>
-                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="imageCertList[0][uid]" value="">
-                    <input type="hidden" name="imageCertList[0][certType]" value="">
-                    <img class="magnifying" style="display: block" src="">
-                    <div class="fileimg-cover" style="display: block;"></div>
-                    <div class="fileimg-edit" style="display: block;">
-                        <span class="fileimg-view">查看</span>
-                        <span class="fileimg-delete" style="display: none">删除</span>
-                    </div>
-                </div>
-            </div>
+
         </div>
         <div class="modal-footer-wrap">
             <div class="modal-footer">
@@ -294,7 +273,7 @@
                 <button type="button" class="btn btn-primary px-5" id="saveBtn">确认新增</button>
             </div>
         </div>
-    </form>
+        </el-form>
 </div>
 <#webGlobalConfig/>
 
@@ -311,11 +290,20 @@
 <script src="${contextPath!}/resources/js/RegisterHeadController.js"></script>
 <script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
 <script type="text/javascript">
+    var groupedImageCertList=[];
+    <%for(imageCertType in imageCertTypeEnumList){%>
+        groupedImageCertList.push({
+            'certType':'${imageCertType.code}',
+            'certTypeName':'${imageCertType.name}',
+            fileList:${json(item.groupedImageCertList[imageCertType])
+        }
+    })
+    <%}%>
     var fileUpload = new Vue({
-        el: '#form',
+        el: '#app',
         data() {
                 return {
-                    fileDataList:  [],
+                    groupedImageCertList: groupedImageCertList,
                     upload: {
                         dialogImageUrl: '',
                         dialogVisible: false,
@@ -332,10 +320,10 @@
             },
             handleSuccess(res, file, fileList){
                 if(res.success){
-                    this.fileDataList.push({
-                        type: res.data.type,
-                        uid: res.data.uid
-                    })
+                   let fileObj= _.chain(this.groupedImageCertList).filter((v,k)=>{
+                        return v.type==resp.data.type;
+                    }).value();
+                    fileObj.fileList.push(res.data.uid);
                 }
             },
             handleExceed(files, fileList) {
@@ -346,11 +334,13 @@
             },
             handleRemove(file, fileList){
 
-               let newFileDataList= this.fileDataList.filter(async (v,i)=>{
+                let fileObj= _.chain(this.groupedImageCertList).filter((v,k)=>{
+                    return v.type==resp.data.type;
+                }).value();
+               let newFileDataList= fileObj.fileList.filter(async (v,i)=>{
                     return v.uid!=file.uid;
                 })
-                debugger
-                this.fileDataList=newFileDataList;
+                fileObj.fileList=newFileDataList;
             },
             handleBeforeUpload(file) {
                 const isLt1M = file.size / 1024 / 1024 < 10
