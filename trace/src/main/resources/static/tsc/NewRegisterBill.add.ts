@@ -128,14 +128,18 @@ class NewRegisterBillAdd extends WebConfig {
         //@ts-ignore
         bs4pop.removeAll();
         let url = super.toUrl("/newRegisterBill/doAdd.action");
-        let arr = [];
-        imageCertList = Object.values(imageCertListTemp).reduce((arr, item) => arr.concat(item));
         //@ts-ignore
-        // if (!this.form.validate().form()) {
-        //     //@ts-ignore
-        //     bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-        //     return;
-        // }
+        if (!this.form.validate().form()) {
+            //@ts-ignore
+            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+            return;
+        }
+
+        //@ts-ignore
+        let arr = [];
+        //@ts-ignore
+        let imageCertList = Object.values(imageCertListTemp).reduce((arr, item) => arr.concat(item));
+
         let registerBill = super.serializeJSON(this.form, {
             customTypes: {
                 hmcustFun: function (strVal, el) {
@@ -146,6 +150,8 @@ class NewRegisterBillAdd extends WebConfig {
                 }
             }
         });
+        registerBill['imageCertList']=imageCertList;
+
         debugger
         return
         try {

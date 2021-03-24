@@ -97,6 +97,12 @@ class NewRegisterBillAdd extends WebConfig {
     async doAdd() {
         bs4pop.removeAll();
         let url = super.toUrl("/newRegisterBill/doAdd.action");
+        if (!this.form.validate().form()) {
+            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+            return;
+        }
+        let arr = [];
+        let imageCertList = Object.values(imageCertListTemp).reduce((arr, item) => arr.concat(item));
         let registerBill = super.serializeJSON(this.form, {
             customTypes: {
                 hmcustFun: function (strVal, el) {
@@ -107,6 +113,7 @@ class NewRegisterBillAdd extends WebConfig {
                 }
             }
         });
+        registerBill['imageCertList'] = imageCertList;
         debugger;
         return;
         try {
