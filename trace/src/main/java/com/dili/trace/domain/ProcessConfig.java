@@ -38,6 +38,49 @@ public class ProcessConfig extends BaseDomain {
     @Column(name = "`is_manully_checkIn`")//is_audit_before_checkin
     private Integer isManullyCheckIn;
 
+
+    /**
+     * 采样检测
+     */
+    @Column(name = "`is_sample_detect`")//is_sample_detect
+    private Integer isSampleDetect;
+
+    /**
+     * 场内审核
+     */
+    @Column(name = "`is_audit_after_checkin`")//is_audit_after_checkin
+    private Integer isAuditAfterCheckin;
+
+    /**
+     * 检测接单
+     */
+    @Column(name = "`is_confirm_detect`")//is_confirm_detect
+    private Integer isConfirmDetect;
+
+    public Integer getIsSampleDetect() {
+        return isSampleDetect;
+    }
+
+    public void setIsSampleDetect(Integer isSampleDetect) {
+        this.isSampleDetect = isSampleDetect;
+    }
+
+    public Integer getIsAuditAfterCheckin() {
+        return isAuditAfterCheckin;
+    }
+
+    public void setIsAuditAfterCheckin(Integer isAuditAfterCheckin) {
+        this.isAuditAfterCheckin = isAuditAfterCheckin;
+    }
+
+    public Integer getIsConfirmDetect() {
+        return isConfirmDetect;
+    }
+
+    public void setIsConfirmDetect(Integer isConfirmDetect) {
+        this.isConfirmDetect = isConfirmDetect;
+    }
+
     @Override
     public Long getId() {
         return id;

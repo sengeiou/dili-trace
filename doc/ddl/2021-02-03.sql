@@ -88,6 +88,7 @@ CREATE TABLE `default_field_detail` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
+
 INSERT INTO dili_trace.default_field_detail (module_type,field_id,field_label,field_name,default_value,json_path,json_path_type,created,modified) VALUES
 (1,NULL,'皮重','truckTareWeight',NULL,'$.truckTareWeight',1,'2021-02-25 17:12:11.0','2021-02-25 17:12:11.0'),
 (1,NULL,'是否拼车','truckType',NULL,'$.truckType',1,'2021-02-25 17:12:11.0','2021-02-25 17:12:11.0'),
@@ -101,7 +102,15 @@ INSERT INTO dili_trace.default_field_detail (module_type,field_id,field_label,fi
 (1,NULL,'到场时间','arrivalDatetime',NULL,'$.arrivalDatetime',1,'2021-02-25 17:12:11.0','2021-02-25 17:12:11.0');
 INSERT INTO dili_trace.default_field_detail (module_type,field_id,field_label,field_name,default_value,json_path,json_path_type,created,modified) VALUES
 (1,NULL,'到货摊位','arrivalTallynos',NULL,'$.arrivalTallynos',1,'2021-02-25 17:12:11.0','2021-02-25 17:12:11.0'),
-(1,NULL,'上传证明','imageCertList',NULL,'$.imageCertList.certType',1,'2021-03-12 12:23:27.0','2021-03-12 12:23:27.0');
+(1,NULL,'上传证明','imageCertList',NULL,'$.imageCertList.certType',1,'2021-03-12 12:23:27.0','2021-03-12 12:23:27.0'),
+(1,NULL,'计重方式','measureType',NULL,'$.measureType',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'业户名称','name',NULL,'$.name',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'企业名称','corporateName',NULL,'$.corporateName',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'自定义商品别名','productAliasName',NULL,'$.productAliasName',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'商品重量','weight',NULL,'$.weight',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'产地','originId',NULL,'$.originId',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0'),
+(2,NULL,'是否打印检测报告','isPrintCheckReport',NULL,'$.isPrintCheckReport',1,'2021-03-18 16:20:42.0','2021-03-18 16:20:42.0');
+
 
 CREATE TABLE `field_config` (
     `id` bigint NOT NULL AUTO_INCREMENT,
@@ -137,6 +146,11 @@ CREATE TABLE `process_config` (
       `is_autoverify_passed` int NOT NULL DEFAULT 1 COMMENT '是否登记审核',
       `can_docheckin_without_weight` int NOT NULL DEFAULT 1 COMMENT '是否进门称重',
       `is_manully_checkIn` int NOT NULL DEFAULT 1 COMMENT '是否进门审核',
+
+      `is_sample_detect` int NOT NULL DEFAULT 1 COMMENT '采样检测',
+      `is_audit_after_checkin` int NOT NULL DEFAULT 1 COMMENT '场内审核',
+      `is_confirm_detect` int NOT NULL DEFAULT 1 COMMENT '检测接单',
+
       `created` datetime NOT NULL DEFAULT now(),
       `modified` datetime NOT NULL DEFAULT now(),
       PRIMARY KEY (`id`)
