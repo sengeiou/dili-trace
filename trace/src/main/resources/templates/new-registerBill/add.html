@@ -293,7 +293,7 @@
         groupedImageCertList.push({
                 'certType':'${imageCertType.code}',
                 'certTypeName':'${imageCertType.name}',
-                fileList:${json(item.groupedImageCertList[imageCertType])}
+                fileList:${json(item.groupedImageUidList[imageCertType])}
             })
           imageCertListTemp['${imageCertType.code}']=[];
     <%}%>

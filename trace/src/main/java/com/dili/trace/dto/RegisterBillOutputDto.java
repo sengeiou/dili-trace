@@ -72,6 +72,19 @@ public class RegisterBillOutputDto extends RegisterBill {
         });
         return map;
     }
+    @JSONField(serialize = false)
+    public Map<ImageCertTypeEnum, List<String>> getGroupedImageUidList() {
+
+        Map<ImageCertTypeEnum, List<String>>map= StreamEx.ofNullable(this.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(item->item.getCertType()!=null)
+                .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), item->item.getUid()).filterKeys(Objects::nonNull)
+                .grouping();
+        StreamEx.of(ImageCertTypeEnum.values()).filter(e->{
+            return !map.containsKey(e);
+        }).forEach(e->{
+            map.put(e,new ArrayList<>());
+        });
+        return map;
+    }
 
     public List<QualityTraceTradeBill> getQualityTraceTradeBillList() {
         return qualityTraceTradeBillList;
