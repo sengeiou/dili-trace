@@ -352,17 +352,17 @@
                 if (!isIMAGE) {
                     this.$message({
                         message: '上传文件只能是图片格式!',
-    type: 'warning'
-    });
-    return false;
-    }
-    if (!isLt1M) {
-    this.$message({
-    message: '上传文件大小不能超过 10MB!',
-    type: 'warning'
-    });
-    return false;
-    }
+                    type: 'warning'
+                    });
+                    return false;
+                }
+                if (!isLt1M) {
+                        this.$message({
+                            message: '上传文件大小不能超过 10MB!',
+                            type: 'warning'
+                        });
+                    return false;
+                }
     }
     },
 
