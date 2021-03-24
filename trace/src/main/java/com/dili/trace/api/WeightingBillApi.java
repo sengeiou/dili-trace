@@ -117,7 +117,7 @@ public class WeightingBillApi {
     @RequestMapping("/updateRegisterBill.api")
     public BaseOutput updateRegisterBill(@RequestBody RegisterBillDto inputDto) {
 
-        if (inputDto == null || inputDto.getId() == null || inputDto.getWeightingBillId() == null) {
+        if (inputDto == null || inputDto.getBillId() == null || inputDto.getWeightingBillId() == null) {
             return BaseOutput.failure("参数错误");
         }
 
@@ -126,7 +126,7 @@ public class WeightingBillApi {
             q.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
             q.setIsDeleted(YesOrNoEnum.NO.getCode());
             q.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-            q.setId(inputDto.getId());
+            q.setId(inputDto.getBillId());
 
             RegisterBill item = StreamEx.of(this.registerBillService.listByExample(q)).findFirst().orElse(null);
             if (item == null) {
