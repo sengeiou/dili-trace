@@ -115,8 +115,7 @@ public class FieldConfigController {
 
         modelMap.put("imageCertTypeList", ImageCertTypeEnum.values());
 
-        modelMap.put("truckTypeEnumList", TruckTypeEnum.values());
-        modelMap.put("measureTypeEnumList", MeasureTypeEnum.values());
+        modelMap.put("yesornoEnumList", YesOrNoEnum.values());
 
         return "fieldConfig/detectrequest";
     }
