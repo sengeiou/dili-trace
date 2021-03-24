@@ -1,7 +1,6 @@
 // import $ from 'jquery';
 // import _ from 'underscore';
-
-
+// import Vue from 'vue'
 class NewRegisterBillAdd extends WebConfig {
     form: JQuery;
     submitBtn: JQuery;
@@ -32,8 +31,6 @@ class NewRegisterBillAdd extends WebConfig {
             //@ts-ignore
             $(this).valid();
         });
-
-
         //@ts-ignore
         let arrivalTallynosSelect2 = this.form.find('select[name="arrivalTallynos"][multiple]').select2({
             placeholder: '-- 请选择 --',
