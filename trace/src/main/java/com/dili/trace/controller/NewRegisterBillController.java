@@ -271,7 +271,11 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
-        modelMap.put("item", this.maskRegisterBillOutputDto(registerBill));
+        RegisterBillOutputDto registerBillOutputDto=RegisterBillOutputDto.build(this.maskRegisterBillOutputDto(registerBill),Lists.newLinkedList());
+
+        String upstreamName=StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
+        registerBillOutputDto.setUpStreamName(upstreamName);
+        modelMap.put("item", registerBillOutputDto);
 
         modelMap.put("citys", this.queryCitys());
 

@@ -95,13 +95,13 @@
                 <div>
                     <% if (@filedNameRetMap.get('measureType').getAvailableValueList().contains(@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getStringCode())) { %>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()}" checked/>
+                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()}"  <%if(item.measureType==@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()){%>checked<%}%>/>
                         <label class="form-check-label" for="">计重</label>
                     </div>
                     <% } %>
                     <% if (@filedNameRetMap.get('measureType').getAvailableValueList().contains(@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getStringCode())) { %>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()}" checked/>
+                        <input class="form-check-input" type="radio" name="measureType" value="${@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()}" <%if(item.measureType==@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()){%>checked<%}%>/>
                         <label class="form-check-label" for="">计件</label>
                     </div>
                     <% } %>
@@ -284,7 +284,7 @@
 <script src="${contextPath!}/resources/js/UpStreamController.js"></script>
 <script src="${contextPath!}/resources/js/CustomerController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/js/RegisterHeadController.js"></script>
-<script src="${contextPath!}/resources/js/NewRegisterBill.add.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/NewRegisterBill.edit.js?v=${v}"></script>
 <script type="text/javascript">
     var groupedImageCertList=[];
     var imageCertListTemp = {};
@@ -412,19 +412,19 @@
         //计重方式radio事件处理
         $('input[name="measureType"]').on("change", function() {
             let val = $('input[name="measureType"]:checked').val();
+
             if (val === '${@com.dili.trace.enums.MeasureTypeEnum.COUNT_WEIGHT.getCode()}') {
                 $('#countWeightMeasureTypeDiv').removeClass("d-none");
                 $('#countWeightMeasureTypeDiv input').prop("disabled", false).val('');
                 $('#countUnitMeasureTypeDiv').addClass("d-none");
                 $('#countUnitMeasureTypeDiv input').prop("disabled", true);
-            } else {
+            } else if(val === '${@com.dili.trace.enums.MeasureTypeEnum.COUNT_UNIT.getCode()}'){
                 $('#countWeightMeasureTypeDiv').addClass("d-none");
                 $('#countWeightMeasureTypeDiv input').prop("disabled", true)
                 $('#countUnitMeasureTypeDiv').removeClass("d-none");
                 $('#countUnitMeasureTypeDiv input').prop("disabled", false).val('');
             }
         });
-        $('input[name="measureType"]').val('${item.measureType}');
         $('input[name="measureType"]').trigger("change");
 
         //件数、件重输入事件处理
@@ -441,7 +441,7 @@
         $('input[name="pieceWeight"]').on("input", countTotalWeight);
 
 
-        new NewRegisterBillAdd($('#saveForm'), $('#saveBtn'));
+        new NewRegisterBillEdit($('#saveForm'), $('#saveBtn'));
     });
 
 
