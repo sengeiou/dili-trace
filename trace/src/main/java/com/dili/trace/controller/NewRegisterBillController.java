@@ -259,9 +259,9 @@ public class NewRegisterBillController {
     public String edit(Long id, ModelMap modelMap) {
         RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
             return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
-        }).orElse(null);
-        if (registerBill == null) {
-            return "";
+        }).orElse(new RegisterBillOutputDto());
+        if (registerBill.getBillId() == null) {
+            return "new-registerBill/edit";
         }
         registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null)));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
@@ -271,7 +271,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
-        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+        modelMap.put("item", this.maskRegisterBillOutputDto(registerBill));
 
         modelMap.put("citys", this.queryCitys());
 
@@ -284,6 +284,18 @@ public class NewRegisterBillController {
         } else {
             modelMap.put("userPlateList", new ArrayList<>(0));
         }
+
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
+        List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
+        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
+
+
         return "new-registerBill/edit";
     }
 
