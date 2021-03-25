@@ -3,6 +3,7 @@ package com.dili.trace.rpc.service;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -528,4 +529,32 @@ public class ProductRpcService {
 //        // obj.setInStockNo(bill.getCode());
 //        return obj;
 //    }
+
+    /**
+     * 锁定 or 释放库存
+     * @param lockReleaseRequestDto
+     * @return
+     */
+    public void lockOrRelease(LockReleaseRequestDto lockReleaseRequestDto) {
+        BaseOutput<?> baseOutput = productRpc.lockOrRelease(lockReleaseRequestDto);
+        if (!baseOutput.isSuccess()) {
+            throw new BusinessException("", "锁定or释放库存接口失败");
+        }
+    }
+
+    /**
+     * 锁定 or 释放库存
+     * @param firmId 市场ID
+     * @param firmName 市场名称
+     * @param amount 数量
+     * @param stockId 库存ID
+     * @param frozen 是否锁定  1 是  0 否
+     */
+    public void lockOrRelease(Long firmId, String firmName, Float amount, Long stockId, Integer frozen) {
+        LockReleaseItem item = new LockReleaseItem(amount, stockId, frozen);
+        List<LockReleaseItem> items = new ArrayList<>();
+        items.add(item);
+        LockReleaseRequestDto lockReleaseRequestDto = new LockReleaseRequestDto(firmId, firmName, items);
+        lockOrRelease(lockReleaseRequestDto);
+    }
 }
