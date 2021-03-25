@@ -375,12 +375,17 @@ public class ManagerRegisterHeadApi {
             RegisterBill registerBill = new RegisterBill();
             registerBill.setRegisterHeadCode(code);
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
+
+
+            List<Long>billIdList=StreamEx.of(registerBills).map(RegisterBill::getBillId).toList();
+            Map<Long,List<String>>billIdTallyMap=this.registerTallyAreaNoService.findTallyAreaNoByRegisterBillIdList(billIdList);
             if (null != registerBills && CollectionUtils.isNotEmpty(registerBills)) {
                 registerBills.forEach(e -> {
                     List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_BILL);
                     e.setImageCertList(imageCerts);
                     UpStream u = upStreamService.get(e.getUpStreamId());
                     e.setUpStreamName(u.getName());
+                    e.setArrivalTallynos(billIdTallyMap.getOrDefault(e.getBillId(),Lists.newArrayList()));
                 });
             }
             registerHead.setRegisterBills(registerBills);

@@ -77,12 +77,30 @@ public class RegisterTallyAreaNoService extends TraceBaseService<RegisterTallyAr
      * @return
      */
     public Map<Long, List<String>> findTallyAreaNoByRegisterHeadIdList(List<Long> billIdList) {
+        return this.findTallyAreaNoByIdListAndType(billIdList,BillTypeEnum.MASTER_BILL);
+    }
+    /**
+     * 根据id查询摊位号
+     * @param billIdList
+     * @return
+     */
+    public Map<Long, List<String>> findTallyAreaNoByRegisterBillIdList(List<Long> billIdList) {
+
+        return this.findTallyAreaNoByIdListAndType(billIdList,BillTypeEnum.REGISTER_BILL);
+    }
+    /**
+     * 根据id查询摊位号
+     * @param billIdList
+     * @return
+     */
+    private Map<Long, List<String>> findTallyAreaNoByIdListAndType(List<Long> billIdList,BillTypeEnum billTypeEnum) {
         if (CollectionUtils.isEmpty(billIdList)) {
             return Maps.newHashMap();
         }
         TallyAreaNoQueryDto q=new TallyAreaNoQueryDto();
         q.setBillIdList(billIdList);
-        q.setBillType(BillTypeEnum.MASTER_BILL.getCode());
+        q.setBillType(billTypeEnum.getCode());
         return StreamEx.of(this.listByExample(q)).mapToEntry(RegisterTallyAreaNo::getBillId,RegisterTallyAreaNo::getTallyareaNo).grouping();
     }
+
 }

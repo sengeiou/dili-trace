@@ -332,6 +332,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
             registerHead.setRemainWeight(remianWeight.subtract(billWeight));
             registerHeadService.updateSelective(registerHead);
+            List<String>arrivalTallynos=StreamEx.of(registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerHead.getId(),BillTypeEnum.MASTER_BILL)).map(RegisterTallyAreaNo::getTallyareaNo).toList();
+            registerBill.setArrivalTallynos(arrivalTallynos);
         }
 
         // 保存报备单
