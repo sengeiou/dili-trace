@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+import java.lang.annotation.Target;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -158,5 +159,11 @@ public class ProductRpcServiceTest extends AutoWiredBaseTest {
         this.productRpcService.increaseRegDetail(tradeDetail.getTradeDetailId(), 8L, BigDecimal.valueOf(5), Optional.empty());
     }
 
-
+    /**
+     * 测试
+     */
+    @Test
+    public void testLockOrRelease() {
+        productRpcService.lockOrRelease(11L, "杭州水产", 1f, 20210118000006L, 0);
+    }
 }
