@@ -87,7 +87,7 @@ class NewRegisterBillEdit extends WebConfig {
             $(this).valid();
         });
         $('#registType').on('change', async (e) => {
-            if (RegistTypeEnum.PARTIAL != $(e.target).val()) {
+            if (30 != $(e.target).val()) {
                 registerHeadCodeInput.parent('div').hide();
                 return;
             }

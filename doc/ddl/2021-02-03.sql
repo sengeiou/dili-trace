@@ -147,10 +147,6 @@ CREATE TABLE `process_config` (
       `can_docheckin_without_weight` int NOT NULL DEFAULT 1 COMMENT '是否进门称重',
       `is_manully_checkIn` int NOT NULL DEFAULT 1 COMMENT '是否进门审核',
 
-      `is_sample_detect` int NOT NULL DEFAULT 1 COMMENT '采样检测',
-      `is_audit_after_checkin` int NOT NULL DEFAULT 1 COMMENT '场内审核',
-      `is_confirm_detect` int NOT NULL DEFAULT 1 COMMENT '检测接单',
-
       `created` datetime NOT NULL DEFAULT now(),
       `modified` datetime NOT NULL DEFAULT now(),
       PRIMARY KEY (`id`)
