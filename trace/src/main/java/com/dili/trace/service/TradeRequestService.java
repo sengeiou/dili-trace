@@ -43,6 +43,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * 交易请求
@@ -822,7 +823,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 outPutDto.setUserId(sellerId);
                 outPutDto.setUserName(cust.getName());
                 outPutDto.setOrganizationType(cust.getOrganizationType());
-                StreamEx.of(cust.getAttachmentGroupInfoList()).filterBy(AttachmentGroupInfo::getCode, CustomerEnum.AttachmentType.营业执照.getCode())
+                StreamEx.ofNullable(cust.getAttachmentGroupInfoList()).flatCollection(Function.identity()).nonNull()
+                        .filterBy(AttachmentGroupInfo::getCode, CustomerEnum.AttachmentType.营业执照.getCode())
                         .flatCollection(AttachmentGroupInfo::getAttachmentList).findFirst().ifPresent(businessLicenseAttachment -> {
                     outPutDto.setBusinessLicenseAttachment(businessLicenseAttachment);
 
