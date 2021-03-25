@@ -21,7 +21,6 @@
     .el-upload--picture-card i {
         font-size: 22px;
     }
-
 </style>
 <div class="container-fluid pb-5" id="app">
     <el-form ref="app"  id="saveForm" label-width="150px" >
@@ -31,7 +30,7 @@
                 <select id="registType" name="registType" class="form-control" required></select>
                 <#bcomboProvider _id="registType" _provider="registTypeProvider" _value=""/>
             </div>
-            <div class="form-group col">
+            <div class="form-group col" id="userInputDiv">
                 <label for="">卖家姓名</label>
                 <input type="text"
                        class="form-control input-sm "
@@ -40,17 +39,20 @@
                 <input type="hidden" name="userId" id="userId"/>
                 <input type="hidden" name="name" id="name"/>
             </div>
-
-            <div class="form-group col" style="display:none">
-                <label for="">台账</label>
-                <input type="text" class="form-control" data-rule-depends="input[name='registerHeadCode']"
-                       data-value-type="skip"
-                       name="registerHeadCodeInput"
-                       placeholder="输入商品名查询"
-                       required/>
-                <input type="hidden" class="form-control" minlength="7" maxlength="8" name="registerHeadCode" required/>
+            <div id="registerHeadDiv" style="display: none">
+                <div class="form-group col">
+                    <label for="">台账</label>
+                    <select class="form-control  input-sm " name="registerHeadCode"  required> </select>
+                </div>
+                <div class="form-group col">
+                    <label for="">主台账重量</label>
+                    <input class="form-control  input-sm " name="registerHead.weight"  disabled />
+                </div>
+                <div class="form-group col">
+                    <label for="">待进门重量</label>
+                    <input class="form-control  input-sm " name="registerHead.remainWeight" disabled />
+                </div>
             </div>
-
             <% if (@filedNameRetMap.containsKey('truckType') && @filedNameRetMap.get('truckType').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">是否拼车</label>

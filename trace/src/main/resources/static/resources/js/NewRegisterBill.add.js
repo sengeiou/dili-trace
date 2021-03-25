@@ -13,6 +13,7 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="productName"]').val(suggestion.value);
             $(this).valid();
         });
+        let registerHeadController = new RegisterHeadController();
         let cityController = new CityController();
         super.initTraceAutoComplete($("[name='originInput']"), function (query, done) {
             cityController.lookupCities(query, done);
@@ -22,6 +23,7 @@ class NewRegisterBillAdd extends WebConfig {
             $('[name="originName"]').val(suggestion.value);
             $(this).valid();
         });
+        let registerHeadCode = this.form.find('select[name="registerHeadCode"]');
         let arrivalTallynosSelect2 = this.form.find('select[name="arrivalTallynos"][multiple]').select2({
             placeholder: '-- 请选择 --',
             language: "zh-CN",
@@ -32,14 +34,15 @@ class NewRegisterBillAdd extends WebConfig {
         }, function (suggestion) {
             $(this).data('select-text', suggestion.value);
             $(this).val(suggestion.value);
-            $('[name="userId"]').val(suggestion.id);
+            let userId = suggestion.id;
+            $('[name="userId"]').val(userId);
             $('[name="name"]').val(suggestion.item.name);
             $(this).valid();
+            arrivalTallynosSelect2.html('');
             (async () => {
                 try {
-                    arrivalTallynosSelect2.html('');
                     arrivalTallynosSelect2.val(null).trigger('change');
-                    let dataList = await customerController.listSellerTallaryNoByUserId(suggestion.id);
+                    let dataList = await customerController.listSellerTallaryNoByUserId(userId);
                     $.each(dataList, async (i, v) => {
                         var tallaryNo = v['assetsName'];
                         var newOption = new Option(tallaryNo, tallaryNo, false, false);
@@ -50,6 +53,18 @@ class NewRegisterBillAdd extends WebConfig {
                     console.error(e);
                 }
             })();
+            registerHeadCode.html('');
+            if (30 == $('#registType').val()) {
+                (async () => {
+                    registerHeadCode.val(null).trigger('change');
+                    let dataList = await registerHeadController.listRegisterHead({ userId: userId, minRemainWeight: 0 });
+                    $.each(dataList, async (i, v) => {
+                        var registerHeadCode = v['code'];
+                        var newOption = new Option(v['productName'], registerHeadCode, false, false);
+                        registerHeadCode.append(newOption).trigger('change');
+                    });
+                })();
+            }
         });
         let upstreamController = new UpStreamController();
         super.initTraceAutoComplete($("[name='upStreamName']"), function (query, done) {
@@ -71,27 +86,18 @@ class NewRegisterBillAdd extends WebConfig {
         this.initRegistType();
     }
     initRegistType() {
-        var registerHeadCodeInput = $('input[name="registerHeadCodeInput"]');
-        let registerHeadController = new RegisterHeadController();
-        super.initTraceAutoComplete(registerHeadCodeInput, function (query, done) {
-            $.extend(query, { userId: $('input[name="userId"]').val() });
-            registerHeadController.lookupRegisterHead(query, done);
-        }, async (suggestion, a, b) => {
-            debugger;
-            $(this).val(suggestion.value);
-            let registerHeadCode = suggestion.item.code;
-            $('[name="registerHeadCode"]').val(registerHeadCode);
-            let plateList = suggestion.item.plateList;
-            let arrivalTallynos = suggestion.item.arrivalTallynos;
-            debugger;
-            $(this).valid();
-        });
+        var registerHeadCodeInput = $('select[name="registerHeadCode"]');
         $('#registType').on('change', async (e) => {
             if (30 != $(e.target).val()) {
-                registerHeadCodeInput.parent('div').hide();
+                $('#registerHeadDiv').hide();
+                $('[name="registerHeadCode"]').val('');
+                this.form.find('input[type="text"]').prop('readonly', false);
                 return;
             }
-            registerHeadCodeInput.parent('div').show();
+            $('#registerHeadDiv').show();
+            this.form.find('input[type="text"]').prop('readonly', true);
+            this.form.find('input[name="plate"]').prop('readonly', false);
+            $('#userInputDiv').find('input').prop('readonly', false);
         });
     }
     async doAdd() {
