@@ -36,33 +36,9 @@ public class ImageController {
      * @return
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress) {
+    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam(required = false) Integer type, @RequestParam(required = false) Boolean compress) {
         try {
             return BaseOutput.successData(this.dfsRpcService.uploadImage(file));
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("upload", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 上传图片
-     *
-     * @param file
-     * @param type
-     * @param compress
-     * @return
-     */
-    @RequestMapping(value = "/uploadImage.action", method = RequestMethod.POST)
-    public BaseOutput<Object> uploadImage(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress) {
-        try {
-            String uid=this.dfsRpcService.uploadImage(file);
-            Map<String,Object> dataMap= Maps.newHashMap();
-            dataMap.put("uid",uid);
-            dataMap.put("type",type);
-            return BaseOutput.successData(dataMap);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
