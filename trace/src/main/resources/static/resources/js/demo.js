@@ -73,5 +73,13 @@
     e2.name = "ss";
     let ss = { name: '', age: 34 };
     let n = { age: 23, name: '' };
+    var comp = Vue.component("demo", {
+        props: ['todo'],
+        template: '<a href="">{{todo.text}}</a>',
+    });
+    var app = new Vue({
+        el: '',
+        data: {},
+    });
     console.info("abcd");
 });

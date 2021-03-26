@@ -82,16 +82,28 @@ class ImplE implements E {
         this.name = "abc";
     }
 }
-var e2=new ImplE();
-e2.name="ss";
 
-type sss={name:string,age:number};
-let ss:sss={name:'',age:34};
+var e2 = new ImplE();
+e2.name = "ss";
 
-let n:{name:string,age:number}={age:23,name:''};
+type sss = { name: string, age: number };
+let ss: sss = {name: '', age: 34};
 
+let n: { name: string, age: number } = {age: 23, name: ''};
 
 
 // e2.age=44; error
+
+import {Component} from 'vue'
+var comp = Vue.component("demo", {
+    props:['todo'],
+    template: '<a href="">{{todo.text}}</a>',
+});
+var app=new Vue(
+    {
+        el:'',
+        data:{},
+    }
+);
 
 console.info("abcd")
