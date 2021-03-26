@@ -22,6 +22,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
+import com.dili.trace.util.JsonPathUtil;
 import com.dili.trace.util.NumUtils;
 import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -575,11 +576,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             }else{
 
                 String json = JSON.toJSONString(registerBill);
-                Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL);
-                List<Object> certTypeObjectList = JsonPath.using(conf).parse(json).read("$.imageCertList[*].certType");
-                List<Integer>certTypeList= StreamEx.ofNullable(certTypeObjectList).flatCollection(Function.identity()).nonNull()
-                        .select(Integer.class).toList();
-
+                List<Integer>certTypeList= JsonPathUtil.parse(json,retDto.getDefaultFieldDetail().getJsonPath(),Integer.class);
                 List<Integer>availableValueList=   StreamEx.ofNullable(retDto.getAvailableValueList()).flatCollection(Function.identity()).nonNull().map(String::valueOf).map(v->{
                     try{
                         return Integer.parseInt(v);
