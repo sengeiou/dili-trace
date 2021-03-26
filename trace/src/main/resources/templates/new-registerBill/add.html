@@ -1,6 +1,14 @@
 <#bs4Body>
 <#vueElm />
 <script src="${contextPath}/resources/design/extends/vue-ele-form-image-uploader/dist/vue-ele-form-image-uploader.umd.min.js"></script>
+<style>
+    .el-input-group__append .el-select .el-input {
+        width: 130px;
+    }
+    .input-with-select .el-input-group__prepend {
+        background-color: #fff;
+    }
+</style>
 <div id="app">
     <ele-form
             v-bind="formConfig"
@@ -154,7 +162,7 @@
                         },
                         registerHeadWeight: {
                             isOptions: true,
-                            default: "我是一段静态文本",
+                            default: "0",
                             type: "text",
                             label: "主台账重量",
                             vif: function (form) {
@@ -167,7 +175,7 @@
                         },
                         registerHeadRemainWeight: {
                             isOptions: true,
-                            default: "我是一段静态文本",
+                            default: "0",
                             type: "text",
                             label: "待进门重量",
                             vif: function (form) {
@@ -443,7 +451,13 @@
                             type: "image-uploader",
                             label: "上传图片",
                             attrs: {
-                                action: "https:\u002F\u002Fwww.mocky.io\u002Fv2\u002F5cc8019d300000980a055e76"
+                                name: "file",
+                                multiple: true,
+                                action: "/action/imageApi/upload",
+                                limit: "10",
+                                data: {
+                                    type: 1
+                                }
                             }
                         },
                     },
@@ -476,6 +490,7 @@
         },
         methods: {
             handleRequest(data) {
+                // ${imageViewPathPrefix}
                 console.log(data);
                 return Promise.resolve();
             },
