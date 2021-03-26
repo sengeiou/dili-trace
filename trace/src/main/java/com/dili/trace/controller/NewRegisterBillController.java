@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.entity.SessionData;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
@@ -172,9 +173,16 @@ public class NewRegisterBillController {
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
         modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
+        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
+            Map<String,Object>m=new HashMap<>();
+            m.put("certType",e.getCode());
+            m.put("certTypeName",e.getName());
+            return m;
+        }).toList()));
         modelMap.put("item", new RegisterBillOutputDto());
         return "new-registerBill/add";
     }
+
 
     /**
      * 新增
