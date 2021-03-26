@@ -1,10 +1,10 @@
-class DetectReportStaticsGrid extends ListPage {
+class RegisterBillDataReportGrid extends ListPage {
     uid:string;
     btns:any[];
     toolbar:any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
-        super(grid,queryform,queryform.find('#query'),"/newRegisterBill/listStaticsPage.action");
+        super(grid,queryform,queryform.find('#query'),"/registerBillDataReport/listStaticsPage.action");
         this.toolbar=toolbar;
         this.btns=this.toolbar.find('button');
         this.uid=_.uniqueId("trace_id_");
@@ -18,7 +18,7 @@ class DetectReportStaticsGrid extends ListPage {
         // this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
         //追加监听统计各个类型的数量
         document.getElementById("query").addEventListener("click", function () {
-            cthis.initStaticsNum("/newRegisterBill/listStaticsPageNum.action");
+            cthis.initStaticsNum("/registerBillDataReport/listStaticsPageNum.action");
         }, false);
         window.addEventListener('message', function(e) {
             var data=JSON.parse(e.data);
@@ -32,7 +32,7 @@ class DetectReportStaticsGrid extends ListPage {
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
         (async ()=>{
-            await this.initStaticsNum("/newRegisterBill/listStaticsPageNum.action");
+            await this.initStaticsNum("/registerBillDataReport/listStaticsPageNum.action");
         })();
     }
 

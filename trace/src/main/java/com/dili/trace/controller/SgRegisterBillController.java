@@ -577,56 +577,7 @@ public class SgRegisterBillController {
         return BaseOutput.success("操作成功");
     }*/
 
-    /**
-     * 跳转到statics页面
-     *
-     * @param modelMap
-     * @return
-     *//*
-    @ApiOperation("跳转到statics页面")
-    @RequestMapping(value = "/statics.html", method = RequestMethod.GET)
-    public String statics(ModelMap modelMap) {
-        Date now = new Date();
-        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        return "sg/registerBill/statics";
-    }*/
 
-    /**
-     * 查询统计数据
-     *
-     * @param registerBill
-     * @return
-     * @throws Exception
-     *//*
-    @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    String listStaticsPage(RegisterBillDto registerBill) throws Exception {
-        return this.registerBillService.listStaticsPage(registerBill);
-    }*/
-
-    /**
-     * 查询统计数据
-     *
-     * @param registerBill
-     * @return
-     * @throws Exception
-     *//*
-    @RequestMapping(value = "/listStaticsData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
-        registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
-//        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeStart())) {
-//            registerBill.setLatestDetectTimeTimeStart(null);
-//        }
-//        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeEnd())) {
-//            registerBill.setLatestDetectTimeTimeEnd(null);
-//        }
-
-        RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
-
-        return BaseOutput.success().setData(staticsDto);
-    }*/
 
     /**
      * 交易区订单溯源页面（二维码）

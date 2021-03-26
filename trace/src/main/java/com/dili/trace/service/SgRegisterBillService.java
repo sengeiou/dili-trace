@@ -34,10 +34,7 @@ public interface SgRegisterBillService {
      */
     public String listBasePageByExample(RegisterBillDto query) throws Exception;
 
-    /**
-     * 查询统计页面分页数据
-     */
-    public String listStaticsPage(RegisterBillDto dto) throws Exception;
+
 
     // /**
     // * 查找任务
@@ -154,13 +151,7 @@ public interface SgRegisterBillService {
      */
     public QualityTraceTradeBillOutDto findQualityTraceTradeBill(String tradeNo);
 
-    /**
-     * 根据状态统计数据
-     *
-     * @param dto
-     * @return
-     */
-    public RegisterBillStaticsDto groupByState(RegisterBillDto dto);
+
 
     /**
      * 通过登记单，获取详情

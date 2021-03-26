@@ -748,11 +748,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return dto;
     }
 
-    @Override
-    public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
-        dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-        return this.billMapper.groupByState(dto);
-    }
+
 
     @Override
     public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
@@ -1123,61 +1119,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return out.toString();
     }
 
-    @Override
-    public String listStaticsPage(RegisterBillDto dto) throws Exception {
-        if (StringUtils.isNotBlank(dto.getAttrValue())) {
-            switch (dto.getAttr()) {
-                case "code":
-                    dto.setCode(dto.getAttrValue());
-                    break;
-                case "plate":
-                    dto.setLikePlate(dto.getAttrValue());
-                    break;
-                case "tallyAreaNo":
-                    // registerBill.setTallyAreaNo(registerBill.getAttrValue());
-                    dto.setLikeTallyAreaNo(dto.getAttrValue());
-                    break;
-                case "latestDetectOperator":
-                    dto.setLatestDetectOperator(dto.getAttrValue());
-                    break;
-                case "name":
-                    dto.setName(dto.getAttrValue());
-                    break;
-                case "productName":
-                    dto.setLikeProductName(dto.getAttrValue());
-                    break;
-                case "likeSampleCode":
-                    dto.setLikeSampleCode(dto.getAttrValue());
-                    break;
-            }
-        }
-        StringBuilder sql = this.buildDynamicCondition(dto);
-        if (sql.length() > 0) {
-            dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
-        }
-        dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-//        dto.setLatestDetectTimeTimeStart(StringUtils.trimToNull(dto.getLatestDetectTimeTimeStart()));
-//        dto.setLatestDetectTimeTimeEnd(StringUtils.trimToNull(dto.getLatestDetectTimeTimeEnd()));
 
-//        dto.setCreatedStart(StringUtils.trimToNull(dto.getCreatedStart()));
-//        dto.setCreatedEnd(StringUtils.trimToNull(dto.getCreatedEnd()));
-        if (dto.getPage() == null || dto.getPage() < 0) {
-            dto.setPage(1);
-        }
-        if (dto.getRows() == null || dto.getRows() <= 0) {
-            dto.setRows(10);
-        }
-        PageHelper.startPage(dto.getPage(), dto.getRows());
-        PageHelper.orderBy(dto.getSort() + " " + dto.getOrder());
-        List<RegisterBillDto> list = this.billMapper.queryListByExample(dto);
-        Page<RegisterBillDto> page = (Page) list;
-
-        EasyuiPageOutput out = new EasyuiPageOutput();
-        List results = ValueProviderUtils.buildDataByProvider(dto, list);
-        out.setRows(results);
-        out.setTotal(page.getTotal());
-        return out.toString();
-    }
 
     private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
         StringBuilder sql = new StringBuilder();

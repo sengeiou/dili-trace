@@ -927,20 +927,7 @@ public class NewRegisterBillController {
         }
     }
 
-    /**
-     * 跳转到statics页面
-     *
-     * @param modelMap
-     * @return
-     */
-    @ApiOperation("跳转到statics页面")
-    @RequestMapping(value = "/statics.html", method = RequestMethod.GET)
-    public String statics(ModelMap modelMap) {
-        Date now = new Date();
-        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        return "detectReport/statics";
-    }
+
 
     /**
      * 跳转到statics页面
@@ -1009,117 +996,10 @@ public class NewRegisterBillController {
     }
 
 
-    /**
-     * 显示条数
-     *
-     * @param registerBill
-     * @return
-     */
-    private RegisterBillStaticsDto buildBillStatic(RegisterBillDto registerBill) {
-        List<RegisterBill> billList = billService.listByExample(registerBill);
-        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(billList).map(RegisterBill::getDetectRequestId).toList());
-        //检测值
-        StreamEx.of(billList).forEach(rb -> {
-            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
-        });
-        RegisterBillStaticsDto rbd = new RegisterBillStaticsDto();
-        StreamEx.of(billList).nonNull().forEach(b -> {
-            DetectRequest detectRequest = b.getDetectRequest();
-            //有产地证明
-            if (YesOrNoEnum.YES.getCode().equals(b.getHasOriginCertifiy())) {
-                rbd.setHasOriginCertifiyNum(rbd.getHasOriginCertifiyNum() + 1);
-            }
-            //有检测报告
-            if (YesOrNoEnum.YES.getCode().equals(b.getHasDetectReport())) {
-                rbd.setHasDetectReportNum(rbd.getHasDetectReportNum() + 1);
-            }
-            if (null != detectRequest) {
-                if (null != detectRequest.getDetectResult()) {
-                    //检测合格
-                    if (BillDetectStateEnum.PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectRequest.getDetectResult())) {
-                        rbd.setPassNum(rbd.getPassNum() + 1);
-                    }
-                    //检测不合格
-                    if (BillDetectStateEnum.NO_PASS.getCode().equals(detectRequest.getDetectResult()) || BillDetectStateEnum.REVIEW_NO_PASS.getCode().equals(detectRequest.getDetectResult())) {
-                        rbd.setNopassNum(rbd.getNopassNum() + 1);
-                    }
-                }
 
-                if (null != detectRequest.getDetectType()) {
-                    //检测采样
-                    if (SampleSourceEnum.SAMPLE_CHECK.getCode().equals(detectRequest.getDetectType())) {
-                        rbd.setCheckNum(rbd.getCheckNum() + 1);
-                    }
-                    //复检
-                    if (DetectTypeEnum.RECHECK.getCode().equals(detectRequest.getDetectType())) {
-                        rbd.setRecheckNum(rbd.getRecheckNum() + 1);
-                    }
-                }
-                //主动送检
-                if (null != detectRequest.getDetectSource() && SampleSourceEnum.AUTO_CHECK.getCode().equals(detectRequest.getDetectSource())) {
-                    rbd.setAutoCheckNum(rbd.getAutoCheckNum() + 1);
-                }
-            }
-            //有无打印报告
-            if (null != b.getCheckSheetId()) {
-                rbd.setHasCheckSheetNum(rbd.getHasCheckSheetNum() + 1);
-            }
-            //打印
-            if (null != b.getIsPrintCheckSheet()) {
-                rbd.setDiffCheckSheetNum(rbd.getDiffCheckSheetNum() + 1);
-            }
-        });
-        return rbd;
-    }
 
-    /**
-     * 查询统计数据
-     *
-     * @param registerBill
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    String listStaticsPage(@RequestBody RegisterBillDto registerBill) throws Exception {
-        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
-        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
 
-        return this.sgRegisterBillService.listStaticsPage(registerBill);
-    }
 
-    /**
-     * 查询各个统计数据(与列表查询条件一致)
-     *
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/listStaticsPageNum.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput listStaticsPageNum(@RequestBody RegisterBillDto registerBill) throws Exception {
-        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
-        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
-
-        RegisterBillStaticsDto registerBillStaticsDto = buildBillStatic(registerBill);
-        return BaseOutput.success().setData(registerBillStaticsDto);
-    }
-
-    /**
-     * 查询统计数据
-     *
-     * @param registerBill
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/listStaticsData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
-        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
-        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
-        registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
-        RegisterBillStaticsDto staticsDto = this.sgRegisterBillService.groupByState(registerBill);
-        return BaseOutput.success().setData(staticsDto);
-    }
 
 
     /**
