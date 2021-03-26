@@ -3,6 +3,7 @@ package com.dili.trace.domain;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.api.output.ProductStockExtendDataDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.TFEnum;
@@ -603,6 +604,9 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     private List<TradePushLog> tradePushLogs;
+
+    @Transient
+    private ProductStockExtendDataDto productStockExtendDataDto;
 
     @Transient
     private BigDecimal headWeight;
@@ -1578,5 +1582,13 @@ public class RegisterBill extends BaseDomain {
 
     public void setWeightingBillId(Long weightingBillId) {
         this.weightingBillId = weightingBillId;
+    }
+
+    public ProductStockExtendDataDto getProductStockExtendDataDto() {
+        return productStockExtendDataDto;
+    }
+
+    public void setProductStockExtendDataDto(ProductStockExtendDataDto productStockExtendDataDto) {
+        this.productStockExtendDataDto = productStockExtendDataDto;
     }
 }

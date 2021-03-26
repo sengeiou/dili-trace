@@ -11,6 +11,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.output.ProductStockExtendDataDto;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillTypeEnum;
@@ -91,6 +92,9 @@ public class ClientTradePushApi {
             pushLog.setOrder("asc");
             List<TradePushLog> tradePushLogs = tradePushService.listByExample(pushLog);
             registerBill.setTradePushLogs(tradePushLogs);
+
+            ProductStockExtendDataDto productStockExtendDataDto=new ProductStockExtendDataDto();
+            registerBill.setProductStockExtendDataDto(productStockExtendDataDto);
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
