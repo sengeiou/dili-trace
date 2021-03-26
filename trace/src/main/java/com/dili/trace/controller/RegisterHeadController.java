@@ -23,6 +23,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * 进门主台账单实现类
@@ -45,6 +46,8 @@ public class RegisterHeadController {
     RegisterTallyAreaNoService registerTallyAreaNoService;
     @Autowired
     UapRpcService uapRpcService;
+    @Autowired
+    UpStreamService upStreamService;
 
     /**
      * 跳转到RegisterHead页面
@@ -166,6 +169,16 @@ public class RegisterHeadController {
         List<RegisterHead> list = this.registerHeadService.listByExample(queryInput);
 
         List<Long> registerHeadIdList = StreamEx.of(list).map(RegisterHead::getId).toList();
+
+
+        UpStreamDto upStreamQ=new UpStreamDto();
+        upStreamQ.setIds(StreamEx.of(list).map(RegisterHead::getUpStreamId).nonNull().distinct().toList());
+        Map<Long,String>upStreamIdNameMap=StreamEx.of(upStreamQ).filter(q->{
+            return !q.getIds().isEmpty();
+        }).flatCollection(q->{
+            return this.upStreamService.listByExample(q);
+        }).toMap(UpStream::getId, UpStream::getName);
+
         Map<Long, List<String>> plateListMap = this.registerHeadPlateService.findPlateByRegisterHeadIdList(registerHeadIdList);
         Map<Long, List<String>> tallyAreaNoListMap = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(registerHeadIdList);
         List<RegisterHead> dataList = StreamEx.of(list).map(rh -> {
@@ -175,6 +188,7 @@ public class RegisterHeadController {
             List<String> registerTallyAreaNoList = tallyAreaNoListMap.getOrDefault(rh.getId(), Lists.newArrayList());
             rh.setArrivalTallynos(registerTallyAreaNoList);
 
+            rh.setUpStreamName(upStreamIdNameMap.getOrDefault(rh.getUpStreamId(),""));
             return rh;
 
         }).toList();
