@@ -84,11 +84,13 @@ public class ClientRegisterHeadApi {
     public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
         logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
         try {
-            Long userId = this.sessionContext.getSessionData().getUserId();
+            SessionData sessionData=this.sessionContext.getSessionData();
+            Long userId = sessionData.getUserId();
             logger.info("获取进门主台账单列表 操作用户:{}", userId);
             input.setSort("created");
             input.setOrder("desc");
             input.setUserId(userId);
+            input.setMarketId(sessionData.getMarketId());
 //            input.setMinRemainWeight(BigDecimal.ZERO);
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
 
@@ -129,6 +131,8 @@ public class ClientRegisterHeadApi {
     @RequestMapping(value = "/countByStatus.api", method = {RequestMethod.POST})
     public BaseOutput<List<VerifyStatusCountOutputDto>> countByStatus(@RequestBody RegisterHeadDto query) {
         try {
+            SessionData sessionData=this.sessionContext.getSessionData();
+            query.setMarketId(sessionData.getMarketId());
             // 10: 已启用 20：已关闭 30：废弃
             List<VerifyStatusCountOutputDto> list = new ArrayList<>(3);
             List<RegisterHead> registerHeads = registerHeadService.listByExample(query);
