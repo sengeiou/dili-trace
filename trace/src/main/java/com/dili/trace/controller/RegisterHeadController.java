@@ -43,6 +43,8 @@ public class RegisterHeadController {
     RegisterHeadPlateService registerHeadPlateService;
     @Autowired
     RegisterTallyAreaNoService registerTallyAreaNoService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 跳转到RegisterHead页面
@@ -92,6 +94,7 @@ public class RegisterHeadController {
 
     public @ResponseBody
     String listPage(RegisterHeadDto query) throws Exception {
+        query.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         return registerHeadService.listEasyuiPageByExample(query, true).toString();
     }
 
@@ -159,6 +162,7 @@ public class RegisterHeadController {
         if (queryInput.getUserId() == null) {
             return BaseOutput.successData(Lists.newArrayList());
         }
+        queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         List<RegisterHead> list = this.registerHeadService.listByExample(queryInput);
 
         List<Long> registerHeadIdList = StreamEx.of(list).map(RegisterHead::getId).toList();

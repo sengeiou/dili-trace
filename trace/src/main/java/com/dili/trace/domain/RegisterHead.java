@@ -2,6 +2,7 @@ package com.dili.trace.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -662,7 +663,7 @@ public class RegisterHead extends BaseDomain {
     }
 
     public String getWeightUnitName() {
-        return weightUnitName;
+        return WeightUnitEnum.toName(this.weightUnit);
     }
 
     public void setWeightUnitName(String weightUnitName) {

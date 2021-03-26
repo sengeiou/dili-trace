@@ -1079,6 +1079,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         RegisterBillDto dto = new RegisterBillDto();
         UserTicket userTicket = getOptUser();
         dto.setOperatorId(userTicket.getId());
+        dto.setMarketId(userTicket.getFirmId());
 //        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         dto.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         dto.setRows(1);
