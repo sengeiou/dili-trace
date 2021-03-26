@@ -28,6 +28,7 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
@@ -565,6 +566,33 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                 throw new TraceBizException("到货摊位不能为空");
             }
         }
+        //图片凭证
+        String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getImageCertList).getName();
+        FieldConfigDetailRetDto retDto = fieldConfigDetailRetDtoMap.getOrDefault(propName, null);
+        if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
+            if(CollectionUtils.isEmpty(registerBill.getImageCertList())){
+                throw new TraceBizException("凭证不能为空");
+            }else{
+
+                String json = JSON.toJSONString(registerBill);
+                Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL);
+                List<Object> certTypeObjectList = JsonPath.using(conf).parse(json).read("$.imageCertList[*].certType");
+                List<Integer>certTypeList= StreamEx.ofNullable(certTypeObjectList).flatCollection(Function.identity()).nonNull()
+                        .select(Integer.class).toList();
+
+                List<Integer>availableValueList=   StreamEx.ofNullable(retDto.getAvailableValueList()).flatCollection(Function.identity()).nonNull().map(String::valueOf).map(v->{
+                    try{
+                        return Integer.parseInt(v);
+                    }catch (Exception e){
+                        return null;
+                    }
+                }).nonNull().toList();
+                if(!availableValueList.containsAll(certTypeList)){
+                    throw new TraceBizException("凭证类型错误");
+                }
+            }
+        }
+
 
 
         // 计重类型，把件数和件重置空

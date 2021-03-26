@@ -33,6 +33,7 @@ public class LeaseOrderRpcController {
         if (assetsParamsDto.getCustomerId() == null) {
             return BaseOutput.failure("参数错误");
         }
+        assetsParamsDto.setBizType(1);
         assetsParamsDto.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         try {
             return this.leaseOrderRpcService.findLease(assetsParamsDto);
