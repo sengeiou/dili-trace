@@ -10,7 +10,7 @@ import javax.persistence.Column;
 public class BrandQueryDto extends Brand {
     @ApiModelProperty(value = "品牌名称")
     @Column(name = "`brand_name`")
-    @Operator(Like.BOTH)
+    @Like(Like.BOTH)
     private String likeBrandName;
 
     public String getLikeBrandName() {
