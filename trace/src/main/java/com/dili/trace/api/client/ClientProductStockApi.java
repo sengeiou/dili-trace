@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +62,8 @@ public class ClientProductStockApi {
     DetectRecordService detectRecordService;
     @Autowired
     RegisterBillService registerBillService;
+    @Autowired
+    DetectRequestService detectRequestService;
     @Autowired
     ImageCertService imageCertService;
 
@@ -180,18 +183,28 @@ public class ClientProductStockApi {
 
         RegisterBillDto rbQ = new RegisterBillDto();
         rbQ.setIdList(billIdList);
-        Map<Long, String> idCodeMap = StreamEx.of(this.registerBillService.listByExample(rbQ)).toMap(RegisterBill::getId, RegisterBill::getCode);
+        List<RegisterBill> registerBillList = this.registerBillService.listByExample(rbQ);
+
+
+        Map<Long, String> idCodeMap = StreamEx.of(registerBillList).toMap(RegisterBill::getId, RegisterBill::getCode);
+
+        Map<Long, Long> billIdDetectRequestIdMap = StreamEx.of(registerBillList)
+                .filter(b -> b.getDetectRequestId() != null)
+                .toMap(RegisterBill::getBillId, RegisterBill::getDetectRequestId);
 
         Map<Long, List<ImageCert>> billIdImageListMap = StreamEx.of(this.imageCertService.findImageCertListByBillIdList(billIdList, BillTypeEnum.REGISTER_BILL)).groupingBy(ImageCert::getBillId);
 
-        List<Long> detectRequestIdList = StreamEx.ofNullable(billIdList).filter(idList -> !idList.isEmpty()).flatCollection(idlist -> {
+        Map<Long, DetectRequest> detectRequestMap = StreamEx.ofNullable(billIdList).filter(idList -> !idList.isEmpty()).flatCollection(idlist -> {
             RegisterBillDto queryInputDto = new RegisterBillDto();
             queryInputDto.setIdList(idlist);
             return this.registerBillService.listByExample(queryInputDto);
-        }).map(RegisterBill::getDetectRequestId).toList();
+        }).map(RegisterBill::getDetectRequestId).map(detectRequestId -> {
+            DetectRequest detectRequest = this.detectRequestService.get(detectRequestId);
+            return detectRequest;
+        }).toMap(DetectRequest::getId, Function.identity());
 
 
-        Map<String, DetectRecord> codeDRMap = StreamEx.ofNullable(detectRequestIdList).filter(idList -> !idList.isEmpty()).flatCollection(idList -> {
+        Map<String, DetectRecord> codeDRMap = StreamEx.ofNullable(Lists.newArrayList(detectRequestMap.keySet())).filter(idList -> !idList.isEmpty()).flatCollection(idList -> {
             DetectRecordQueryDto detectRecord = new DetectRecordQueryDto();
             detectRecord.setDetectRequestIdList(idList);
             return this.detectRecordService.listByExample(detectRecord);
@@ -201,6 +214,12 @@ public class ClientProductStockApi {
             outDto.setImageCertList(billIdImageListMap.getOrDefault(billId, Lists.newArrayList()));
             DetectRecord detectRecord = StreamEx.ofNullable(idCodeMap.get(billId)).nonNull().map(code -> codeDRMap.get(code)).nonNull().findFirst().orElse(null);
             outDto.setDetectRecord(detectRecord);
+
+
+            Date scheduledDetectTime = StreamEx.of(billIdDetectRequestIdMap.get(billId)).nonNull().map(detectRequestId -> {
+                return detectRequestMap.get(detectRequestId);
+            }).nonNull().map(DetectRequest::getScheduledDetectTime).findFirst().orElse(null);
+            outDto.setScheduledDetectTime(scheduledDetectTime);
         });
 
         return BaseOutput.successData(dataList);
