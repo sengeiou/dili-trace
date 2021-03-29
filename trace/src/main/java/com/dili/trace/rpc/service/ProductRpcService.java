@@ -482,84 +482,16 @@ public class ProductRpcService {
 
 
     /**
-     * 根据报备单构建库存创建 DTO
-     *
-     * @param bill
-     * @param optUser
-     * @param marketId
-     * @return
-     */
-//    private RegCreateDto buildCreateDtoFromBill(RegisterBill bill, Optional<OperatorUser> optUser, Long marketId) {
-//        RegCreateDto obj = new RegCreateDto();
-//        obj.setFirmId(marketId);
-//        this.firmRpcService.getFirmById(marketId).ifPresent(firm -> {
-//            obj.setFirmName(firm.getName());
-//        });
-//        // 库存系统要校验InStockNo字段唯一，传报备单主键交易场景有问题，所以生成个唯一单号
-//        obj.setInStockNo(uidRestfulRpcService.bizNumber(BizNumberType.STOCK_CODE.getType()));
-//        optUser.ifPresent(o -> {
-//            obj.setOperatorId(o.getId());
-//            obj.setOperatorName(o.getName());
-//        });
-//        obj.setPlateNo(bill.getPlate());
-//
-//        //库存详情信息
-//        RegDetailDto detailDto = new RegDetailDto();
-//        detailDto.setBrand(bill.getBrandName());
-//        detailDto.setSpec(bill.getSpecName());
-//        // 买家增加库存
-//        detailDto.setCustomerId(bill.getUserId());
-//        detailDto.setCustomerName(bill.getName());
-//        detailDto.setCateId(bill.getProductId());
-//        detailDto.setCname(bill.getProductName());
-//
-//        if (WeightUnitEnum.JIN.equalsToCode(bill.getWeightUnit())) {
-//            detailDto.setInUnit(StockInUnitEnum.JIN.getCode());
-//        } else if (WeightUnitEnum.KILO.equalsToCode(bill.getWeightUnit())) {
-//            detailDto.setInUnit(StockInUnitEnum.KILO.getCode());
-//        } else {
-//            detailDto.setInUnit(StockInUnitEnum.PIECE.getCode());
-//        }
-//        detailDto.setPlace(bill.getOriginName());
-//        detailDto.setPrice(bill.getUnitPrice());
-//        detailDto.setWeight(bill.getWeight());
-//        detailDto.setProductId(bill.getProductId());
-//        detailDto.setProductName(bill.getProductName());
-//
-//        obj.setRegDetailDtos(Lists.newArrayList(detailDto));
-//        obj.setSource(StockRegisterSourceEnum.REG.getCode());
-//        // obj.setInStockNo(bill.getCode());
-//        return obj;
-//    }
-
-    /**
      * 锁定 or 释放库存
      *
      * @param lockReleaseRequestDto
      * @return
      */
-    public void lockOrRelease(LockReleaseRequestDto lockReleaseRequestDto) {
+    private void lockOrRelease(LockReleaseRequestDto lockReleaseRequestDto) {
         BaseOutput<?> baseOutput = productRpc.lockOrRelease(lockReleaseRequestDto);
         if (!baseOutput.isSuccess()) {
-            throw new BusinessException("", "锁定or释放库存接口失败：" + baseOutput.getMessage());
+            throw new TraceBizException("锁定or释放库存接口失败：" + baseOutput.getMessage());
         }
-    }
-
-    /**
-     * 锁定 or 释放库存
-     *
-     * @param firmId   市场ID
-     * @param firmName 市场名称
-     * @param amount   数量
-     * @param stockId  库存ID
-     * @param frozen   是否锁定  1 是  0 否
-     */
-    public void lockOrRelease(Long firmId, String firmName, Float amount, Long stockId, Integer frozen) {
-        LockReleaseItem item = new LockReleaseItem(amount, stockId, frozen);
-        List<LockReleaseItem> items = new ArrayList<>();
-        items.add(item);
-        LockReleaseRequestDto lockReleaseRequestDto = new LockReleaseRequestDto(firmId, firmName, items);
-        lockOrRelease(lockReleaseRequestDto);
     }
 
     /**
@@ -575,7 +507,7 @@ public class ProductRpcService {
         List<LockReleaseItem> items = new ArrayList<>();
         items.add(item);
         LockReleaseRequestDto lockReleaseRequestDto = new LockReleaseRequestDto(marketId, this.firmRpcService.getFirmById(marketId).get().getName(), items);
-        lockOrRelease(lockReleaseRequestDto);
+        this.lockOrRelease(lockReleaseRequestDto);
     }
 
     /**
@@ -590,7 +522,7 @@ public class ProductRpcService {
         List<LockReleaseItem> items = new ArrayList<>();
         items.add(item);
         LockReleaseRequestDto lockReleaseRequestDto = new LockReleaseRequestDto(marketId, this.firmRpcService.getFirmById(marketId).get().getName(), items);
-        lockOrRelease(lockReleaseRequestDto);
+        this.lockOrRelease(lockReleaseRequestDto);
     }
 
 }
