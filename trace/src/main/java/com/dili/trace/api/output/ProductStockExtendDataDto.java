@@ -13,7 +13,7 @@ public class ProductStockExtendDataDto {
      */
     private BigDecimal buyingWeight=BigDecimal.ZERO;
     /**
-     * 下回重量
+     * 下架重量
      */
     private BigDecimal pushDownWeight=BigDecimal.ZERO;
 
