@@ -150,7 +150,7 @@
             <%if (@defaultFieldNameIdMap.containsKey('imageCertList')){%>
             <div class="row row-cols-12" id="imageCertListDiv">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][fieldName]" value="imageCertList">
-                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][jsonPath]" value="$.imageCertList.certType">
+                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][jsonPath]" value="$.imageCertList[*]certType">
                 <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][defaultId]" value="${defaultFieldNameIdMap['imageCertList']}">
                 <div class="form-group col-2">
                     <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][displayed]" value="1" <%if(filedNameRetMap['imageCertList'].displayed!1==1){%>checked<%}%> >

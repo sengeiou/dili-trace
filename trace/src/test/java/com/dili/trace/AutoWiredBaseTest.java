@@ -52,11 +52,11 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
     @Autowired
     AssetsRpcService categoryService;
     @Autowired
-    TradeDetailService tradeDetailService;
+    protected TradeDetailService tradeDetailService;
     @Autowired
     TradeRequestService tradeRequestService;
     @SpyBean
-    CustomerRpcService clientRpcService;
+    protected CustomerRpcService customerRpcService;
 
     @BeforeEach
     public void mockInit() {
@@ -91,6 +91,84 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		return categoryItem;*//*
 		return null;
 	}*/
+    protected Long doOneCheckin(Long billId) {
+        this.checkinOutRecordService.doOneCheckin(billId, CheckinStatusEnum.ALLOWED, Optional.empty());
+        return billId;
+    }
+
+    protected Long doVerifyBeforeCheckIn(Long billId) {
+
+        RegisterBill input=new RegisterBill();
+        input.setId(billId);
+        input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+        this.registerBillService.doVerifyBeforeCheckIn(input, Optional.empty());
+        return billId;
+    }
+
+    protected Long baseCreateRegisterBill(Long marketId, Long userId,BigDecimal weight) {
+        CreateRegisterBillInputDto inputDto = new CreateRegisterBillInputDto();
+        inputDto.setRegistType(RegistTypeEnum.NONE.getCode());
+
+        List<CreateRegisterBillInputDto> inputBillDtoList = Lists.newArrayList(inputDto);
+
+        CustomerExtendDto customerExtendDto = new CustomerExtendDto();
+        customerExtendDto.setId(userId);
+        customerExtendDto.setName("testuser-" + userId);
+        Mockito.doReturn(customerExtendDto).when(this.customerRpcService)
+                .findApprovedCustomerByIdOrEx(Mockito.anyLong(), Mockito.anyLong());
+
+        Optional<OperatorUser> operatorUser = Optional.empty();
+        CreatorRoleEnum creatorRoleEnum = CreatorRoleEnum.MANAGER;
+
+
+
+        inputDto.setWeight(weight);
+
+
+        inputDto.setWeightUnit(WeightUnitEnum.KILO.getCode());
+
+        inputDto.setProductId(1L);
+        inputDto.setProductName("白菜");
+
+        inputDto.setOriginId(2L);
+        inputDto.setOriginName("四川成都");
+        inputDto.setRemark("备注信息");
+
+        inputDto.setTruckTareWeight(BigDecimal.ONE);
+
+
+        inputDto.setTruckType(TruckTypeEnum.POOL.getCode());
+
+
+        inputDto.setPlate("川A12345");
+
+
+        inputDto.setUnitPrice(BigDecimal.ONE);
+
+        inputDto.setSpecName("箱子");
+
+        inputDto.setBrandName("好巴适");
+
+
+        inputDto.setUpStreamId(10L);
+        inputDto.setArrivalDatetime(new Date());
+
+        inputDto.setArrivalTallynos(Lists.newArrayList("222"));
+
+        ImageCert imageCert = new ImageCert();
+        imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
+        imageCert.setUid("abcd");
+
+        ImageCert imageCert2 = new ImageCert();
+        imageCert2.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
+        imageCert2.setUid("abcd");
+
+        inputDto.setImageCertList(Lists.newArrayList(imageCert, imageCert2));
+        List<Long> idList = this.registerBillService.createRegisterBillList(marketId, inputBillDtoList, userId, operatorUser, creatorRoleEnum);
+        assertNotNull(idList);
+        return idList.get(0);
+    }
+
     protected Long baseCreateRegisterBill() {
 
         CreateRegisterBillInputDto inputDto = new CreateRegisterBillInputDto();
@@ -103,7 +181,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
         CustomerExtendDto customerExtendDto = new CustomerExtendDto();
         customerExtendDto.setId(customerId);
         customerExtendDto.setName("testuser");
-        Mockito.doReturn(customerExtendDto).when(this.clientRpcService)
+        Mockito.doReturn(customerExtendDto).when(this.customerRpcService)
                 .findApprovedCustomerByIdOrEx(Mockito.anyLong(), Mockito.anyLong());
 
         Optional<OperatorUser> operatorUser = Optional.empty();

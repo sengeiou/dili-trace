@@ -105,7 +105,8 @@ public class ClientTradeRequestApi {
             }
             if (condition.getBuyerId() != null) {
                 condition.setBuyerMarketId(this.sessionContext.getSessionData().getMarketId());
-                condition.setMetadata(IDTO.AND_CONDITION_EXPR, "  trade_order_id not  in( select id from trade_order  where  order_type ="+TradeOrderTypeEnum.NONE.getCode()+" and `buyer_id` = "+condition.getBuyerId()+" and `buyer_market_id` = "+condition.getBuyerMarketId()+")");
+                String orderTypeStrs=StreamEx.of(TradeOrderTypeEnum.values()).map(TradeOrderTypeEnum::getCode).joining(",");
+                condition.setMetadata(IDTO.AND_CONDITION_EXPR, "  trade_order_id not  in( select id from trade_order  where  order_type not in("+orderTypeStrs+") and `buyer_id` = "+condition.getBuyerId()+" and `buyer_market_id` = "+condition.getBuyerMarketId()+")");
             }
             if (condition.getSellerId() != null) {
                 condition.setSellerMarketId(this.sessionContext.getSessionData().getMarketId());
