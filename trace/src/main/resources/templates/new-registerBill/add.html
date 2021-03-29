@@ -8,15 +8,15 @@
     >
         <template v-slot:weight="{ desc, data, field, formData }">
             <el-input placeholder="请输入内容" v-model="formData.weight" class="input-with-select">
-                <el-select v-model="formData.weightUnit" slot="append" placeholder="请选择">
+                <el-select v-model="formData.weightUnit" slot="append">
                     <el-option label="斤" value="1"></el-option>
                     <el-option label="公斤" value="2"></el-option>
                 </el-select>
             </el-input>
         </template>
         <template v-slot:pieceweight="{ desc, data, field, formData }">
-            <el-input placeholder="请输入内容" v-model="formData.pieceweight" class="input-with-select">
-                <el-select v-model="formData.pieceweightUnit" slot="append" placeholder="请选择">
+            <el-input placeholder="请输入内容" v-model="formData.pieceweight" class="input-with-select" @input="changePieceWeight">
+                <el-select v-model="formData.pieceweightUnit" slot="append">
                     <el-option label="斤" value="1"></el-option>
                     <el-option label="公斤" value="2"></el-option>
                 </el-select>
@@ -53,7 +53,7 @@
                             return prefix + response.data;
                         },
                         beforeRemove: function (file, fileList) {
-                            app.certTypeList.splice(app.certTypeList.findIndex(item => item.uid === file.replace(prefix,"")), 1);
+                            app.certTypeList.splice(app.certTypeList.findIndex(item => item.uid === file.replace(prefix, "")), 1);
                             console.log(app.certTypeList)
                         },
                         limit: "10"
@@ -69,17 +69,21 @@
                 pieceweightUnit: "",
                 formData: {
                     total: 0,
+                    pieceNum: 0,
+                    pieceweight: "",
                     measureType: 20,
                     registType: 10,
                     userId: "",
                     registerHeadCode: "",
                     arrivalTallynos: "",
                     plateList: [],
-                    truckType: 20
+                    truckType: 20,
+                    weightUnit: "1",
+                    pieceweightUnit: "1",
                 },
                 formConfig: {
                     formBtnSize: 'small',
-                    formAttrs:{size:'small'},
+                    formAttrs: {size: 'small'},
                     formDesc: {
                         registType: {
                             isOptions: true,
@@ -320,6 +324,11 @@
                         weight: {
                             type: "input",
                             label: "商品重量",
+                            rules: [{
+                                pattern: new RegExp("^\\d+$", ""),
+                                type: "string",
+                                message: "格式不正确"
+                            }],
                             attrs: {},
                             vif: function (form) {
                                 if (form.measureType === 20) {
@@ -329,38 +338,48 @@
                             },
                         },
                         pieceNum: {
-                            layout: 8,
-                            type: "number",
+                            type: "input",
                             label: "商品件数",
+                            rules: [{
+                                pattern: new RegExp("^\\d+$", ""),
+                                type: "string",
+                                message: "格式不正确"
+                            }],
                             attrs: {},
-                            default: 0,
-                            on: {
-                                change: function (currentValue, oldValue) {
-                                    app.formData.total = app.formData.pieceweight * currentValue;
-                                }
-                            },
                             vif: function (form) {
                                 if (form.measureType === 20) {
                                     return false;
                                 }
                                 return true;
                             },
+                            on: {
+                                input: function (value) {
+                                    if (!value || !app.formData.pieceweight) {
+                                        app.formData.total = 0;
+                                    } else {
+                                        app.formData.total = app.formData.pieceweight * value;
+                                    }
+
+                                }
+                            }
                         },
                         pieceweight: {
-                            layout: 8,
-                            type: "number",
+                            type: "input",
                             label: "件重",
+                            rules: [{
+                                pattern: new RegExp("^\\d+$", ""),
+                                type: "string",
+                                message: "格式不正确"
+                            }],
                             attrs: {},
-                            default: 0,
                             vif: function (form) {
                                 if (form.measureType === 20) {
                                     return false;
                                 }
                                 return true;
-                            },
+                            }
                         },
                         total: {
-                            layout: 8,
                             isOptions: true,
                             default: "0",
                             type: "text",
@@ -509,6 +528,13 @@
             },
             handleRequestSuccess() {
                 this.$message.success("发送成功");
+            },
+            changePieceWeight:function(value){
+                if (!value || !app.formData.pieceNum) {
+                    app.formData.total = 0;
+                } else {
+                    app.formData.total = app.formData.pieceNum * value;
+                }
             }
         }
     });
