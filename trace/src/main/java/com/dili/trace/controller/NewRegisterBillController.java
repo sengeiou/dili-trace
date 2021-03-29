@@ -109,6 +109,11 @@ public class NewRegisterBillController {
         UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
         modelMap.put("user", user);
         modelMap.put("isDeleted", YesOrNoEnum.NO.getCode());
+        //加载配置项，以便控制页面查询条件、列显示与否
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(user.getFirmId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
 
         return "new-registerBill/index";
     }

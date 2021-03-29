@@ -166,10 +166,10 @@
             </div>
             <% } %>
 
-            <% if (@filedNameRetMap.containsKey('upStreamId') && @filedNameRetMap.get('upStreamId').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+            <% if (@filedNameRetMap.containsKey('originId') && @filedNameRetMap.get('originId').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">产地</label>
-                <% if (@filedNameRetMap.get('upStreamId').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
+                <% if (@filedNameRetMap.get('originId').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text"
                        class="form-control input-sm "
                        data-rule-depends="input[name='originId'],input[name='originName']"
