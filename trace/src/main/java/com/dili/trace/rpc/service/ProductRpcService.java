@@ -538,7 +538,7 @@ public class ProductRpcService {
     public void lockOrRelease(LockReleaseRequestDto lockReleaseRequestDto) {
         BaseOutput<?> baseOutput = productRpc.lockOrRelease(lockReleaseRequestDto);
         if (!baseOutput.isSuccess()) {
-            throw new BusinessException("", "锁定or释放库存接口失败");
+            throw new BusinessException("", "锁定or释放库存接口失败：" + baseOutput.getMessage());
         }
     }
 
