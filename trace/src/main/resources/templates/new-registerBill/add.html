@@ -459,11 +459,11 @@
                         multiple: true,
                         action: "/action/imageApi/upload",
                         responseFn(response, file) {
-                            app.certTypeList.push({certType: it.certType, uid: response.data})
+                            app.imageCertList.push({certType: it.certType, uid: response.data})
                             return prefix + response.data;
                         },
                         beforeRemove: function (file, fileList) {
-                            app.certTypeList.splice(app.certTypeList.findIndex(item => item.uid === file.replace(prefix, "")), 1);
+                            app.imageCertList.splice(app.imageCertList.findIndex(item => item.uid === file.replace(prefix, "")), 1);
                         },
                         limit: "10"
                     }
@@ -472,7 +472,7 @@
         },
         data() {
             return {
-                certTypeList: [],
+                imageCertList: [],
                 registerHeadCodeTemp: [],
                 weightUnit: "",
                 pieceweightUnit: "",
@@ -494,7 +494,12 @@
             };
         },
         methods: {
-            handleRequest(data) {
+            handleRequest(registerBill) {
+                if(registerBill.measureType==10){
+                    registerBill.weight=registerBill.total;
+                }
+                registerBill.imageCertList= app.imageCertList;
+                let data=[registerBill];
                 console.log(data);
                 return Promise.resolve();
             },
@@ -511,6 +516,8 @@
         }
     });
 
+
+
     function loadProvider(data) {
         return new Promise((resolve, reject) => {
             axios.post('/convert/list.action', data)
@@ -524,5 +531,7 @@
                 });
         });
     }
+    app.formData=JSON.parse('${item}');
+    //$.extend(app.data,JSON.parse('${item}'));
 </script>
 </#bs4Body>

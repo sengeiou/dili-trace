@@ -184,7 +184,14 @@ public class NewRegisterBillController {
             m.put("certTypeName",e.getName());
             return m;
         }).toList()));
-        modelMap.put("item", new RegisterBillOutputDto());
+
+        RegisterBillOutputDto item=new RegisterBillOutputDto();
+        item.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+        item.setRegistType(RegistTypeEnum.NONE.getCode());
+        item.setTruckType(TruckTypeEnum.FULL.getCode());
+        item.setWeightUnit(WeightUnitEnum.JIN.getCode());
+        modelMap.put("item", JSON.toJSONString(item));
+
         return "new-registerBill/add";
     }
 
@@ -270,9 +277,37 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(Long id, ModelMap modelMap) {
+
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
+        List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
+        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
+
+
+        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
+            Map<String,Object>m=new HashMap<>();
+            m.put("certType",e.getCode());
+            m.put("certTypeName",e.getName());
+            return m;
+        }).toList()));
+
         RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
             return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
-        }).orElse(new RegisterBillOutputDto());
+        }).orElseGet(()->{
+            RegisterBillOutputDto item=new RegisterBillOutputDto();
+            item.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+            item.setRegistType(RegistTypeEnum.NONE.getCode());
+            item.setTruckType(TruckTypeEnum.FULL.getCode());
+            item.setWeightUnit(WeightUnitEnum.JIN.getCode());
+
+            return item;
+        });
+        modelMap.put("item", JSON.toJSONString(registerBill));
         if (registerBill.getBillId() == null) {
             return "new-registerBill/edit";
         }
@@ -288,7 +323,7 @@ public class NewRegisterBillController {
 
         String upstreamName=StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
         registerBillOutputDto.setUpStreamName(upstreamName);
-        modelMap.put("item", registerBillOutputDto);
+        modelMap.put("item",  JSON.toJSONString(registerBillOutputDto));
 
         modelMap.put("citys", this.queryCitys());
 
@@ -302,15 +337,6 @@ public class NewRegisterBillController {
             modelMap.put("userPlateList", new ArrayList<>(0));
         }
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
-        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
-
-        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
-                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        modelMap.put("filedNameRetMap", filedNameRetMap);
-
-        List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
 
 
         return "new-registerBill/edit";
