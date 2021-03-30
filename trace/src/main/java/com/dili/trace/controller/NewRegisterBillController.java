@@ -136,8 +136,8 @@ public class NewRegisterBillController {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         List<Integer> billTypes = new ArrayList<>();
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
-        billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
-        billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
+//        billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
+//        billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
         registerBill.setBillTypes(billTypes);
         return sgRegisterBillService.listBasePageByExample(registerBill);
         // return registerBillService.listPage(registerBill);

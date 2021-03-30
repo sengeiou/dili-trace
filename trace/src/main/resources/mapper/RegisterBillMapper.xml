@@ -749,6 +749,9 @@
     select r.`detect_result`,r.`detect_type`,b.has_origin_certifiy,b.has_detect_report,r.detect_source,b.check_sheet_id
     FROM register_bill b LEFT JOIN detect_request r ON (b.`detect_request_id` = r.`id`)
     where 1=1
+    <if test="marketId != null">
+      and b.`market_id` = #{marketId}
+    </if>
     <if test="registerSource != null">
       and b.`register_source` = #{registerSource,jdbcType=TINYINT}
     </if>
