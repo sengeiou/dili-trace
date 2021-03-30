@@ -156,6 +156,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             TradeDetail tradeDetail = new TradeDetail();
             tradeDetail.setId(td.getId());
             tradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+            tradeDetail.setSoftWeight(td.getStockWeight());
+            tradeDetail.setStockWeight(BigDecimal.ZERO);
+            this.productRpcService.lock(td.getThirdPartyStockId(),buyerPS.getMarketId(),td.getStockWeight());
             this.tradeDetailService.updateSelective(tradeDetail);
 
         });
@@ -199,49 +202,63 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         if (TradeReturnStatusEnum.REFUSE == returnStatus) {
 
-            StreamEx.of(tradeDetailList).forEach(td -> {
+            StreamEx.of(tradeDetailList).forEach(buyerTd -> {
+                BigDecimal softWeight=buyerTd.getSoftWeight();
 
-                ProductStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
+                ProductStock buyerStockItem = this.batchStockService.selectByIdForUpdate(buyerTd.getProductStockId())
                         .orElseThrow(() -> {
                             return new TraceBizException("操作库存失败");
                         });
 
                 ProductStock batchStock = new ProductStock();
-                batchStock.setId(batchStockItem.getId());
-                batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() + 1);
-                batchStock.setStockWeight(batchStockItem.getStockWeight().add(td.getStockWeight()));
+                batchStock.setId(buyerStockItem.getId());
+                batchStock.setTradeDetailNum(buyerStockItem.getTradeDetailNum() + 1);
+                batchStock.setStockWeight(buyerStockItem.getStockWeight().add(softWeight));
                 this.batchStockService.updateSelective(batchStock);
 
                 TradeDetail tradeDetail = new TradeDetail();
-                tradeDetail.setId(td.getId());
+                tradeDetail.setId(buyerTd.getId());
                 tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                tradeDetail.setStockWeight(softWeight);
+                tradeDetail.setSoftWeight(BigDecimal.ZERO);
                 this.tradeDetailService.updateSelective(tradeDetail);
+
+                this.productRpcService.release(buyerTd.getThirdPartyStockId(),buyerStockItem.getMarketId(),softWeight);
             });
         } else {
 
             StreamEx.of(tradeDetailList).mapToEntry(buyerTd -> buyerTd, buyerTd -> {
                 Long parentId = buyerTd.getParentId();
                 return this.tradeDetailService.get(parentId);
-            }).forKeyValue((buyertd, sellertd) -> {
+            }).forKeyValue((buyerTd, sellertd) -> {
 
-                TradeDetail buyerTradeDetail = new TradeDetail();
-                buyerTradeDetail.setId(buyertd.getId());
-                buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
-                buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
-                this.tradeDetailService.updateSelective(buyerTradeDetail);
+                BigDecimal softWeight=buyerTd.getSoftWeight();
 
                 ProductStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getProductStockId())
                         .orElseThrow(() -> {
                             return new TraceBizException("操作库存失败");
                         });
 
+                ProductStock buyerStockItem = this.batchStockService.selectByIdForUpdate(buyerTd.getProductStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBizException("操作库存失败");
+                        });
+
+                TradeDetail buyerTradeDetail = new TradeDetail();
+                buyerTradeDetail.setId(buyerTd.getId());
+                buyerTradeDetail.setIsBatched(YesOrNoEnum.NO.getCode());
+                buyerTradeDetail.setSoftWeight(BigDecimal.ZERO);
+                buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
+                this.tradeDetailService.updateSelective(buyerTradeDetail);
+
+
                 ProductStock sellerBatchStock = new ProductStock();
                 sellerBatchStock.setId(sellerBatchStockItem.getId());
-                sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(buyertd.getStockWeight()));
+                sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(softWeight));
 
                 TradeDetail sellerTradeDetail = new TradeDetail();
                 sellerTradeDetail.setId(sellertd.getId());
-                sellerTradeDetail.setStockWeight(sellertd.getStockWeight().add(buyertd.getStockWeight()));
+                sellerTradeDetail.setStockWeight(sellertd.getStockWeight().add(softWeight));
 
                 if (SaleStatusEnum.FOR_SALE.equalsToCode(sellertd.getSaleStatus())) {
                     // do nothing
@@ -253,9 +270,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
 
+                this.productRpcService.release(buyerTradeDetail.getThirdPartyStockId(),buyerStockItem.getMarketId(),buyerTradeDetail.getSoftWeight());
+                this.productRpcService.deductRegDetail(buyerTradeDetail.getTradeDetailId(),tradeRequestItem.getBuyerMarketId(),buyerTd.getStockWeight(),Optional.empty());
 
-                this.productRpcService.increaseRegDetail(sellerTradeDetail.getTradeDetailId(),tradeRequestItem.getSellerMarketId(),buyertd.getStockWeight(),Optional.empty());
-                this.productRpcService.deductRegDetail(buyerTradeDetail.getTradeDetailId(),tradeRequestItem.getBuyerMarketId(),buyertd.getStockWeight(),Optional.empty());
+                this.productRpcService.increaseRegDetail(sellerTradeDetail.getTradeDetailId(),tradeRequestItem.getSellerMarketId(),buyerTd.getStockWeight(),Optional.empty());
+
             });
 
             this.userQrHistoryService.rollBackByTradeRequest(tradeRequestItem);
