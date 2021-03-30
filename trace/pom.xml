@@ -398,6 +398,12 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 			<version>3.3.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.beust</groupId>
+					<artifactId>jcommander</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!--dependency> <groupId>org.jetbrains</groupId> <artifactId>annotations</artifactId> 
 			<version>RELEASE</version> <scope>compile</scope> </dependency -->

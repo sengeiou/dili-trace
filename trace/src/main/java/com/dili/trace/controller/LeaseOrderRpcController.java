@@ -2,9 +2,11 @@ package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.rpc.dto.AssetsParamsDto;
+import com.dili.trace.rpc.dto.AssetsResultDto;
 import com.dili.trace.rpc.service.LeaseOrderRpcService;
 import com.dili.trace.service.UapRpcService;
 import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,12 +41,12 @@ public class LeaseOrderRpcController {
         assetsParamsDto.setBizType(1);
         assetsParamsDto.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         try {
-            this.leaseOrderRpcService.findLease(assetsParamsDto);
-            return BaseOutput.successData(Lists.newArrayList("11111", "22222"));
+            List<AssetsResultDto> assetsResultDtoList = this.leaseOrderRpcService.findLease(assetsParamsDto);
+            List<String> dataList = StreamEx.of(assetsResultDtoList).map(AssetsResultDto::getAssetsName).toList();
+            return BaseOutput.successData(dataList);
         } catch (Exception e) {
             return BaseOutput.failure("后端出错");
         }
-
     }
 
 }
