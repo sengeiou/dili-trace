@@ -1,13 +1,20 @@
 package com.dili.trace.service;
 
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.rpc.service.ProductRpcService;
+import com.dili.uap.sdk.domain.Firm;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
@@ -27,6 +34,9 @@ public class ProductRpcServiceTest extends AutoWiredBaseTest {
     TradeDetailService tradeDetailService;
     @Autowired
     ProductStockService productStockService;
+
+    @Spy
+    FirmRpcService firmRpcService;
 
     /**
      * test
@@ -163,7 +173,28 @@ public class ProductRpcServiceTest extends AutoWiredBaseTest {
      * 测试
      */
     @Test
-    public void testLockOrRelease() {
-        productRpcService.lockOrRelease(11L, "杭州水产", 1f, 20210118000006L, 0);
+    public void lock() {
+
+        Mockito.doAnswer(invocation -> {
+            Firm firm = DTOUtils.newDTO(Firm.class);
+            firm.setId(invocation.getArgument(0));
+            firm.setName("杭州水产");
+            return Optional.of(firm);
+        }).when(this.firmRpcService).getFirmById(Mockito.anyLong());
+        productRpcService.lock(20210118000006L, 11L, BigDecimal.ONE);
+    }
+
+    /**
+     * 测试
+     */
+    @Test
+    public void release() {
+        Mockito.doAnswer(invocation -> {
+            Firm firm = DTOUtils.newDTO(Firm.class);
+            firm.setId(invocation.getArgument(0));
+            firm.setName("杭州水产");
+            return Optional.of(firm);
+        }).when(this.firmRpcService).getFirmById(Mockito.anyLong());
+        productRpcService.release(20210118000006L, 11L, BigDecimal.ONE);
     }
 }

@@ -2,8 +2,11 @@ package com.dili.trace.rpc.api;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.rpc.dto.AssetsParamsDto;
+import com.dili.trace.rpc.dto.AssetsResultDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 /**
  * 分布式文件系统rpc
@@ -22,6 +25,6 @@ public interface LeaseOrderRpc {
      * @return
      */
     @PostMapping(value = "/api/leaseOrder/findLease")
-    BaseOutput<Object> findLease(AssetsParamsDto assetsParamsDto);
+    BaseOutput<List<AssetsResultDto>> findLease(AssetsParamsDto assetsParamsDto);
 
 }
