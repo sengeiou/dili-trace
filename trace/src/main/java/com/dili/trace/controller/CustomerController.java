@@ -67,7 +67,7 @@ public class CustomerController {
     @RequestMapping(value = "/listSeller.action")
     @ResponseBody
     public BaseOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryInput query) {
-        if (StrUtil.isBlank(query.getKeyword())) {
+        if (StrUtil.isBlank(query.getKeyword())&&query.getId()==null) {
             return BaseOutput.success().setData(new ArrayList<>(0));
         }
         Firm firm = uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
