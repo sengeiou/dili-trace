@@ -305,9 +305,10 @@ public class NewRegisterBillController {
 
             return item;
         });
+        RegisterHead registerHead=this.registerHeadService.findByCode(registerBill.getRegisterHeadCode()).orElse(new RegisterHead());
+        registerBill.setRegisterHead(registerHead);
         modelMap.put("item", JSON.toJSONString(registerBill));
         if (registerBill.getBillId() == null) {
-            modelMap.put("registerHead",JSON.toJSONString(new RegisterHead()));
             return "new-registerBill/edit";
         }
         registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null)));
@@ -324,8 +325,7 @@ public class NewRegisterBillController {
         registerBillOutputDto.setUpStreamName(upstreamName);
         modelMap.put("item",  JSON.toJSONString(registerBillOutputDto));
 
-        RegisterHead registerHead=this.registerHeadService.findByCode(registerBillOutputDto.getRegisterHeadCode()).orElse(new RegisterHead());
-        modelMap.put("registerHead",JSON.toJSONString(registerHead));
+
 
         modelMap.put("citys", this.queryCitys());
 

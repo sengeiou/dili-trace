@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RegisterBillOutputDto extends RegisterBill {
     private static final long serialVersionUID = 1L;
+
+    private RegisterHead registerHead;
     /**
      * 交易单明细集合
      */
@@ -153,5 +155,13 @@ public class RegisterBillOutputDto extends RegisterBill {
 
     public void setDetectType(Integer detectType) {
         this.detectType = detectType;
+    }
+
+    public RegisterHead getRegisterHead() {
+        return registerHead;
+    }
+
+    public void setRegisterHead(RegisterHead registerHead) {
+        this.registerHead = registerHead;
     }
 }
