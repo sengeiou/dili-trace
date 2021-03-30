@@ -105,19 +105,20 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     public String listPage(RegisterHeadDto input) throws Exception {
         return this.listEasyuiPageByExample(input, true).toString();
     }
+
     @Transactional
     @Override
     public Long createRegisterHead(RegisterHead registerHead, List<ImageCert> imageCertList,
                                    Optional<OperatorUser> operatorUser) {
         List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(registerHead.getMarketId(), FieldConfigModuleTypeEnum.REGISTER);
         Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap = StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        return this.createRegisterHead(registerHead,imageCertList,fieldConfigDetailRetDtoMap,operatorUser);
+        return this.createRegisterHead(registerHead, imageCertList, fieldConfigDetailRetDtoMap, operatorUser);
 
     }
 
     private Long createRegisterHead(RegisterHead registerHead, List<ImageCert> imageCertList, Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap,
-                                   Optional<OperatorUser> operatorUser) {
-        this.checkRegisterHead(registerHead,fieldConfigDetailRetDtoMap);
+                                    Optional<OperatorUser> operatorUser) {
+        this.checkRegisterHead(registerHead, fieldConfigDetailRetDtoMap);
 
         registerHead.setRemainWeight(registerHead.getWeight());
         registerHead.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_HEAD));
@@ -181,7 +182,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
      * @return
      */
     private BaseOutput checkRegisterHead(RegisterHead registerHead, Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap) {
-        if(registerHead.getMarketId()==null){
+        if (registerHead.getMarketId() == null) {
             throw new TraceBizException("市场不存在");
         }
         BigDecimal weight = registerHead.getWeight();
@@ -301,7 +302,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (StringUtils.isNotBlank(specName) && !RegUtils.isValidInput(specName)) {
             throw new TraceBizException("规格名称包含非法字符");
         }
-
 
 
         //品牌
@@ -446,7 +446,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 //        }
         List<FieldConfigDetailRetDto> fieldConfigDetailRetDtoList = this.fieldConfigDetailService.findByMarketIdAndModuleType(input.getMarketId(), FieldConfigModuleTypeEnum.REGISTER);
         Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap = StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        this.checkRegisterHead(input,fieldConfigDetailRetDtoMap);
+        this.checkRegisterHead(input, fieldConfigDetailRetDtoMap);
 
         RegisterHead headItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
@@ -493,7 +493,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId(), input.getMarketId());
-        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(),input.getId(), BillTypeEnum.MASTER_BILL);
+        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(), input.getId(), BillTypeEnum.MASTER_BILL);
         this.registerHeadPlateService.deleteAndInsertPlateList(input.getId(), plateList);
         return input.getId();
     }
@@ -569,6 +569,16 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             });
         }
         return registerHeadBasePage;
+    }
+
+    @Override
+    public Optional<RegisterHead> findByCode(String registerHeadCode) {
+        if (StringUtils.isBlank(registerHeadCode)) {
+            return Optional.empty();
+        }
+        RegisterHead q = new RegisterHead();
+        q.setCode(registerHeadCode);
+        return StreamEx.of(this.listByExample(q)).findFirst();
     }
 
     private Optional<String> buildLikeKeyword(RegisterHeadDto query) {

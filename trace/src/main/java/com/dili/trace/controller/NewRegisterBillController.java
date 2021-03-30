@@ -90,6 +90,8 @@ public class NewRegisterBillController {
     FieldConfigDetailService fieldConfigDetailService;
     @Autowired
     EnumService enumService;
+    @Autowired
+    RegisterHeadService registerHeadService;
 
 
     /**
@@ -177,7 +179,6 @@ public class NewRegisterBillController {
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
         modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
             Map<String,Object>m=new HashMap<>();
             m.put("certType",e.getCode());
@@ -286,9 +287,6 @@ public class NewRegisterBillController {
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
-
-
         modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
             Map<String,Object>m=new HashMap<>();
             m.put("certType",e.getCode());
@@ -309,6 +307,7 @@ public class NewRegisterBillController {
         });
         modelMap.put("item", JSON.toJSONString(registerBill));
         if (registerBill.getBillId() == null) {
+            modelMap.put("registerHead",JSON.toJSONString(new RegisterHead()));
             return "new-registerBill/edit";
         }
         registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id, BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null)));
@@ -324,6 +323,9 @@ public class NewRegisterBillController {
         String upstreamName=StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
         registerBillOutputDto.setUpStreamName(upstreamName);
         modelMap.put("item",  JSON.toJSONString(registerBillOutputDto));
+
+        RegisterHead registerHead=this.registerHeadService.findByCode(registerBillOutputDto.getRegisterHeadCode()).orElse(new RegisterHead());
+        modelMap.put("registerHead",JSON.toJSONString(registerHead));
 
         modelMap.put("citys", this.queryCitys());
 
