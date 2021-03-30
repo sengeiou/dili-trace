@@ -392,7 +392,7 @@
                     remote: true,
                     // 相对于官方，增加了一个 callback 参数
                     remoteMethod(query, callback) {
-                        axios.post('/upStream/listByKeyWord.action', {'keyword': query})
+                        axios.post('/upStream/listByKeyWord.action', {'keyword': query, 'userId': app.formData.userId})
                             .then((res) => {
                                 const data = $.map(res.data.data, function (obj) {
                                     return obj;
