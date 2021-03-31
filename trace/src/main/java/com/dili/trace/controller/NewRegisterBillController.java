@@ -179,14 +179,14 @@ public class NewRegisterBillController {
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
-            Map<String,Object>m=new HashMap<>();
-            m.put("certType",e.getCode());
-            m.put("certTypeName",e.getName());
+        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("certType", e.getCode());
+            m.put("certTypeName", e.getName());
             return m;
         }).toList()));
 
-        RegisterBillOutputDto item=new RegisterBillOutputDto();
+        RegisterBillOutputDto item = new RegisterBillOutputDto();
         item.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
         item.setRegistType(RegistTypeEnum.NONE.getCode());
         item.setTruckType(TruckTypeEnum.FULL.getCode());
@@ -209,10 +209,19 @@ public class NewRegisterBillController {
         if (firm == null) {
             return BaseOutput.failure("未登录");
         }
+        List<CreateRegisterBillInputDto> registerBills = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity()).nonNull().toList();
+
+        List<Long> userIdList = StreamEx.of(registerBills).map(CreateRegisterBillInputDto::getUserId).nonNull()
+                .distinct().toList();
+        Long userId = StreamEx.ofNullable(userIdList).filter(list -> list.size() == 1).flatCollection(Function.identity()).findFirst().orElse(null);
+        if (userId == null) {
+            return BaseOutput.failure("参数错误");
+        }
+
         try {
 
-            registerBillService.createRegisterBillList(firm.getId(),input.getRegisterBills()
-                    , input.getUserId()
+            registerBillService.createRegisterBillList(firm.getId(), registerBills
+                    , userId
                     , this.uapRpcService.getCurrentOperator()
                     , CreatorRoleEnum.MANAGER);
         } catch (TraceBizException e) {
@@ -287,17 +296,17 @@ public class NewRegisterBillController {
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e->{
-            Map<String,Object>m=new HashMap<>();
-            m.put("certType",e.getCode());
-            m.put("certTypeName",e.getName());
+        modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("certType", e.getCode());
+            m.put("certTypeName", e.getName());
             return m;
         }).toList()));
 
         RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
             return RegisterBillOutputDto.build(bill, Lists.newLinkedList());
-        }).orElseGet(()->{
-            RegisterBillOutputDto item=new RegisterBillOutputDto();
+        }).orElseGet(() -> {
+            RegisterBillOutputDto item = new RegisterBillOutputDto();
             item.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
             item.setRegistType(RegistTypeEnum.NONE.getCode());
             item.setTruckType(TruckTypeEnum.FULL.getCode());
@@ -305,7 +314,7 @@ public class NewRegisterBillController {
 
             return item;
         });
-        RegisterHead registerHead=this.registerHeadService.findByCode(registerBill.getRegisterHeadCode()).orElse(new RegisterHead());
+        RegisterHead registerHead = this.registerHeadService.findByCode(registerBill.getRegisterHeadCode()).orElse(new RegisterHead());
         registerBill.setRegisterHead(registerHead);
         modelMap.put("item", JSON.toJSONString(registerBill));
         if (registerBill.getBillId() == null) {
@@ -319,12 +328,11 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
-        RegisterBillOutputDto registerBillOutputDto=RegisterBillOutputDto.build(this.maskRegisterBillOutputDto(registerBill),Lists.newLinkedList());
+        RegisterBillOutputDto registerBillOutputDto = RegisterBillOutputDto.build(this.maskRegisterBillOutputDto(registerBill), Lists.newLinkedList());
 
-        String upstreamName=StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
+        String upstreamName = StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
         registerBillOutputDto.setUpStreamName(upstreamName);
-        modelMap.put("item",  JSON.toJSONString(registerBillOutputDto));
-
+        modelMap.put("item", JSON.toJSONString(registerBillOutputDto));
 
 
         modelMap.put("citys", this.queryCitys());
@@ -338,7 +346,6 @@ public class NewRegisterBillController {
         } else {
             modelMap.put("userPlateList", new ArrayList<>(0));
         }
-
 
 
         return "new-registerBill/edit";
@@ -873,7 +880,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doEdit.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> doEdit(RegisterBill input) {
+    public BaseOutput<?> doEdit(@RequestBody RegisterBill input) {
         try {
             Long id = this.sgRegisterBillService.doEdit(input);
             return BaseOutput.success().setData(id);
@@ -969,7 +976,6 @@ public class NewRegisterBillController {
     }
 
 
-
     /**
      * 跳转到statics页面
      *
@@ -1035,12 +1041,6 @@ public class NewRegisterBillController {
             return BaseOutput.failure("服务端出错");
         }
     }
-
-
-
-
-
-
 
 
     /**

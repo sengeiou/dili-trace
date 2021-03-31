@@ -37,7 +37,6 @@ public class TestJob {
         String etime = DateUtils.format(endTime, queDateFormatter);
         String mdfive = "md5";
         String url = "orderdata" + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&stime=" + stime + "&etime=" + etime;
-        System.out.println(url);
     }
 
     /**

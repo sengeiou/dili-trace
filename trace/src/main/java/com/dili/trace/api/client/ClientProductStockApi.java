@@ -47,7 +47,7 @@ import io.swagger.annotations.Api;
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 @RequestMapping(value = "/api/client/clientProductStockApi")
 public class ClientProductStockApi {
-    private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientProductStockApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired
@@ -165,64 +165,69 @@ public class ClientProductStockApi {
         if (dto == null || dto.getProductStockId() == null) {
             return BaseOutput.failure("参数错误");
         }
+        try {
+            TradeDetail q = new TradeDetail();
+            q.setProductStockId(dto.getProductStockId());
+            List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(q);
 
-        TradeDetail q = new TradeDetail();
-        q.setProductStockId(dto.getProductStockId());
-        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(q);
+            List<ProductStockDetectDataOutputDto> dataList = StreamEx.of(tradeDetailList).map(td -> {
+                ProductStockDetectDataOutputDto outDto = new ProductStockDetectDataOutputDto();
+                outDto.setBatchNo(td.getParentBatchNo());
+                outDto.setBillId(td.getBillId());
+                return outDto;
+            }).toList();
+            if (dataList.isEmpty()) {
+                return BaseOutput.success();
+            }
+            List<Long> billIdList = StreamEx.of(dataList).map(ProductStockDetectDataOutputDto::getBillId).toList();
 
-        List<ProductStockDetectDataOutputDto> dataList = StreamEx.of(tradeDetailList).map(td -> {
-            ProductStockDetectDataOutputDto outDto = new ProductStockDetectDataOutputDto();
-            outDto.setBatchNo(td.getParentBatchNo());
-            outDto.setBillId(td.getBillId());
-            return outDto;
-        }).toList();
-        if (dataList.isEmpty()) {
-            return BaseOutput.success();
+            RegisterBillDto rbQ = new RegisterBillDto();
+            rbQ.setIdList(billIdList);
+            List<RegisterBill> registerBillList = this.registerBillService.listByExample(rbQ);
+
+
+            Map<Long, String> idCodeMap = StreamEx.of(registerBillList).toMap(RegisterBill::getId, RegisterBill::getCode);
+
+            Map<Long, Long> billIdDetectRequestIdMap = StreamEx.of(registerBillList)
+                    .filter(b -> b.getDetectRequestId() != null)
+                    .toMap(RegisterBill::getBillId, RegisterBill::getDetectRequestId);
+
+            Map<Long, List<ImageCert>> billIdImageListMap = StreamEx.of(this.imageCertService.findImageCertListByBillIdList(billIdList, BillTypeEnum.REGISTER_BILL)).groupingBy(ImageCert::getBillId);
+
+            Map<Long, DetectRequest> detectRequestMap = StreamEx.ofNullable(billIdList).filter(idList -> !idList.isEmpty()).flatCollection(idlist -> {
+                RegisterBillDto queryInputDto = new RegisterBillDto();
+                queryInputDto.setIdList(idlist);
+                return this.registerBillService.listByExample(queryInputDto);
+            }).map(RegisterBill::getDetectRequestId).map(detectRequestId -> {
+                DetectRequest detectRequest = this.detectRequestService.get(detectRequestId);
+                return detectRequest;
+            }).toMap(DetectRequest::getId, Function.identity());
+
+
+            Map<String, DetectRecord> codeDRMap = StreamEx.ofNullable(Lists.newArrayList(detectRequestMap.keySet())).filter(idList -> !idList.isEmpty()).flatCollection(idList -> {
+                DetectRecordQueryDto detectRecord = new DetectRecordQueryDto();
+                detectRecord.setDetectRequestIdList(idList);
+                return this.detectRecordService.listByExample(detectRecord);
+            }).toMap(DetectRecord::getRegisterBillCode, Function.identity());
+            StreamEx.of(dataList).forEach(outDto -> {
+                Long billId = outDto.getBillId();
+                outDto.setImageCertList(billIdImageListMap.getOrDefault(billId, Lists.newArrayList()));
+                DetectRecord detectRecord = StreamEx.ofNullable(idCodeMap.get(billId)).nonNull().map(code -> codeDRMap.get(code)).nonNull().findFirst().orElse(null);
+                outDto.setDetectRecord(detectRecord);
+
+
+                Date scheduledDetectTime = StreamEx.ofNullable(billIdDetectRequestIdMap.get(billId)).map(detectRequestId -> {
+                    return detectRequestMap.get(detectRequestId);
+                }).nonNull().map(DetectRequest::getScheduledDetectTime).nonNull().findFirst().orElse(null);
+                outDto.setScheduledDetectTime(scheduledDetectTime);
+            });
+
+            return BaseOutput.successData(dataList);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询数据出错");
         }
-        List<Long> billIdList = StreamEx.of(dataList).map(ProductStockDetectDataOutputDto::getBillId).toList();
 
-        RegisterBillDto rbQ = new RegisterBillDto();
-        rbQ.setIdList(billIdList);
-        List<RegisterBill> registerBillList = this.registerBillService.listByExample(rbQ);
-
-
-        Map<Long, String> idCodeMap = StreamEx.of(registerBillList).toMap(RegisterBill::getId, RegisterBill::getCode);
-
-        Map<Long, Long> billIdDetectRequestIdMap = StreamEx.of(registerBillList)
-                .filter(b -> b.getDetectRequestId() != null)
-                .toMap(RegisterBill::getBillId, RegisterBill::getDetectRequestId);
-
-        Map<Long, List<ImageCert>> billIdImageListMap = StreamEx.of(this.imageCertService.findImageCertListByBillIdList(billIdList, BillTypeEnum.REGISTER_BILL)).groupingBy(ImageCert::getBillId);
-
-        Map<Long, DetectRequest> detectRequestMap = StreamEx.ofNullable(billIdList).filter(idList -> !idList.isEmpty()).flatCollection(idlist -> {
-            RegisterBillDto queryInputDto = new RegisterBillDto();
-            queryInputDto.setIdList(idlist);
-            return this.registerBillService.listByExample(queryInputDto);
-        }).map(RegisterBill::getDetectRequestId).map(detectRequestId -> {
-            DetectRequest detectRequest = this.detectRequestService.get(detectRequestId);
-            return detectRequest;
-        }).toMap(DetectRequest::getId, Function.identity());
-
-
-        Map<String, DetectRecord> codeDRMap = StreamEx.ofNullable(Lists.newArrayList(detectRequestMap.keySet())).filter(idList -> !idList.isEmpty()).flatCollection(idList -> {
-            DetectRecordQueryDto detectRecord = new DetectRecordQueryDto();
-            detectRecord.setDetectRequestIdList(idList);
-            return this.detectRecordService.listByExample(detectRecord);
-        }).toMap(DetectRecord::getRegisterBillCode, Function.identity());
-        StreamEx.of(dataList).forEach(outDto -> {
-            Long billId = outDto.getBillId();
-            outDto.setImageCertList(billIdImageListMap.getOrDefault(billId, Lists.newArrayList()));
-            DetectRecord detectRecord = StreamEx.ofNullable(idCodeMap.get(billId)).nonNull().map(code -> codeDRMap.get(code)).nonNull().findFirst().orElse(null);
-            outDto.setDetectRecord(detectRecord);
-
-
-            Date scheduledDetectTime = StreamEx.of(billIdDetectRequestIdMap.get(billId)).nonNull().map(detectRequestId -> {
-                return detectRequestMap.get(detectRequestId);
-            }).nonNull().map(DetectRequest::getScheduledDetectTime).findFirst().orElse(null);
-            outDto.setScheduledDetectTime(scheduledDetectTime);
-        });
-
-        return BaseOutput.successData(dataList);
 
     }
 
