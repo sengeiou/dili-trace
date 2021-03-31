@@ -201,6 +201,7 @@ public class CreateRegisterHeadInputDto {
         registerHead.setBrandId(this.getBrandId());
         registerHead.setBrandName(StringUtils.trim(this.getBrandName()));
 //        registerHead.setPlate(this.getPlate());
+        registerHead.setMarketId(user.getCustomerMarket().getMarketId());
         registerHead.setRemark(this.getRemark());
         registerHead.setActive(this.getActive());
         registerHead.setUnitPrice(this.getUnitPrice());
