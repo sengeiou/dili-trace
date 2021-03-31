@@ -488,6 +488,7 @@ public class ProductRpcService {
      * @return
      */
     private void lockOrRelease(LockReleaseRequestDto lockReleaseRequestDto) {
+        logger.debug("lockOrRelease={}",JSON.toJSONString(lockReleaseRequestDto));
         BaseOutput<?> baseOutput = productRpc.lockOrRelease(lockReleaseRequestDto);
         if (!baseOutput.isSuccess()) {
             throw new TraceBizException("锁定or释放库存接口失败：" + baseOutput.getMessage());

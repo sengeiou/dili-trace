@@ -196,7 +196,7 @@ public class ManagerRegisterHeadApi {
                 return BaseOutput.failure("没有进门主台账单/参数错误");
             }
 
-            logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
+            logger.info("保存多个进门主台账单操作用户:userid={}，username={},marketid={}", userId, userName,sessionContext.getSessionData().getMarketId());
             List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads, this.sessionContext.getSessionData().getOptUser(), sessionContext.getSessionData().getMarketId());
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
