@@ -74,19 +74,11 @@
             </div>
             <% } %>
 
-
-
-
             <% if (@filedNameRetMap.containsKey('isPrintCheckReport') && @filedNameRetMap.get('isPrintCheckReport').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
-                <label for="">是否打印检测报告</label>
-                <% if (@filedNameRetMap.get('isPrintCheckReport').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
-                <input type="radio" class="form-control" min="1" name="isPrintCheckReport" required/>
-                <input type="radio" class="form-control" min="1" name="isPrintCheckReport" required/>
-                <% } else { %>
-                <input type="radio" class="form-control" min="1" name="isPrintCheckReport"/>
-                <input type="radio" class="form-control" min="1" name="isPrintCheckReport"/>
-                <% } %>
+                <label for="">是否打印检测报告: </label>
+                是<input type="radio" class="" min="1" name="isPrintCheckReport" value="1" />
+                否<input type="radio" class="" min="1" name="isPrintCheckReport" value="=0" checked/>
             </div>
             <% } %>
 
