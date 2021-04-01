@@ -75,7 +75,7 @@ class CommissionDetectRequestCreate extends WebConfig {
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info', autoClose: 600});
+            popwrapper.alert('操作成功', {type: 'info', autoClose: 600});
         } catch (e) {
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});

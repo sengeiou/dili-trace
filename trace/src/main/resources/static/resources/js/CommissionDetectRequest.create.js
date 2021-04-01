@@ -51,7 +51,7 @@ class CommissionDetectRequestCreate extends WebConfig {
                 return;
             }
             bs4pop.removeAll();
-            bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+            popwrapper.alert('操作成功', { type: 'info', autoClose: 600 });
         }
         catch (e) {
             bs4pop.alert('远程访问失败', { type: 'error' });

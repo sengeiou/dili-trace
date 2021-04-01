@@ -5,6 +5,9 @@
             <% if (@filedNameRetMap.containsKey('name') && @filedNameRetMap.get('name').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">业户名称</label>
+                <% if (@filedNameRetMap.get('name').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
                 <% if (@filedNameRetMap.get('name').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text" class="form-control isWord" name="name" required/>
                 <% } else { %>
@@ -16,6 +19,9 @@
             <% if (@filedNameRetMap.containsKey('corporateName') && @filedNameRetMap.get('corporateName').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">企业名称</label>
+                <% if (@filedNameRetMap.get('corporateName').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
                 <% if (@filedNameRetMap.get('corporateName').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text" class="form-control isWord" name="corporateName" required/>
                 <% } else { %>
@@ -26,6 +32,7 @@
 
             <div class="form-group col">
                 <label for="">商品品类</label>
+                <i class="red">*</i>
                 <input type="text"
                        class="form-control input-sm "
                        data-rule-depends="input[name='productName'],input[name='productId']"
@@ -38,6 +45,10 @@
             <% if (@filedNameRetMap.containsKey('productAliasName') && @filedNameRetMap.get('productAliasName').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">商品别名</label>
+                <% if (@filedNameRetMap.get('productAliasName').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
+
                 <% if (@filedNameRetMap.get('productAliasName').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text" class="form-control isWord" name="productAliasName" required/>
                 <% } else { %>
@@ -48,6 +59,9 @@
             <% if (@filedNameRetMap.containsKey('originId') && @filedNameRetMap.get('originId').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">产地</label>
+                <% if (@filedNameRetMap.get('originId').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
                 <% if (@filedNameRetMap.get('originId').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="text"
                        class="form-control input-sm "
@@ -66,6 +80,9 @@
             <% if (@filedNameRetMap.containsKey('weight') && @filedNameRetMap.get('weight').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">商品重量</label>
+                <% if (@filedNameRetMap.get('weight').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
                 <% if (@filedNameRetMap.get('weight').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
                 <input type="number" class="form-control isNaturalNum" min="1" name="weight" required/>
                 <% } else { %>
@@ -77,6 +94,9 @@
             <% if (@filedNameRetMap.containsKey('isPrintCheckReport') && @filedNameRetMap.get('isPrintCheckReport').getDisplayed() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) { %>
             <div class="form-group col">
                 <label for="">是否打印检测报告: </label>
+                <% if (@filedNameRetMap.get('isPrintCheckReport').getRequired() == @com.dili.commons.glossary.YesOrNoEnum.YES.getCode()) {%>
+                <i class="red">*</i>
+                <% }%>
                 是<input type="radio" class="" min="1" name="isPrintCheckReport" value="1" />
                 否<input type="radio" class="" min="1" name="isPrintCheckReport" value="=0" checked/>
             </div>
