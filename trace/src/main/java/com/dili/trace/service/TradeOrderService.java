@@ -178,6 +178,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetail.setParentId(null);
         tradeDetail.setWeightUnit(registerBill.getWeightUnit());
         tradeDetail.setStockWeight(registerBill.getWeight());
+        tradeDetail.setTotalWeight(registerBill.getWeight());
+        tradeDetail.setSoftWeight(BigDecimal.ZERO);
         tradeDetail.setProductName(registerBill.getProductName());
         tradeDetail.setProductStockId(productStockId);
         tradeDetail.setBuyerId(registerBill.getUserId());
@@ -669,7 +671,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
             td.setSoftWeight(tradeDetail.getSoftWeight().add(tradeRequestDetail.getTradeWeight()));
             this.tradeDetailService.updateSelective(td);
-            this.productRpcService.lock(td.getThirdPartyStockId(), productStockItem.getMarketId(), tradeRequestDetail.getTradeWeight());
+            this.productRpcService.lock(tradeDetail.getThirdPartyStockId(), productStockItem.getMarketId(), tradeRequestDetail.getTradeWeight());
 
         }
         return tradeRequestDetailList;
