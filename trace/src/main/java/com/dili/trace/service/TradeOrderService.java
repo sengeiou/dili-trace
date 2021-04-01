@@ -211,7 +211,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             return new TraceBizException("创建/查询卖家库存失败");
         });
 
-        this.createTradeDetailForRegisterBill(registerBill, productStock.getProductStockId());
+        TradeDetail buyerTD=this.createTradeDetailForRegisterBill(registerBill, productStock.getProductStockId());
 
 
 //        TradeDto tradeDto = new TradeDto();
@@ -254,6 +254,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 //
 //        this.dealTradeOrder(tradeOrder, TradeOrderStatusEnum.FINISHED, tradeRequestList);
 //        return Optional.of(tradeOrder);
+        this.productRpcService.createRegCreate(buyerTD.getId(), productStock.getMarketId(), Optional.empty());
         return Optional.empty();
     }
 

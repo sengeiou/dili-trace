@@ -66,6 +66,7 @@
 			<artifactId>json-path</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
@@ -526,7 +527,7 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.5</version>
+				<version>4.0.0</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -547,8 +548,10 @@
 				<configuration>
 					<dotGitDirectory>${project.parent.basedir}/.git</dotGitDirectory>
 					<generateGitPropertiesFilename>${project.build.outputDirectory}\git.properties</generateGitPropertiesFilename>
-					<failOnNoGitDirectory>false</failOnNoGitDirectory>
+					<failOnNoGitDirectory>true</failOnNoGitDirectory>
 					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<offline>true</offline>
+					<dateFormat>yyyy-MM-dd HH:mm:ssZ</dateFormat>
 				</configuration>
 			</plugin>
 		</plugins>
