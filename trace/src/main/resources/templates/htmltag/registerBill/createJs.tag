@@ -57,10 +57,10 @@
                     plateList: [],
                     truckType: 20,
                     weight: 0,
-                    weightUnit: "1",
+                    weightUnit: 1,
                     productName: "",
                     originName: "",
-                    pieceweightUnit: "1",
+                    pieceweightUnit: 1,
                 },
                 formConfig: {
                     formBtnSize: 'small',
