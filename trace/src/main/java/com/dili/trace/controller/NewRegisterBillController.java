@@ -632,6 +632,14 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
+
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
         RegisterBill item = billService.get(id);
         if (item == null) {
 
