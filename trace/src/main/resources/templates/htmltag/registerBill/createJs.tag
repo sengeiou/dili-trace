@@ -47,7 +47,8 @@
                     plateList: [],
                     truckType: 20,
                     weightUnit: "1",
-                    productName:"",
+                    productName: "",
+                    originName: "",
                     pieceweightUnit: "1",
                 },
                 formConfig: {
@@ -161,6 +162,7 @@
                                             this.formData.truckTareWeight = obj.truckTareWeight;
                                             this.formData.arrivalDatetime = obj.arrivalDatetime;
                                             this.formData.originId = obj.originId;
+                                            this.formData.originName = obj.originName;
                                             this.formData.productId = obj.productId;
                                             this.formData.productName = obj.productName;
                                             this.formData.upStreamId = obj.upStreamId;
@@ -409,6 +411,16 @@
                                             callback([]);
                                         });
                                 }
+                            },
+                            on: {
+                                change:function (val){
+                                    let options = app.$refs.myForm.$refs.originId[0].options;
+                                    options.forEach(it =>{
+                                        if(it.value === val){
+                                            app.formData.originName = it.text;
+                                        }
+                                    });
+                                }
                             }
                         },
                         upStreamId: {
@@ -459,6 +471,17 @@
                         arrivalDatetime: {
                             type: "datetime",
                             label: "到场时间"
+                        },
+                        unitPrice: {
+                            type: "number",
+                            label: "单价",
+                            attrs: {},
+                            default: 0
+                        },
+                        remark: {
+                            type: "textarea",
+                            label: "备注",
+                            attrs: {}
                         }
                     },
                     order: [
