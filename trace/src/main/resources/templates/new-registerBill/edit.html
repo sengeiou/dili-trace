@@ -8,19 +8,27 @@
             :request-fn="handleRequest"
     >
         <template v-slot:weight="{ desc, data, field, formData }">
-            <el-input placeholder="请输入内容" v-model="formData.weight" class="input-with-select">
+            <el-input placeholder="请输入内容" v-model.number="formData.weight" class="input-with-select">
                 <el-select v-model="formData.weightUnit" slot="append">
-                    <el-option label="斤" value="1"></el-option>
-                    <el-option label="公斤" value="2"></el-option>
+                    <el-option
+                            v-for="item in unitOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
                 </el-select>
             </el-input>
         </template>
         <template v-slot:pieceweight="{ desc, data, field, formData }">
-            <el-input placeholder="请输入内容" v-model="formData.pieceweight" class="input-with-select"
+            <el-input placeholder="请输入内容" v-model.number="formData.pieceweight" class="input-with-select"
                       @input="changePieceWeight">
                 <el-select v-model="formData.pieceweightUnit" slot="append">
-                    <el-option label="斤" value="1"></el-option>
-                    <el-option label="公斤" value="2"></el-option>
+                    <el-option
+                            v-for="item in unitOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
                 </el-select>
             </el-input>
         </template>

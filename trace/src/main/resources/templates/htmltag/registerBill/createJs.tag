@@ -29,6 +29,13 @@
         },
         data() {
             return {
+                unitOptions: [{
+                    value: 1,
+                    label: '斤'
+                }, {
+                    value: 2,
+                    label: '公斤'
+                }],
                 editMode: false,
                 imageCertList: [],
                 registerHeadCodeTemp: [],
@@ -46,6 +53,7 @@
                     arrivalTallynos: "",
                     plateList: [],
                     truckType: 20,
+                    weight:0,
                     weightUnit: "1",
                     productName: "",
                     originName: "",
@@ -297,14 +305,8 @@
                         weight: {
                             type: "input",
                             label: "商品重量",
-                            rules: [{
-                                pattern: new RegExp("^\\d+$", ""),
-                                type: "string",
-                                message: "格式不正确"
-                            }],
                             vif: function (form) {
                                 return form.measureType === 20;
-
                             },
                         },
                         pieceNum: {
@@ -333,11 +335,6 @@
                         pieceweight: {
                             type: "input",
                             label: "件重",
-                            rules: [{
-                                pattern: new RegExp("^\\d+$", ""),
-                                type: "string",
-                                message: "格式不正确"
-                            }],
                             vif: function (form) {
                                 return form.measureType !== 20;
 
