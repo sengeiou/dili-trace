@@ -182,7 +182,7 @@ public class NewRegisterBillController {
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        modelMap.put("filedNameRetMap", filedNameRetMap);
+        modelMap.put("filedNameRetMap", JSON.toJSONString(filedNameRetMap));
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
         modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e -> {
@@ -296,7 +296,7 @@ public class NewRegisterBillController {
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        modelMap.put("filedNameRetMap", filedNameRetMap);
+        modelMap.put("filedNameRetMap", JSON.toJSONString(filedNameRetMap));
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
         modelMap.put("imageCertTypeEnumMap", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(e -> {
