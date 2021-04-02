@@ -516,9 +516,14 @@
                     registerBill.weight = registerBill.total;
                 }
                 registerBill.imageCertList = this.imageCertList;
-                let data = [registerBill];
+
+                let data = registerBill;
+                let url='/newRegisterBill/doAdd.action'
+                if(app.editMode){
+                    url='/newRegisterBill/doEdit.action'
+                }
                 console.log(data);
-                axios.post('/newRegisterBill/doAdd.action', {'registerBills': data})
+                axios.post(url,data)
                     .then((res) => {
                         if (!res.data.success) {
                             bs4pop.alert(res.data.message, { type: 'error' });

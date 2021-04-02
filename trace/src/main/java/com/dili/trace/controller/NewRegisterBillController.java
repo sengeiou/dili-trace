@@ -24,11 +24,13 @@ import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -92,6 +94,10 @@ public class NewRegisterBillController {
     EnumService enumService;
     @Autowired
     RegisterHeadService registerHeadService;
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
+    @Autowired
+    GlobalVarService globalVarService;
 
 
     /**
@@ -204,23 +210,20 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doAdd.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput doAdd(@RequestBody CreateListBillParam input) {
+    BaseOutput doAdd(@RequestBody CreateRegisterBillInputDto input) {
         Firm firm = this.uapRpcService.getCurrentFirm().orElse(null);
         if (firm == null) {
             return BaseOutput.failure("未登录");
         }
-        List<CreateRegisterBillInputDto> registerBills = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity()).nonNull().toList();
 
-        List<Long> userIdList = StreamEx.of(registerBills).map(CreateRegisterBillInputDto::getUserId).nonNull()
-                .distinct().toList();
-        Long userId = StreamEx.ofNullable(userIdList).filter(list -> list.size() == 1).flatCollection(Function.identity()).findFirst().orElse(null);
+        Long userId =input.getUserId();
         if (userId == null) {
             return BaseOutput.failure("参数错误");
         }
 
         try {
 
-            registerBillService.createRegisterBillList(firm.getId(), registerBills
+            registerBillService.createRegisterBillList(firm.getId(), Lists.newArrayList(input)
                     , userId
                     , this.uapRpcService.getCurrentOperator()
                     , CreatorRoleEnum.MANAGER);
@@ -325,6 +328,10 @@ public class NewRegisterBillController {
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setSourceName(firstTallyAreaNo);
 
+        List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(registerBill.getBillId(), BillTypeEnum.REGISTER_BILL);
+        registerBill.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+
+
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
@@ -332,7 +339,13 @@ public class NewRegisterBillController {
 
         String upstreamName = StreamEx.ofNullable(registerBillOutputDto.getUpStreamId()).map(this.upStreamService::get).nonNull().map(UpStream::getName).findFirst().orElse(null);
         registerBillOutputDto.setUpStreamName(upstreamName);
-        modelMap.put("item", JSON.toJSONString(registerBillOutputDto));
+
+        Map<Object,Object>   item= Maps.newHashMap(new BeanMap(registerBillOutputDto));
+        StreamEx.of(imageCertTypeEnumList).forEach(e->{
+            List<String>imageUidList=StreamEx.of(registerBillOutputDto.getGroupedImageCertList().get(e)).nonNull().map(ImageCert::getUid).nonNull().map(uid->this.globalVarService.getDfsImageViewPathPrefix()+"/"+uid).toList();
+            item.put("certType"+e.getCode(),imageUidList);
+        });
+        modelMap.put("item", JSON.toJSONString(item));
 
 
         modelMap.put("citys", this.queryCitys());
