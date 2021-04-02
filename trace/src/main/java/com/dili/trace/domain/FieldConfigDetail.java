@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,6 +69,7 @@ public class FieldConfigDetail extends BaseDomain {
      * 显示field条件值
      */
     @Column(name = "available_values")
+    @JSONField(serialize = false)
     private String availableValues;
 
 
@@ -80,11 +82,15 @@ public class FieldConfigDetail extends BaseDomain {
     }
     @Transient
     public List<Object> getAvailableValueList() {
-        List<Object>list=JSON.parseArray(StringUtils.trimToNull(this.availableValues));
-        if(list==null){
+        try {
+            List<Object>list=JSON.parseArray(StringUtils.trimToNull(this.availableValues));
+            if(list==null){
+                return new ArrayList<>();
+            }
+            return list;
+        }catch (Exception e){
             return new ArrayList<>();
         }
-        return list;
     }
 
     @Override
