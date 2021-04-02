@@ -1,5 +1,5 @@
 <script type="text/javascript">
-
+    let filedNameRetMap = JSON.parse('${filedNameRetMap}');
     var app = new Vue({
         el: '#app',
         created: function () {
@@ -22,6 +22,9 @@
                             vm.imageCertList.splice(vm.imageCertList.findIndex(item => item.uid === file.replace(prefix, "")), 1);
                         },
                         limit: "10"
+                    },
+                    vif: function () {
+                        return filedNameRetMap.imageCertList.displayed === 1;
                     }
                 }
             })
@@ -41,7 +44,7 @@
                 registerHeadCodeTemp: [],
                 weightUnit: "",
                 pieceweightUnit: "",
-                productOptionsTemp:[],
+                productOptionsTemp: [],
                 formData: {
                     total: 0,
                     pieceNum: 0,
@@ -53,7 +56,7 @@
                     arrivalTallynos: "",
                     plateList: [],
                     truckType: 20,
-                    weight:0,
+                    weight: 0,
                     weightUnit: "1",
                     productName: "",
                     originName: "",
@@ -105,6 +108,7 @@
                             type: "select",
                             label: "到货摊位",
                             optionsLinkageFields: ['userId', 'registerHeadCode'],
+                            required: filedNameRetMap.arrivalTallynos.required === 1,
                             prop: {text: 'text', value: 'text'},
                             options: async data => {
                                 let registerHeadCode = data.registerHeadCode;
@@ -133,6 +137,9 @@
                                 filterable: true,
                                 multiple: true,
                                 allowCreate: true
+                            },
+                            vif: function () {
+                                return filedNameRetMap.arrivalTallynos.displayed === 1;
                             }
                         },
                         registerHeadCode: {
@@ -209,21 +216,29 @@
                                     value: 10
                                 }
                             ],
+                            required: filedNameRetMap.unitPrice.required === 1,
                             type: "radio",
-                            label: "是否拼车"
+                            label: "是否拼车",
+                            vif: function () {
+                                return filedNameRetMap.unitPrice.displayed === 1;
+                            }
                         },
                         plate: {
                             type: "input",
                             label: "车牌号",
+                            required: filedNameRetMap.plate.required === 1,
                             vif: function (form) {
+                                if (filedNameRetMap.plate.displayed === 0) {
+                                    return false;
+                                }
                                 return form.registType !== 30;
-
                             },
                         },
                         plateList: {
                             type: "select",
                             label: "车牌号",
                             prop: {text: 'text', value: 'text'},
+                            required: filedNameRetMap.plate.required === 1,
                             optionsLinkageFields: ['registerHeadCode'],
                             options: data => {
                                 let registerHeadCodeTemp = this.registerHeadCodeTemp;
@@ -238,6 +253,9 @@
                                 return [];
                             },
                             vif: function (form) {
+                                if (filedNameRetMap.plate.displayed === 0) {
+                                    return false;
+                                }
                                 return form.registType === 30;
                             },
                         },
@@ -278,12 +296,12 @@
                                 }
                             },
                             on: {
-                                change:function (val){
+                                change: function (val) {
                                     let options = app.$refs.myForm.$refs.productId[0].options;
-                                    options.forEach(it =>{
-                                       if(it.value === val){
-                                           app.formData.productName = it.text;
-                                       }
+                                    options.forEach(it => {
+                                        if (it.value === val) {
+                                            app.formData.productName = it.text;
+                                        }
                                     });
                                 }
                             }
@@ -300,7 +318,11 @@
                                 }
                             ],
                             type: "radio",
-                            label: "计重方式"
+                            label: "计重方式",
+                            required: filedNameRetMap.measureType.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.measureType.displayed === 1;
+                            }
                         },
                         weight: {
                             type: "input",
@@ -354,12 +376,15 @@
                         specName: {
                             type: "input",
                             label: "商品规格",
-                            attrs: {}
+                            required: filedNameRetMap.specName.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.specName.displayed === 1;
+                            }
                         },
                         brandName: {
                             type: "autocomplete",
                             label: "品牌",
-                            rules: [],
+                            required: filedNameRetMap.brandName.required === 1,
                             attrs: {
                                 valueKey: "brandName",
                                 triggerOnFocus: false,
@@ -371,12 +396,16 @@
                                         .catch(function (error) {
                                         });
                                 }
+                            },
+                            vif: function () {
+                                return filedNameRetMap.brandName.displayed === 1;
                             }
                         },
                         originId: {
                             type: "select",
                             label: "产地",
                             prop: {text: 'name', value: 'id'},
+                            required: filedNameRetMap.originId.required === 1,
                             optionsLinkageFields: ['registerHeadCode'],
                             options: data => {
                                 if (this != undefined) {
@@ -410,20 +439,24 @@
                                 }
                             },
                             on: {
-                                change:function (val){
+                                change: function (val) {
                                     let options = app.$refs.myForm.$refs.originId[0].options;
-                                    options.forEach(it =>{
-                                        if(it.value === val){
+                                    options.forEach(it => {
+                                        if (it.value === val) {
                                             app.formData.originName = it.text;
                                         }
                                     });
                                 }
+                            },
+                            vif: function () {
+                                return filedNameRetMap.originId.displayed === 1;
                             }
                         },
                         upStreamId: {
                             type: "select",
                             label: "上游企业",
                             prop: {text: 'name', value: 'id'},
+                            required: filedNameRetMap.upStreamId.required === 1,
                             optionsLinkageFields: ['registerHeadCode'],
                             options: data => {
                                 if (this !== undefined) {
@@ -459,26 +492,44 @@
                                             callback([]);
                                         });
                                 }
+                            },
+                            vif: function () {
+                                return filedNameRetMap.upStreamId.displayed === 1;
                             }
                         },
                         truckTareWeight: {
                             type: "input",
-                            label: "皮重"
+                            label: "皮重",
+                            required: filedNameRetMap.truckTareWeight.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.truckTareWeight.displayed === 1;
+                            }
                         },
                         arrivalDatetime: {
                             type: "datetime",
-                            label: "到场时间"
+                            label: "到场时间",
+                            required: filedNameRetMap.arrivalDatetime.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.arrivalDatetime.displayed === 1;
+                            }
                         },
                         unitPrice: {
                             type: "number",
                             label: "单价",
                             attrs: {},
-                            default: 0
+                            default: 0,
+                            required: filedNameRetMap.unitPrice.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.unitPrice.displayed === 1;
+                            }
                         },
                         remark: {
                             type: "textarea",
                             label: "备注",
-                            attrs: {}
+                            required: filedNameRetMap.remark.required === 1,
+                            vif: function () {
+                                return filedNameRetMap.remark.displayed === 1;
+                            }
                         }
                     },
                     order: [
@@ -515,22 +566,22 @@
                 registerBill.imageCertList = this.imageCertList;
 
                 let data = registerBill;
-                let url='/newRegisterBill/doAdd.action'
-                if(app.editMode){
-                    url='/newRegisterBill/doEdit.action'
+                let url = '/newRegisterBill/doAdd.action'
+                if (app.editMode) {
+                    url = '/newRegisterBill/doEdit.action'
                 }
                 console.log(data);
-                axios.post(url,data)
+                axios.post(url, data)
                     .then((res) => {
                         if (!res.data.success) {
-                            bs4pop.alert(res.data.message, { type: 'error' });
+                            bs4pop.alert(res.data.message, {type: 'error'});
                             return;
                         }
                         bs4pop.removeAll();
-                        bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+                        bs4pop.alert('操作成功', {type: 'info', autoClose: 600});
                     })
                     .catch(function (error) {
-                        bs4pop.alert('远程访问失败', { type: 'error' });
+                        bs4pop.alert('远程访问失败', {type: 'error'});
                     });
             },
             changePieceWeight: function (value) {
