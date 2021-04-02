@@ -231,7 +231,7 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             q.setFieldConfigId(fc.getId());
             q.setIsValid(YesOrNoEnum.YES.getCode());
             return this.listByExample(q);
-        }).flatCollection(Function.identity()).mapToEntry(FieldConfigDetail::getDefaultId, Function.identity()).toMap();
+        }).flatCollection(Function.identity()).distinct(FieldConfigDetail::getDefaultId).mapToEntry(FieldConfigDetail::getDefaultId, Function.identity()).toMap();
 
 
         return StreamEx.of(this.defaultFieldDetailService.findByModuleType(moduleTypeEnum)).map(df -> {
