@@ -895,7 +895,7 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doEdit(@RequestBody RegisterBill input) {
         try {
-            Long id = this.sgRegisterBillService.doEdit(input);
+            Long id = this.registerBillService.doEdit(input,input.getImageCertList(),this.uapRpcService.getCurrentOperator());
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);

@@ -201,13 +201,6 @@ public interface SgRegisterBillService {
      */
     public Long doAuditWithoutDetect(RegisterBill input);
 
-    /**
-     * 修改登记单
-     *
-     * @param input
-     * @return
-     */
-    public Long doEdit(RegisterBill input);
 
     /**
      * 批量主动送检

@@ -878,40 +878,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return registerBill.getId();
     }
 
-    @Override
-    public Long doEdit(RegisterBill input) {
-        if (input == null || input.getId() == null) {
-            throw new TraceBizException("参数错误");
-        }
-        RegisterBill registerBill = this.billService.getAvaiableBill(input.getId()).orElseThrow(() -> {
-            return new TraceBizException("数据错误");
-        });
-
-        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
-            throw new TraceBizException("数据状态错误");
-        }
-
-        //if (input.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-        // 理货区
-        registerBill.setPlate(input.getPlate());
-        //} else {
-
-        //}
-        this.checkPlate(registerBill);
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
-                registerBill.getOriginId(), input.getOriginId());
-        registerBill.setProductId(input.getProductId());
-        registerBill.setProductName(input.getProductName());
-
-        registerBill.setOriginId(input.getOriginId());
-        registerBill.setOriginName(input.getOriginName());
-
-        registerBill.setWeight(input.getWeight());
-
-        // registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
-        this.billService.updateSelective(registerBill);
-        return registerBill.getId();
-    }
 
     @Override
     public Long doUploadDetectReport(RegisterBill input) {
