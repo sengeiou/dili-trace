@@ -24,6 +24,7 @@ import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MergeBeanUtils;
 import com.dili.trace.util.NumUtils;
 import com.dili.trace.util.RegUtils;
 import de.cronn.reflection.util.PropertyUtils;
@@ -475,14 +476,15 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         // 保存车牌
 //        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
 
-        input.setReason("");
         operatorUser.ifPresent(op -> {
-            input.setModifyUser(op.getName());
-            input.setModified(new Date());
+            headItem.setModifyUser(op.getName());
+            headItem.setModified(new Date());
         });
-        input.setRemainWeight(input.getWeight());
+        MergeBeanUtils.merge(input,headItem,true);
+        headItem.setReason(null);
+        headItem.setRemainWeight(headItem.getWeight());
 
-        this.updateSelective(input);
+        this.update(headItem);
 
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
@@ -490,12 +492,12 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 //            throw new TraceBusinessException("请上传凭证");
 //        }
         // 保存图片
-        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, headItem.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
-        this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId(), input.getMarketId());
-        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(), input.getId(), BillTypeEnum.MASTER_BILL);
-        this.registerHeadPlateService.deleteAndInsertPlateList(input.getId(), plateList);
-        return input.getId();
+        this.brandService.createOrUpdateBrand(headItem.getBrandName(), headItem.getUserId(), headItem.getMarketId());
+        this.registerTallyAreaNoService.insertTallyAreaNoList(input.getArrivalTallynos(), headItem.getId(), BillTypeEnum.MASTER_BILL);
+        this.registerHeadPlateService.deleteAndInsertPlateList(headItem.getId(), plateList);
+        return headItem.getId();
     }
 
     @Transactional
