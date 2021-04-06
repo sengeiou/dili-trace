@@ -484,6 +484,15 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         headItem.setRemainWeight(input.getWeight());
         headItem.setReason(null);
         headItem.setTruckTareWeight(input.getTruckTareWeight());
+        headItem.setUpStreamName(input.getUpStreamName());
+        headItem.setUpStreamId(input.getUpStreamId());
+        headItem.setUnitPrice(input.getUnitPrice());
+        headItem.setBrandId(input.getBrandId());
+        headItem.setBrandName(input.getBrandName());
+        headItem.setOriginId(input.getOriginId());
+        headItem.setOriginName(input.getOriginName());
+        headItem.setRemark(input.getRemark());
+        headItem.setArrivalDatetime(input.getArrivalDatetime());
 
         this.update(headItem);
 
