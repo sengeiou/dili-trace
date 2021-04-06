@@ -493,6 +493,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         headItem.setOriginName(input.getOriginName());
         headItem.setRemark(input.getRemark());
         headItem.setArrivalDatetime(input.getArrivalDatetime());
+        headItem.setSpecName(input.getSpecName());
 
         this.update(headItem);
 
