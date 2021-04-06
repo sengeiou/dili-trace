@@ -53,6 +53,9 @@ public class CustomerDetectRequestController {
     UserRpcService userRpcService;
 
     @Autowired
+    UapRpcService uapRpcService;
+
+    @Autowired
     BillService billService;
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
@@ -446,7 +449,7 @@ public class CustomerDetectRequestController {
         if (dto == null) {
             return dto;
         }
-        if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
+        if (this.uapRpcService.hasAccess("post", "registerBill/create.html#user")) {
             return dto;
         } else {
             dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));

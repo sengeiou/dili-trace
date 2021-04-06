@@ -54,7 +54,7 @@ class NewRegisterBillAdd extends WebConfig {
                 }
             })();
             registerHeadCode.html('');
-            if (RegistTypeEnum.PARTIAL == $('#registType').val()) {
+            if (30 == $('#registType').val()) {
                 (async () => {
                     registerHeadCode.val(null).trigger('change');
                     let dataList = await registerHeadController.listRegisterHead({ userId: userId, minRemainWeight: 0 });
@@ -88,7 +88,7 @@ class NewRegisterBillAdd extends WebConfig {
     initRegistType() {
         var registerHeadCodeInput = $('select[name="registerHeadCode"]');
         $('#registType').on('change', async (e) => {
-            if (RegistTypeEnum.PARTIAL != $(e.target).val()) {
+            if (30 != $(e.target).val()) {
                 $('#registerHeadDiv').hide();
                 $('[name="registerHeadCode"]').val('');
                 this.form.find('input[type="text"]').prop('readonly', false);
