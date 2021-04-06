@@ -437,6 +437,27 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("业户ID不能为空");
         }
 
+
+        if(StringUtils.isNotBlank(registerBill.getName())){
+            if(!RegUtils.isValidInput(registerBill.getName())){
+                throw new TraceBizException("业户名称不能有特殊字符");
+            }
+            if(StringUtils.trimToEmpty(registerBill.getName()).length()>40){
+                throw new TraceBizException("业户名称不能超过40字符");
+            }
+        }
+        if(StringUtils.isNotBlank(registerBill.getCorporateName())){
+            if(!RegUtils.isValidInput(registerBill.getCorporateName())){
+                throw new TraceBizException("企业名称不能有特殊字符");
+            }
+            if(StringUtils.trimToEmpty(registerBill.getProductAliasName()).length()>40){
+                throw new TraceBizException("企业名称不能超过40字符");
+            }
+        }
+        
+        if(StringUtils.trimToEmpty(registerBill.getProductAliasName()).length()>40){
+            throw new TraceBizException("商品别名不能超过40字符");
+        }
         //登记单类型字段
         if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
             String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getBillType).getName();

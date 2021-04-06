@@ -1,5 +1,17 @@
 package com.dili.trace.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
@@ -10,22 +22,19 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.*;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectStatusEnum;
+import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
-import one.util.streamex.StreamEx;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.dili.trace.util.RegUtils;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
+import one.util.streamex.StreamEx;
 
 /**
  * 委托单
@@ -208,6 +217,26 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (!RegisterBilCreationSourceEnum.fromCode(bill.getCreationSource()).isPresent()) {
             throw new TraceBizException("登记单来源类型错误");
         }
+        if(StringUtils.isNotBlank(bill.getName())){
+            if(!RegUtils.isValidInput(bill.getName())){
+                throw new TraceBizException("业户名称不能有特殊字符");
+            }
+            if(StringUtils.trimToEmpty(bill.getName()).length()>40){
+                throw new TraceBizException("业户名称不能超过40字符");
+            }
+        }
+        if(StringUtils.isNotBlank(bill.getCorporateName())){
+            if(!RegUtils.isValidInput(bill.getCorporateName())){
+                throw new TraceBizException("企业名称不能有特殊字符");
+            }
+            if(StringUtils.trimToEmpty(bill.getCorporateName()).length()>40){
+                throw new TraceBizException("企业名称不能超过40字符");
+            }
+        }
+        if(StringUtils.trimToEmpty(bill.getProductAliasName()).length()>40){
+            throw new TraceBizException("商品别名不能超过40字符");
+        }
+        
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());
         createCommissionBill(bill);
