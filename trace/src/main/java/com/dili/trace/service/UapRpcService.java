@@ -25,7 +25,20 @@ import java.util.Optional;
 public class UapRpcService {
     @Autowired
     FirmRpcService firmRpcService;
-
+    /**
+     * 当前登录用户名和id
+     * @return
+     */
+    public OperatorUser getCurrentOperatorOrEx() {
+        return this.getCurrentUserTicket().map(ut -> {
+            OperatorUser dto = new OperatorUser(ut.getId(), ut.getRealName());
+            dto.setMarketId(ut.getFirmId());
+            dto.setMarketName(ut.getFirmName());
+            return dto;
+        }).orElseThrow(()->{
+            return new TraceBizException("请先登录");
+        });
+    }
     /**
      * 当前登录用户名和id
      * @return
