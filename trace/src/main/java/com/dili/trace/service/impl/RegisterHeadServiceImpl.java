@@ -481,11 +481,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             headItem.setModified(new Date());
         });
         MergeBeanUtils.merge(input,headItem,true);
+        headItem.setRemainWeight(input.getWeight());
         headItem.setReason(null);
-        headItem.setRemainWeight(headItem.getWeight());
+        headItem.setTruckTareWeight(input.getTruckTareWeight());
 
         this.update(headItem);
-
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
 //        if (imageCertList.isEmpty()) {
