@@ -198,10 +198,10 @@ public class ClientProductStockApi {
                 RegisterBillDto queryInputDto = new RegisterBillDto();
                 queryInputDto.setIdList(idlist);
                 return this.registerBillService.listByExample(queryInputDto);
-            }).map(RegisterBill::getDetectRequestId).map(detectRequestId -> {
+            }).map(RegisterBill::getDetectRequestId).nonNull().map(detectRequestId -> {
                 DetectRequest detectRequest = this.detectRequestService.get(detectRequestId);
                 return detectRequest;
-            }).toMap(DetectRequest::getId, Function.identity());
+            }).nonNull().toMap(DetectRequest::getId, Function.identity());
 
 
             Map<String, DetectRecord> codeDRMap = StreamEx.ofNullable(Lists.newArrayList(detectRequestMap.keySet())).filter(idList -> !idList.isEmpty()).flatCollection(idList -> {
