@@ -42,30 +42,6 @@ class FieldConfigBill extends WebConfig {
         });
     }
     async initPlate() {
-        let truckTypeDiv = this.saveForm.find('#truckTypeDiv');
-        let truckTypeDisplayed = truckTypeDiv.find('[name*="displayed"]');
-        let truckTypeRequired = truckTypeDiv.find('[name*="required"]');
-        let plateDiv = this.saveForm.find('#plateDiv');
-        let plateDisplayed = plateDiv.find('[name*="displayed"][type="hidden"]');
-        let plate = plateDiv.find('input[name*="displayed"][type="checkbox"]');
-        plateDiv.find('input[name*="displayed"],input[name*="required"]').readonly(true);
-        debugger;
-        truckTypeDisplayed.on('click', function () {
-            var isDisplayed = $(this).is(":checked");
-            if (isDisplayed == true) {
-                plate.attr('checked', 'checked');
-                plateDisplayed.removeAttr('disabled');
-            }
-            else {
-                plate.removeAttr('checked');
-                plateDisplayed.attr('disabled', 'disabled');
-            }
-        });
-        truckTypeRequired.on('click', function () {
-            var isRequired = $(this).val();
-            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"]').prop("checked", false);
-            $('input[name*="fieldName"][value*="plate"]').siblings().children('input[type="radio"][name*="required"][value=' + isRequired + ']').prop("checked", true);
-        });
     }
     async initMeasureType() {
         let measureTypeDiv = this.saveForm.find('#measureTypeDiv');
