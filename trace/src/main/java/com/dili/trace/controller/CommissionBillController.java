@@ -245,21 +245,17 @@ public class CommissionBillController {
      * @param modelMap
      * @return
      */
-    @RequestMapping(value = "/view/{id}/{displayWeight}", method = RequestMethod.GET)
-    public String view(ModelMap modelMap, @PathVariable Long id,
-                       @PathVariable(required = false) Boolean displayWeight) {
+    @RequestMapping(value = "/view.html", method = RequestMethod.GET)
+    public String view(ModelMap modelMap,  Long id) {
         RegisterBill bill = this.billService.get(id);
         if (bill == null) {
             return "";
         }
         List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(bill.getCode());
         modelMap.put("detectRecordList", detectRecordList);
-        if (displayWeight == null) {
-            displayWeight = false;
-        }
 
         modelMap.put("item", bill);
-        modelMap.put("displayWeight", displayWeight);
+        modelMap.put("displayWeight", false);
         return "commissionBill/view";
     }
 
@@ -270,7 +266,7 @@ public class CommissionBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput autoCheck(@PathVariable Long id) {
         try {
@@ -279,7 +275,7 @@ public class CommissionBillController {
             return BaseOutput.failure(e.getMessage());
         }
         return BaseOutput.success("操作成功");
-    }
+    }*/
 
     /**
      * 采样检测
@@ -287,7 +283,7 @@ public class CommissionBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput samplingCheck(@PathVariable Long id) {
         try {
@@ -296,7 +292,7 @@ public class CommissionBillController {
             return BaseOutput.failure(e.getMessage());
         }
         return BaseOutput.success("操作成功");
-    }
+    }*/
 
 
     /**

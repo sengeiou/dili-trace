@@ -324,8 +324,8 @@ public class CheckSheetController {
      * @return
      */
     @ApiOperation("跳转到CheckSheet二维码请求页面")
-    @RequestMapping(value = "/detail/{checkSheetCode}", method = RequestMethod.GET)
-    public String detail(ModelMap modelMap, @PathVariable(required = false) String checkSheetCode) {
+    @RequestMapping(value = "/detail.html", method = RequestMethod.GET)
+    public String detail(ModelMap modelMap, String checkSheetCode) {
         modelMap.put("item", new CheckSheetPrintOutput());
         this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet -> {
             CheckSheetPrintOutput resultMap = this.checkSheetService.findPrintableCheckSheet(checkSheet.getId());

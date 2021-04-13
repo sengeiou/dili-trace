@@ -331,7 +331,7 @@ class EcommerceBillGrid extends ListPage {
             return;
         }
         let selected_id = row[0].id;
-        let url = this.toUrl('/ecommerceBill/view/' + selected_id);
+        let url = this.toUrl('/ecommerceBill/view.html?id=' + selected_id);
         var dia = bs4pop.dialog({
             title: '查看电商登记单',
             content: url,

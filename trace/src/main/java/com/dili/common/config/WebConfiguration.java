@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-    @Autowired
+/*    @Autowired
     private SessionFilter sessionFilter;
 
     @Bean
@@ -28,7 +28,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         registration.setName("sessionFilter");
         registration.setOrder(1);
         return registration;
-    }
+    }*/
 
 //    @Override
 //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
