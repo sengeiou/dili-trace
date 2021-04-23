@@ -98,38 +98,5 @@ public class TradeInfoController {
         return BaseOutput.success().setData(list);
     }
 
-    /**
-     * 对用户敏感信息进行遮罩
-     *
-     * @param user
-     * @return
-     */
-    private UserInfo maskUser(UserInfo user) {
-        if (this.uapRpcService.hasAccess("post", "registerBill/create.html#user")) {
-            return user;
-        } else {
-            user.setCardNo(MaskUserInfo.maskIdNo(user.getCardNo()));
-            user.setAddr(MaskUserInfo.maskAddr(user.getAddr()));
-            return user;
-        }
-
-    }
-
-    /**
-     * 判断权限
-     *
-     * @param customer
-     * @return
-     */
-    private Customer maskCustomer(Customer customer) {
-        if (this.uapRpcService.hasAccess("post", "registerBill/create.html#user")) {
-            return customer;
-        } else {
-            customer.setIdNo(MaskUserInfo.maskIdNo(customer.getIdNo()));
-            customer.setAddress(MaskUserInfo.maskAddr(customer.getAddress()));
-            return customer;
-        }
-
-    }
 
 }

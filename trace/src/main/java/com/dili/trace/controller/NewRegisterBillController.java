@@ -1111,7 +1111,7 @@ public class NewRegisterBillController {
         if (dto == null) {
             return dto;
         }
-        return dto.mask(!this.uapRpcService.hasAccess("post", "registerBill/create.html#user"));
+        return dto.mask(!this.uapRpcService.hasAccess( "registerBill/create.html#user"));
     }
 
     /**
@@ -1124,7 +1124,7 @@ public class NewRegisterBillController {
         if (dto == null) {
             return dto;
         }
-        if (this.uapRpcService.hasAccess("post", "registerBill/create.html#user")) {
+        if (this.uapRpcService.hasAccess( "registerBill/create.html#user")) {
             return dto;
         } else {
             dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));

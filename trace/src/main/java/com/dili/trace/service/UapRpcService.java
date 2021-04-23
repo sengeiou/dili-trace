@@ -2,12 +2,18 @@ package com.dili.trace.service;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.util.ReflectionUtils;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.glossary.SystemType;
+import com.dili.uap.sdk.service.redis.UserUrlRedis;
+import com.dili.uap.sdk.session.PermissionContext;
 import com.dili.uap.sdk.session.SessionContext;
 import one.util.streamex.StreamEx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
@@ -23,8 +29,11 @@ import java.util.Optional;
  */
 @Service
 public class UapRpcService {
+    private static final Logger logger = LoggerFactory.getLogger(UapRpcService.class);
     @Autowired
     FirmRpcService firmRpcService;
+    @Autowired
+    UserUrlRedis userUrlRedis;
     /**
      * 当前登录用户名和id
      * @return
@@ -41,6 +50,7 @@ public class UapRpcService {
     }
     /**
      * 当前登录用户名和id
+     *
      * @return
      */
     public Optional<OperatorUser> getCurrentOperator() {
@@ -68,8 +78,25 @@ public class UapRpcService {
         } catch (Exception e) {
             throw new TraceBizException("当前运行环境不是web请求环境");
         }
-        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-        return Optional.ofNullable(userTicket);
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            return Optional.ofNullable(userTicket);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            PermissionContext pc = (PermissionContext)ReflectionUtils.getFieldValue(SessionContext.getSessionContext(), "pc");
+            Object authService = ReflectionUtils.getFieldValue(SessionContext.getSessionContext(), "authService");
+            logger.info("pc={}",pc);
+            logger.info("authService={}",authService);
+            if(pc!=null){
+                Object req =    ReflectionUtils.getFieldValue(pc,"req");
+                Object resp =    ReflectionUtils.getFieldValue(pc,"resp");
+                logger.info("req={}",req);
+                logger.info("resp={}",resp);
+
+            }
+            return Optional.empty();
+        }
+
     }
 
     /**
@@ -91,18 +118,12 @@ public class UapRpcService {
      * @param url
      * @return
      */
-    public boolean hasAccess(String method, String url) {
-        return SessionContext.hasAccess(method, url);
-    }
+    public boolean hasAccess(String url) {
 
-    /**
-     * 是否有访问权限
-     *
-     * @param access
-     * @return
-     */
-    public boolean hasAccess(AppAccess access) {
-        return SessionContext.hasAccess(access.method(), access.url());
+        UserTicket ut = this.getCurrentUserTicket().orElseThrow(() -> {
+            return new TraceBizException("您还未登录");
+        });
+        return this.userUrlRedis.checkUserMenuUrlRight(ut.getId(), SystemType.WEB.getCode(), url);
     }
 
 }

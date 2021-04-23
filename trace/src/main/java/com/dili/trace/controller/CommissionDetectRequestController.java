@@ -207,7 +207,7 @@ public class CommissionDetectRequestController {
         if (Objects.isNull(dto)) {
             return dto;
         }
-        if (this.uapRpcService.hasAccess("post", "registerBill/create.html#user")) {
+        if (this.uapRpcService.hasAccess( "registerBill/create.html#user")) {
             return dto;
         } else {
             dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));

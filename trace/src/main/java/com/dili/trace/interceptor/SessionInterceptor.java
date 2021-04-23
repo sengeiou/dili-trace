@@ -11,14 +11,22 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.SyncUserInfoService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.uap.sdk.config.ManageConfig;
 import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.redis.UserRedis;
-import com.dili.uap.sdk.redis.UserUrlRedis;
+import com.dili.uap.sdk.service.AuthService;
+import com.dili.uap.sdk.service.redis.UserRedis;
+import com.dili.uap.sdk.service.redis.UserUrlRedis;
+import com.dili.uap.sdk.session.PermissionContext;
+import com.dili.uap.sdk.util.WebContent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -44,8 +52,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserUrlRedis userUrlRedis;
     @Autowired
     SyncUserInfoService syncUserInfoService;
-    @Autowired
+    @Resource
     RedisUtil redisUtil;
+    @Autowired
+    AuthService authService;
     private ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -56,6 +66,12 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
      * 用户过期时间-分钟
      */
     private Integer userEffectMin = 10;
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+                                @Nullable Exception ex) throws Exception {
+        WebContent.resetLocal();
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -70,6 +86,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             if (access == null) {
                 return this.write401(response, "没有权限访问");
             }
+            WebContent.put(request);
+            WebContent.put(response);
             Optional<SessionData> currentSessionData = Optional.empty();
             if (access.role() == Role.ANY) {
                 currentSessionData = this.loginAsAny(request);
@@ -91,6 +109,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         } catch (TraceBizException e) {
             return this.writeError(response, e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return this.writeError(response, "服务端出错");
         }
 
@@ -125,22 +144,18 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private Optional<SessionData> loginAsManager(HttpServletRequest req) {
-//        System.out.println(req.getHeaderNames());
-        String userToken = req.getHeader("UAP_Token");
-        if (StringUtils.isBlank(userToken)) {
+
+        String accessToken = req.getHeader("UAP_accessToken");
+        String refreshToken = req.getHeader("UAP_refreshToken");
+        if (StringUtils.isBlank(accessToken) && StringUtils.isBlank(refreshToken)) {
             return Optional.empty();
         }
 
-        UserTicket ut = this.userRedis.getTokenUser(userToken);
+        UserTicket ut = authService.getUserTicket(accessToken, refreshToken);
         if (ut == null) {
             return Optional.empty();
         }
-//        String url = "app_auth";
-//        if (!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(), url)) {
-//            return Optional.empty();
-//        }
         SessionData sessionData = SessionData.fromUserTicket(ut);
-        //asyncRpcUser(Optional.ofNullable(sessionData));
         return Optional.ofNullable(sessionData);
     }
 
@@ -152,9 +167,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private Optional<SessionData> loginAsAny(HttpServletRequest req) {
-        String userToken = req.getHeader("UAP_Token");
+        String accessToken = req.getHeader("UAP_accessToken");
+        String refreshToken = req.getHeader("UAP_refreshToken");
         String userId = req.getHeader("userId");
-        if (StringUtils.isNotBlank(userToken)) {
+        if (StringUtils.isNotBlank(accessToken) || StringUtils.isNotBlank(refreshToken)) {
             return this.loginAsManager(req);
         } else if (StringUtils.isNotBlank(userId)) {
             return this.loginAsClient(req);
