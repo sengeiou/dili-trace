@@ -1,5 +1,6 @@
 package com.dili.trace.interceptor;
 
+import com.dili.trace.routing.RoutingContextHolder;
 import com.dili.trace.service.ProcessConfigService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.service.AuthService;
@@ -35,6 +36,7 @@ public class TanentInterceptor extends HandlerInterceptorAdapter {
         }
         this.findMarketId(req).ifPresent(marketId -> {
             logger.info("marketId={}", marketId);
+            RoutingContextHolder.put(String.valueOf(marketId));
         });
 
         return true;
