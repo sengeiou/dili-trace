@@ -68,13 +68,13 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     private Integer userEffectMin = 10;
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+    public void afterCompletion(HttpServletRequest req, HttpServletResponse resp, Object handler,
                                 @Nullable Exception ex) throws Exception {
         WebContent.resetLocal();
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler)
             throws Exception {
         if (!(handler instanceof HandlerMethod)) {
             return true;
@@ -84,33 +84,36 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
         try {
             if (access == null) {
-                return this.write401(response, "没有权限访问");
+                return this.write401(resp, "没有权限访问");
             }
-            WebContent.put(request);
-            WebContent.put(response);
+            if(WebContent.getRequest()==null){
+                WebContent.resetLocal();
+                WebContent.put(req);
+                WebContent.put(resp);
+            }
             Optional<SessionData> currentSessionData = Optional.empty();
             if (access.role() == Role.ANY) {
-                currentSessionData = this.loginAsAny(request);
+                currentSessionData = this.loginAsAny(req);
             } else if (access.role() == Role.Client) {
-                currentSessionData = this.loginAsClient(request);
+                currentSessionData = this.loginAsClient(req);
             } else if (access.role() == Role.Manager) {
-                currentSessionData = this.loginAsManager(request);
+                currentSessionData = this.loginAsManager(req);
             } else if (access.role() == Role.NONE) {
                 logger.info("无需权限即可访问。比如检测机器");
                 return true;
             } else {
-                return this.writeError(response, "权限配置错误");
+                return this.writeError(resp, "权限配置错误");
             }
             if (!currentSessionData.isPresent()) {
-                return this.write401(response, "没有权限访问");
+                return this.write401(resp, "没有权限访问");
             }
             this.sessionContext.setSessionData(currentSessionData.get(), access);
 
         } catch (TraceBizException e) {
-            return this.writeError(response, e.getMessage());
+            return this.writeError(resp, e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return this.writeError(response, "服务端出错");
+            return this.writeError(resp, "服务端出错");
         }
 
         this.sessionContext.getSessionData().setRole(access.role());
@@ -176,38 +179,6 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return this.loginAsClient(req);
         } else {
             return Optional.empty();
-        }
-    }
-
-    /**
-     * 同步用户信息
-     *
-     * @param customer
-     */
-    public void asyncRpcUser(Optional<SessionData> customer) {
-        if (null == customer) {
-            return;
-        }
-        try {
-            //取用户id
-            SessionData sessionData = customer.get();
-            if (null == sessionData) {
-                return;
-            }
-            Long userId = sessionData.getUserId();
-            if (null == userId) {
-                return;
-            }
-            String key_user = syncUserTimeKey + userId;
-            //没有对应用户key，则同步该用户信息并写入到redis，key:user_id,val:过期时间
-            if (!redisUtil.exists(key_user)) {
-                syncUserInfoAdd(userId, key_user);
-            } else {
-                syncUserInfoUpdate(userId, key_user);
-            }
-        } catch (Exception e) {
-            logger.error("===>>同步用户失败");
-            logger.error(e.getMessage());
         }
     }
 
