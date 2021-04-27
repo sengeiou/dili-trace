@@ -160,7 +160,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         }
 
         RegisterBill registerBill = this.billService.get(billId);
-        if (registerBill == null) {
+        if (registerBill == null||registerBill.getDetectRequestId()==null) {
             return Optional.empty();
         }
         Long detectRequestId = registerBill.getDetectRequestId();

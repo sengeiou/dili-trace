@@ -2,15 +2,15 @@ package com.dili.trace.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisDistributedLock;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.TaskGetParam;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
