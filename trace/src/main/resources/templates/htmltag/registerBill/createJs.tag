@@ -45,6 +45,10 @@
                 weightUnit: "",
                 pieceweightUnit: "",
                 productOptionsTemp: [],
+                rules: {
+                    plate: {required: true, type: 'string', message: '必须填写车牌'},
+                    plateList: {required: true, type: 'string', message: '必须填写车牌'},
+                },
                 formData: {
                     total: 0,
                     pieceNum: 0,
@@ -221,19 +225,17 @@
                             label: "是否拼车",
                             vif: function () {
                                 return filedNameRetMap.truckType.displayed === 1;
+                            },
+                            on: {
+                                change: function (val) {
+                                    app.rules['plate'].required = val === 20;
+                                    app.rules['plateList'].required = val === 20;
+                                }
                             }
                         },
                         plate: {
                             type: "input",
                             label: "车牌号",
-                            required: function(form){
-                                if (filedNameRetMap.truckType.displayed === 1) {
-                                    if(form.truckType==20){
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            },
                             vif: function (form) {
                                 if (filedNameRetMap.truckType.displayed === 0) {
                                     return false;
