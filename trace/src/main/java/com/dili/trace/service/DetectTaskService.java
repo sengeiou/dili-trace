@@ -46,6 +46,9 @@ public class DetectTaskService {
     @Autowired
     RedisDistributedLock redisDistributedLock;
 
+    @Autowired
+    ProductStockService productStockService;
+
     /**
      * 查询检测任务
      * @param exeMachineNo
@@ -220,6 +223,8 @@ public class DetectTaskService {
         this.detectRequestService.updateSelective(detectRequest);
 
         this.billService.updateSelective(registerBill);
+
+        this.productStockService.updateDetectFailedWeightByBillIdAfterDetect(registerBill.getBillId());
 
     }
 
