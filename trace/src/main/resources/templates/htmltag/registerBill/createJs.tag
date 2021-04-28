@@ -216,19 +216,26 @@
                                     value: 10
                                 }
                             ],
-                            required: filedNameRetMap.unitPrice.required === 1,
+                            required: filedNameRetMap.truckType.required === 1,
                             type: "radio",
                             label: "是否拼车",
                             vif: function () {
-                                return filedNameRetMap.unitPrice.displayed === 1;
+                                return filedNameRetMap.truckType.displayed === 1;
                             }
                         },
                         plate: {
                             type: "input",
                             label: "车牌号",
-                            required: filedNameRetMap.plate.required === 1,
+                            required: function(form){
+                                if (filedNameRetMap.truckType.displayed === 1) {
+                                    if(form.truckType==20){
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            },
                             vif: function (form) {
-                                if (filedNameRetMap.plate.displayed === 0) {
+                                if (filedNameRetMap.truckType.displayed === 0) {
                                     return false;
                                 }
                                 return form.registType !== 30;
@@ -238,7 +245,7 @@
                             type: "select",
                             label: "车牌号",
                             prop: {text: 'text', value: 'text'},
-                            required: filedNameRetMap.plate.required === 1,
+                            required: true,
                             optionsLinkageFields: ['registerHeadCode'],
                             options: data => {
                                 let registerHeadCodeTemp = this.registerHeadCodeTemp;
@@ -253,7 +260,7 @@
                                 return [];
                             },
                             vif: function (form) {
-                                if (filedNameRetMap.plate.displayed === 0) {
+                                if (filedNameRetMap.truckType.displayed === 0) {
                                     return false;
                                 }
                                 return form.registType === 30;
