@@ -224,10 +224,8 @@ public class ProcessService {
         updatableBill.setModified(new Date());
         this.billService.updateSelective(updatableBill);
 
-        if (RegistTypeEnum.SUPPLEMENT == registTypeEnum) {
-            if (BillVerifyStatusEnum.PASSED == toVerifyStatusEnum) {
-                this.createCheckInRecord(billId, checkinStatusEnum, operatorUser);
-            }
+        if (BillVerifyStatusEnum.PASSED == toVerifyStatusEnum) {
+            this.createCheckInRecord(billId, checkinStatusEnum, operatorUser);
         }
 
         this.billVerifyHistoryService.createVerifyHistory(Optional.of(toVerifyStatusEnum), billId, operatorUser);
