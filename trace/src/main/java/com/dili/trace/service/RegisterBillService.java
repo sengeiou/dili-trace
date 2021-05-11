@@ -6,7 +6,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
@@ -15,7 +14,10 @@ import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
-import com.dili.trace.dto.*;
+import com.dili.trace.dto.MessageInputDto;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
@@ -29,11 +31,10 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import de.cronn.reflection.util.PropertyUtils;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
-import de.cronn.reflection.util.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -415,6 +416,16 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
+
+        String remark = StringUtils.trimToNull(registerBill.getRemark());
+        if(Objects.nonNull(remark)){
+            if (!RegUtils.isValidInput(remark)) {
+                throw new TraceBizException("备注包含非法字符");
+            }
+            if (remark.length()>200) {
+                throw new TraceBizException("备注不能超过200字符");
+            }
+        }
         return  registerBill;
     }
     /**
@@ -517,11 +528,15 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                 throw new TraceBizException("备注不能为空");
             }
         }
-        String remark = registerBill.getRemark();
-        if (StringUtils.isNotBlank(remark) && !RegUtils.isValidInput(remark)) {
-            throw new TraceBizException("备注包含非法字符");
+        String remark = StringUtils.trimToNull(registerBill.getRemark());
+        if(Objects.nonNull(remark)){
+            if (!RegUtils.isValidInput(remark)) {
+                throw new TraceBizException("备注包含非法字符");
+            }
+            if (remark.length()>200) {
+                throw new TraceBizException("备注不能超过200字符");
+            }
         }
-
 
         //皮重字段
         if (registerBill.getTruckTareWeight() == null) {
