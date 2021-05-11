@@ -426,6 +426,45 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                 throw new TraceBizException("备注不能超过200字符");
             }
         }
+
+        // 计件类型，校验件数和件重
+        if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType())) {
+            // 件数
+            if (registerBill.getPieceNum() == null) {
+                logger.error("商品件数不能为空");
+                throw new TraceBizException("商品件数不能为空");
+            }
+            if (BigDecimal.ZERO.compareTo(registerBill.getPieceNum()) >= 0) {
+                logger.error("商品件数不能小于0");
+                throw new TraceBizException("商品件数不能小于0");
+            }
+            if (NumUtils.MAX_NUM.compareTo(registerBill.getPieceNum()) < 0) {
+                logger.error("商品件数不能大于{}", NumUtils.MAX_NUM.toString());
+                throw new TraceBizException("商品件数不能大于" + NumUtils.MAX_NUM.toString());
+            }
+            if (!NumUtils.isIntegerValue(registerBill.getPieceNum())) {
+                logger.error("商品件数必须为整数");
+                throw new TraceBizException("商品件数必须为整数");
+            }
+
+            // 件重
+            if (registerBill.getPieceWeight() == null) {
+                logger.error("商品件重不能为空");
+                throw new TraceBizException("商品件重不能为空");
+            }
+            if (BigDecimal.ZERO.compareTo(registerBill.getPieceWeight()) >= 0) {
+                logger.error("商品件重不能小于0");
+                throw new TraceBizException("商品件重不能小于0");
+            }
+            if (NumUtils.MAX_WEIGHT.compareTo(registerBill.getPieceWeight()) < 0) {
+                logger.error("商品件重不能大于{}", NumUtils.MAX_WEIGHT.toString());
+                throw new TraceBizException("商品件重不能大于" + NumUtils.MAX_WEIGHT.toString());
+            }
+            if (!NumUtils.isIntegerValue(registerBill.getPieceWeight())) {
+                logger.error("商品件重必须为整数");
+                throw new TraceBizException("商品件重必须为整数");
+            }
+        }
         return  registerBill;
     }
     /**
@@ -666,10 +705,10 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
 
         // 计重类型，把件数和件重置空
-        if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerBill.getMeasureType())) {
-            registerBill.setPieceNum(BigDecimal.ZERO);
-            registerBill.setPieceWeight(BigDecimal.ZERO);
-        }
+//        if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerBill.getMeasureType())) {
+//            registerBill.setPieceNum(BigDecimal.ZERO);
+//            registerBill.setPieceWeight(BigDecimal.ZERO);
+//        }
 
         // 计件类型，校验件数和件重
         if (MeasureTypeEnum.COUNT_UNIT.equalsCode(registerBill.getMeasureType())) {
