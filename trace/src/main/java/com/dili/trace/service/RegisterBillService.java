@@ -385,7 +385,38 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         return registerBill.getId();
     }
+    /**
+     * 检查用户输入参数
+     *
+     * @param registerBill
+     * @return
+     */
+    private RegisterBill simpleCheck(RegisterBill registerBill) {
+        if (registerBill.getMarketId() == null) {
+            throw new TraceBizException("登记单市场不存在");
+        }
+        BigDecimal weight = registerBill.getWeight();
+        if (weight == null) {
+            logger.error("商品重量不能为空");
+            throw new TraceBizException("商品重量不能为空");
+        }
 
+        if (!NumUtils.isIntegerValue(weight)) {
+            logger.error("商品重量必须为整数");
+            throw new TraceBizException("商品重量必须为整数");
+        }
+
+        if (BigDecimal.ZERO.compareTo(weight) >= 0) {
+            logger.error("商品重量不能小于0");
+            throw new TraceBizException("商品重量不能小于0");
+        }
+
+        if (NumUtils.MAX_WEIGHT.compareTo(weight) < 0) {
+            logger.error("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+            throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
+        }
+        return  registerBill;
+    }
     /**
      * 检查用户输入参数
      *
@@ -695,6 +726,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
+        this.simpleCheck(input);
         RegisterBill billItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
 
