@@ -645,6 +645,16 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             }
         }
 
+        String brandName = StringUtils.trimToNull(registerBill.getBrandName());
+        if(Objects.nonNull(brandName)){
+            if (!RegUtils.isValidInput(brandName)) {
+                throw new TraceBizException("品牌包含非法字符");
+            }
+            if (brandName.length()>20) {
+                throw new TraceBizException("品牌不能超过20字符");
+            }
+        }
+
 
         //上游企业
         if (registerBill.getUpStreamId() == null) {
