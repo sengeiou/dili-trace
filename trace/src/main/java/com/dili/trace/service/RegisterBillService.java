@@ -587,6 +587,12 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("到货摊位不能为空");
             }
+            boolean inValid=StreamEx.of(arrivalTallynos).anyMatch(no->{
+                return !RegUtils.isValidInput(no);
+            });
+            if(inValid){
+                throw  new TraceBizException("到货摊位包含非法字符");
+            }
         }
         //图片凭证
         String propName = PropertyUtils.getPropertyDescriptor(registerBill, RegisterBill::getImageCertList).getName();
