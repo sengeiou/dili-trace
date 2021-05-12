@@ -1,5 +1,15 @@
 <script type="text/javascript">
     let filedNameRetMap = JSON.parse('${filedNameRetMap}');
+    let measureTypeEnumList=JSON.parse('${measureTypeEnumList}');
+
+    let measureTypeOptions=[];
+    if(filedNameRetMap.measureType&&filedNameRetMap.measureType.displayed ===1&&filedNameRetMap.measureType.availableValueList){
+        measureTypeEnumList.forEach(mt=>{
+            if($.inArray(new String(mt.code).toString(),filedNameRetMap.measureType.availableValueList) >-1){
+                measureTypeOptions.push({text:mt.name,value:mt.code})
+            }
+        })
+    }
     var app = new Vue({
         el: '#app',
         created: function () {
@@ -56,13 +66,13 @@
                     total: 0,
                     pieceNum: "",
                     pieceweight: "",
-                    measureType: 20,
+                    measureType: measureTypeOptions.length>0?measureTypeOptions[measureTypeOptions.length-1].value:'',
                     registType: 10,
                     userId: "",
                     registerHeadCode: "",
                     arrivalTallynos: "",
                     plateList: [],
-                    truckType: 20,
+                    truckType: 10,
                     weight: "",
                     weightUnit: 1,
                     productName: "",
@@ -92,7 +102,7 @@
                         },
                         userId: {
                             type: "select",
-                            label: "卖家姓名",
+                            label: "经营户",
                             prop: {text: 'text', value: 'id'},
                             options: async data => {
                                 if (this.editMode) {
@@ -105,6 +115,7 @@
                                 }
                             },
                             attrs: {
+                                placeholder:"姓名,手机号,卡号",
                                 filterable: true,
                                 remote: true,
                                 remoteMethod(query, callback) {
@@ -331,16 +342,7 @@
                             }
                         },
                         measureType: {
-                            options: [
-                                {
-                                    text: "计重",
-                                    value: 20
-                                },
-                                {
-                                    text: "计件",
-                                    value: 10
-                                }
-                            ],
+                            options: measureTypeOptions,
                             type: "radio",
                             label: "计重方式",
                             required: filedNameRetMap.measureType.required === 1,
