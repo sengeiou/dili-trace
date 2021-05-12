@@ -417,6 +417,16 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             throw new TraceBizException("商品重量不能大于" + NumUtils.MAX_WEIGHT.toString());
         }
 
+        String brandName = StringUtils.trimToNull(registerBill.getBrandName());
+        if(Objects.nonNull(brandName)){
+            if (!RegUtils.isValidInput(brandName)) {
+                throw new TraceBizException("品牌包含非法字符");
+            }
+            if (brandName.length()>20) {
+                throw new TraceBizException("品牌不能超过20字符");
+            }
+        }
+
         String remark = StringUtils.trimToNull(registerBill.getRemark());
         if(Objects.nonNull(remark)){
             if (!RegUtils.isValidInput(remark)) {
