@@ -67,6 +67,7 @@
                     weightUnit: 1,
                     productName: "",
                     originName: "",
+                    unitPrice:"",
                     pieceweightUnit: 1,
                 },
                 formConfig: {
@@ -557,14 +558,13 @@
                             }
                         },
                         unitPrice: {
-                            type: "number",
+                            type: "input",
                             label: "商品单价",
                             rules: [{
-                                pattern:/^([1-9][0-9]{0,7})$/,
-                                message: "请输入1-99999999之间的数字"
+                                pattern:/^(\s{0,0}|\d\.([1-9]{1,2}|[0-9][1-9])|[1-9]\d{0,3}(\.\d{1,2}){0,1})$/,
+                                message: "请输入0.01-9999.99之间的数字(两位小数)"
                             }],
                             attrs: {},
-                            default: 0,
                             required: filedNameRetMap.unitPrice.required === 1,
                             vif: function () {
                                 return filedNameRetMap.unitPrice.displayed === 1;
