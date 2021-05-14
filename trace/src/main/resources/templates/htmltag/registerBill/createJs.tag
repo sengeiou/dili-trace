@@ -368,7 +368,7 @@
                             },
                         },
                         pieceNum: {
-                            type: "number",
+                            type: "input",
                             label: "商品件数",
                             rules: [{
                                 pattern: /^([1-9][0-9]{0,7})$/,
@@ -380,18 +380,17 @@
                             },
                             on: {
                                 input: function (value) {
+                                    let formDataRef = app.formData;
+                                    let total=0;
                                     try {
-                                        var formDataRef = app.formData;
-                                        if (!value || !formDataRef.pieceweight) {
-                                            formDataRef.total = 0;
-                                        } else {
-                                            formDataRef.total = formDataRef.pieceweight * value;
-                                        }
+                                        total=formDataRef.pieceweight * value;
                                     } catch (e) {
                                         debugger
                                     }
-
-
+                                    if(isNaN(total)){
+                                        total=0;
+                                    }
+                                    formDataRef.total = total;
                                 }
                             }
                         },
