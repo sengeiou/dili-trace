@@ -99,10 +99,12 @@
                             options: loadProvider({provider: 'registTypeProvider', queryParams: {required: true}}),
                             type: "select",
                             label: "单据类型",
+                            required: true,
                         },
                         userId: {
                             type: "select",
                             label: "经营户",
+                            required: true,
                             prop: {text: 'text', value: 'id'},
                             options: async data => {
                                 if (this.editMode) {
@@ -300,6 +302,7 @@
                         productId: {
                             type: "select",
                             label: "商品品类",
+                            required: true,
                             prop: {text: 'name', value: 'id'},
                             disabled: function (data) {
                                 return data.registType === 30
@@ -359,6 +362,7 @@
                         weight: {
                             type: "input",
                             label: "商品重量",
+                            required: $.inArray('20',filedNameRetMap.measureType.availableValueList)>-1,
                             rules: [{
                                 pattern: /^([1-9][0-9]{0,7})$/,
                                 message: "请输入1-99999999之间的数字"
@@ -370,6 +374,7 @@
                         pieceNum: {
                             type: "input",
                             label: "商品件数",
+                            required: $.inArray('10',filedNameRetMap.measureType.availableValueList)>-1,
                             rules: [{
                                 pattern: /^([1-9][0-9]{0,6})$/,
                                 message: "请输入1-9999999之间的数字"
@@ -396,6 +401,7 @@
                         pieceweight: {
                             type: "number",
                             label: "件重",
+                            required: $.inArray('10',filedNameRetMap.measureType.availableValueList)>-1,
                             rules: [{
                                 pattern: /^([1-9][0-9]{0,6})$/,
                                 message: "请输入1-9999999之间的数字"
