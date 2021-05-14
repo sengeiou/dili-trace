@@ -61,6 +61,8 @@
                 rules: {
                     plate: {required: false, type: 'string', message: '必须填写车牌'},
                     plateList: {required: true, type: 'string', message: '必须填写车牌'},
+                    registerHeadCode: {required: false, type: 'string', message: '必须选择台账'},
+
                 },
                 formData: {
                     total: 0,
@@ -100,6 +102,11 @@
                             type: "select",
                             label: "单据类型",
                             required: true,
+                            on:{
+                                change:function (val){
+                                    app.rules.registerHeadCode.required = (val === 30);
+                                }
+                            },
                         },
                         userId: {
                             type: "select",
