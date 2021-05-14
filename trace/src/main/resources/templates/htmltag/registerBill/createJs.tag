@@ -371,12 +371,11 @@
                             type: "input",
                             label: "商品件数",
                             rules: [{
-                                pattern: /^([1-9][0-9]{0,7})$/,
-                                message: "请输入1-99999999之间的数字"
+                                pattern: /^([1-9][0-9]{0,6})$/,
+                                message: "请输入1-9999999之间的数字"
                             }],
                             vif: function (form) {
                                 return form.measureType !== 20;
-
                             },
                             on: {
                                 input: function (value) {
@@ -398,8 +397,8 @@
                             type: "number",
                             label: "件重",
                             rules: [{
-                                pattern: /^([1-9][0-9]{0,7})$/,
-                                message: "请输入1-99999999之间的数字"
+                                pattern: /^([1-9][0-9]{0,6})$/,
+                                message: "请输入1-9999999之间的数字"
                             }],
                             vif: function (form) {
                                 return form.measureType !== 20;
