@@ -59,7 +59,7 @@
                 pieceweightUnit: "",
                 productOptionsTemp: [],
                 rules: {
-                    plate: {required: true, type: 'string', message: '必须填写车牌'},
+                    plate: {required: false, type: 'string', message: '必须填写车牌'},
                     plateList: {required: true, type: 'string', message: '必须填写车牌'},
                 },
                 formData: {
