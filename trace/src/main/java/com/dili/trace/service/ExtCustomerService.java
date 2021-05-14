@@ -199,6 +199,7 @@ public class ExtCustomerService {
             customer.setId(accountGetListResultDto.getCustomerId());
             customer.setPhone(idCustMap.getOrDefault(customer.getId(), customer).getPhone());
             customer.setCode(accountGetListResultDto.getCustomerCode());
+            customer.setCardNo(accountGetListResultDto.getCardNo());
             customer.setName(accountGetListResultDto.getCustomerName());
             customer.setFirmId(firm.getId());
             customer.setFirmName(firm.getName());
