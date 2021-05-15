@@ -28,9 +28,13 @@
             let prefix = "${imageViewPathPrefix}/";
             let vm = this;
             imageCertTypeEnumMap.forEach(it => {
-                vm.formConfig.formDesc["certType" + it.certType] = {
+                let uniqueCertTypeName="certType" + it.certType;
+                vm.formConfig.formDesc[uniqueCertTypeName] = {
                     type: "image-uploader",
                     label: it.certTypeName,
+                    disabled: function (data) {
+                        return data.registType === 30
+                    },
                     attrs: {
                         name: "file",
                         multiple: true,
@@ -53,9 +57,8 @@
                 }
             })
             init(this);
+            let formDataRef = this.formData;
             if(this.formData.measureType=='10'){
-                let formDataRef = this.formData;
-
                 if(isNaN(formDataRef.pieceWeight)||isNaN(formDataRef.pieceNum)){
                     formDataReftotal = 0;
                 }else{
@@ -246,6 +249,19 @@
                                             formDataRef.productId = obj.productId;
                                             formDataRef.productName = obj.productName;
                                             formDataRef.upStreamId = obj.upStreamId;
+                                            formDataRef.unitPrice = obj.unitPrice;
+
+                                            formDataRef.arrivalTallynos=obj.arrivalTallynos;
+                                            formDataRef.remark=obj.remark;
+
+                                            $.makeArray(obj.uniqueCertTypeNameList).forEach(ct=>{
+                                                if(obj[ct]){
+                                                    formDataRef[ct]=  obj[ct];
+                                                }else{
+                                                    formDataRef[ct]=  [];
+                                                }
+                                            });
+
                                         }
                                     }
                                 }
