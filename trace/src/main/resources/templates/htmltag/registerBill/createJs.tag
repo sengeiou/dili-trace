@@ -32,9 +32,12 @@
                 vm.formConfig.formDesc[uniqueCertTypeName] = {
                     type: "image-uploader",
                     label: it.certTypeName,
-                    disabled: function (data) {
-                        return data.registType === 30
-                    },
+                    // disabled: function (data) {
+                    //     return data.registType === 30
+                    // },
+                    // readonly:function(){
+                    //     return true;
+                    // },
                     attrs: {
                         name: "file",
                         multiple: true,
