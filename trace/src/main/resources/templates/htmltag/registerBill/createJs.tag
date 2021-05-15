@@ -53,6 +53,17 @@
                 }
             })
             init(this);
+            if(this.formData.measureType=='10'){
+                let formDataRef = this.formData;
+
+                if(isNaN(formDataRef.pieceWeight)||isNaN(formDataRef.pieceNum)){
+                    formDataReftotal = 0;
+                }else{
+                    formDataRef.total = formDataRef.pieceWeight * formDataRef.pieceNum;
+                }
+            }else{
+                formDataRef.total = '';
+            }
         },
         data() {
             return {
@@ -78,7 +89,7 @@
                 formData: {
                     total: 0,
                     pieceNum: "",
-                    pieceweight: "",
+                    pieceWeight: "",
                     measureType: measureTypeOptions.length > 0 ? measureTypeOptions[measureTypeOptions.length - 1].value : '',
                     registType: 10,
                     userId: "",
@@ -395,15 +406,15 @@
                             on: {
                                 input: function (value) {
                                     let formDataRef = app.formData;
-                                    if(isNaN(formDataRef.pieceweight)||isNaN(value)){
+                                    if(isNaN(formDataRef.pieceWeight)||isNaN(value)){
                                         formDataRef.total = 0;
                                     }else{
-                                        formDataRef.total = formDataRef.pieceweight * value;
+                                        formDataRef.total = formDataRef.pieceWeight * value;
                                     }
                                 }
                             }
                         },
-                        pieceweight: {
+                        pieceWeight: {
                             type: "number",
                             label: "件重",
                             required: $.inArray('10',filedNameRetMap.measureType.availableValueList)>-1,
@@ -639,7 +650,7 @@
                         "measureType",
                         "weight",
                         "pieceNum",
-                        "pieceweight",
+                        "pieceWeight",
                         "total",
                         "specName",
                         "brandName",
