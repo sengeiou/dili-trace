@@ -692,10 +692,10 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
                 throw new TraceBizException("到货摊位不能为空");
             }
-            boolean inValid=StreamEx.of(arrivalTallynos).anyMatch(no->{
+            boolean hasValidTallyno=StreamEx.of(arrivalTallynos).anyMatch(no->{
                 return !RegUtils.isValidInput(no);
             });
-            if(inValid){
+            if(hasValidTallyno){
                 throw  new TraceBizException("到货摊位包含非法字符");
             }
         }
