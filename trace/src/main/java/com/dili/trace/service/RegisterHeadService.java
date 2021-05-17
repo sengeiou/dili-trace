@@ -373,14 +373,15 @@ public class RegisterHeadService extends BaseServiceImpl<RegisterHead, Long> {
 			if (retDto != null && YesOrNoEnum.YES.getCode().equals(retDto.getDisplayed()) && YesOrNoEnum.YES.getCode().equals(retDto.getRequired())) {
 				throw new TraceBizException("到货摊位不能为空");
 			}
-			boolean hasValidTallyno=StreamEx.of(arrivalTallynos).anyMatch(no->{
-				return !RegUtils.isValidInput(no);
-			});
-			if(hasValidTallyno){
-				throw  new TraceBizException("到货摊位包含非法字符");
-			}
 		}
 		registerHead.setArrivalTallynos(arrivalTallynos);
+
+		boolean hasValidTallyno=StreamEx.of(arrivalTallynos).anyMatch(no->{
+			return !RegUtils.isValidInput(no);
+		});
+		if(hasValidTallyno){
+			throw  new TraceBizException("到货摊位包含非法字符");
+		}
 
 		// 计重类型，把件数和件重置空
 		if (MeasureTypeEnum.COUNT_WEIGHT.equalsCode(registerHead.getMeasureType())) {
