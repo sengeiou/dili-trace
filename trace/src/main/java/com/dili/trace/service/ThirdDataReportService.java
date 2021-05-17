@@ -193,6 +193,11 @@ public class ThirdDataReportService {
         return this.buildReportQrCodeDto(dataMap);
     }
 
+    /**
+     * 生成上报信息
+     * @param dataMap
+     * @return
+     */
     private List<ReportQrCodeDto> buildReportQrCodeDto(Map<UserInfo, List<UserQrHistory>> dataMap) {
         List<ReportQrCodeDto> qrCodeDtos = EntryStream.of(dataMap).mapKeyValue((userInfo, qrHistoryList) -> {
             Long userId = userInfo.getUserId();
@@ -222,6 +227,11 @@ public class ThirdDataReportService {
         return qrCodeDtos;
     }
 
+    /**
+     * 转换状态
+     * @param userQrStatusEnum
+     * @return
+     */
     private Integer convertColorStatus(UserQrStatusEnum userQrStatusEnum) {
         //0-黑 1-绿 2-黄 3-红
         if (UserQrStatusEnum.GREEN == userQrStatusEnum) {
