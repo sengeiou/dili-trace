@@ -16,6 +16,7 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @EnableDiscoveryClient
 public class TradeOrderServiceTest extends AutoWiredBaseTest {
@@ -53,6 +54,12 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     //用mock的bean来代码本次testcase相关的所有依赖的bean(@Autowired+@Mocked)
     @MockBean
     CustomerRpc customerRpc;
+    @Autowired
+    RegisterBillService registerBillService;
+    @Autowired
+    CheckinOutRecordService checkinOutRecordService;
+    @Autowired
+    BrandService brandService;
 
 
     //@Mock标注的Bean并没有被初始化，需要对当前对象进行初始化init(MockitoAnnotations.initMocks(this);)
@@ -216,12 +223,12 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
         List<Long> billIdList = StreamEx.of(this.registerBillService.listByExample(del)).map(RegisterBill::getId).toList();
         this.registerBillService.deleteByExample(del);
 
-        StreamEx.of(billIdList).forEach(billId->{
-            TradeDetail td=new TradeDetail();
+        StreamEx.of(billIdList).forEach(billId -> {
+            TradeDetail td = new TradeDetail();
             td.setBillId(billId);
             this.tradeDetailService.deleteByExample(td);
         });
-        ProductStock productStock=new ProductStock();
+        ProductStock productStock = new ProductStock();
         productStock.setUserId(userDto.getId());
         productStock.setMarketId(userDto.getCustomerMarket().getMarketId());
         this.productStockService.deleteByExample(productStock);
@@ -292,5 +299,31 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     public void createTradeFromRegisterBill() {
         Optional<TradeOrder> tradeOrder = this.tradeOrderService.createTradeFromRegisterBill(this.registerBillService.get(4L));
         Assertions.assertNotNull(tradeOrder);
+    }
+
+    @Test
+    public void testBuyTrade() {
+
+        Long marketId = 1L;
+        Long userId = 100L;
+        List<BigDecimal> weightList = Lists.newArrayList(BigDecimal.valueOf(100L), BigDecimal.valueOf(80L));
+        Mockito.doAnswer(invocation -> {
+            CustomerExtendDto dto = new CustomerExtendDto();
+            Long uid = (Long) invocation.getArguments()[0];
+            Long marketid = (Long) invocation.getArguments()[1];
+            dto.setName("test-user-" + uid);
+            dto.setId(uid);
+            dto.setCustomerMarket(new CustomerMarket());
+            dto.getCustomerMarket().setMarketId(marketid);
+            dto.getCustomerMarket().setApprovalStatus(CustomerEnum.ApprovalStatus.PASSED.getCode());
+            return Optional.ofNullable(dto);
+        }).when(customerRpcService).findCustomerById(marketId, userId);
+
+        Mockito.doAnswer(invocation -> {
+            return Lists.newArrayList();
+        }).when(assetsRpcService).listCusCategory(Mockito.any(), Mockito.anyLong());
+
+        ProductStock q = super.buildProductStock(marketId, userId, weightList);
+
     }
 }

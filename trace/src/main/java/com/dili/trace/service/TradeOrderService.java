@@ -342,6 +342,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         List<TradeRequest> tradeRequestList = StreamEx.of(productStockInputList).map(productStockInput -> {
             TradeRequest tradeRequest = this.createTradeRequest(tradeDto, productStockInput, tradeOrder, productStockInput.getTradeWeight());
             List<TradeRequestDetail> tradeRequestDetailList = this.findOrCreateTradeRequestDetail(tradeRequest);
+//            List<TradeRequestDetail> tradeRequestDetailList = this.createTradeRequestDetailForInput(tradeRequest);
             return tradeRequest;
         }).toList();
         return tradeOrder;
