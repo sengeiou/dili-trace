@@ -72,7 +72,6 @@ public class QrCodeApi {
         QrOutputDto dto = new QrOutputDto();
         dto.setClientId(input.getClientId());
         dto.setMarketId(input.getMarketId());
-        dto.setColor(UserQrStatusEnum.BLACK.getCode());
         dto.setClientType(clientTypeEnum.getCode());
 
         try {
@@ -84,6 +83,7 @@ public class QrCodeApi {
                 return UserQrStatusEnum.fromCode(qrStatus).orElse(UserQrStatusEnum.BLACK);
             }).findFirst().orElse(UserQrStatusEnum.BLACK);
 
+            dto.setColor(userQrStatusEnum.getCode());
             String base64QrCode = this.qrCodeService.getBase64QrCode(JSONUtil.toJsonStr(dto), 200, 200, userQrStatusEnum.getARgb());
             dto.setBase64QrCode(base64QrCode);
             return BaseOutput.successData(dto);
