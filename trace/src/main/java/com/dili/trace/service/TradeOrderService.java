@@ -631,8 +631,8 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         TradeDetailQueryDto tradeDetailQuery = new TradeDetailQueryDto();
         tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
         tradeDetailQuery.setProductStockId(productStockItem.getId());
-        tradeDetailQuery.setSort("created");
-        tradeDetailQuery.setOrder("asc");
+        tradeDetailQuery.setSort("created,id");
+        tradeDetailQuery.setOrder("asc,asc");
         tradeDetailQuery.setMinStockWeight(BigDecimal.ZERO);
 
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);

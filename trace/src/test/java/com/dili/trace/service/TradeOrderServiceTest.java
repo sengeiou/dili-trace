@@ -47,6 +47,10 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     TradeRequestService tradeRequestService;
     @Autowired
     ProductStockService productStockService;
+    @Autowired
+    TradeRequestDetailService tradeRequestDetailService;
+    @Autowired
+    TradeDetailService tradeDetailService;
     //对真实的bean进行一次spy之后再注入。
     //相当于 @Autowired之后进行Spy然后再替换这个Service (@Autowired+@Spy)
 //    @SpyBean
@@ -304,26 +308,83 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
     @Test
     public void testBuyTrade() {
 
-        Long marketId = 1L;
+        Long marketId = 8L;
         Long userId = 100L;
         List<BigDecimal> weightList = Lists.newArrayList(BigDecimal.valueOf(100L), BigDecimal.valueOf(80L));
         Mockito.doAnswer(invocation -> {
-            CustomerExtendDto dto = new CustomerExtendDto();
+
             Long uid = (Long) invocation.getArguments()[0];
             Long marketid = (Long) invocation.getArguments()[1];
+
+            CustomerExtendDto dto = new CustomerExtendDto();
             dto.setName("test-user-" + uid);
             dto.setId(uid);
             dto.setCustomerMarket(new CustomerMarket());
             dto.getCustomerMarket().setMarketId(marketid);
             dto.getCustomerMarket().setApprovalStatus(CustomerEnum.ApprovalStatus.PASSED.getCode());
             return Optional.ofNullable(dto);
-        }).when(customerRpcService).findCustomerById(marketId, userId);
+        }).when(customerRpcService).findCustomerById(Mockito.anyLong(), Mockito.anyLong());
 
         Mockito.doAnswer(invocation -> {
             return Lists.newArrayList();
         }).when(assetsRpcService).listCusCategory(Mockito.any(), Mockito.anyLong());
 
-        ProductStock q = super.buildProductStock(marketId, userId, weightList);
+        ProductStock ps = super.buildProductStock(marketId, userId, weightList);
+        BigDecimal totalWeight = StreamEx.of(weightList).reduce(BigDecimal.ZERO, BigDecimal::add);
+        assertEquals(ps.getStockWeight().compareTo(totalWeight), 0, "报备进门总重量与库存总重量不相等");
+
+        TradeDetail td = new TradeDetail();
+        td.setProductStockId(ps.getProductStockId());
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(td);
+        BigDecimal sumWeight = StreamEx.of(tradeDetailList).map(TradeDetail::getStockWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+        assertEquals(sumWeight.compareTo(totalWeight), 0, "报备进门总重量与批次库存总重量不相等");
+
+        TradeDto tradeDto = new TradeDto();
+        tradeDto.setMarketId(marketId);
+        tradeDto.setTradeOrderType(TradeOrderTypeEnum.BUY);
+
+        tradeDto.getSeller().setSellerId(ps.getUserId());
+        tradeDto.getSeller().setSellerName(ps.getUserName());
+
+        tradeDto.getBuyer().setBuyerType(BuyerTypeEnum.NORMAL_BUYER);
+        tradeDto.getBuyer().setBuyerId(2L);
+        tradeDto.getBuyer().setBuyerName("lisi");
+
+
+        BigDecimal tradeWeight = BigDecimal.valueOf(110);
+        List<ProductStockInput> batchStockInputList = new ArrayList<>();
+        ProductStockInput input = new ProductStockInput();
+        input.setProductStockId(ps.getProductStockId());
+        input.setTradeWeight(tradeWeight);
+        batchStockInputList.add(input);
+
+        TradeOrder tradeOrder = this.tradeOrderService.createBuyTrade(tradeDto, batchStockInputList);
+        Assertions.assertNotNull(tradeOrder);
+
+        ProductStock afterTradePs = this.productStockService.get(ps.getProductStockId());
+
+        List<TradeDetail> afterTradeDetailList = StreamEx.of(tradeDetailList).map(TradeDetail::getId).map(this.tradeDetailService::get).toList();
+        BigDecimal afterTradeSumWeight = StreamEx.of(afterTradeDetailList).map(TradeDetail::getStockWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal afterTradeSumSoftWeight = StreamEx.of(afterTradeDetailList).map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        assertEquals(afterTradePs.getStockWeight().compareTo(afterTradeSumWeight), 0, "剩余总库存与剩余批次总库存不一致");
+
+        assertEquals(afterTradeSumSoftWeight.add(afterTradeSumWeight).compareTo(totalWeight), 0, "锁定库存+剩余批次总库存之和不等于总进门重量");
+
+
+        TradeRequest treq = new TradeRequest();
+        treq.setTradeOrderId(tradeOrder.getTradeOrderId());
+        List<TradeRequest> tradeRequestList = this.tradeRequestService.listByExample(treq);
+
+
+        List<TradeRequestDetail> tradeRequestDetailList = StreamEx.of(tradeRequestList).map(TradeRequest::getId).flatCollection(treqId -> {
+            TradeRequestDetail trdQ = new TradeRequestDetail();
+            trdQ.setTradeRequestId(treqId);
+            return this.tradeRequestDetailService.listByExample(trdQ);
+
+        }).toList();
+        BigDecimal tradeWeightTotal = StreamEx.of(tradeRequestDetailList).map(TradeRequestDetail::getTradeWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+        assertEquals(tradeWeightTotal.compareTo(afterTradeSumSoftWeight), 0, "锁定库存与交易重量不一致");
 
     }
 }
