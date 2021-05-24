@@ -11,6 +11,7 @@ import com.dili.trace.api.input.TradeRequestHandleDto;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.BuyerTypeEnum;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.google.common.collect.Lists;
@@ -323,7 +324,7 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
 
         Long marketId = 8L;
         Long userId = 100L;
-        List<BigDecimal> weightList = Lists.newArrayList(BigDecimal.valueOf(100L), BigDecimal.valueOf(80L));
+        List<BigDecimal> weightList = Lists.newArrayList(BigDecimal.valueOf(200L),BigDecimal.valueOf(100L), BigDecimal.valueOf(80L));
         Mockito.doAnswer(invocation -> {
 
             Long uid = (Long) invocation.getArguments()[0];
@@ -370,7 +371,7 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
         this.productStockService.deleteByExample(q);
 
 
-        BigDecimal tradeWeight = BigDecimal.valueOf(110);
+        BigDecimal tradeWeight = BigDecimal.valueOf(210);
         List<ProductStockInput> batchStockInputList = new ArrayList<>();
         ProductStockInput input = new ProductStockInput();
         input.setProductStockId(ps.getProductStockId());
@@ -382,7 +383,12 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
 
         ProductStock afterTradePs = this.productStockService.get(ps.getProductStockId());
 
+
         List<TradeDetail> afterTradeDetailList = StreamEx.of(tradeDetailList).map(TradeDetail::getId).map(this.tradeDetailService::get).toList();
+        long tradeDetailNum=StreamEx.of(afterTradeDetailList).filter(item-> SaleStatusEnum.FOR_SALE.equalsToCode(item.getSaleStatus())).count();
+        assertEquals(afterTradePs.getTradeDetailNum().longValue(),tradeDetailNum,"可售批次个数不一致");
+
+
         BigDecimal afterTradeSumWeight = StreamEx.of(afterTradeDetailList).map(TradeDetail::getStockWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal afterTradeSumSoftWeight = StreamEx.of(afterTradeDetailList).map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -409,6 +415,7 @@ public class TradeOrderServiceTest extends AutoWiredBaseTest {
         ProductStock buyerPs = StreamEx.of(this.productStockService.listByExample(q)).findFirst().orElse(null);
         assertNotNull(buyerPs);
         assertEquals(buyerPs.getStockWeight().compareTo(tradeWeightTotal), 0);
+
 
         TradeDetail tdq = new TradeDetail();
         tdq.setProductStockId(buyerPs.getProductStockId());
