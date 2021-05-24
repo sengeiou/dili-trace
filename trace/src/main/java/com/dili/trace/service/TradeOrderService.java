@@ -638,6 +638,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         ProductStock productStock = new ProductStock();
         productStock.setId(productStockItem.getId());
         productStock.setStockWeight(productStockItem.getStockWeight().subtract(totalTradeWeight));
+        productStock.setTradeDetailNum(productStockItem.getTradeDetailNum());
 
 
         TradeDetailQueryDto tradeDetailQuery = new TradeDetailQueryDto();
@@ -663,7 +664,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
                 tradeRequestDetail.setTradeWeight(tradeDetail.getStockWeight());
                 td.setStockWeight(BigDecimal.ZERO);
                 td.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-                productStock.setTradeDetailNum(productStockItem.getTradeDetailNum() - 1);
+                productStock.setTradeDetailNum(productStock.getTradeDetailNum() - 1);
                 totalTradeWeight = totalTradeWeight.subtract(tradeDetail.getStockWeight());
             } else {
                 tradeRequestDetail.setTradeWeight(totalTradeWeight);
