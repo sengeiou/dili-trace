@@ -856,14 +856,16 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
     /**
      * 处理tradeorder
-     *
-     * @param tradeOrderItem
-     * @param tradeStatusEnum
      */
 //
 //    public void handleTradeOrder(TradeOrder tradeOrderItem, TradeOrderStatusEnum tradeStatusEnum) {
 //        tradeOrderItem.setOrderStatus(tradeStatusEnum.getCode());
 //        this.updateSelective(tradeOrderItem);
 //    }
+    private void privateTestMethod() {
 
+        System.out.println(this.tradeRequestService == null);
+        System.out.println(this.tradeRequestDetailService == null);
+
+    }
 }
