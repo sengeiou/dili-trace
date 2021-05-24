@@ -11,6 +11,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.TraceCustomer;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
 import com.dili.trace.rpc.dto.AccountGetListResultDto;
+import com.dili.trace.rpc.dto.CustomerQueryDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.ExtCustomerService;
 import com.dili.trace.service.UapRpcService;
@@ -95,14 +96,15 @@ public class CustomerController {
      */
     @RequestMapping(value = "/listSellerTallaryNoByUserId.action")
     @ResponseBody
-    public BaseOutput<List<TallyingArea>> listSellerTallaryNoByUserId(@RequestBody CustomerQueryInput query) {
+    public BaseOutput<List<TallyingArea>> listSellerTallaryNoByUserId(@RequestBody CustomerQueryDto query) {
         if (query.getId() == null) {
             return BaseOutput.success().setData(new ArrayList<>(0));
         }
         Firm firm = uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
         query.setPage(1);
         query.setRows(50);
-        PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query, firm.getId());
+        query.setMarketId(firm.getId());
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query);
         if (!pageOutput.isSuccess()) {
             return BaseOutput.failure(pageOutput.getMessage());
         }

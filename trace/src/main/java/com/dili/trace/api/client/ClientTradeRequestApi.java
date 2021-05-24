@@ -29,6 +29,7 @@ import com.dili.trace.dto.TradeDto;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
 import com.dili.trace.dto.VehicleInfoDto;
 import com.dili.trace.enums.*;
+import com.dili.trace.rpc.dto.CustomerQueryDto;
 import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
@@ -407,13 +408,14 @@ public class ClientTradeRequestApi {
      * @return 卖家列表
      */
     @RequestMapping(value = "/listSeller.api", method = {RequestMethod.POST})
-    public String listSeller(@RequestBody CustomerQueryInput query) {
+    public String listSeller(@RequestBody CustomerQueryDto query) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             query.setPage(1);
             //取100个，再多远程太慢了
             query.setRows(50);
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query, marketId);
+            query.setMarketId(marketId);
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(query);
 
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             List<CustomerExtendOutPutDto> list = getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER).getData();

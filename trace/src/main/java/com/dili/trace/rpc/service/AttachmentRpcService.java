@@ -1,9 +1,8 @@
 package com.dili.trace.rpc.service;
 
+import com.dili.customer.sdk.domain.Attachment;
 import com.dili.customer.sdk.domain.BusinessCategory;
-import com.dili.customer.sdk.domain.TallyingArea;
-import com.dili.customer.sdk.rpc.BusinessCategoryRpc;
-import com.dili.customer.sdk.rpc.TallyingAreaRpc;
+import com.dili.customer.sdk.rpc.AttachmentRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -16,30 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Alvin.Li
- */
 @Service
-public class TallyingAreaRpcService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TallyingAreaRpcService.class);
-
+public class AttachmentRpcService {
+    private static final Logger logger = LoggerFactory.getLogger(AttachmentRpcService.class);
     @Autowired
-    TallyingAreaRpc tallyingAreaRpc;
-
-    /**
-     * 查询理货区
-     *
-     * @return
-     */
-    public TallyingArea findCustomerByIdOrEx(String tallyAreaNo, Long marketId) {
-
-        TallyingArea tallyingAreaQuery = new TallyingArea();
-        tallyingAreaQuery.setAssetsName(tallyAreaNo);
-        this.tallyingAreaRpc.listByExample(tallyingAreaQuery);
-        return null;
-    }
-
+    AttachmentRpc attachmentRpc;
 
     /**
      * 根据市场id和customerid查询
@@ -48,13 +28,13 @@ public class TallyingAreaRpcService {
      * @param customerId
      * @return
      */
-    public List<TallyingArea> findTallyingAreaByMarketIdAndCustomerId(Long marketId, Long customerId) {
+    public List<Attachment> findAttachmentByMarketIdAndCustomerId(Long marketId, Long customerId) {
         if (marketId == null || customerId == null) {
             return Lists.newArrayList();
         }
 
         try {
-            BaseOutput<List<TallyingArea>> out = this.tallyingAreaRpc.listTallyingArea(customerId, marketId);
+            BaseOutput<List<Attachment>> out = this.attachmentRpc.listAttachment(customerId, marketId);
             if (out == null) {
                 logger.error("查询返回BaseOutput为Null");
                 return Lists.newArrayList();
@@ -77,14 +57,14 @@ public class TallyingAreaRpcService {
      * @param customerIdList
      * @return
      */
-    public Map<Long, List<TallyingArea>> findTallyingAreaByMarketIdAndCustomerIdList(Long marketId, List<Long> customerIdList) {
+    public Map<Long, List<Attachment>> findAttachmentByMarketIdAndCustomerIdList(Long marketId, List<Long> customerIdList) {
         if (marketId == null || customerIdList == null || customerIdList.isEmpty()) {
             return Maps.newHashMap();
         }
         return StreamEx.of(customerIdList).nonNull().toMap(customerId -> {
             return customerId;
         }, customerId -> {
-            return this.findTallyingAreaByMarketIdAndCustomerId(marketId, customerId);
+            return this.findAttachmentByMarketIdAndCustomerId(marketId, customerId);
         });
 
     }

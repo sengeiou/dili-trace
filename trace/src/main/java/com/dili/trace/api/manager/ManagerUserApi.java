@@ -12,6 +12,7 @@ import com.dili.ss.domain.PageOutput;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.ClientTypeEnum;
 import com.dili.trace.rpc.dto.AccountGetListResultDto;
+import com.dili.trace.rpc.dto.CustomerQueryDto;
 import com.dili.trace.rpc.service.CarTypeRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import io.swagger.annotations.Api;
@@ -146,10 +147,11 @@ public class ManagerUserApi {
      */
     @ApiOperation(value = "查询经营户信息")
     @RequestMapping(value = "/listSeller.api", method = RequestMethod.POST)
-    public PageOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryInput input) {
+    public PageOutput<List<CustomerExtendOutPutDto>> listSeller(@RequestBody CustomerQueryDto input) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input, marketId);
+            input.setMarketId(marketId);
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input);
 
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             return getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER);
@@ -169,10 +171,11 @@ public class ManagerUserApi {
      */
     @ApiOperation(value = "查询买家信息")
     @RequestMapping(value = "/listBuyer.api", method = RequestMethod.POST)
-    public PageOutput<List<CustomerExtendOutPutDto>> listBuyer(@RequestBody CustomerQueryInput input) {
+    public PageOutput<List<CustomerExtendOutPutDto>> listBuyer(@RequestBody CustomerQueryDto input) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input, marketId);
+            input.setMarketId(marketId);
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listBuyer(input);
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             return getListPageOutput(marketId, pageOutput, ClientTypeEnum.BUYER);
         } catch (TraceBizException e) {
@@ -191,9 +194,10 @@ public class ManagerUserApi {
      */
     @ApiOperation(value = "查询司机信息")
     @RequestMapping(value = "/listDriver.api", method = RequestMethod.POST)
-    public BaseOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryInput input) {
+    public BaseOutput<List<CustomerExtendOutPutDto>> listDriver(@RequestBody CustomerQueryDto input) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
+            input.setMarketId(marketId);
             PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listDriver(input, marketId);
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             return getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
