@@ -2,6 +2,7 @@ package com.dili.trace.rpc.service;
 
 import com.dili.customer.sdk.domain.Customer;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
@@ -32,7 +33,7 @@ public class CustomerRpcServiceTest extends BaseTestWithouMVC {
         Long marketId = 8L;
         query.setMarketId(marketId);
 
-        PageOutput<List<CustomerExtendDto>> out = this.customerRpcService.listSeller(query);
+        PageOutput<List<CustomerSimpleExtendDto>> out = this.customerRpcService.listSeller(query);
         Assertions.assertNotNull(out);
     }
 
@@ -47,7 +48,7 @@ public class CustomerRpcServiceTest extends BaseTestWithouMVC {
         query.setMarketId(marketId);
 
         System.out.println(this.customerRpcService == null);
-        PageOutput<List<CustomerExtendDto>> pg = this.customerRpcService.queryCustomerByCustomerQueryDto(query);
+        PageOutput<List<CustomerSimpleExtendDto>> pg = this.customerRpcService.queryCustomerByCustomerQueryDto(query);
         Assertions.assertNotNull(pg);
     }
 }

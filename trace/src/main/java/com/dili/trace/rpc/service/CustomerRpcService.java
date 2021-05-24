@@ -6,6 +6,7 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.*;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.customer.sdk.domain.query.CustomerBaseQueryInput;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.customer.sdk.enums.CustomerEnum;
@@ -282,7 +283,7 @@ public class CustomerRpcService {
      * @param characterType
      * @return
      */
-    private PageOutput<List<CustomerExtendDto>> queryCustomerByCustomerQueryDto(CustomerQueryDto queryInput, CustomerEnum.CharacterType characterType) {
+    private PageOutput<List<CustomerSimpleExtendDto>> queryCustomerByCustomerQueryDto(CustomerQueryDto queryInput, CustomerEnum.CharacterType characterType) {
         if (queryInput == null || queryInput.getMarketId() == null) {
             return PageOutput.failure("参数错误");
         }
@@ -290,7 +291,7 @@ public class CustomerRpcService {
         seller.setCharacterType(characterType.getCode());
         queryInput.setCharacterType(seller);
 
-        PageOutput<List<CustomerExtendDto>> page = this.queryCustomerByCustomerQueryDto(queryInput);
+        PageOutput<List<CustomerSimpleExtendDto>> page = this.queryCustomerByCustomerQueryDto(queryInput);
         return page;
     }
 
@@ -301,8 +302,8 @@ public class CustomerRpcService {
      * @param queryInput
      * @return
      */
-    public PageOutput<List<CustomerExtendDto>> listSeller(CustomerQueryDto queryInput) {
-        PageOutput<List<CustomerExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.经营户);
+    public PageOutput<List<CustomerSimpleExtendDto>> listSeller(CustomerQueryDto queryInput) {
+        PageOutput<List<CustomerSimpleExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.经营户);
         return pageOutput;
     }
 
@@ -312,9 +313,9 @@ public class CustomerRpcService {
      * @param queryInput
      * @return
      */
-    public PageOutput<List<CustomerExtendDto>> listBuyer(CustomerQueryDto queryInput) {
+    public PageOutput<List<CustomerSimpleExtendDto>> listBuyer(CustomerQueryDto queryInput) {
         logger.debug("listBuyer:marketId={},queryInput={}", queryInput.getMarketId(), JSON.toJSONString(queryInput));
-        PageOutput<List<CustomerExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.买家);
+        PageOutput<List<CustomerSimpleExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.买家);
         return pageOutput;
     }
 
@@ -325,9 +326,9 @@ public class CustomerRpcService {
      * @param marketId
      * @return
      */
-    public PageOutput<List<CustomerExtendDto>> listDriver(CustomerQueryDto queryInput, Long marketId) {
+    public PageOutput<List<CustomerSimpleExtendDto>> listDriver(CustomerQueryDto queryInput, Long marketId) {
         queryInput.setMarketId(marketId);
-        PageOutput<List<CustomerExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.其他类型);
+        PageOutput<List<CustomerSimpleExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.其他类型);
         return pageOutput;
     }
 
@@ -396,11 +397,11 @@ public class CustomerRpcService {
      * @param plate
      * @return
      */
-    public List<CustomerExtendDto> findCustomerByPlate(String plate, Long marketId) {
+    public List<CustomerSimpleExtendDto> findCustomerByPlate(String plate, Long marketId) {
         CustomerQueryDto queryInput = new CustomerQueryDto();
         queryInput.setVehicleNumber(plate);
         queryInput.setMarketId(marketId);
-        PageOutput<List<CustomerExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.经营户);
+        PageOutput<List<CustomerSimpleExtendDto>> pageOutput = this.queryCustomerByCustomerQueryDto(queryInput, CustomerEnum.CharacterType.经营户);
 
         return StreamEx.ofNullable(pageOutput).filter(PageOutput::isSuccess)
                 .map(PageOutput::getData).nonNull()
@@ -478,7 +479,7 @@ public class CustomerRpcService {
      * @param queryDto
      * @return
      */
-    public PageOutput<List<CustomerExtendDto>> queryCustomerByCustomerQueryDto(CustomerQueryDto queryDto) {
+    public PageOutput<List<CustomerSimpleExtendDto>> queryCustomerByCustomerQueryDto(CustomerQueryDto queryDto) {
         if (queryDto == null || queryDto.getMarketId() == null) {
             return PageOutput.success();
         }
@@ -498,12 +499,12 @@ public class CustomerRpcService {
      * @param queryDto
      * @return
      */
-    private PageOutput<List<CustomerExtendDto>> queryCustomer(CustomerQueryDto queryDto) {
+    private PageOutput<List<CustomerSimpleExtendDto>> queryCustomer(CustomerQueryDto queryDto) {
         if (queryDto == null) {
             return PageOutput.success();
         }
         Long marketId = queryDto.getMarketId();
-        return this.customerRpc.listNormalPage(queryDto);
+        return this.customerRpc.listSimpleNormalPage(queryDto);
 
 //        List<Long> customerIdList = Lists.newLinkedList();
 //
