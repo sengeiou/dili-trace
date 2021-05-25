@@ -134,9 +134,9 @@ public class ProcessService {
         }
         if (BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())) {
             if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-                updatableBill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
-            } else {
                 updatableBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
+            } else {
+                updatableBill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
             }
         }
         this.billService.updateSelective(updatableBill);
