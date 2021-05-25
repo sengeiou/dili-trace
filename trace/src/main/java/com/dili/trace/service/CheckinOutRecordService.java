@@ -40,6 +40,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
     TradeService tradeService;
     @Autowired
     ProcessService processService;
+    @Autowired
+    BillVerifyHistoryService billVerifyHistoryService;
 
     /**
      * 出门操作
@@ -234,33 +236,42 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
      * 新的审核方法
      *
      * @param billId
-     * @param toVverifyStatusEnum
+     * @param toVerifyStatusEnum
      * @param operatorUser
      */
-    public void doVerify(Long billId, BillVerifyStatusEnum toVverifyStatusEnum, Optional<OperatorUser> operatorUser) {
+    public void doVerify(Long billId, BillVerifyStatusEnum toVerifyStatusEnum, Optional<OperatorUser> operatorUser) {
 
         RegisterBill billItem = this.registerBillService.get(billId);
         if (billItem == null) {
             throw new TraceBizException("报备单不存在");
         }
+        BillVerifyStatusEnum oldVerifyStatusEnum = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElseThrow(() -> {
+            return new TraceBizException("审核状态不能为空");
+        });
+
         RegisterBill up = new RegisterBill();
         up.setId(billItem.getId());
-        up.setVerifyStatus(toVverifyStatusEnum.getCode());
+
+        RegistTypeEnum registTypeEnum = RegistTypeEnum.fromCode(billItem.getRegistType()).orElseThrow(() -> {
+            return new TraceBizException("报备类型不能为空");
+        });
+
+        up.setVerifyStatus(toVerifyStatusEnum.getCode());
+        if (BillVerifyStatusEnum.PASSED == toVerifyStatusEnum) {
+            if (RegistTypeEnum.SUPPLEMENT == registTypeEnum) {
+                up.setVerifyType(VerifyTypeEnum.CHECKIN_WITHOUT_VERIFY.getCode());
+            } else {
+                up.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
+            }
+        }
         this.registerBillService.updateSelective(up);
 
-        Optional<CheckinOutRecord> checkinRecordOpt = StreamEx.of(billItem).filter(v -> {
-            return BillVerifyStatusEnum.PASSED == toVverifyStatusEnum && CheckinStatusEnum.ALLOWED.equalsToCode(v.getCheckinStatus());
-        }).map(v -> {
-            return this.findOrCreateAllowedCheckInRecord(billId, operatorUser);
-        }).findFirst();
-        if (checkinRecordOpt.isPresent()) {
-            //审核通过并且已经进门
-        } else {
-            //其他
+        this.billVerifyHistoryService.createVerifyHistory(Optional.of(oldVerifyStatusEnum), billId, operatorUser);
 
-        }
+        Optional<CheckinOutRecord> checkinRecordOpt = this.findOrCreateAllowedCheckInRecord(billId);
 
     }
+
 
     /**
      * 查询或创建进门记录
@@ -268,21 +279,22 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
      * @param billId
      * @return
      */
-    public CheckinOutRecord findOrCreateAllowedCheckInRecord(Long billId, Optional<OperatorUser> operatorUser) {
+    public Optional<CheckinOutRecord> findOrCreateAllowedCheckInRecord(Long billId) {
         RegisterBill billItem = this.registerBillService.get(billId);
         if (billItem == null) {
             throw new TraceBizException("报备单不存在");
         }
         CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(billItem.getCheckinStatus());
         if (CheckinStatusEnum.ALLOWED != checkinStatusEnum) {
-            throw new TraceBizException("当前状态不能创建进门数据");
+            return Optional.empty();
         }
         CheckinOutRecord q = new CheckinOutRecord();
         q.setBillId(billId);
+        q.setStatus(CheckinStatusEnum.ALLOWED.getCode());
         q.setInout(CheckinOutTypeEnum.IN.getCode());
-        return StreamEx.of(this.listByExample(q)).findFirst().orElseGet(() -> {
-            return this.createAllowedCheckInRecord(billItem, operatorUser);
-        });
+        return Optional.of(StreamEx.of(this.listByExample(q)).findFirst().orElseGet(() -> {
+            return this.createAllowedCheckInRecord(billItem);
+        }));
 
     }
 
@@ -290,17 +302,13 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
      * 创建允许进门数据
      *
      * @param billItem
-     * @param operatorUser
      * @return
      */
-    private CheckinOutRecord createAllowedCheckInRecord(RegisterBill billItem, Optional<OperatorUser> operatorUser) {
+    private CheckinOutRecord createAllowedCheckInRecord(RegisterBill billItem) {
         CheckinOutRecord item = new CheckinOutRecord();
-//				item.setId(cin.getId());
+
         item.setStatus(CheckinStatusEnum.ALLOWED.getCode());
-        operatorUser.ifPresent(op -> {
-            // item.setOperatorId(op.getId());
-            // item.setOperatorName(op.getName());
-        });
+
         item.setModified(new Date());
         item.setProductName(billItem.getProductName());
         item.setInoutWeight(billItem.getWeight());
