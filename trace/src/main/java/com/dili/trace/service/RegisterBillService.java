@@ -1484,7 +1484,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
             String keyword = query.getKeyword().trim();
             sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
                     + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
-                    + keyword + "%') OR third_party_code like '%" + keyword + "%' OR register_head_code LIKE '%" + keyword + "%' )";
+                    + keyword + "%') OR card_no like '%" + keyword + "%' OR register_head_code LIKE '%" + keyword + "%' )";
         }
         return Optional.ofNullable(sql);
     }
