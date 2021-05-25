@@ -13,10 +13,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.CheckinOutTypeEnum;
-import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.CheckoutStatusEnum;
-import com.dili.trace.enums.SaleStatusEnum;
+import com.dili.trace.enums.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -230,6 +227,38 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             return item;
         }
         return null;
+
+    }
+
+    /**
+     * 新的审核方法
+     *
+     * @param billId
+     * @param toVverifyStatusEnum
+     * @param operatorUser
+     */
+    public void doVerify(Long billId, BillVerifyStatusEnum toVverifyStatusEnum, Optional<OperatorUser> operatorUser) {
+
+        RegisterBill billItem = this.registerBillService.get(billId);
+        if (billItem == null) {
+            throw new TraceBizException("报备单不存在");
+        }
+        RegisterBill up = new RegisterBill();
+        up.setId(billItem.getId());
+        up.setVerifyStatus(toVverifyStatusEnum.getCode());
+        this.registerBillService.updateSelective(up);
+
+        Optional<CheckinOutRecord> checkinRecordOpt = StreamEx.of(billItem).filter(v -> {
+            return BillVerifyStatusEnum.PASSED == toVverifyStatusEnum && CheckinStatusEnum.ALLOWED.equalsToCode(v.getCheckinStatus());
+        }).map(v -> {
+            return this.findOrCreateAllowedCheckInRecord(billId, operatorUser);
+        }).findFirst();
+        if (checkinRecordOpt.isPresent()) {
+            //审核通过并且已经进门
+        } else {
+            //其他
+
+        }
 
     }
 
