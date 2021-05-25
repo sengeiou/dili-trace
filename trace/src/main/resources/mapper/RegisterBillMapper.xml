@@ -13,7 +13,7 @@
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="trade_account" jdbcType="VARCHAR" property="tradeAccount" />
-    <result column="trade_printing_card" jdbcType="VARCHAR" property="tradePrintingCard" />
+    <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="plate" jdbcType="VARCHAR" property="plate" />
     <result column="state" jdbcType="TINYINT" property="state" />
@@ -36,7 +36,7 @@
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
     <result column="market_id" jdbcType="VARCHAR" property="marketId" />
     <result column="register_head_code" jdbcType="VARCHAR" property="registerHeadCode" />
-    <result column="third_party_code" jdbcType="VARCHAR" property="thirdPartyCode" />
+    <result column="third_party_code" jdbcType="VARCHAR" property="cardNo" />
     <result column="area" jdbcType="VARCHAR" property="area" />
     <result column="measure_type" jdbcType="TINYINT" property="measureType" />
     <result column="piece_num" jdbcType="DECIMAL" property="pieceNum" />

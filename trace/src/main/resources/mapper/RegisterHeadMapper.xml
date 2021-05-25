@@ -10,7 +10,7 @@
     <result column="user_id" property="userId" />
     <result column="name" property="name" />
     <result column="id_card_no" property="idCardNo" />
-    <result column="third_party_code" property="thirdPartyCode" />
+    <result column="third_party_code" property="cardNo" />
     <result column="addr" property="addr" />
     <result column="phone" property="phone" />
     <result column="plate" property="plate" />
