@@ -234,15 +234,56 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
     }
 
     /**
-     * 查询进门记录
+     * 查询或创建进门记录
      *
      * @param billId
      * @return
      */
-    public Optional<CheckinOutRecord> findCheckInRecordByBillId(Long billId) {
+    public CheckinOutRecord findOrCreateAllowedCheckInRecord(Long billId, Optional<OperatorUser> operatorUser) {
+        RegisterBill billItem = this.registerBillService.get(billId);
+        if (billItem == null) {
+            throw new TraceBizException("报备单不存在");
+        }
+        CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(billItem.getCheckinStatus());
+        if (CheckinStatusEnum.ALLOWED != checkinStatusEnum) {
+            throw new TraceBizException("当前状态不能创建进门数据");
+        }
         CheckinOutRecord q = new CheckinOutRecord();
         q.setBillId(billId);
         q.setInout(CheckinOutTypeEnum.IN.getCode());
-        return StreamEx.of(this.listByExample(q)).findFirst();
+        return StreamEx.of(this.listByExample(q)).findFirst().orElseGet(() -> {
+            return this.createAllowedCheckInRecord(billItem, operatorUser);
+        });
+
+    }
+
+    /**
+     * 创建允许进门数据
+     *
+     * @param billItem
+     * @param operatorUser
+     * @return
+     */
+    private CheckinOutRecord createAllowedCheckInRecord(RegisterBill billItem, Optional<OperatorUser> operatorUser) {
+        CheckinOutRecord item = new CheckinOutRecord();
+//				item.setId(cin.getId());
+        item.setStatus(CheckinStatusEnum.ALLOWED.getCode());
+        operatorUser.ifPresent(op -> {
+            // item.setOperatorId(op.getId());
+            // item.setOperatorName(op.getName());
+        });
+        item.setModified(new Date());
+        item.setProductName(billItem.getProductName());
+        item.setInoutWeight(billItem.getWeight());
+        item.setWeightUnit(billItem.getWeightUnit());
+        item.setUserName(billItem.getName());
+        item.setUserId(billItem.getUserId());
+        item.setBillType(billItem.getBillType());
+
+        item.setBillId(billItem.getBillId());
+        item.setInout(CheckinOutTypeEnum.IN.getCode());
+
+        this.insertSelective(item);
+        return item;
     }
 }
