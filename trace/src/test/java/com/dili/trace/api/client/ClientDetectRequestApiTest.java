@@ -12,7 +12,7 @@ public class ClientDetectRequestApiTest extends AutoWiredBaseTest {
 
     @Test
     public void getDetectRequestDetail() {
-        String str = this.clientDetectRequestApi.getDetectRequestDetail(464L);
+        String str = this.clientDetectRequestApi.getDetectRequestDetail(448L);
         System.out.println(str);
     }
 }
