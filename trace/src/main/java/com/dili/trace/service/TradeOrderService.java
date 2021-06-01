@@ -15,6 +15,7 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -647,6 +648,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         tradeDetailQuery.setSort("created,id");
         tradeDetailQuery.setOrder("asc,asc");
         tradeDetailQuery.setMinStockWeight(BigDecimal.ZERO);
+        tradeDetailQuery.setDetectResultList(Lists.newArrayList(DetectResultEnum.NONE.getCode(), DetectResultEnum.PASSED.getCode()));
 
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         for (TradeDetail tradeDetail : tradeDetailList) {

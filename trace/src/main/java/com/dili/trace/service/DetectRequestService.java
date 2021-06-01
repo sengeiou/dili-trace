@@ -163,13 +163,12 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
 
         RegisterBill registerBill = this.billService.get(billId);
 
-        if (Objects.isNull(registerBill)||Objects.isNull(registerBill.getDetectRequestId())) {
+        if (Objects.isNull(registerBill) || Objects.isNull(registerBill.getDetectRequestId())) {
             return Optional.empty();
         }
         Long detectRequestId = registerBill.getDetectRequestId();
         return Optional.ofNullable(this.get(detectRequestId));
     }
-
 
 
     /**
@@ -793,7 +792,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         RegisterBill updateBill = new RegisterBill();
         updateBill.setId(registerBill.getId());
         updateBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
-        operatorUser.ifPresent(opt->{
+        operatorUser.ifPresent(opt -> {
             updateBill.setOperatorId(opt.getId());
             updateBill.setOperatorName(opt.getName());
         });
@@ -824,7 +823,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (!Objects.nonNull(detectRecord)) {
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
         }
-        DetectRequest drItem=this.get(detectRequestId);
+        DetectRequest drItem = this.get(detectRequestId);
 
         DetectRequest updateRequest = new DetectRequest();
         updateRequest.setId(drItem.getId());
@@ -842,7 +841,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateRequest.setDetectorName(detectRecord.getDetectOperator());
         this.updateSelective(updateRequest);
 
-        this.productStockService.updateDetectFailedWeightByBillIdAfterDetect(drItem.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(drItem.getBillId());
     }
 
     /**
@@ -937,7 +936,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         billService.updateSelective(registerBill);
 
 
-        DetectResultEnum detectResultEnum=DetectResultEnum.fromCode(record.getDetectState()).orElseThrow(()->{
+        DetectResultEnum detectResultEnum = DetectResultEnum.fromCode(record.getDetectState()).orElseThrow(() -> {
             return new TraceBizException("检测结果参数错误");
         });
         // 更新检测请求
@@ -959,7 +958,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         this.detectRecordService.insertSelective(newRecord);
 
 
-        this.productStockService.updateDetectFailedWeightByBillIdAfterDetect(registerBill.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId());
     }
 
     /**
@@ -1056,7 +1055,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         if (CollectionUtils.isEmpty(imageCerts)) {
             throw new TraceBizException("请上传报告");
         }
-        imageCertService.insertImageCert(imageCerts, bill.getId(),BillTypeEnum.REGISTER_BILL);
+        imageCertService.insertImageCert(imageCerts, bill.getId(), BillTypeEnum.REGISTER_BILL);
         if (bill.getHandleResult().trim().length() > 1000) {
             throw new TraceBizException("处理结果不能超过1000");
         }

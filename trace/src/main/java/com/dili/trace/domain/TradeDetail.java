@@ -194,6 +194,13 @@ public class TradeDetail extends BaseDomain {
     private BigDecimal softWeight;
 
     /**
+     * 检测结果
+     */
+    @Column(name = "`detect_result`")
+    private Integer detectResult;
+
+
+    /**
      * 车牌
      */
     @Transient
@@ -230,17 +237,19 @@ public class TradeDetail extends BaseDomain {
     @Column(name = "`third_party_stock_id`")
     private Long thirdPartyStockId;
 
+    public Integer getDetectResult() {
+        return detectResult;
+    }
+
+    public void setDetectResult(Integer detectResult) {
+        this.detectResult = detectResult;
+    }
+
     @Transient
     public String getWeightUnitName() {
         return WeightUnitEnum.toName(this.getWeightUnit());
     }
-    // public Integer getStatus() {
-    // 	return status;
-    // }
 
-    // public void setStatus(Integer status) {
-    // 	this.status = status;
-    // }
     @Transient
     public Long getTradeDetailId() {
         return id;

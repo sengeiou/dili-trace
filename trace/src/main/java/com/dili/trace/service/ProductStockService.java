@@ -1,20 +1,19 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.api.input.TradeDetailQueryDto;
 import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.google.common.collect.Lists;
 
@@ -159,57 +158,6 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         return this.updateSelective(psUpdatable);
     }
 
-    /**
-     * 检测之后,根据billId更新检测失败重量
-     *
-     * @param billId
-     */
-    @Transactional
-    public int updateDetectFailedWeightByBillIdAfterDetect(Long billId) {
-        logger.info("开始更新检测失败库存:billId={}", billId);
-        if (this != null) {
-            return 0;
-        }
-        if (Objects.isNull(billId)) {
-            throw new TraceBizException("变更检测失败重量:参数错误");
-        }
-
-        DetectResultEnum detectResultEnum = StreamEx.of(this.detectRequestService.findDetectRequestByBillId(billId)).map(detectRequest -> {
-            return detectRequest.getDetectResult();
-        }).map(DetectResultEnum::fromCode).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
-
-
-        return EntryStream.of(this.findGroupedTradeDetailsByBillId(billId)).mapKeys(productStockId -> {
-            ProductStock productStockItem = this.selectByIdForUpdate(productStockId).orElseThrow(() -> {
-                throw new TraceBizException("库存数据不存在");
-            });
-            return productStockItem;
-        }).mapValues(tdList -> {
-            BigDecimal totalFailedWeight = StreamEx.of(tdList).map(TradeDetail::getStockWeight).reduce(BigDecimal.ZERO, (t, v) -> {
-                return t.add(v);
-            });
-
-            if (DetectResultEnum.PASSED == detectResultEnum) {
-                return totalFailedWeight;
-            } else if (DetectResultEnum.FAILED == detectResultEnum) {
-                return totalFailedWeight.negate();
-            } else if (DetectResultEnum.NONE == detectResultEnum) {
-                return BigDecimal.ZERO;
-            } else {
-                throw new TraceBizException("检测结果错误");
-            }
-
-        }).mapKeyValue((productStockItem, totalFailedWeight) -> {
-
-            ProductStock psUpdatable = new ProductStock();
-            psUpdatable.setId(productStockItem.getId());
-            psUpdatable.setDetectFailedWeight(productStockItem.getDetectFailedWeight().add(totalFailedWeight));
-            psUpdatable.setStockWeight(productStockItem.getStockWeight().subtract(totalFailedWeight));
-            return this.updateSelective(psUpdatable);
-
-        }).mapToInt(Integer::intValue).sum();
-
-    }
 
 
     /**
@@ -228,46 +176,87 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
     }
 
     /**
-     * 增减库存重量(正数增加,负数减少)
+     * 更新检测结果
      *
-     * @param productStockId
-     * @param alterWeight
+     * @param billId
      * @return
      */
-    private int updateStockWeight(Long productStockId, BigDecimal alterWeight) {
+    public int updateProductStockAndTradeDetailAfterDetect(Long billId) {
 
-        ProductStock item = this.get(productStockId);
-        if (item == null) {
-            throw new TraceBizException("库存信息不存在");
+
+        DetectResultEnum detectResultEnum = StreamEx.of(this.detectRequestService.findDetectRequestByBillId(billId)).map(detectRequest -> {
+            return detectRequest.getDetectResult();
+        }).map(DetectResultEnum::fromCode).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
+
+        if (detectResultEnum == null) {
+            return 0;
         }
-        if (alterWeight.compareTo(BigDecimal.ZERO) < 0 && item.getStockWeight().add(alterWeight).compareTo(BigDecimal.ZERO) < 0) {
-            throw new TraceBizException("扣减库存不能超过总库存");
+        if (DetectResultEnum.NONE == detectResultEnum) {
+            return 0;
         }
-        ProductStock up = new ProductStock();
-        up.setId(item.getId());
-        up.setStockWeight(item.getStockWeight().add(alterWeight));
-        return this.updateSelective(up);
+        RegisterBill billItem = this.registerBillService.getAndCheckById(billId).orElseThrow(() -> {
+            return new TraceBizException("报备单不存在");
+        });
+
+        TradeDetail tdq = new TradeDetail();
+        tdq.setBillId(billId);
+        tdq.setDetectResult(detectResultEnum.getCode());
+        Map<Long, List<TradeDetail>> productIdTradeDetailListMap = StreamEx.of(StreamEx.of(this.tradeDetailService.listByExample(tdq))).groupingBy(TradeDetail::getProductStockId);
+
+        return EntryStream.of(productIdTradeDetailListMap).mapKeyValue((productStockId, tradeDetailList) -> {
+            int rowCount = StreamEx.of((tradeDetailList)).mapToInt(tradeDetail -> {
+                TradeDetail upTD = new TradeDetail();
+                upTD.setDetectResult(detectResultEnum.getCode());
+                upTD.setId(tradeDetail.getId());
+                if (DetectResultEnum.FAILED == detectResultEnum) {
+                    upTD.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+                } else {
+                    upTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                }
+                return this.tradeDetailService.updateSelective(upTD);
+            }).sum();
+
+            this.updateProductStock(productStockId);
+
+            return rowCount;
+        }).mapToInt(Integer::intValue).sum();
     }
 
+
     /**
-     * 增减检测失败重量(正数增加,负数减少)
+     * 更新库存相关数据
      *
      * @param productStockId
-     * @param alterWeight
      * @return
      */
-    private int updateDetectFailedWeight(Long productStockId, BigDecimal alterWeight) {
+    private int updateProductStock(Long productStockId) {
+        ProductStock ps = this.selectByIdForUpdate(productStockId).orElseThrow(() -> {
+            return new TraceBizException("库存信息不存在");
+        });
+        TradeDetailQueryDto tdq = new TradeDetailQueryDto();
+        tdq.setProductStockId(ps.getProductStockId());
+        tdq.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+        tdq.setMinStockWeight(BigDecimal.ONE);
 
-        ProductStock item = this.get(productStockId);
-        if (item == null) {
-            throw new TraceBizException("库存信息不存在");
+        BigDecimal stockWeight = BigDecimal.ZERO;
+        BigDecimal detectFailedWeight = BigDecimal.ZERO;
+        int num = 0;
+        for (TradeDetail tradeDetail : this.tradeDetailService.listByExample(tdq)) {
+            if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())) {
+                stockWeight = stockWeight.add(tradeDetail.getStockWeight());
+                num = num + 1;
+            }
+            if (DetectResultEnum.FAILED.equalsToCode(tradeDetail.getDetectResult())) {
+                detectFailedWeight = detectFailedWeight.add(tradeDetail.getStockWeight());
+            }
         }
-        if (alterWeight.compareTo(BigDecimal.ZERO) < 0 && item.getDetectFailedWeight().add(alterWeight).compareTo(BigDecimal.ZERO) < 0) {
-            throw new TraceBizException("扣减库存不能超过总库存");
-        }
+
+
         ProductStock up = new ProductStock();
-        up.setId(item.getId());
-        up.setDetectFailedWeight(item.getDetectFailedWeight().add(alterWeight));
+        up.setId(ps.getId());
+        up.setTradeDetailNum(num);
+        up.setStockWeight(stockWeight);
+        up.setDetectFailedWeight(detectFailedWeight);
         return this.updateSelective(up);
     }
 }

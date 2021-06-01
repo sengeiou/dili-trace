@@ -6,6 +6,7 @@ import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.TradeDetail;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +37,19 @@ public class TradeDetailQueryDto extends TradeDetail {
     @Column(name = "`trade_request_id`")
     @Operator(Operator.IN)
     private List<Long> tradeRequestIdList;
+
+
+    @Column(name = "`detect_result`")
+    @Operator(Operator.IN)
+    private List<Integer> detectResultList;
+
+    public List<Integer> getDetectResultList() {
+        return detectResultList;
+    }
+
+    public void setDetectResultList(List<Integer> detectResultList) {
+        this.detectResultList = detectResultList;
+    }
 
     public List<Long> getTradeRequestIdList() {
         return tradeRequestIdList;
