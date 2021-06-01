@@ -50,8 +50,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
     @Autowired
     UsualAddressService usualAddressService;
     @Autowired
-    EventMessageService eventMessageService;
-    @Autowired
     RegisterBillService registerBillService;
     @Autowired
     DefaultConfiguration defaultConfiguration;
@@ -61,11 +59,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
     UserQrHistoryService userQrHistoryService;
     @Autowired
     TallyAreaNoService tallyAreaNoService;
-    @Autowired
-    IWxAppService wxAppService;
-
-    @Autowired
-    MessageService messageService;
 
     @Autowired
     UserStoreService userStoreService;

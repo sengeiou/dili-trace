@@ -81,8 +81,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     @Autowired
     UserQrHistoryService userQrHistoryService;
     @Autowired
-    MessageService messageService;
-    @Autowired
     TradeRequestService tradeRequestService;
 
     @Autowired
@@ -1090,33 +1088,6 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
      */
     private void addMessage(RegisterBill billItem, Integer messageType, Integer businessType, Integer receiverType, Long marketId) {
 
-        Integer receiverNormal = 10;
-        MessageInputDto messageInputDto = new MessageInputDto();
-        messageInputDto.setSourceBusinessType(businessType);
-        messageInputDto.setSourceBusinessId(billItem.getId());
-        messageInputDto.setMessageType(messageType);
-        messageInputDto.setCreatorId(billItem.getUserId());
-        messageInputDto.setReceiverType(receiverType);
-        messageInputDto.setEventMessageContentParam(new String[]{billItem.getName()});
-        //管理员
-        if (!receiverType.equals(receiverNormal)) {
-            // 审核通过增加消息**已通过
-            List<com.dili.uap.sdk.domain.User> manageList = new ArrayList<>();
-            Set<Long> managerIdSet = new HashSet<>();
-            StreamEx.of(manageList).nonNull().forEach(s -> {
-                //没有判断用户状态
-                managerIdSet.add(s.getId());
-            });
-            Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
-            messageInputDto.setReceiverIdArray(managerId);
-        } else {
-            messageInputDto.setReceiverIdArray(new Long[]{billItem.getUserId()});
-        }
-        //审核通过/不通过/退回
-        //增加卖家短信
-        Map<String, Object> smsMap = getSmsMap(billItem);
-        messageInputDto.setSmsContentParam(smsMap);
-        messageService.addMessage(messageInputDto, marketId);
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.events.ECommerceBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -70,7 +71,7 @@ public class ECommerceBillController {
     ApproverInfoService approverInfoService;
 
     @Autowired
-    SgRegisterBillService registerBillService;
+    ImageCertService imageCertService;
 
     @Autowired
     SeperatePrintReportService seperatePrintReportService;
@@ -198,7 +199,7 @@ public class ECommerceBillController {
      * @return
      */
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
-    public String view(ModelMap modelMap,Long id) {
+    public String view(ModelMap modelMap, Long id) {
         RegisterBill bill = this.billService.get(id);
         if (bill == null) {
             return "";
@@ -210,7 +211,7 @@ public class ECommerceBillController {
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         modelMap.put("separateSalesRecords", records);
 
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(bill.getBillId());
+        List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(bill.getBillId(), BillTypeEnum.E_COMMERCE_BILL);
         bill.setImageCertList(imageCerts);
 
         modelMap.put("item", bill);
@@ -393,46 +394,49 @@ public class ECommerceBillController {
 
     /**
      * 查询eventlist
+     *
      * @param billIdList
      * @return
      */
     @RequestMapping("/queryEvents.action")
     @ResponseBody
     public List<String> queryEvents(@RequestBody List<Long> billIdList) {
-        List<String>list=StreamEx.of(this.queryEventsByIdList(billIdList)).map(ECommerceBillMessageEvent::getCode).toList();
+        List<String> list = StreamEx.of(this.queryEventsByIdList(billIdList)).map(ECommerceBillMessageEvent::getCode).toList();
         return list;
     }
+
     /**
      * 查询eventlist
+     *
      * @param billIdList
      * @return
      */
-    private  List<ECommerceBillMessageEvent> queryEventsByIdList(@RequestBody List<Long> billIdList) {
-        List<ECommerceBillMessageEvent>list=new ArrayList<>();
+    private List<ECommerceBillMessageEvent> queryEventsByIdList(@RequestBody List<Long> billIdList) {
+        List<ECommerceBillMessageEvent> list = new ArrayList<>();
         list.add(ECommerceBillMessageEvent.ADD);
         list.add(ECommerceBillMessageEvent.EXPORT);
-        if(billIdList==null||billIdList.size()==0||billIdList.size()>1){
-            return  list;
-        }
-
-        Long billId=billIdList.get(0);
-        if(billId==null){
+        if (billIdList == null || billIdList.size() == 0 || billIdList.size() > 1) {
             return list;
         }
 
-        RegisterBill billItem=this.billService.get(billId);
-        if(billItem==null){
+        Long billId = billIdList.get(0);
+        if (billId == null) {
+            return list;
+        }
+
+        RegisterBill billItem = this.billService.get(billId);
+        if (billItem == null) {
             return list;
         }
         list.add(ECommerceBillMessageEvent.PRINT);
         list.add(ECommerceBillMessageEvent.PRINT_SEPERATE);
 
         list.add(ECommerceBillMessageEvent.DETAIL);
-        if(YesOrNoEnum.NO.getCode().equals(billItem.getIsDeleted())){
+        if (YesOrNoEnum.NO.getCode().equals(billItem.getIsDeleted())) {
             list.add(ECommerceBillMessageEvent.DELETE);
         }
 
-        if(BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())){
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())) {
             list.add(ECommerceBillMessageEvent.AUDIT);
         }
         return list;

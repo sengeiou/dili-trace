@@ -67,9 +67,7 @@ public class CommissionBillController {
     CommissionBillService commissionBillService;
     @Autowired
     BillService billService;
-
-    @Autowired
-    SgRegisterBillService registerBillService;
+    
     @Autowired
     UapRpcService uapRpcService;
 

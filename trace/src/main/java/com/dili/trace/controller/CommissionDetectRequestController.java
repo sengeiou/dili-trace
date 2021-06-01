@@ -67,7 +67,7 @@ public class CommissionDetectRequestController {
     @Autowired
     DetectRecordService detectRecordService;
     @Autowired
-    SgRegisterBillService registerBillService;
+    ImageCertService imageCertService;
     @Autowired
     TradeTypeService tradeTypeService;
     @Autowired
@@ -193,7 +193,7 @@ public class CommissionDetectRequestController {
         RegisterBill item = billService.get(billId);
         RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.COMMISSION_BILL);
         registerBill.setImageCertList(imageCerts);
         return registerBill;
     }

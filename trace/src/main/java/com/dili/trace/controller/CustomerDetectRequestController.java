@@ -68,7 +68,7 @@ public class CustomerDetectRequestController {
     @Autowired
     DetectRecordService detectRecordService;
     @Autowired
-    SgRegisterBillService registerBillService;
+    ImageCertService imageCertService;
     @Autowired
     UpStreamService upStreamService;
     @Autowired
@@ -351,7 +351,7 @@ public class CustomerDetectRequestController {
 //        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
 //        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
 
-        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.REGISTER_BILL);
         item.setImageCertList(imageCerts);
 
         RegisterBillOutputDto bill = RegisterBillOutputDto.build(item,Lists.newArrayList());
@@ -379,7 +379,7 @@ public class CustomerDetectRequestController {
             List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
             modelMap.put("detectRecordList", detectRecordList);
 
-            List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+            List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.REGISTER_BILL);
             item.setImageCertList(imageCerts);
             modelMap.put("registerBill", item);
         } catch (Exception e) {
@@ -438,7 +438,7 @@ public class CustomerDetectRequestController {
             RegisterBill item = billService.get(id);
             RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
             BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-            List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+            List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.REGISTER_BILL);
             registerBill.setImageCertList(imageCerts);
             modelMap.put("registerBill", registerBill);
         }catch (Exception e){

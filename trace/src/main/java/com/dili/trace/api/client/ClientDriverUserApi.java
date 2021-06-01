@@ -17,7 +17,6 @@ import com.dili.trace.dto.query.UserDriverRefQueryDto;
 import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.DriverUserService;
-import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,8 +53,6 @@ public class ClientDriverUserApi {
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
     @Autowired
-    EventMessageService eventMessageService;
-    @Autowired
     LoginSessionContext sessionContext;
 
     /**
@@ -91,8 +88,8 @@ public class ClientDriverUserApi {
         try {
             queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
             queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
-            BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
-            return BaseOutput.successData(page);
+//            BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
+            return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -118,8 +115,9 @@ public class ClientDriverUserApi {
             queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
             queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
-            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
-                    .findFirst().map(data -> BaseOutput.successData(data)).orElseGet(() -> BaseOutput.failure("数据不存在"));
+//            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
+//                    .findFirst().map(data -> BaseOutput.successData(data)).orElseGet(() -> BaseOutput.failure("数据不存在"));
+            return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -143,16 +141,17 @@ public class ClientDriverUserApi {
             queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
             queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
-            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
-                    .findFirst().map(data -> {
-                        EventMessage msg = new EventMessage();
-                        msg.setId(data.getId());
-                        msg.setReadFlag(MessageStateEnum.READ.getCode());
-                        this.eventMessageService.updateSelective(msg);
-                        return BaseOutput.successData(this.eventMessageService.get(data.getId()));
-                    }).orElseGet(() -> {
-                        return BaseOutput.failure("数据不存在");
-                    });
+//            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
+//                    .findFirst().map(data -> {
+//                        EventMessage msg = new EventMessage();
+//                        msg.setId(data.getId());
+//                        msg.setReadFlag(MessageStateEnum.READ.getCode());
+//                        this.eventMessageService.updateSelective(msg);
+//                        return BaseOutput.successData(this.eventMessageService.get(data.getId()));
+//                    }).orElseGet(() -> {
+//                        return BaseOutput.failure("数据不存在");
+//                    });
+            return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -170,8 +169,8 @@ public class ClientDriverUserApi {
     @RequestMapping(value = "/countReadableEventMessage.api", method = RequestMethod.POST)
     public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
         try {
-            Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
-            return BaseOutput.successData(cnt);
+//            Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
+            return BaseOutput.successData(0);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

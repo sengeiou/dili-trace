@@ -66,8 +66,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     @Autowired
     ImageCertService imageCertService;
     @Autowired
-    MessageService messageService;
-    @Autowired
     UserStoreService userStoreService;
     @Autowired
     TradeRequestMapper tradeRequestMapper;
