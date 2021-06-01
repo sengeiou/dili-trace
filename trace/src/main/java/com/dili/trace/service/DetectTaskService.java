@@ -51,6 +51,7 @@ public class DetectTaskService {
 
     /**
      * 查询检测任务
+     *
      * @param exeMachineNo
      * @param taskCount
      * @param marketId
@@ -64,7 +65,7 @@ public class DetectTaskService {
             List<DetectRequest> detectRequestList = this.registerBillMapper.selectDetectingOrWaitDetectBillId(exeMachineNo, taskCount, marketId);
             if (!detectRequestList.isEmpty()) {
                 List<Long> billIdList = StreamEx.of(detectRequestList).map(DetectRequest::getBillId).toList();
-                List<Long> designateNameBlankBillIdList = StreamEx.of(detectRequestList).filter(dr->{
+                List<Long> designateNameBlankBillIdList = StreamEx.of(detectRequestList).filter(dr -> {
                     return StringUtils.isBlank(dr.getDesignatedName());
                 }).map(DetectRequest::getBillId).toList();
 
@@ -119,6 +120,7 @@ public class DetectTaskService {
         List<RegisterBill> billList = this.findByExeMachineNo(exeMachineNo, taskCount, taskGetParam.getMarketId());
         return DetectTaskApiOutputDto.build(billList);
     }
+
     /**
      * 更新检测状态
      *
@@ -153,6 +155,7 @@ public class DetectTaskService {
 
     /**
      * 更新状态值
+     *
      * @param detectRecord
      */
     private void updateRegisterBill(DetectRecordParam detectRecord) {
@@ -169,7 +172,7 @@ public class DetectTaskService {
             LOGGER.error("上传检测任务结果失败,该单号已完成检测");
             throw new TraceBizException("已完成检测");
         }
-        if(!DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())){
+        if (!DetectStatusEnum.DETECTING.equalsToCode(registerBillItem.getDetectStatus())) {
             LOGGER.error("上传检测任务结果失败,当前状态不能进行检测");
             throw new TraceBizException("当前状态错误");
         }
@@ -188,7 +191,7 @@ public class DetectTaskService {
             // 复检
             /// 1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(DetectTypeEnum.RECHECK.getCode());
-        } else if(DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())){
+        } else if (DetectResultEnum.NONE.equalsToCode(detectRequestItem.getDetectResult())) {
             // 第一次检测
             detectRecord.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         }
@@ -224,12 +227,9 @@ public class DetectTaskService {
 
         this.billService.updateSelective(registerBill);
 
-        this.productStockService.updateDetectFailedWeightByBillIdAfterDetect(registerBill.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId());
 
     }
 
-
-
-    
 
 }
