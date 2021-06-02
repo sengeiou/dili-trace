@@ -1,23 +1,37 @@
-<#bodyOrigin>
-<style>
-    .fileimg-box{
-        display:inline-block;
-        margin: 5px;
-        width:8%;
-    }
-    .fileimg-box img{
-        display:inline-block;
-        vertical-align: middle;
-        width:100% !important;
-    }
-</style>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>报备单详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="keywords" content="物流,智能,智能流通管理系统" />
+    <meta name="description" content="智能流通管理系统" />
+    <meta name="author" content="农丰时代科技有限公司">
+    <link rel="stylesheet" href="/resources/assets/dep/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/resources/assets/css/widget/common.css" />
+    <link rel="stylesheet" href="/resources/assets/css/widget/layerDialog.css" />
+    <link rel="stylesheet" href="/resources/assets/css/widget/tmsBaseCommon.css" />
+
+    <style>
+        .fileimg-box{
+            display:inline-block;
+            margin: 5px;
+            width:8%;
+        }
+        .fileimg-box img{
+            display:inline-block;
+            vertical-align: middle;
+            width:100% !important;
+        }
+    </style>
+</head>
+
+<body>
+
 <div class="main-container" style="padding: 0">
-    <div class="topicTop">
-        <!--<div class="toppic-title">
-            <span class="topic-title-text maincolor">货品信息详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
-        </div>-->
-    </div>
+
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group row row-cols-3">
@@ -51,17 +65,17 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>业户名称</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.name!}" required readonly/>
                 </div>
-                
+
                 <div class="form-group col">
                     <label class="label-title text-right"><span class="red">&lowast;</span>企业名称</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.corporateName!}" required readonly/>
                 </div>
                 <%if (@filedNameRetMap.containsKey('truckType')){
                 if(filedNameRetMap['truckType'].displayed!0==1){%>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>车牌号</label>
-                        <input type="text" class="form-control input-sm"  value="${registerBill.plate!}" required readonly/>
-                    </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate!}" required readonly/>
+                </div>
                 <%}}%>
 
                 <div class="form-group col">
@@ -78,10 +92,10 @@
                 <%}}%>
                 <%if (@filedNameRetMap.containsKey('measureType')){
                 if(filedNameRetMap['measureType'].displayed!0==1&&@filedNameRetMap.get('measureType').getAvailableValueList().contains('20')&&registerBill.measureType==20){%>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>重量/${registerBill.weightUnitName!}</label>
-                        <input type="text" class="form-control input-sm"  value=" ${registerBill.weight!,'0.00'}" required readonly/>
-                    </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>重量/${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm"  value=" ${registerBill.weight!,'0.00'}" required readonly/>
+                </div>
                 <%}}%>
 
 
@@ -97,18 +111,18 @@
 
                 <%if (@filedNameRetMap.containsKey('measureType')){
                 if(filedNameRetMap['measureType'].displayed!0==1&&@filedNameRetMap.get('measureType').getAvailableValueList().contains('10')&&registerBill.measureType==10){%>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>件数</label>
-                        <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum!){%>${pieceNum}<%}else{%>-<%}%>" required readonly/>
-                    </div>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>件重/${registerBill.weightUnitName!}</label>
-                        <input type="text" class="form-control input-sm" value="<%if(null!= pieceWeight!){%>${pieceWeight}<%}else{%>-<%}%>" required readonly/>
-                    </div>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>合计/${registerBill.weightUnitName!}</label>
-                        <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum! && null!= pieceWeight){%>${pieceNum*pieceWeight}<%}else{%>-<%}%>" required readonly/>
-                    </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>件数</label>
+                    <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum!){%>${pieceNum}<%}else{%>-<%}%>" required readonly/>
+                </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>件重/${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm" value="<%if(null!= pieceWeight!){%>${pieceWeight}<%}else{%>-<%}%>" required readonly/>
+                </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>合计/${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm" value="<%if(null!= pieceNum! && null!= pieceWeight){%>${pieceNum*pieceWeight}<%}else{%>-<%}%>" required readonly/>
+                </div>
                 <%}}%>
 
 
@@ -157,10 +171,10 @@
 
                 <%if (@filedNameRetMap.containsKey('truckTareWeight')){
                 if(filedNameRetMap['truckTareWeight'].displayed!0==1){%>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>皮重/${registerBill.weightUnitName!}</label>
-                        <input type="text" class="form-control input-sm" value="<%if(null!= truckTareWeight!){%>${truckTareWeight,'0.00'}<%}else{%>-<%}%>" required readonly/>
-                    </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>皮重/${registerBill.weightUnitName!}</label>
+                    <input type="text" class="form-control input-sm" value="<%if(null!= truckTareWeight!){%>${truckTareWeight,'0.00'}<%}else{%>-<%}%>" required readonly/>
+                </div>
                 <%}}%>
 
                 <%if (@filedNameRetMap.containsKey('specName')){
@@ -207,10 +221,10 @@
                 <%}}%>
                 <%if (@filedNameRetMap.containsKey('remark')){
                 if(filedNameRetMap['remark'].displayed!0==1){%>
-                    <div class="form-group col">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>备注</label>
-                        <input type="text" class="form-control input-sm" value="${registerBill.remark}" required readonly/>
-                    </div>
+                <div class="form-group col">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>备注</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.remark}" required readonly/>
+                </div>
                 <%}}%>
             </div>
 
@@ -271,75 +285,68 @@
                     <!-- 表格后的统计 end -->
                 </div>
             </div>
-           <% for(imageCertTypeEnum in imageCertTypeEnumList){%>
-                <div class="form-item-group">
-                    <h4 class="form-item-title">${imageCertTypeEnum.name}</h4>
-                    <%for(img in @registerBill.getGroupedImageCertList().get(imageCertTypeEnum)){%>
-                    <div class="fileimg-box"  >
-                        <img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
-                    </div>
-                    <%}%>
+            <% for(imageCertTypeEnum in imageCertTypeEnumList){%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">${imageCertTypeEnum.name}</h4>
+                <%for(img in @registerBill.getGroupedImageCertList().get(imageCertTypeEnum)){%>
+                <div class="fileimg-box"  >
+                    <img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
                 </div>
+                <%}%>
+            </div>
             <% }%>
 
         </form>
     </div>
 
 </div>
-</#bodyOrigin>
+
+</body>
+
+<script type="text/javascript" src="/resources/easyui/js/jquery-3.2.1.min.js"></script>
+<script src="/resources/assets/dep/bootstrap/js/bootstrap.min.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+</html>
 <style>
-.layui-layer-btn0{
-border:1px solid #dedede!important;
-background-color:#f1f1f1!important;
-color:#333!important;
-}
+    .layui-layer-btn0{
+        border:1px solid #dedede!important;
+        background-color:#f1f1f1!important;
+        color:#333!important;
+    }
 
 </style>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script>
-	function showCheckSheet(checkSheetId){
-		var url="${contextPath}/checkSheet/view.html?id="+checkSheetId;
-		$(window.parent.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
-	}
-	function rotateImg(angle){
-		$('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
-	}
+    function showCheckSheet(checkSheetId){
+        var url="${contextPath}/checkSheet/view.html?id="+checkSheetId;
+        $(window.parent.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
+    }
+    function rotateImg(angle){
+        $('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
+    }
     $('.show-image').on('click', function () {
-    	debugger;
+        debugger;
         var url = $(this).attr('src');
-       // url='http://gss0.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/241f95cad1c8a786d814d6eb6709c93d70cf501c.jpg'
+        // url='http://gss0.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/241f95cad1c8a786d814d6eb6709c93d70cf501c.jpg'
         if(url){
             layer.open({
                 title:'图片',
                 type: 1,
                 skin: 'layui-layer-rim',
-               // closeBtn: 2,
+                // closeBtn: 2,
                 btn:["顺时针旋转","逆时针旋转"],
                 btnAlign: 'c',
                 area: ['90%', '90%'], //宽高
                 content: '<div id="cropContainer" style="text-align:center"><img id="showedImg"   src="' + url + '" alt="" class="show-image-zoom"></div>'
-            ,btn1:function(){
-            	rotateImg(90);
-            	return false;
-            },btn2:function(){
-            	rotateImg(-90);
-            	return false;
-            }});
+                ,btn1:function(){
+                    rotateImg(90);
+                    return false;
+                },btn2:function(){
+                    rotateImg(-90);
+                    return false;
+                }});
         }
     });
-    /*$('.imageUpload,.show-img').on('click', function () {
-        var url = $(this).find("img").attr('src');
-        if(url){
-            layer.open({
-                title:'图片',
-                type: 1,
-                skin: 'layui-layer-rim',
-                closeBtn: 2,
-                area: ['90%', '90%'], //宽高
-                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-            });
-        }
-    });*/
 
     $('.ssr-view').on('click', function () {
         let tradeId = $(this).attr('data-trade-id');
