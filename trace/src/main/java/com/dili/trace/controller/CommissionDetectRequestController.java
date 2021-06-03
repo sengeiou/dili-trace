@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -7,6 +8,7 @@ import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.CreateListBillParam;
@@ -17,10 +19,12 @@ import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.BeanMapUtil;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
@@ -41,6 +45,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -65,7 +70,7 @@ public class CommissionDetectRequestController {
     @Autowired
     DetectRecordService detectRecordService;
     @Autowired
-    ImageCertService imageCertService;
+    SgRegisterBillService registerBillService;
     @Autowired
     TradeTypeService tradeTypeService;
     @Autowired
@@ -76,6 +81,13 @@ public class CommissionDetectRequestController {
     UsualAddressService usualAddressService;
     @Autowired
     FieldConfigDetailService fieldConfigDetailService;
+    @Autowired
+    RegisterTallyAreaNoService registerTallyAreaNoService;
+    @Autowired
+    UpStreamService upStreamService;
+
+    @Autowired
+    EnumService enumService;
 
     /**
      * 跳转到DetectRequest页面
@@ -136,7 +148,20 @@ public class CommissionDetectRequestController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.getAvaiableBill(id).orElse(null);
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
+
+        Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
+                .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
+        modelMap.put("filedNameRetMap", filedNameRetMap);
+
+        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+
+
+        List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
+        modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);
+
+        RegisterBill item = billService.get(id);
         if (item == null) {
             modelMap.put("registerBill", item);
             return "customerDetectRequest/view";
@@ -172,13 +197,25 @@ public class CommissionDetectRequestController {
             condition.setRegisterBillCode(item.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
-
         List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
+        if (null != item.getUpStreamId()) {
+            UpStream upStream = upStreamService.get(item.getUpStreamId());
+            String upStreamName = Optional.ofNullable(upStream).orElse(new UpStream()).getName();
+            modelMap.put("upStreamName", upStreamName);
+        }
 
-        RegisterBillOutputDto registerBill = buildRegisterBill(id);
-        modelMap.put("registerBill", registerBill);
+//        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+//        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
+
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
+        item.setImageCertList(imageCerts);
+
+        RegisterBillOutputDto bill = RegisterBillOutputDto.build(item,Lists.newArrayList());
+        List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(bill.getBillId(), BillTypeEnum.REGISTER_BILL);
+        bill.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
+        modelMap.put("registerBill", bill);
 
         return "customerDetectRequest/view";
     }
@@ -191,7 +228,7 @@ public class CommissionDetectRequestController {
         RegisterBill item = billService.get(billId);
         RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
         BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
-        List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.COMMISSION_BILL);
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCertList(imageCerts);
         return registerBill;
     }
@@ -223,7 +260,7 @@ public class CommissionDetectRequestController {
     @RequestMapping(value = "/create.html")
     public String create(ModelMap modelMap) {
         modelMap.put("citys", this.queryCitys());
-        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
+        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
         modelMap.put("currentFirm", currentFirm);
         FieldConfigModuleTypeEnum moduleType=FieldConfigModuleTypeEnum.DETECT_REQUEST;
         Map<String, FieldConfigDetailRetDto>filedNameRetMap=   StreamEx.of(  this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(),moduleType))
