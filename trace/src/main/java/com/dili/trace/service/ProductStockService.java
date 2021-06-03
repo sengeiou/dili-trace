@@ -12,6 +12,7 @@ import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.dto.ret.TradeDetailRetDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
@@ -183,13 +184,11 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
 
         TradeDetail tdq = new TradeDetail();
         tdq.setBillId(billId);
-        tdq.setDetectResult(detectResultEnum.getCode());
         Map<Long, List<TradeDetail>> productIdTradeDetailListMap = StreamEx.of(StreamEx.of(this.tradeDetailService.listByExample(tdq))).groupingBy(TradeDetail::getProductStockId);
 
         return EntryStream.of(productIdTradeDetailListMap).mapKeyValue((productStockId, tradeDetailList) -> {
             int rowCount = StreamEx.of((tradeDetailList)).mapToInt(tradeDetail -> {
                 TradeDetail upTD = new TradeDetail();
-                upTD.setDetectResult(detectResultEnum.getCode());
                 upTD.setId(tradeDetail.getId());
                 if (DetectResultEnum.FAILED == detectResultEnum) {
                     upTD.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
@@ -221,10 +220,10 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         });
 
 
-        Map<Boolean, TradeDetail> mappedSumData = StreamEx.of(this.tradeDetailService.groupSumWeightByProductStockId(productStockId)).mapToEntry(item -> {
+        Map<Boolean, TradeDetailRetDto> mappedSumData = StreamEx.of(this.tradeDetailService.groupSumWeightByProductStockId(productStockId)).mapToEntry(item -> {
             return !DetectResultEnum.FAILED.equalsToCode(item.getDetectResult());
         }, Function.identity()).mapValues(list -> {
-            TradeDetail identity = new TradeDetail();
+            TradeDetailRetDto identity = new TradeDetailRetDto();
             identity.setStockWeight(BigDecimal.ZERO);
             identity.setTotalWeight(BigDecimal.ZERO);
             identity.setSoftWeight(BigDecimal.ZERO);
@@ -236,8 +235,8 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
             });
         }).toMap();
 
-        TradeDetail succeed = mappedSumData.get(true);
-        TradeDetail failed = mappedSumData.get(false);
+        TradeDetailRetDto succeed = mappedSumData.get(true);
+        TradeDetailRetDto failed = mappedSumData.get(false);
 
 
         BigDecimal softWeight = StreamEx.of(succeed, failed).nonNull().map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);

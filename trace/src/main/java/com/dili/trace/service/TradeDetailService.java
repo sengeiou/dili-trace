@@ -17,6 +17,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.TradeDto;
+import com.dili.trace.dto.ret.TradeDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.github.pagehelper.Page;
@@ -410,7 +411,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
      * @param productStockId
      * @return
      */
-    public List<TradeDetail> groupSumWeightByProductStockId(Long productStockId) {
+    public List<TradeDetailRetDto> groupSumWeightByProductStockId(Long productStockId) {
         if (productStockId == null) {
             return Lists.newArrayList();
         }

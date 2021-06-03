@@ -7,6 +7,7 @@ import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.ret.TradeDetailRetDto;
 import org.apache.ibatis.annotations.Param;
 
 public interface TradeDetailMapper extends MyMapper<TradeDetail> {
@@ -22,5 +23,5 @@ public interface TradeDetailMapper extends MyMapper<TradeDetail> {
      * @param tradeDetail
      * @return
      */
-    public List<TradeDetail> groupSumWeightByProductStockId(TradeDetail tradeDetail);
+    public List<TradeDetailRetDto> groupSumWeightByProductStockId(TradeDetail tradeDetail);
 }

@@ -108,7 +108,7 @@
 
 
   <select id="groupSumWeightByProductStockId" parameterType="com.dili.trace.domain.TradeDetail"
-          resultType="com.dili.trace.domain.TradeDetail">
+          resultType="com.dili.trace.dto.ret.TradeDetailRetDto">
     SELECT detect_request.detect_result,sum(stock_weight)as stock_weight,sum(total_weight) as total_weight,sum(soft_weight) as soft_weight
     from trade_detail
     inner join register_bill on trade_detail.bill_id=register_bill.id

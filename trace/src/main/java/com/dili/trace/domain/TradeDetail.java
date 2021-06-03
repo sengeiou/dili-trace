@@ -193,12 +193,6 @@ public class TradeDetail extends BaseDomain {
     @Column(name = "`soft_weight`")
     private BigDecimal softWeight;
 
-    /**
-     * 检测结果
-     */
-    @Column(name = "`detect_result`")
-    private Integer detectResult;
-
 
     /**
      * 车牌
@@ -236,14 +230,6 @@ public class TradeDetail extends BaseDomain {
     @ApiModelProperty(value = "第三方库存主键")
     @Column(name = "`third_party_stock_id`")
     private Long thirdPartyStockId;
-
-    public Integer getDetectResult() {
-        return detectResult;
-    }
-
-    public void setDetectResult(Integer detectResult) {
-        this.detectResult = detectResult;
-    }
 
     @Transient
     public String getWeightUnitName() {
