@@ -6,7 +6,6 @@ import com.dili.common.annotation.Role;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
 import com.dili.trace.dto.TaskGetParam;

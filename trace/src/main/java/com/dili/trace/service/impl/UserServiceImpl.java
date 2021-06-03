@@ -265,7 +265,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
 
     @Override
     public UserInfo findByTallyAreaNo(String tallyAreaNo, Long marketId) {
-        UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+        UserTallyArea query = new UserTallyArea();
         query.setTallyAreaNo(tallyAreaNo);
         TallyingArea tallyingArea = tallyingAreaRpcService.findCustomerByIdOrEx(tallyAreaNo, marketId);
 

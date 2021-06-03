@@ -8,7 +8,6 @@ import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.TraceCustomer;
 import com.dili.trace.dto.CustomerExtendOutPutDto;
 import com.dili.trace.rpc.dto.AccountGetListResultDto;
@@ -82,7 +81,7 @@ public class CustomerController {
         if (StrUtil.isBlank(query.getKeyword()) && query.getId() == null) {
             return BaseOutput.success().setData(new ArrayList<>(0));
         }
-        Firm firm = uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm firm = uapRpcService.getCurrentFirmOrNew();
         if (query.getId() != null) {
             return BaseOutput.success().setData(this.extCustomerService.querySellersByCustomerId(query.getId(), firm));
         } else if (StringUtils.isNotBlank(query.getKeyword())) {
@@ -105,7 +104,7 @@ public class CustomerController {
         if (query.getId() == null) {
             return BaseOutput.success().setData(new ArrayList<>(0));
         }
-        Firm firm = uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm firm = uapRpcService.getCurrentFirmOrNew();
         query.setPage(1);
         query.setRows(50);
         query.setMarketId(firm.getId());

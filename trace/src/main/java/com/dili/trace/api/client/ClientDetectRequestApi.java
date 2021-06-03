@@ -10,7 +10,6 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestInputDto;

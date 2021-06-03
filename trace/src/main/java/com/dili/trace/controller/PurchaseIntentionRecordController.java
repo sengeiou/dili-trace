@@ -15,6 +15,7 @@ import com.dili.trace.service.MarketService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.FirmDto;
@@ -107,7 +108,7 @@ public class PurchaseIntentionRecordController {
      */
     @RequestMapping(value = "/add.html", method = RequestMethod.GET)
     public String add(ModelMap modelMap) {
-        User userItem = DTOUtils.newDTO(User.class);
+        User userItem = TraceUtil.newDTO(User.class);
         modelMap.put("userItem", userItem);
         return "purchaseIntentionRecord/add";
     }
@@ -133,7 +134,7 @@ public class PurchaseIntentionRecordController {
      */
     @RequestMapping(value = "/add_buyer.html", method = RequestMethod.GET)
     public String addBuyer(ModelMap modelMap) throws Exception {
-        FirmDto firmDto = DTOUtils.newDTO(FirmDto.class);
+        FirmDto firmDto = TraceUtil.newDTO(FirmDto.class);
         firmDto.setDeleted(false);
         firmDto.setFirmState(EnabledStateEnum.ENABLED.getCode());
         BaseOutput<List<Firm>> baseOutput = firmRpc.listByExample(firmDto);

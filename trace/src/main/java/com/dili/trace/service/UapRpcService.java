@@ -2,9 +2,11 @@ package com.dili.trace.service;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.ReflectionUtils;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.rpc.service.FirmRpcService;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.glossary.SystemType;
@@ -98,7 +100,17 @@ public class UapRpcService {
         }
 
     }
+    /**
+     * 查询当前登录用户所属市场信息
+     *
+     * @return
+     */
+    public Firm getCurrentFirmOrNew() {
+        return StreamEx.of(this.getCurrentUserTicket()).flatCollection(u -> {
+            return StreamEx.of(this.firmRpcService.getFirmById(u.getFirmId())).toList();
+        }).findFirst().orElse(TraceUtil.newDTO(Firm.class));
 
+    }
     /**
      * 查询当前登录用户所属市场信息
      *

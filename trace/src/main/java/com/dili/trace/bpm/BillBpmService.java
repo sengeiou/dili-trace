@@ -25,7 +25,7 @@ public class BillBpmService {
             throw new TraceBizException("流程启动失败，请联系管理员");
         }
         ProcessInstanceMapping instanceMapping = out.getData();
-        ProcessInstanceDto dto = DTOUtils.newDTO(ProcessInstanceDto.class);
+        ProcessInstanceDto dto = TraceUtil.newDTO(ProcessInstanceDto.class);
 
         dto.setProcessDefinitionId(instanceMapping.getProcessDefinitionId());
         dto.setProcessInstanceId(instanceMapping.getProcessInstanceId());

@@ -10,7 +10,6 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;

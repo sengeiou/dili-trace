@@ -120,7 +120,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 		if (item == null) {
 			return Optional.empty();
 		}
-		UserTallyArea condition = DTOUtils.newDTO(UserTallyArea.class);
+		UserTallyArea condition = new UserTallyArea();
 		condition.setUserId(userId);
 
 		List<UserTallyArea> tallyAreaList = this.tallyAreaService.listByExample(condition);

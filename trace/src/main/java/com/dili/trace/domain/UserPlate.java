@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -17,7 +18,7 @@ import javax.persistence.Id;
  * This file was generated on 2019-10-11 10:05:11.
  */
 @Table(name = "`user_plate`")
-public interface UserPlate extends IBaseDomain {
+public class UserPlate extends BaseDomain {
     /**
      * ID
      * @return
@@ -25,53 +26,77 @@ public interface UserPlate extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+    private Long id;
 
-    void setId(Long id);
 
     /**
      * 车牌号
      * @return
      */
     @Column(name = "`plate`")
-    @FieldDef(label="车牌号", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getPlate();
-
-    void setPlate(String plate);
+    private String plate;
 
     /**
      * 用户id
      * @return
      */
     @Column(name = "`user_id`")
-    @FieldDef(label="用户id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getUserId();
+    private Long userId;
 
-    void setUserId(Long userId);
 
     /**
      * 创建时间
      * @return
      */
     @Column(name = "`created`")
-    @FieldDef(label="created")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getCreated();
-
-    void setCreated(Date created);
+    private Date created;
 
     /**
      * 修改时间
      * @return
      */
     @Column(name = "`modified`")
-    @FieldDef(label="modified")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getModified();
+    private Date modified;
 
-    void setModified(Date modified);
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPlate() {
+        return plate;
+    }
+
+    public void setPlate(String plate) {
+        this.plate = plate;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 }

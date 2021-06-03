@@ -8,14 +8,21 @@ import com.dili.trace.domain.UserPlate;
 /**
  * 客户车牌查询DTO
  */
-public interface UserPlateQueryDto extends UserPlate {
+public class UserPlateQueryDto extends UserPlate {
     /**
      * 车牌号模糊查询
+     *
      * @return
      */
     @Column(name = "`plate`")
-	@Like(value = "RIGHT")
-    String getLikePlate();
+    @Like(value = "RIGHT")
+    private String likePlate;
 
-    void setLikePlate(String likePlate);
+    public String getLikePlate() {
+        return likePlate;
+    }
+
+    public void setLikePlate(String likePlate) {
+        this.likePlate = likePlate;
+    }
 }

@@ -90,7 +90,7 @@ public class ApproverInfoService extends BaseServiceImpl<ApproverInfo, Long> {
         String oldSignBase64 = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
 
         if (!signBase64.equals(oldSignBase64)) {
-            Base64Signature condition = DTOUtils.newDTO(Base64Signature.class);
+            Base64Signature condition = new Base64Signature();
             condition.setApproverInfoId(approverInfo.getId());
             this.base64SignatureService.deleteByExample(condition);
 
@@ -126,7 +126,7 @@ public class ApproverInfoService extends BaseServiceImpl<ApproverInfo, Long> {
 
         for (int start = 0; start < signBase64.length(); start += MAX_LENGTH) {
             String base64 = signBase64.substring(start, Math.min(signBase64.length(), start + MAX_LENGTH));
-            Base64Signature base64Signature = DTOUtils.newDTO(Base64Signature.class);
+            Base64Signature base64Signature = new Base64Signature();
             base64Signature.setBase64(base64);
             base64Signature.setApproverInfoId(approverInfoId);
             base64Signature.setOrderNum(base64SignatureList.size());

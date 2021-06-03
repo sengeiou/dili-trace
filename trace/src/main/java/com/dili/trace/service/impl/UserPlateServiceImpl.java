@@ -25,7 +25,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 		if (userId == null) {
 			return new ArrayList<>(0);
 		}
-		UserPlate query = DTOUtils.newDTO(UserPlate.class);
+		UserPlate query = new UserPlate();
 		query.setUserId(userId);
 		List<UserPlate> list = this.listByExample(query);
 		return list;
@@ -43,13 +43,13 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 //
 //	@Override
 //	public int deleteAndInsertUserPlate(Long userId, List<String> plateList) {
-//		UserPlate example = DTOUtils.newDTO(UserPlate.class);
+//		UserPlate example = new UserPlate();
 //		example.setUserId(userId);
 //		this.deleteByExample(example);
 //
 //		List<UserPlate> list =plateList.stream().map(p->{
 //
-//			UserPlate item = DTOUtils.newDTO(UserPlate.class);
+//			UserPlate item = new UserPlate();
 //			item.setPlate(p.toUpperCase());
 //			item.setUserId(userId);
 //			item.setModified(new Date());
@@ -77,7 +77,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 	@Override
 	public int checkAndInsertUserPlate(Long userId, String plate) {
 		if(userId!=null&&plate!=null){
-			UserPlate item = DTOUtils.newDTO(UserPlate.class);
+			UserPlate item = new UserPlate();
 			item.setPlate(plate.toUpperCase());
 			item.setUserId(userId);
 			boolean exists=this.listByExample(item).size()>0;
@@ -90,7 +90,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 
 //	@Override
 //	public List<UserPlate> findUserPlateByTallyAreaNo(String tallyAreaNo) {
-//		UserTallyArea domain=DTOUtils.newDTO(UserTallyArea.class);
+//		UserTallyArea domain=new UserTallyArea();
 //		domain.setTallyAreaNo(tallyAreaNo);
 //		Set<Long> userIdSet=userTallyAreaService.listByExample(domain).stream().map(UserTallyArea::getUserId).collect(Collectors.toSet());
 //		if(!userIdSet.isEmpty()) {

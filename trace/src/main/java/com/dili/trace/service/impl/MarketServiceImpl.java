@@ -8,6 +8,7 @@ import com.dili.trace.enums.MarketEnum;
 import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.MarketService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.dto.FirmDto;
 import one.util.streamex.StreamEx;
@@ -94,7 +95,7 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public Optional<List<Market>> getMarkets() {
-        Optional<List<Firm>> res = this.firmRpcService.getFirms(DTOUtils.newDTO(FirmDto.class));
+        Optional<List<Firm>> res = this.firmRpcService.getFirms(TraceUtil.newDTO(FirmDto.class));
         List<Firm> firms = res.orElse(new ArrayList<>());
         // 过滤掉非激活和集团市场
         List<Market> filteredFirms = StreamEx.of(firms).filter(f -> f.getFirmState() == 1 && !"group".equals(f.getCode())).map(f -> {

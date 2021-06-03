@@ -3,10 +3,8 @@ package com.dili.trace.controller;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
@@ -207,7 +205,7 @@ public class RegisterHeadController {
         Map<Long, List<String>> tallyAreaNoListMap = this.registerTallyAreaNoService.findTallyAreaNoByRegisterHeadIdList(registerHeadIdList);
 
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
         List<Map<Object, Object>> dataList = StreamEx.of(list).map(rh -> {

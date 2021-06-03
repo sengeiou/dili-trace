@@ -9,6 +9,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.rpc.service.ProductRpcService;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -176,7 +177,7 @@ public class ProductRpcServiceTest extends AutoWiredBaseTest {
     public void lock() {
 
         Mockito.doAnswer(invocation -> {
-            Firm firm = DTOUtils.newDTO(Firm.class);
+            Firm firm = TraceUtil.newDTO(Firm.class);
             firm.setId(invocation.getArgument(0));
             firm.setName("杭州水产");
             return Optional.of(firm);
@@ -190,7 +191,7 @@ public class ProductRpcServiceTest extends AutoWiredBaseTest {
     @Test
     public void release() {
         Mockito.doAnswer(invocation -> {
-            Firm firm = DTOUtils.newDTO(Firm.class);
+            Firm firm = TraceUtil.newDTO(Firm.class);
             firm.setId(invocation.getArgument(0));
             firm.setName("杭州水产");
             return Optional.of(firm);

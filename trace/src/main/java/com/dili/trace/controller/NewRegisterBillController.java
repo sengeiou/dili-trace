@@ -1,7 +1,6 @@
 package com.dili.trace.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -21,8 +20,8 @@ import com.dili.trace.rpc.dto.AccountGetListResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.BeanMapUtil;
-import com.dili.trace.util.ImageCertUtil;
 import com.dili.trace.util.MaskUserInfo;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -121,7 +120,7 @@ public class NewRegisterBillController {
         query.setBillCreatedEnd(DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
         query.setBillCreatedStart(DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
         modelMap.put("query", query);
-        UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
+        UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(TraceUtil.newDTO(UserTicket.class));
         modelMap.put("user", user);
         modelMap.put("isDeleted", YesOrNoEnum.NO.getCode());
         //加载配置项，以便控制页面查询条件、列显示与否
@@ -184,7 +183,7 @@ public class NewRegisterBillController {
         modelMap.put("tradeTypes", tradeTypeService.findAll());
         modelMap.put("citys", this.queryCitys());
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
@@ -297,7 +296,7 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(Long id, ModelMap modelMap) {
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
@@ -660,7 +659,7 @@ public class NewRegisterBillController {
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))

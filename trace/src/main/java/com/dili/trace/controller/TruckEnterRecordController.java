@@ -26,6 +26,7 @@ import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -185,7 +186,7 @@ public class TruckEnterRecordController {
      */
     @RequestMapping(value = "/add_driver.html", method = RequestMethod.GET)
     public String addBuyer(ModelMap modelMap) throws Exception {
-        FirmDto firmDto = DTOUtils.newDTO(FirmDto.class);
+        FirmDto firmDto = TraceUtil.newDTO(FirmDto.class);
         firmDto.setDeleted(false);
         firmDto.setFirmState(EnabledStateEnum.ENABLED.getCode());
         BaseOutput<List<Firm>> baseOutput = firmRpc.listByExample(firmDto);

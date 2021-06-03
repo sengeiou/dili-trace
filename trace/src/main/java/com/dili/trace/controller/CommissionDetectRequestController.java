@@ -7,7 +7,6 @@ import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.dto.CreateListBillParam;
@@ -22,7 +21,6 @@ import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
-import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
@@ -225,7 +223,7 @@ public class CommissionDetectRequestController {
     @RequestMapping(value = "/create.html")
     public String create(ModelMap modelMap) {
         modelMap.put("citys", this.queryCitys());
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         modelMap.put("currentFirm", currentFirm);
         FieldConfigModuleTypeEnum moduleType=FieldConfigModuleTypeEnum.DETECT_REQUEST;
         Map<String, FieldConfigDetailRetDto>filedNameRetMap=   StreamEx.of(  this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(),moduleType))

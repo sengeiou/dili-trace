@@ -3,6 +3,7 @@ package com.dili.trace.rpc.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.dto.FirmDto;
 import com.dili.uap.sdk.rpc.FirmRpc;
@@ -33,7 +34,7 @@ public class FirmRpcService {
      */
     public List<Firm> findAllFirm() {
 
-        FirmDto dto = DTOUtils.newDTO(FirmDto.class);
+        FirmDto dto = TraceUtil.newDTO(FirmDto.class);
         dto.setDeleted(false);
 
         try {

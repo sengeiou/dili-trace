@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.dto.DepartmentDto;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
@@ -38,7 +39,7 @@ public class DepartmentRpcService {
         if (firmId == null) {
             return Optional.empty();
         }
-        DepartmentDto query = DTOUtils.newDTO(DepartmentDto.class);
+        DepartmentDto query = TraceUtil.newDTO(DepartmentDto.class);
         query.setNameLike(DetectDepartmentKeyWord);
         query.setFirmId(firmId);
         try {

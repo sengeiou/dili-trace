@@ -7,7 +7,6 @@ import com.dili.trace.events.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
@@ -290,7 +289,7 @@ public class CustomerDetectRequestController {
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "billId") Long billId
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
 
-        Firm currentFirm = this.uapRpcService.getCurrentFirm().orElse(DTOUtils.newDTO(Firm.class));
+        Firm currentFirm = this.uapRpcService.getCurrentFirmOrNew();
         FieldConfigModuleTypeEnum moduleType = FieldConfigModuleTypeEnum.REGISTER;
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))

@@ -4,6 +4,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.util.MarketUtil;
+import com.dili.trace.util.TraceUtil;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.DepartmentDto;
@@ -49,7 +50,7 @@ public class UserRpcService {
                 return new TraceBizException("当前登录用户所属市场没有检测部门。");
             });
 
-            UserQuery user = DTOUtils.newDTO(UserQuery.class);
+            UserQuery user = TraceUtil.newDTO(UserQuery.class);
             user.setDepartmentId(department.getId());
             user.setKeyword(likeUserName);
             BaseOutput<List<User>> result = userRpc.listByExample(user);
