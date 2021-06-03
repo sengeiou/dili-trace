@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.util.ImageCertUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
@@ -42,16 +42,17 @@ public class RegisterBillOutputDto extends RegisterBill {
      */
     private Integer detectType;
 
-    @JSONField(serialize = false)
+    @JsonIgnore
     public String getHandleResultUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.Handle_Result);
     }
 
-    @JSONField(serialize = false)
+    @JsonIgnore
     public String getOriginCertifiyUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.ORIGIN_CERTIFIY);
     }
-    @JSONField(serialize = false)
+
+    @JsonIgnore
     public String getDetectReportUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.DETECT_REPORT);
     }
@@ -62,20 +63,22 @@ public class RegisterBillOutputDto extends RegisterBill {
                         .stream().map(ImageCert::getUid).filter(StringUtils::isNotBlank)
                         .collect(Collectors.joining(","));
     }
-    @JSONField(serialize = false)
+
+    @JsonIgnore
     public Map<ImageCertTypeEnum, List<ImageCert>> getGroupedImageCertList() {
         return ImageCertUtil.groupedImageCertList(this.getImageCertList());
     }
-    @JSONField(serialize = false)
+
+    @JsonIgnore
     public Map<ImageCertTypeEnum, List<String>> getGroupedImageUidList() {
 
-        Map<ImageCertTypeEnum, List<String>>map= StreamEx.ofNullable(this.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(item->item.getCertType()!=null)
-                .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), item->item.getUid()).filterKeys(Objects::nonNull)
+        Map<ImageCertTypeEnum, List<String>> map = StreamEx.ofNullable(this.getImageCertList()).flatCollection(Function.identity()).nonNull().filter(item -> item.getCertType() != null)
+                .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), item -> item.getUid()).filterKeys(Objects::nonNull)
                 .grouping();
-        StreamEx.of(ImageCertTypeEnum.values()).filter(e->{
+        StreamEx.of(ImageCertTypeEnum.values()).filter(e -> {
             return !map.containsKey(e);
-        }).forEach(e->{
-            map.put(e,new ArrayList<>());
+        }).forEach(e -> {
+            map.put(e, new ArrayList<>());
         });
         return map;
     }

@@ -1,6 +1,5 @@
 package com.dili.trace.dto.thirdparty.report;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author asa.lee
@@ -20,7 +19,6 @@ public class ReportUserImgDto{
         this.credentialName = credentialName;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public String getEnd() {
         return end;
     }
@@ -29,7 +27,6 @@ public class ReportUserImgDto{
         this.end = end;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public String getStart() {
         return start;
     }

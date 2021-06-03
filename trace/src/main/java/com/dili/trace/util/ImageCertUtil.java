@@ -1,6 +1,5 @@
 package com.dili.trace.util;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import one.util.streamex.StreamEx;

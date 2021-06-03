@@ -1,6 +1,7 @@
 package com.dili.trace.dto.thirdparty.report;
 
-import com.alibaba.fastjson.annotation.JSONField;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 
@@ -13,7 +14,7 @@ public class ReportOrderDetailDto {
     private String thirdOrderParentId;// 上级订单id(溯源关联用)
     private String thirdOrderDetailParentId;// 上级订单明细id(溯源关联用)
     private String unitName;// 单位
-    @JSONField(serialize = false)
+    @JsonIgnore
     private String requestId; // 订单id
 
     public String getDetailId() {

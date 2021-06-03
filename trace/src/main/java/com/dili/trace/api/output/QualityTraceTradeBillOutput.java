@@ -2,9 +2,7 @@ package com.dili.trace.api.output;
 
 import java.util.Date;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.trace.glossary.BillDetectStateEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 public class QualityTraceTradeBillOutput {
@@ -18,8 +16,6 @@ public class QualityTraceTradeBillOutput {
      * 检测记录时间
      */
     @ApiModelProperty(value = "检测记录时间")
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date latestDetectTime;
 
     /**

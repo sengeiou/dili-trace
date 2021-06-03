@@ -10,10 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
 import com.dili.trace.enums.WeightUnitEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -31,7 +31,7 @@ public class ProductStock extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @JSONField(serialize = false)
+    @JsonIgnore
     private Long id;
 
     /**

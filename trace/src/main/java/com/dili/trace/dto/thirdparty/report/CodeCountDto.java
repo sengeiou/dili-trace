@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.trace.enums.ReportDtoTypeEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CodeCountDto implements ReportDto {
@@ -12,7 +11,6 @@ public class CodeCountDto implements ReportDto {
     private Integer yellowCount;// 黄码数量
     private Integer redCount;// 红码数量
     private List<WaringInfoDto> warningInfo;// 预警数据明细
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 更新日期(格式:yyyy-MM-dd hh:mm:ss)
 
     @JsonIgnore

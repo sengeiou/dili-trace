@@ -8,10 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
 import com.dili.ss.domain.annotation.Like;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -30,7 +30,7 @@ public class TallyAreaNo extends BaseDomain {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @JSONField(serialize = false)
+    @JsonIgnore
 	private Long id;
 
     /**

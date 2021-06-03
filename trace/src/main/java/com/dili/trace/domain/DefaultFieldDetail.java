@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

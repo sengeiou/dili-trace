@@ -162,7 +162,6 @@ public class CreateRegisterHeadInputDto {
     /**
      * 预计到场时间
      */
-
     private LocalDateTime arrivalDatetime;
 
 

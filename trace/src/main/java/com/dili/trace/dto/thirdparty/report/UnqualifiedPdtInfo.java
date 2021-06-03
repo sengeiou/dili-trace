@@ -3,10 +3,8 @@ package com.dili.trace.dto.thirdparty.report;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class UnqualifiedPdtInfo implements ReportDto {
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 数据日期(格式:yyyy-MM-dd hh:mm:ss)
     private String stallNo;// 摊位号
     private String subjectName;// 经营主体名称

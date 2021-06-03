@@ -3,13 +3,11 @@ package com.dili.trace.dto.thirdparty.report;
 import java.util.Date;
 
 import com.dili.trace.enums.ReportDtoTypeEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MarketCountDto implements ReportDto {
     private Integer subjectCount;// 经营户备案数量
     private Integer pdtCount;// 品种数量
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 更新日期(格式:yyyy-MM-dd hh:mm:ss)
 
 

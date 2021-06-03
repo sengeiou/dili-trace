@@ -1,6 +1,5 @@
 package com.dili.trace.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.enums.TradeOrderStatusEnum;
@@ -8,6 +7,7 @@ import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -28,7 +28,7 @@ public class TradeRequest extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @JSONField(serialize = false)
+   @JsonIgnore
     private Long id;
 
     /**
@@ -280,7 +280,6 @@ public class TradeRequest extends BaseDomain {
      * 交易时间
      */
     @Transient
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderDate;
 
     /**

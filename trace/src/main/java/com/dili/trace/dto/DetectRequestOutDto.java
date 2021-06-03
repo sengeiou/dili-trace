@@ -1,8 +1,5 @@
 package com.dili.trace.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.dili.ss.domain.annotation.Like;
-import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
@@ -10,9 +7,6 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -73,21 +67,18 @@ public class DetectRequestOutDto extends DetectRequest {
      * 报备时间
      */
     @Transient
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss" )
     private Date billCreated;
 
     /**
      * 审核时间
      */
     @Transient
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss" )
     private Date billOperationTime;
 
     /**
      * 报备单修改时间
      */
     @Transient
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss" )
     private Date billModified;
 
     /**
@@ -154,7 +145,6 @@ public class DetectRequestOutDto extends DetectRequest {
      * 审核时间
      */
     @Transient
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss" )
     private Date verifyDateTime;
     /**
      * 审核人
@@ -179,7 +169,6 @@ public class DetectRequestOutDto extends DetectRequest {
     @Transient
     private List<String> arrivalTallynos;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm")
     private LocalDateTime arrivalDatetime;
 
     public LocalDateTime getArrivalDatetime() {

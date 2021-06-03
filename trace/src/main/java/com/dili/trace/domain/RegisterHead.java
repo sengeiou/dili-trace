@@ -1,6 +1,5 @@
 package com.dili.trace.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
@@ -333,7 +332,6 @@ public class RegisterHead extends BaseDomain {
      * 预计到场时间
      */
     @Column(name = "`arrival_datetime`")
-    @JSONField(format = "yyyy-MM-dd HH:mm")
     private LocalDateTime arrivalDatetime;
 
     /**

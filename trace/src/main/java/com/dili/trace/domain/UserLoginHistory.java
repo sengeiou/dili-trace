@@ -8,9 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -25,7 +25,7 @@ public class UserLoginHistory extends BaseDomain {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @JSONField(serialize = false)
+    @JsonIgnore
 	private Long id;
 
 

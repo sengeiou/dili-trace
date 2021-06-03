@@ -1,12 +1,10 @@
 package com.dili.trace.dto.thirdparty.report;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
 public class ReportCheckInDto {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date inTime;// 进门时间
     private String marketId;// 市场id
     private String thirdAccId;// 经营户id

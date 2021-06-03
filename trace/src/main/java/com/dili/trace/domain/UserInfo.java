@@ -1,6 +1,5 @@
 package com.dili.trace.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
@@ -107,13 +106,7 @@ public class UserInfo extends BaseDomain {
     @Column(name = "`state`")
     private Integer state;
 
-    /**
-     * 密码
-     */
-//    @ApiModelProperty(value = "密码")
-//    @Column(name = "`password`")
-//    @JSONField(serialize = false)
-//    private String password;
+
 
     /**
      * 删除状态1:正常 0：删除

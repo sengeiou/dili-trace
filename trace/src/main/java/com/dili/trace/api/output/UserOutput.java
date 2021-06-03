@@ -1,7 +1,5 @@
 package com.dili.trace.api.output;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.customer.sdk.domain.Attachment;
 
 /**

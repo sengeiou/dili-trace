@@ -2,7 +2,6 @@ package com.dili.trace.dto.thirdparty.report;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class WaringInfoDto implements ReportDto {
     private String marketName;
@@ -11,7 +10,6 @@ public class WaringInfoDto implements ReportDto {
     private String subjectName;// 经营主体名称
     private String codeStatus;// 码状态（黄码，红码）
     private String warningReason;// 黄码，红码原因
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 更新日期(格式:yyyy-MM-dd hh:mm:ss)
 
     /**

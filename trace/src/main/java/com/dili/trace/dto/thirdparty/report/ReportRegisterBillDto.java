@@ -1,6 +1,5 @@
 package com.dili.trace.dto.thirdparty.report;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,10 +9,8 @@ public class ReportRegisterBillDto {
 
     private String approvalName;// 审核人姓名
     private Integer approvalStatus;// 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date approvalTime;// 审核时间
     private String brand;// 品牌
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date enterTime;// 报备时间
     private String marketId;// 市场id
     private String productionStr;// 产地字符串 省市区之间用-分隔

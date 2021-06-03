@@ -1,8 +1,8 @@
 package com.dili.trace.domain;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
@@ -69,7 +69,7 @@ public class FieldConfigDetail extends BaseDomain {
      * 显示field条件值
      */
     @Column(name = "available_values")
-    @JSONField(serialize = false)
+    @JsonIgnore
     private String availableValues;
 
 

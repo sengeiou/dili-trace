@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.trace.enums.ReportDtoTypeEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportCountDto implements ReportDto {
@@ -17,7 +16,6 @@ public class ReportCountDto implements ReportDto {
     private Integer unqualifiedBatch=0;//今日不合格批次
     private Integer unqualifiedPdtCount=0;//今日不合格品种数量（注意是:品种数量）
     private List<UnqualifiedPdtInfo>unqualifiedPdtInfo;//今日不合格品种数据明细
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 更新日期(格式:yyyy-MM-dd hh:mm:ss)
 
     @JsonIgnore

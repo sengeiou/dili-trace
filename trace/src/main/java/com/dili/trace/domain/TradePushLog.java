@@ -1,8 +1,8 @@
 package com.dili.trace.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.IBaseDomain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -18,7 +18,7 @@ public class TradePushLog extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @JSONField(serialize =false)
+    @JsonIgnore
     private Long id;
 
     /**
