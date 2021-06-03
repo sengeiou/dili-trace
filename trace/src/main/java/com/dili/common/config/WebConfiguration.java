@@ -6,6 +6,7 @@ import com.dili.ss.mvc.converter.JsonHttpMessageConverter;
 import com.dili.trace.interceptor.AddAttributeInterceptor;
 import com.dili.trace.interceptor.SessionInterceptor;
 import com.dili.trace.interceptor.TanentInterceptor;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
@@ -56,23 +57,11 @@ public class WebConfiguration extends WebConfig {
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        Iterator it = converters.iterator();
-        int index = -1;
-        int tmp = 0;
 
-        while (it.hasNext()) {
-            Object obj = it.next();
-            if (obj instanceof JsonHttpMessageConverter) {
-                it.remove();
-                index = tmp;
-            }
-
-            if (index == -1) {
-                ++tmp;
-            }
-        }
-
+        int index = StreamEx.of(converters).select(JsonHttpMessageConverter.class)
+                .mapToInt(converter -> converters.indexOf(converter)).findFirst().orElse(-1);
         if (index != -1) {
+            converters.remove(index);
             converters.add(index, this.mappingJackson2HttpMessageConverter);
         } else {
             converters.add(this.mappingJackson2HttpMessageConverter);
