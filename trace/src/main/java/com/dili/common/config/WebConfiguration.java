@@ -7,6 +7,7 @@ import com.dili.trace.interceptor.AddAttributeInterceptor;
 import com.dili.trace.interceptor.SessionInterceptor;
 import com.dili.trace.interceptor.TanentInterceptor;
 import one.util.streamex.StreamEx;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
@@ -16,7 +17,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,6 +71,34 @@ public class WebConfiguration extends WebConfig {
         } else {
             converters.add(this.mappingJackson2HttpMessageConverter);
         }
+    }
+
+    static class DemoData {
+        private Date myDate = new Date();
+        private LocalDateTime dateTime = LocalDateTime.now();
+
+        public Date getMyDate() {
+            return myDate;
+        }
+
+        public void setMyDate(Date myDate) {
+            this.myDate = myDate;
+        }
+
+        public LocalDateTime getDateTime() {
+            return dateTime;
+        }
+
+        public void setDateTime(LocalDateTime dateTime) {
+            this.dateTime = dateTime;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        System.out.println(mapper.writeValueAsString(new DemoData()));
+
     }
 
 }
