@@ -83,6 +83,14 @@ public class ProductStock extends BaseDomain {
     @Column(name = "`stock_weight`")
     private BigDecimal stockWeight;
 
+
+    /**
+     * 锁定库存重量
+     */
+    @ApiModelProperty(value = "锁定库存重量")
+    @Column(name = "`soft_weight`")
+    private BigDecimal softWeight;
+
     /**
      * 检测失败重量
      */
@@ -388,5 +396,13 @@ public class ProductStock extends BaseDomain {
 
     public void setDetectFailedWeight(BigDecimal detectFailedWeight) {
         this.detectFailedWeight = detectFailedWeight;
+    }
+
+    public BigDecimal getSoftWeight() {
+        return softWeight;
+    }
+
+    public void setSoftWeight(BigDecimal softWeight) {
+        this.softWeight = softWeight;
     }
 }

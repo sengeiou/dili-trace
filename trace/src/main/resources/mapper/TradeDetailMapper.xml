@@ -106,4 +106,16 @@
     ) t order by created desc
   </select>
 
+
+  <select id="groupSumWeightByProductStockId" parameterType="com.dili.trace.domain.TradeDetail"
+          resultType="com.dili.trace.domain.TradeDetail">
+    SELECT detect_request.detect_result,sum(stock_weight)as stock_weight,sum(total_weight) as total_weight,sum(soft_weight) as soft_weight
+    from trade_detail
+    inner join register_bill on trade_detail.bill_id=register_bill.id
+    left JOIN detect_request on register_bill.detect_request_id =detect_request.bill_id
+    where product_stock_id = #{id}
+    group by detect_request.detect_result
+
+  </select>
+
 </mapper>

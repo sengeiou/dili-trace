@@ -158,23 +158,6 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         return this.updateSelective(psUpdatable);
     }
 
-
-
-    /**
-     * 根据billid查询tradedetail
-     *
-     * @param billId
-     * @return
-     */
-    private Map<Long, List<TradeDetail>> findGroupedTradeDetailsByBillId(Long billId) {
-        if (Objects.isNull(billId)) {
-            return Maps.newHashMap();
-        }
-        TradeDetail td = new TradeDetail();
-        td.setBillId(billId);
-        return StreamEx.of(this.tradeDetailService.listByExample(td)).groupingBy(TradeDetail::getProductStockId);
-    }
-
     /**
      * 更新检测结果
      *
@@ -224,39 +207,54 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
 
 
     /**
-     * 更新库存相关数据
+     * 根据相关的tradedetail数据,更新库存productstock相关数据
      *
      * @param productStockId
      * @return
      */
-    private int updateProductStock(Long productStockId) {
+    public int updateProductStock(Long productStockId) {
+        if (productStockId == null) {
+            return 0;
+        }
         ProductStock ps = this.selectByIdForUpdate(productStockId).orElseThrow(() -> {
             return new TraceBizException("库存信息不存在");
         });
+
+
+        Map<Boolean, TradeDetail> mappedSumData = StreamEx.of(this.tradeDetailService.groupSumWeightByProductStockId(productStockId)).mapToEntry(item -> {
+            return !DetectResultEnum.FAILED.equalsToCode(item.getDetectResult());
+        }, Function.identity()).mapValues(list -> {
+            TradeDetail identity = new TradeDetail();
+            identity.setStockWeight(BigDecimal.ZERO);
+            identity.setTotalWeight(BigDecimal.ZERO);
+            identity.setSoftWeight(BigDecimal.ZERO);
+            return StreamEx.of(list).reduce(identity, (t, v) -> {
+                t.setStockWeight(t.getStockWeight().add(v.getStockWeight()));
+                t.setSoftWeight(t.getSoftWeight().add(v.getSoftWeight()));
+                t.setTotalWeight(t.getTotalWeight().add(v.getTotalWeight()));
+                return t;
+            });
+        }).toMap();
+
+        TradeDetail succeed = mappedSumData.get(true);
+        TradeDetail failed = mappedSumData.get(false);
+
+
+        BigDecimal softWeight = StreamEx.of(succeed, failed).nonNull().map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
         TradeDetailQueryDto tdq = new TradeDetailQueryDto();
         tdq.setProductStockId(ps.getProductStockId());
+        tdq.setMinStockWeight(BigDecimal.ZERO);
         tdq.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-        tdq.setMinStockWeight(BigDecimal.ONE);
-
-        BigDecimal stockWeight = BigDecimal.ZERO;
-        BigDecimal detectFailedWeight = BigDecimal.ZERO;
-        int num = 0;
-        for (TradeDetail tradeDetail : this.tradeDetailService.listByExample(tdq)) {
-            if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())) {
-                stockWeight = stockWeight.add(tradeDetail.getStockWeight());
-                num = num + 1;
-            }
-            if (DetectResultEnum.FAILED.equalsToCode(tradeDetail.getDetectResult())) {
-                detectFailedWeight = detectFailedWeight.add(tradeDetail.getStockWeight());
-            }
-        }
-
+        int tradenum = this.tradeDetailService.listByExample(tdq).size();
 
         ProductStock up = new ProductStock();
         up.setId(ps.getId());
-        up.setTradeDetailNum(num);
-        up.setStockWeight(stockWeight);
-        up.setDetectFailedWeight(detectFailedWeight);
+        up.setTradeDetailNum(tradenum);
+        up.setStockWeight(succeed == null ? BigDecimal.ZERO : succeed.getStockWeight());
+        up.setDetectFailedWeight(failed == null ? BigDecimal.ZERO : failed.getTotalWeight());
+        up.setSoftWeight(softWeight);
         return this.updateSelective(up);
     }
 }
