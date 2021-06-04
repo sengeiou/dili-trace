@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -61,6 +65,21 @@ public class TestController {
     @RequestMapping(value = "/test.action", method = {RequestMethod.GET, RequestMethod.POST})
     public BaseOutput test() {
         DemoData rb = new DemoData();
+        rb.getDateTime2().atZone(ZoneId.systemDefault());
         return BaseOutput.successData(rb);
+    }
+
+    /**
+     * SS
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        Date date = new Date();//local (GMT+8)
+        Instant instant = Instant.now();
+        System.out.println(instant);//utf
+        System.out.println(instant.atOffset(ZoneOffset.of("+8")));//GMT+8
+        System.out.println(LocalDateTime.now().atZone(ZoneId.of("Etc/GMT")).toInstant()
+                .atOffset(ZoneOffset.of("+8")));
     }
 }
