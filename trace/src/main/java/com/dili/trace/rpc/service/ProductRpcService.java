@@ -1,7 +1,7 @@
 package com.dili.trace.rpc.service;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;

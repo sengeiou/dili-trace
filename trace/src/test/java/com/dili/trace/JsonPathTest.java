@@ -1,7 +1,7 @@
 package com.dili.trace;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.ImageCertTypeEnum;

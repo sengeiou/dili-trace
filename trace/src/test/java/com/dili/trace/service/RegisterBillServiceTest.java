@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.AutoWiredBaseTest;

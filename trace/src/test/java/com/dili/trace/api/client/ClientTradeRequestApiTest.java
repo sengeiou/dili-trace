@@ -1,7 +1,7 @@
 package com.dili.trace.api.client;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.AutoWiredBaseTest;
@@ -27,7 +27,7 @@ public class ClientTradeRequestApiTest extends AutoWiredBaseTest {
     @Test
     public void testListBuyHistory() {
         List<UserOutput> list = this.tradeRequestService.queryTradeSellerHistoryList(28L);
-        System.out.println(JSON.toJSON(list));
+        System.out.println(JSON.toJSONString(list));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.dili.trace.mq;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.customer.sdk.constants.MqConstant;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.rpc.CustomerRpc;

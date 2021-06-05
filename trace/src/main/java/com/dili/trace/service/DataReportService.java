@@ -3,7 +3,7 @@ package com.dili.trace.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -407,7 +407,7 @@ public class DataReportService {
         thirdPartyReportData.setModified(new Date());
         thirdPartyReportData.setMarketId(this.marketId);
 
-        String data = JSON.toJSONStringWithDateFormat(reportDto, "yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        String data = JSON.toJSONString(reportDto);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 

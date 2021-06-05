@@ -1,7 +1,7 @@
 package com.dili.trace.service.impl;
 
 
-import com.alibaba.fastjson.JSON;
+import com.dili.trace.util.JSON;
 import com.dili.trace.dao.TradeStatisticMapper;
 import com.dili.trace.dto.BillSumReportDto;
 import com.dili.trace.dto.CommodityWeightReportDto;
