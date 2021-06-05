@@ -166,7 +166,7 @@ public class CheckSheetController {
             @ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody CheckSheetQueryDto checkSheet) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody CheckSheetQueryDto checkSheet) throws Exception {
 
         if (checkSheet.getBillType() == null) {
             checkSheet.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
@@ -193,7 +193,7 @@ public class CheckSheetController {
 
         checkSheet.setMetadata(IDTO.AND_CONDITION_EXPR, String.join(" AND ", sqlList));
         EasyuiPageOutput out = this.checkSheetService.listEasyuiPageByExample(checkSheet, true);
-        return out.toString();
+        return out;
     }
 
     /**

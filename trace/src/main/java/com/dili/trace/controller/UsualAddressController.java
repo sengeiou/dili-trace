@@ -85,10 +85,10 @@ public class UsualAddressController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(@RequestBody UsualAddress usualAddress) throws Exception {
+	public @ResponseBody EasyuiPageOutput listPage(@RequestBody UsualAddress usualAddress) throws Exception {
 
 		EasyuiPageOutput out = this.usualAddressService.listEasyuiPageByExample(usualAddress, true);
-		return out.toString();
+		return out;
 	}
 
 	/**

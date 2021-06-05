@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
@@ -67,7 +68,7 @@ public class RegisterBillDataReportController {
      */
     @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listStaticsPage(@RequestBody RegisterBillDto registerBill) throws Exception {
+    EasyuiPageOutput listStaticsPage(@RequestBody RegisterBillDto registerBill) throws Exception {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
 

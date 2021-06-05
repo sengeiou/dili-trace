@@ -126,7 +126,7 @@ public class UpStreamController {
      */
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody UpStreamDto upStreamDto) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody UpStreamDto upStreamDto) throws Exception {
         // 业户名称查询
         if (StringUtils.isNotBlank(upStreamDto.getLikeUserName())) {
             upStreamDto.setMetadata(IDTO.AND_CONDITION_EXPR, " id in(select upstream_id from r_user_upstream where user_name like '%"+upStreamDto.getLikeUserName()+"%')");
@@ -139,7 +139,7 @@ public class UpStreamController {
         List<UpStream> upStreams = streamBasePage.getDatas();
         List<UpStreamDto> upStreamDtos = this. buildUpUserMap(upStreams);
         List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
-        return new EasyuiPageOutput(totalItem, results).toString();
+        return new EasyuiPageOutput(totalItem, results);
 
     }
 

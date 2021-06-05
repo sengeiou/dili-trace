@@ -59,10 +59,10 @@ public class TraceRecordController {
      */
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
-    public String listPage(ModelMap modelMap, TradeRequest tradeRequest)  throws Exception{
+    public EasyuiPageOutput listPage(ModelMap modelMap, TradeRequest tradeRequest)  throws Exception{
         if (null == tradeRequest) {
             logger.error("查询参数异常");
-            return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
+            return new EasyuiPageOutput(0L, Collections.emptyList());
         }
         //由于只判断了null值,页面传参为空字符串时需要特殊处理
         String queStr = "";
@@ -115,7 +115,7 @@ public class TraceRecordController {
         });
         List results = ValueProviderUtils.buildDataByProvider(tradeRequest, requestList);
         long total = results instanceof Page ? ((Page) results).getTotal() : results.size();
-        return new EasyuiPageOutput(total, results).toString();
+        return new EasyuiPageOutput(total, results);
     }
 
 }

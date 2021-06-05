@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.component.RpcComponent;
 import com.dili.trace.domain.Market;
 import com.dili.trace.domain.ThirdPartyReportData;
@@ -85,10 +86,10 @@ public class ThirdPartyReportController {
      */
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
-    public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
+    public EasyuiPageOutput listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
         input.setMarketId(MarketUtil.returnMarket());
         input = BeanMapUtil.trimBean(input);
-        return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
+        return thirdPartyReportDataService.listEasyuiPageByExample(input, true);
     }
 
     /**

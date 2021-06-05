@@ -58,9 +58,9 @@ public class TradeDetailController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(TradeDetail input) throws Exception {
+	public @ResponseBody EasyuiPageOutput listPage(TradeDetail input) throws Exception {
 		EasyuiPageOutput out = this.tradeDetailService.listEasyuiPageByExample(input, true);
-		return out.toString();
+		return out;
 	}
 
 	/**

@@ -77,7 +77,7 @@ public class ECommerceBillService {
      * @return
      * @throws Exception
      */
-    public String listPage(RegisterBillDto query) throws Exception {
+    public EasyuiPageOutput listPage(RegisterBillDto query) throws Exception {
         RegisterBillDto dto = this.preBuildDTO(query);
         dto.setMarketId(MarketUtil.returnMarket());
         dto.setBillType(this.supportedBillType().getCode());
@@ -92,7 +92,7 @@ public class ECommerceBillService {
         });
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
         EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(), results);
-        return out.toString();
+        return out;
     }
 
     /**

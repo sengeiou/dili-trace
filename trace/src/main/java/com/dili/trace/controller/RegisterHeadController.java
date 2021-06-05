@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterHead;
@@ -116,9 +117,9 @@ public class RegisterHeadController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
 
     public @ResponseBody
-    String listPage(RegisterHeadDto query) throws Exception {
+    EasyuiPageOutput listPage(RegisterHeadDto query) throws Exception {
         query.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
-        return registerHeadService.listEasyuiPageByExample(query, true).toString();
+        return registerHeadService.listEasyuiPageByExample(query, true);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.service.SeparateSalesRecordService;
 import io.swagger.annotations.Api;
@@ -65,8 +66,9 @@ public class SeparateSalesRecordController {
 		@ApiImplicitParam(name="SeparateSalesRecord", paramType="form", value = "SeparateSalesRecord的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(SeparateSalesRecord separateSalesRecord) throws Exception {
-        return separateSalesRecordService.listEasyuiPageByExample(separateSalesRecord, true).toString();
+    public @ResponseBody
+    EasyuiPageOutput listPage(SeparateSalesRecord separateSalesRecord) throws Exception {
+        return separateSalesRecordService.listEasyuiPageByExample(separateSalesRecord, true);
     }
 
     /**

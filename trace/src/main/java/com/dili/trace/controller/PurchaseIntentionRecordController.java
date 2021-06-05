@@ -7,6 +7,7 @@ import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
@@ -80,10 +81,10 @@ public class PurchaseIntentionRecordController extends AbstractBaseController{
             @ApiImplicitParam(name = "PurchaseIntentionRecord", paramType = "form", value = "PurchaseIntentionRecord的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody PurchaseIntentionRecordQueryDto queryInput) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody PurchaseIntentionRecordQueryDto queryInput) throws Exception {
         queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         queryInput.setState(EnabledStateEnum.ENABLED.getCode());
-        return this.purchaseIntentionRecordService.listEasyuiPageByExample(queryInput, true).toString();
+        return this.purchaseIntentionRecordService.listEasyuiPageByExample(queryInput, true);
 
     }
 

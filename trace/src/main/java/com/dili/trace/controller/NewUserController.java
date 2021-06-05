@@ -68,11 +68,11 @@ public class NewUserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
     @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody String listPage(UserQueryDto user) throws Exception {
+    public @ResponseBody EasyuiPageOutput listPage(UserQueryDto user) throws Exception {
         // 设置市场查询条件
         user.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput out = this.userService.listEasyuiPageByExample(user);
-        return out.toString();
+        return out;
     }
 
 

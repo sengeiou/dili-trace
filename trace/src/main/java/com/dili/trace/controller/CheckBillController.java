@@ -7,7 +7,6 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.CheckExcelDto;
 import com.dili.trace.dto.CheckOrderDto;
@@ -136,11 +135,10 @@ public class CheckBillController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrder", paramType = "form", value = "CheckOrder的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    String listPage(CheckOrderDto checkOrder) throws Exception {
+    public @ResponseBody EasyuiPageOutput listPage(CheckOrderDto checkOrder) throws Exception {
         checkOrder.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput out = this.checkBillService.selectForEasyuiPage(checkOrder, true);
-        return out.toString();
+        return out;
     }
 
     /**

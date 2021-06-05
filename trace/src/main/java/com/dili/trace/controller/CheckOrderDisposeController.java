@@ -108,10 +108,10 @@ public class CheckOrderDisposeController {
             @ApiImplicitParam(name = "CheckOrderDispose", paramType = "form", value = "CheckOrderDispose的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(CheckOrderDisposeDto checkOrderDispose) throws Exception {
+    EasyuiPageOutput listPage(CheckOrderDisposeDto checkOrderDispose) throws Exception {
         checkOrderDispose.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput out = this.checkOrderDisposeService.selectForEasyuiPage(checkOrderDispose, true);
-        return out.toString();
+        return out;
     }
 
     /**

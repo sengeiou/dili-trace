@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.AutoWiredBaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ public class ClientDetectRequestApiTest extends AutoWiredBaseTest {
 
     @Test
     public void getDetectRequestDetail() {
-        String str = this.clientDetectRequestApi.getDetectRequestDetail(448L);
+        BaseOutput str = this.clientDetectRequestApi.getDetectRequestDetail(448L);
         System.out.println(str);
     }
 }

@@ -12,6 +12,7 @@ import com.dili.customer.sdk.domain.dto.IndividualCustomerInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.customer.sdk.rpc.VehicleRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.PurchaseIntentionRecord;
@@ -100,9 +101,9 @@ public class TruckEnterRecordController {
             @ApiImplicitParam(name = "TruckEnterRecord", paramType = "form", value = "TruckEnterRecord的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody TruckEnterRecordQueryDto queryInput) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody TruckEnterRecordQueryDto queryInput) throws Exception {
         queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
-        return this.truckEnterRecordService.listEasyuiPageByExample(queryInput, true).toString();
+        return this.truckEnterRecordService.listEasyuiPageByExample(queryInput, true);
 
     }
 

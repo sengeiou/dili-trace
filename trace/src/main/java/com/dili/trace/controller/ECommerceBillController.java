@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.events.ECommerceBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
@@ -109,7 +110,7 @@ public class ECommerceBillController {
             @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/findHighLightBill.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    Object findHighLightBill(RegisterBillDto dto) throws Exception {
+    BaseOutput findHighLightBill(RegisterBillDto dto) throws Exception {
         try {
             RegisterBill bill = this.eCommerceBillService.findHighLightEcommerceBill(dto, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success().setData(bill);
@@ -134,7 +135,7 @@ public class ECommerceBillController {
             @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody RegisterBillDto input) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody RegisterBillDto input) throws Exception {
         return this.eCommerceBillService.listPage(input);
 
     }

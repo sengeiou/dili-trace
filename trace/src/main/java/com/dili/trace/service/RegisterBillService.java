@@ -1586,7 +1586,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
      * @param query
      * @return
      */
-    public String listBasePageByExample(RegisterBillDto query) throws Exception {
+    public EasyuiPageOutput listBasePageByExample(RegisterBillDto query) throws Exception {
         if (query.getPage() == null || query.getPage() < 0) {
             query.setPage(1);
         }
@@ -1603,7 +1603,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
         out.setRows(results);
         out.setTotal(page.getTotal());
 
-        return out.toString();
+        return out;
     }
 
     /**

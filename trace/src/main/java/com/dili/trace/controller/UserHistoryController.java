@@ -63,10 +63,10 @@ public class UserHistoryController {
             @ApiImplicitParam(name = "UserHistory", paramType = "form", value = "UserHistory的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(UserHistoryListDto userHistory) throws Exception {
+    EasyuiPageOutput listPage(UserHistoryListDto userHistory) throws Exception {
 
         EasyuiPageOutput out = this.userHistoryService.listUserHistoryPageByExample(userHistory);
-        return out.toString();
+        return out;
     }
 
     /**

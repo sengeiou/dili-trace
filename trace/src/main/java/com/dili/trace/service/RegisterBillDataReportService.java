@@ -26,7 +26,7 @@ public class RegisterBillDataReportService {
     /**
      * 查询统计页面分页数据
      */
-    public String listStaticsPage(RegisterBillDto dto) throws Exception {
+    public EasyuiPageOutput listStaticsPage(RegisterBillDto dto) throws Exception {
         if (StringUtils.isNotBlank(dto.getAttrValue())) {
             switch (dto.getAttr()) {
                 case "code":
@@ -78,7 +78,7 @@ public class RegisterBillDataReportService {
         List results = ValueProviderUtils.buildDataByProvider(dto, list);
         out.setRows(results);
         out.setTotal(page.getTotal());
-        return out.toString();
+        return out;
     }
 
     /**

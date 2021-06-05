@@ -102,7 +102,7 @@ public class CustomerDetectRequestController extends AbstractBaseController{
             @ApiImplicitParam(name = "DetectRequest", paramType = "form", value = "DetectRequest的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
         List<Integer> billTypes = new ArrayList<>();
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
@@ -111,7 +111,7 @@ public class CustomerDetectRequestController extends AbstractBaseController{
         detectRequestDto.setBillTypes(billTypes);
         //detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
-        return out.toString();
+        return out;
     }
 
     /**

@@ -219,7 +219,7 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping(value = "/getDetectRequestDetail.api", method = RequestMethod.GET)
-    public String getDetectRequestDetail(Long id) {
+    public BaseOutput getDetectRequestDetail(Long id) {
         BaseOutput<DetectRequestOutDto> output = null;
         try {
             DetectRequestQueryDto detectRequest = new DetectRequestQueryDto();
@@ -241,24 +241,9 @@ public class ClientDetectRequestApi {
             logger.error(e.getMessage(), e);
             output = BaseOutput.failure("服务端出错");
         }
-        return JSONObject.toJSONString(output, SerializerFeature.DisableCircularReferenceDetect);
+        return output;//JSONObject.toJSONString(output, SerializerFeature.DisableCircularReferenceDetect);
     }
 
-    /**
-     * main
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        DetectRequestOutDto detail = new DetectRequestOutDto();
-        detail.setArrivalDatetime(LocalDateTime.now());
-        detail.setVerifyDateTime(new Date());
-        detail.setDetectReservationTime(new Date());
-        BaseOutput output = BaseOutput.successData(detail);
-        String str = JSONObject.toJSONString(output, SerializerFeature.DisableCircularReferenceDetect);
-        System.out.println(str);
-
-    }
 
     /**
      * 查询市场检测人员

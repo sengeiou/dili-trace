@@ -5,6 +5,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.*;
@@ -143,7 +144,7 @@ public class NewRegisterBillController extends AbstractBaseController {
             @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
         registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         List<Integer> billTypes = new ArrayList<>();
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());

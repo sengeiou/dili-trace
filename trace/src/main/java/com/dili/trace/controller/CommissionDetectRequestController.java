@@ -113,12 +113,12 @@ public class CommissionDetectRequestController extends AbstractBaseController{
             @ApiImplicitParam(name = "commissionDetectRequest", paramType = "form", value = "commissionDetectRequest的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
+    EasyuiPageOutput listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
         detectRequestDto.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
-        return out.toString();
+        return out;
     }
 
     /**
