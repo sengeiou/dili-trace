@@ -22,10 +22,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
-import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.*;
-import com.dili.uap.sdk.domain.Firm;
-import com.dili.uap.sdk.domain.dto.FirmDto;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -83,8 +80,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private Integer pushBatchSize;
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
-    @Autowired
-    FirmRpcService FirmRpcService;
     @Autowired
     AssetsRpc assetsRpc;
 

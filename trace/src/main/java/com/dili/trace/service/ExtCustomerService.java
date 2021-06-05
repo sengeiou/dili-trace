@@ -39,8 +39,6 @@ public class ExtCustomerService {
     @Autowired
     AccountRpcService accountRpcService;
     @Autowired
-    FirmRpcService firmRpcService;
-    @Autowired
     AsyncService asyncService;
 
     /**

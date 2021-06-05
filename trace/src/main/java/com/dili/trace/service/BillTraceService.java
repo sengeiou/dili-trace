@@ -20,7 +20,6 @@ import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.rpc.dto.CustDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.FirmRpcService;
-import com.dili.uap.sdk.domain.Firm;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;

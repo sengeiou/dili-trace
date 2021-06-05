@@ -126,7 +126,6 @@ public class UapRpcService {
     /**
      * 是否有访问权限
      *
-     * @param method
      * @param url
      * @return
      */
