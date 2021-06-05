@@ -8,19 +8,16 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.domain.UserDriverRef;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.dto.query.UserDriverRefQueryDto;
 import com.dili.trace.enums.MessageReceiverEnum;
-import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.DriverUserService;
 import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-import java.util.function.Function;
 
 /**
  * 司机接口
@@ -84,10 +80,10 @@ public class ClientDriverUserApi {
      */
     @ApiOperation(value = "查询司机消息数据列表", notes = "查询司机消息数据列表")
     @RequestMapping(value = "/listPagedEventMessage.api", method = RequestMethod.POST)
-    public BaseOutput listPagedEventMessage(@RequestBody EventMessage queryDto) {
+    public BaseOutput listPagedEventMessage(@RequestBody Object queryDto) {
         try {
-            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+//            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+//            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 //            BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
             return BaseOutput.success();
         } catch (TraceBizException e) {
@@ -107,13 +103,13 @@ public class ClientDriverUserApi {
      */
     @ApiOperation(value = "查看消息详情", notes = "查看消息详情")
     @RequestMapping(value = "/eventMessageDetail.api", method = RequestMethod.POST)
-    public BaseOutput<EventMessage> eventMessageDetail(@RequestBody EventMessage queryDto) {
-        if (queryDto.getId() == null) {
-            return BaseOutput.failure("参数错误");
-        }
+    public BaseOutput<Object> eventMessageDetail(@RequestBody Object queryDto) {
+//        if (queryDto.getId() == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
         try {
-            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+//            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+//            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
 //            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
 //                    .findFirst().map(data -> BaseOutput.successData(data)).orElseGet(() -> BaseOutput.failure("数据不存在"));
@@ -133,13 +129,13 @@ public class ClientDriverUserApi {
      */
     @ApiOperation(value = "消息标记为已阅读", notes = "消息标记为已阅读")
     @RequestMapping(value = "/doRead.api", method = RequestMethod.POST)
-    public BaseOutput<EventMessage> doRead(@RequestBody EventMessage queryDto) {
-        if (queryDto.getId() == null) {
-            return BaseOutput.failure("参数错误");
-        }
+    public BaseOutput<Object> doRead(@RequestBody Object queryDto) {
+//        if (queryDto.getId() == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
         try {
-            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
-            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+//            queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+//            queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
 
 //            return StreamEx.ofNullable(this.eventMessageService.listByExample(queryDto)).flatCollection(Function.identity()).nonNull()
 //                    .findFirst().map(data -> {
@@ -167,7 +163,7 @@ public class ClientDriverUserApi {
      */
     @ApiOperation(value = "查询司机未读取消息数量", notes = "查询司机未读取消息数量")
     @RequestMapping(value = "/countReadableEventMessage.api", method = RequestMethod.POST)
-    public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
+    public BaseOutput<Integer> countReadableEventMessage(@RequestBody Object queryDto) {
         try {
 //            Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
             return BaseOutput.successData(0);

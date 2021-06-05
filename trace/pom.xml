@@ -499,7 +499,6 @@
                     <loggingLevel>Debug</loggingLevel>
                     <noFileComment>false</noFileComment>
                     <classes>
-                        <class>com.dili.trace.domain.Market</class>
                         <class>com.dili.trace.glossary.RegisterSourceEnum</class>
                         <class>com.dili.trace.enums.BillVerifyStatusEnum</class>
                         <class>com.dili.trace.enums.DetectStatusEnum</class>
