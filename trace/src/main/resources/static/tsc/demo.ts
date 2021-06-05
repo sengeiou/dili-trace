@@ -94,16 +94,4 @@ let n: { name: string, age: number } = {age: 23, name: ''};
 
 // e2.age=44; error
 
-import {Component} from 'vue'
-var comp = Vue.component("demo", {
-    props:['todo'],
-    template: '<a href="">{{todo.text}}</a>',
-});
-var app=new Vue(
-    {
-        el:'',
-        data:{},
-    }
-);
-
 console.info("abcd")
