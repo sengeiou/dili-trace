@@ -402,7 +402,7 @@ public class ManagerDetectRquestApi {
             if (sessionData == null) {
                 throw new TraceBizException("用户未登录");
             }
-            registerBillService.autoCheckRegisterBillFromApp(id,sessionData.getOptUser().get());
+            registerBillService.autoCheckRegisterBill(id,sessionData.getOptUser().get());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -422,7 +422,7 @@ public class ManagerDetectRquestApi {
             if (sessionData == null) {
                 throw new TraceBizException("用户未登录");
             }
-            registerBillService.samplingCheckRegisterBillFromApp(id, sessionData.getOptUser().get());
+            registerBillService.samplingCheckRegisterBill(id, sessionData.getOptUser().get());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -442,7 +442,7 @@ public class ManagerDetectRquestApi {
             if (sessionData == null) {
                 throw new TraceBizException("用户未登录");
             }
-            registerBillService.spotCheckRegisterBillFromApp(id, sessionData.getOptUser().get());
+            registerBillService.spotCheckRegisterBill(id, sessionData.getOptUser().get());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

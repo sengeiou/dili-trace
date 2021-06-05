@@ -1658,34 +1658,9 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         return autoCheckRegisterBill(registerBillItem, operatorUser);
     }
 
-    /**
-     * 接单
-     *
-     * @param id
-     * @param operatorUser
-     * @return
-     */
-    @Transactional
-    public int autoCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(() -> {
-            return new TraceBizException("数据不存在或已删除");
-        });
-        return autoCheckRegisterBill(registerBillItem, operatorUser);
-    }
 
-    /**
-     * 抽检标记-app
-     *
-     * @param id
-     * @return
-     */
-    public int spotCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
-        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(() -> {
-            return new TraceBizException("数据不存在或已删除");
-        });
 
-        return spotCheckRegisterBill(registerBillItem, operatorUser);
-    }
+
 
     /**
      * 抽检标记
@@ -1734,19 +1709,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         return BaseOutput.success().setData(dto);
 
     }
-    /**
-     * 采样检测标记
-     *
-     * @param id
-     * @return
-     */
-    @Transactional
-    public int samplingCheckRegisterBill(Long id, OperatorUser operatorUser) {
-        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
-            return new TraceBizException("数据不存在或已删除");
-        });
-        return samplingCheckRegisterBill(registerBill, operatorUser);
-    }
+
 
     /**
      * 抽检标记
@@ -1775,12 +1738,13 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     }
 
     /**
-     * 采样检测标记-app
+     * 采样检测标记
      *
      * @param id
      * @return
      */
-    public int samplingCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
+    @Transactional
+    public int samplingCheckRegisterBill(Long id, OperatorUser operatorUser) {
         RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
             return new TraceBizException("数据不存在或已删除");
         });
