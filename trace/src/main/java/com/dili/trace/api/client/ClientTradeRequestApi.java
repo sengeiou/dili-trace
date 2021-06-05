@@ -68,7 +68,7 @@ import javax.swing.text.html.Option;
 @RestController
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 @RequestMapping(value = "/api/client/clientTradeRequestApi")
-public class ClientTradeRequestApi  extends AbstractApi {
+public class ClientTradeRequestApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradeRequestApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
@@ -463,25 +463,13 @@ public class ClientTradeRequestApi  extends AbstractApi {
     private PageOutput<List<CustomerExtendOutPutDto>> getListPageOutput(Long marketId, PageOutput<List<CustomerSimpleExtendDto>> pageOutput, ClientTypeEnum clientTypeEnum) {
         PageOutput<List<CustomerExtendOutPutDto>> page = new PageOutput<>();
         if (null != pageOutput) {
-            Map<Long, String> carTypeMap = StreamEx.ofNullable(this.carTypeRpcService.listCarType()).flatCollection(Function.identity())
-                    .mapToEntry(CarTypeDTO::getId, CarTypeDTO::getName).toMap();
 
             List<CustomerSimpleExtendDto> customerList = pageOutput.getData();
             List<Long> customerIdList = StreamEx.ofNullable(customerList).flatCollection(Function.identity()).nonNull().map(CustomerSimpleExtendDto::getId).toList();
 
             Future<Map<Long, List<VehicleInfoDto>>> vehicleInfoMapFuture = this.asyncService.executeAsync(() -> {
-                Map<Long, List<VehicleInfo>> retMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
-
-                return EntryStream.of(retMap).mapValues(list -> {
-                    return StreamEx.of(list).map(v -> {
-                        VehicleInfoDto vehicleInfoDto = new VehicleInfoDto();
-                        vehicleInfoDto.setVehiclePlate(v.getRegistrationNumber());
-                        vehicleInfoDto.setVehicleType(v.getTypeNumber());
-                        vehicleInfoDto.setVehicleTypeName(carTypeMap.getOrDefault(v.getTypeNumber(), ""));
-                        return vehicleInfoDto;
-                    }).toList();
-                }).toMap();
-
+                Map<Long, List<VehicleInfoDto>> retMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+                return retMap;
             });
             Future<Map<Long, Attachment>> attachmentMapFuture = this.asyncService.executeAsync(() -> {
                 return this.attachmentRpcService.findAttachmentByAttachmentTypeAndCustomerIdList(marketId, customerIdList, CustomerEnum.AttachmentType.营业执照);

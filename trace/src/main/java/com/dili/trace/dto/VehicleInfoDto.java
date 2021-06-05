@@ -17,6 +17,8 @@ public class VehicleInfoDto {
      */
     private String vehicleTypeName;
 
+    private Long vehicleTypeNumber;
+
     /**
      * build对象
      *
@@ -29,7 +31,16 @@ public class VehicleInfoDto {
         vehicleInfoDto.setVehiclePlate(v.getRegistrationNumber());
         vehicleInfoDto.setVehicleType(v.getTypeNumber());
         vehicleInfoDto.setVehicleTypeName(carType);
+        vehicleInfoDto.setVehicleTypeNumber(v.getTypeNumber());
         return vehicleInfoDto;
+    }
+
+    public Long getVehicleTypeNumber() {
+        return vehicleTypeNumber;
+    }
+
+    public void setVehicleTypeNumber(Long vehicleTypeNumber) {
+        this.vehicleTypeNumber = vehicleTypeNumber;
     }
 
     public String getVehiclePlate() {

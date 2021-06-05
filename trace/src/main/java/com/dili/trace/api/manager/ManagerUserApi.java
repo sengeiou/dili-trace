@@ -213,19 +213,15 @@ public class ManagerUserApi {
             PageOutput<List<CustomerExtendOutPutDto>> pgData = getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
 
             List<Long> customerIdList = StreamEx.of(pgData.getData()).nonNull().map(CustomerExtendOutPutDto::getId).toList();
-            Map<Long, List<VehicleInfo>> vehicleInfoMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
 
-            Map<Long, String> carTypeMap = StreamEx.ofNullable(this.carTypeRpcService.listCarType()).flatCollection(Function.identity())
-                    .mapToEntry(CarTypeDTO::getId, CarTypeDTO::getName).toMap();
+
+            Map<Long, List<VehicleInfoDto>> vehicleInfoMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+
+
             List<CustomerExtendOutPutDto> dataList = StreamEx.of(pgData.getData()).map(o -> {
-                List<VehicleInfoDto> vehicleInfoList = StreamEx.of(vehicleInfoMap.getOrDefault(o.getId(), Lists.newArrayList())).map(v -> {
-                    String carType = carTypeMap.getOrDefault(v.getTypeNumber(), "");
-                    return VehicleInfoDto.build(v, carType);
-
-                }).toList();
+                List<VehicleInfoDto> vehicleInfoList = vehicleInfoMap.getOrDefault(o.getId(), Lists.newArrayList());
                 o.setVehicleInfoList(vehicleInfoList);
                 return o;
-
             }).toList();
             pgData.setData(dataList);
             return pgData;
