@@ -468,8 +468,7 @@ public class ClientTradeRequestApi extends AbstractApi {
             List<Long> customerIdList = StreamEx.ofNullable(customerList).flatCollection(Function.identity()).nonNull().map(CustomerSimpleExtendDto::getId).toList();
 
             Future<Map<Long, List<VehicleInfoDto>>> vehicleInfoMapFuture = this.asyncService.executeAsync(() -> {
-                Map<Long, List<VehicleInfoDto>> retMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
-                return retMap;
+                return this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
             });
             Future<Map<Long, Attachment>> attachmentMapFuture = this.asyncService.executeAsync(() -> {
                 return this.attachmentRpcService.findAttachmentByAttachmentTypeAndCustomerIdList(marketId, customerIdList, CustomerEnum.AttachmentType.营业执照);

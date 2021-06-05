@@ -11,6 +11,7 @@ import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
+import com.dili.trace.async.AsyncService;
 import com.dili.trace.domain.TraceCustomer;
 import com.dili.trace.dto.*;
 import com.dili.trace.enums.ClientTypeEnum;
@@ -21,6 +22,7 @@ import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.VehicleRpcService;
 import com.dili.trace.service.ExtCustomerService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 /**
@@ -59,6 +62,8 @@ public class ManagerUserApi {
     VehicleRpcService vehicleRpcService;
     @Autowired
     ExtCustomerService extCustomerService;
+    @Autowired
+    AsyncService asyncService;
 
 //    /**
 //     * 商户审核统计概览
@@ -209,15 +214,24 @@ public class ManagerUserApi {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             input.setMarketId(marketId);
             PageOutput<List<CustomerSimpleExtendDto>> pageOutput = this.customerRpcService.listDriver(input, marketId);
-            // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
-            PageOutput<List<CustomerExtendOutPutDto>> pgData = getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
-
-            List<Long> customerIdList = StreamEx.of(pgData.getData()).nonNull().map(CustomerExtendOutPutDto::getId).toList();
 
 
-            Map<Long, List<VehicleInfoDto>> vehicleInfoMap = this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+            List<Long> customerIdList = StreamEx.of(pageOutput.getData()).nonNull().map(CustomerSimpleExtendDto::getId).toList();
+            Future<Map<Long, List<VehicleInfoDto>>> vehicleInfoDtoMapFuture = this.asyncService.executeAsync(() -> {
+                return this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+            });
 
-
+            Map<Long, List<VehicleInfoDto>> vehicleInfoMap = Maps.newHashMap();
+            try {
+                vehicleInfoMap.putAll(vehicleInfoDtoMapFuture.get());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            Future<PageOutput<List<CustomerExtendOutPutDto>>> pgDataFuture = this.asyncService.executeAsync(() -> {
+                // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
+                return getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
+            });
+            PageOutput<List<CustomerExtendOutPutDto>> pgData = pgDataFuture.get();
             List<CustomerExtendOutPutDto> dataList = StreamEx.of(pgData.getData()).map(o -> {
                 List<VehicleInfoDto> vehicleInfoList = vehicleInfoMap.getOrDefault(o.getId(), Lists.newArrayList());
                 o.setVehicleInfoList(vehicleInfoList);
