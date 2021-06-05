@@ -34,32 +34,7 @@ public class OrderService {
     @Autowired
     TradeTypeService tradeTypeService;
 
-    /**
-     * 查询订单信息
-     *
-     * @param startId
-     * @param limit
-     * @return
-     */
-    public List<QualityTraceTradeBill> fetchOrderData(Long startId, Integer limit) {
-        try {
-            Map<String, TradeType> tradeTypeMap = this.tradeTypeService.queryTradeTypeMap();
-            return StreamEx.ofNullable(this.orderRpc.sourceSync(startId, limit)).nonNull()
-                    .filter(BaseOutput::isSuccess).map(BaseOutput::getData).nonNull()
-                    .flatCollection(Function.identity()).nonNull().map(this::build).map(bill -> {
-                        if (StringUtils.isBlank(bill.getTradetypeName())) {
-                            String tradeTypeName=Optional.ofNullable(tradeTypeMap.get(bill.getTradetypeId())).map(TradeType::getTypeName).orElse("");
-                            bill.setTradetypeName(tradeTypeName);
-                        }
-                        return bill;
-                    }).sortedByLong(QualityTraceTradeBill::getBillId).toList();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Lists.newArrayList();
 
-
-    }
 
     /**
      * 数据结构转换

@@ -130,6 +130,14 @@
             <version>2.1.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
+                    <groupId>com.dili</groupId>
+                    <artifactId>ss-mbg</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.dili</groupId>
+                    <artifactId>ss-processor</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.alibaba.cloud</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>

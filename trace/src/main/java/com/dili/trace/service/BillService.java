@@ -316,16 +316,4 @@ public class BillService extends TraceBaseService<RegisterBill, Long> {
 
     }
 
-    /**
-     * 查询并锁定登记单
-     *
-     * @param id
-     * @return
-     */
-
-    public RegisterBill selectByIdForUpdate(Long id) {
-        return this.getActualDao().selectByIdForUpdate(id).orElseThrow(() -> {
-            return new TraceBizException("操作登记单失败");
-        });
-    }
 }

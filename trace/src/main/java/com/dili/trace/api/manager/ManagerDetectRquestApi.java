@@ -65,7 +65,7 @@ public class ManagerDetectRquestApi {
     @Autowired
     DetectRecordService detectRecordService;
     @Autowired
-    SgRegisterBillService registerBillService;
+    RegisterBillService registerBillService;
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired

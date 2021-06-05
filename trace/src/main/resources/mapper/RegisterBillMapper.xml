@@ -700,13 +700,6 @@
 
   </select>
 
-  <!-- 从寿光合并过来，杭州直接在java中写的sql -->
-<!--  <select id="selectByIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">-->
-<!--    select-->
-<!--    <include refid="Base_Column_List" />-->
-<!--    from register_bill-->
-<!--    where id = #{id,jdbcType=BIGINT} for update-->
-<!--  </select>-->
 
   <select id="findUnMatchedRegisterBill" parameterType="com.dili.trace.dto.MatchDetectParam" resultType="com.dili.trace.domain.RegisterBill">
     SELECT   <include refid="Base_Column_List" />  from register_bill

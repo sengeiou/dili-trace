@@ -74,7 +74,7 @@ public class ClientDetectRequestApi {
     @Autowired
     private LoginSessionContext sessionContext;
     @Autowired
-    SgRegisterBillService registerBillService;
+    RegisterBillService registerBillService;
     @Autowired
     CommissionBillService commissionBillService;
     @Autowired

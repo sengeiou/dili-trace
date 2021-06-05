@@ -6,22 +6,23 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
-import com.dili.trace.dto.MessageInputDto;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.rpc.dto.AccountGetListResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
@@ -30,6 +31,8 @@ import com.dili.trace.util.NumUtils;
 import com.dili.trace.util.RegUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Option;
@@ -47,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -109,6 +113,8 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     RegisterTallyAreaNoService registerTallyAreaNoService;
     @Autowired
     ProcessConfigService processConfigService;
+    @Autowired
+    CodeGenerateService codeGenerateService;
 
 
     /**
@@ -190,33 +196,48 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
             Long billId = this.createRegisterBill(registerBill, fieldConfigDetailRetDtoMap, processConfig, operatorUser);
 
-            // 寿光管理端，新增完报备单的同时新增检测请求
-//            OperatorUser oprUser = operatorUser.orElseThrow(() -> {
-//                return new TraceBizException("用户未登录");
-//            });
-
-//            // 创建检测请求
-//            DetectRequest item = this.detectRequestService.createByBillId(billId, DetectTypeEnum.NEW, new IdNameDto(oprUser.getId(),oprUser.getName()), Optional.empty());
-//
-//            // 如果管理创建登记单，更新检测状态和检测编号
-//            if (CreatorRoleEnum.MANAGER.equalsToCode(creatorRoleEnum.getCode())) {
-//                DetectRequest updatable = new DetectRequest();
-//                updatable.setId(item.getId());
-//                // 维护接单时间
-//                updatable.setConfirmTime(new Date());
-//                // 维护检测编号
-//                updatable.setDetectCode(uidRestfulRpcService.detectRequestBizNumber(operatorUser.get().getMarketName()));
-//                this.detectRequestService.updateSelective(updatable);
-//
-//                RegisterBill bill = this.billService.get(item.getBillId());
-//                bill.setOperatorName(oprUser.getName());
-//                bill.setOperatorId(oprUser.getId());
-//                bill.setDetectStatus(DetectStatusEnum.NONE.getCode()); // 新增完为：待采样
-//                this.billService.update(bill);
-//            }
-
             return billId;
         }).toList();
+    }
+
+    /**
+     * 保存修改数据
+     *
+     * @param input
+     * @return
+     */
+    public Long doUploadDetectReport(RegisterBill input) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBizException("参数错误");
+        }
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCertList()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (!imageCertList.isEmpty()) {
+            imageCertList = StreamEx.of(imageCertList).filter(img -> {
+                // 只取uid不为空，并且类型为处理结果的照片
+                return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
+            }).toList();
+        }
+        if (imageCertList.isEmpty()) {
+            //StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+            throw new TraceBizException("请上传报告");
+        }
+
+        // TODO:流程引擎内容？
+        // RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
+        RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+            throw new TraceBizException("状态错误,不能上传检测报告");
+        }
+        List<ImageCert> imageCerts =
+                StreamEx.of(this.imageCertService.findImageCertListByBillId(item.getBillId(), BillTypeEnum.REGISTER_BILL)).filter(img -> {
+                    Integer cerType = img.getCertType();
+                    return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(cerType);
+                }).append(imageCertList).toList();
+
+        this.billService.updateHasImage(item.getBillId(), imageCerts, BillTypeEnum.REGISTER_BILL);
+        return item.getBillId();
     }
 
     /**
@@ -999,14 +1020,23 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     }
 
     /**
-     * 增加动态条件
+     * 动态查询
      *
      * @param registerBill
      * @return
      */
     private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
         StringBuilder sql = new StringBuilder();
-
+        if (registerBill.getHasCheckSheet() != null) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            if (registerBill.getHasCheckSheet()) {
+                sql.append("  (check_sheet_id is not null) ");
+            } else {
+                sql.append("  (check_sheet_id is null) ");
+            }
+        }
         return sql;
     }
 
@@ -1537,24 +1567,45 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         return StreamEx.of(sqlList).joining(" AND ");
     }
 
-
     /**
-     * 查询用户最近操作数据
-     *
-     * @param input
-     * @return
-     * @throws Exception
+     * 查询第一条需要被高亮显示的登记单
      */
-    public RegisterBill findHighLightBill(RegisterBillDto input) throws Exception {
+    public RegisterBill findHighLightBill(RegisterBillDto input, OperatorUser operatorUser) throws Exception {
         RegisterBillDto dto = new RegisterBillDto();
-        UserTicket userTicket = getOptUser();
-        dto.setOperatorId(userTicket.getId());
+        dto.setOperatorId(operatorUser.getId());
+        dto.setMarketId(operatorUser.getMarketId());
 //        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         dto.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         dto.setRows(1);
         dto.setSort("code");
         dto.setOrder("desc");
-        return this.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
+        return this.billService.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
+    }
+
+    /**
+     * 分页查询采样检测列表
+     *
+     * @param query
+     * @return
+     */
+    public String listBasePageByExample(RegisterBillDto query) throws Exception {
+        if (query.getPage() == null || query.getPage() < 0) {
+            query.setPage(1);
+        }
+        if (query.getRows() == null || query.getRows() <= 0) {
+            query.setRows(10);
+        }
+        PageHelper.startPage(query.getPage(), query.getRows());
+        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
+        List<RegisterBillDto> list = this.getActualDao().queryListByExample(query);
+        Page<RegisterBillDto> page = (Page) list;
+
+        EasyuiPageOutput out = new EasyuiPageOutput();
+        List results = ValueProviderUtils.buildDataByProvider(query, list);
+        out.setRows(results);
+        out.setTotal(page.getTotal());
+
+        return out.toString();
     }
 
     /**
@@ -1568,6 +1619,446 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
     }
 
 
+    /**
+     * 批量主动送检
+     *
+     * @param idList
+     * @return
+     */
+    public BaseOutput doBatchAutoCheck(List<Long> idList, OperatorUser operatorUser) {
+        BatchResultDto<String> dto = new BatchResultDto<>();
+        for (Long id : idList) {
+            RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElse(null);
+            if (registerBillItem == null) {
+                continue;
+            }
+            try {
+                this.autoCheckRegisterBill(registerBillItem, operatorUser);
+                dto.getSuccessList().add(registerBillItem.getCode());
+            } catch (Exception e) {
+                dto.getFailureList().add(registerBillItem.getCode());
+            }
+        }
+
+        return BaseOutput.success().setData(dto);
+
+    }
+
+    /**
+     * 自动送检标记
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public int autoCheckRegisterBill(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return autoCheckRegisterBill(registerBillItem, operatorUser);
+    }
+
+    /**
+     * 接单
+     *
+     * @param id
+     * @param operatorUser
+     * @return
+     */
+    @Transactional
+    public int autoCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return autoCheckRegisterBill(registerBillItem, operatorUser);
+    }
+
+    /**
+     * 抽检标记-app
+     *
+     * @param id
+     * @return
+     */
+    public int spotCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBillItem = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+
+        return spotCheckRegisterBill(registerBillItem, operatorUser);
+    }
+
+    /**
+     * 抽检标记
+     *
+     * @param registerBillItem
+     * @return
+     */
+    private int spotCheckRegisterBill(RegisterBill registerBillItem, OperatorUser operatorUser) {
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus()) || BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())) {
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill = new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
+
+            updatableBill.setOperatorName(operatorUser.getName());
+            updatableBill.setOperatorId(operatorUser.getId());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+
+            this.spotCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
+        } else {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+    }
+    /**
+     * 批量采样检测
+     *
+     * @param idList
+     * @return
+     */
+    public BaseOutput doBatchSamplingCheck(List<Long> idList, OperatorUser operatorUser) {
+        BatchResultDto<String> dto = new BatchResultDto<>();
+        for (Long id : idList) {
+            RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+            if (registerBill == null) {
+                continue;
+            }
+            try {
+                this.samplingCheckRegisterBill(registerBill, operatorUser);
+                dto.getSuccessList().add(registerBill.getCode());
+            } catch (Exception e) {
+                dto.getFailureList().add(registerBill.getCode());
+            }
+        }
+        return BaseOutput.success().setData(dto);
+
+    }
+    /**
+     * 采样检测标记
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public int samplingCheckRegisterBill(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return samplingCheckRegisterBill(registerBill, operatorUser);
+    }
+
+    /**
+     * 抽检标记
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public int spotCheckRegisterBill(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return spotCheckRegisterBill(registerBill, operatorUser);
+    }
+
+    /**
+     * 抽检标记
+     *
+     * @param id
+     * @return
+     */
+    private int spotCheckDetectRequest(Long id) {
+        DetectRequest detectRequest = this.detectRequestService.get(id);
+        detectRequest.setDetectSource(SampleSourceEnum.SPOT_CHECK.getCode());
+        return this.detectRequestService.updateSelective(detectRequest);
+    }
+
+    /**
+     * 采样检测标记-app
+     *
+     * @param id
+     * @return
+     */
+    public int samplingCheckRegisterBillFromApp(Long id, OperatorUser operatorUser) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return samplingCheckRegisterBill(registerBill, operatorUser);
+    }
+
+    /**
+     * 接单
+     * @param registerBillItem
+     * @param operatorUser
+     * @return
+     */
+    private int samplingCheckRegisterBill(RegisterBill registerBillItem, OperatorUser operatorUser) {
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus()) || BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())) {
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill = new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
+            updatableBill.setOperatorName(operatorUser.getName());
+            updatableBill.setOperatorId(operatorUser.getId());
+//            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+
+            BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);
+            updatableBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+
+//            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//            }
+
+            this.samplingCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
+        } else {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+    }
+    /**
+     * 删除产地证明及检测报告
+     *
+     * @param id
+     * @param deleteType
+     * @return
+     */
+    public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType) {
+        RegisterBill item = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+            throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
+        }
+        // 查出所有照片
+        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(item.getBillId(),BillTypeEnum.REGISTER_BILL);
+
+        if ("all".equalsIgnoreCase(deleteType)) {
+            imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType())
+                        && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
+            }).toList();
+        } else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
+            imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType());
+            }).toList();
+        } else if ("detectReport".equalsIgnoreCase(deleteType)) {
+            imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
+            }).toList();
+        } else {
+            // do nothing
+            return BaseOutput.success();
+        }
+
+        // this.billMapper.doRemoveReportAndCertifiy(item);
+        this.billService.updateHasImage(item.getBillId(), imageCertList, BillTypeEnum.REGISTER_BILL);
+
+        return BaseOutput.success();
+    }
+    /**
+     * 不知道
+     * @param id
+     * @return
+     */
+    private int samplingCheckDetectRequest(Long id) {
+        DetectRequest detectRequest = this.detectRequestService.get(id);
+        detectRequest.setDetectSource(SampleSourceEnum.SAMPLE_CHECK.getCode());
+        // 维护采样时间
+        detectRequest.setSampleTime(new Date());
+        return this.detectRequestService.updateSelective(detectRequest);
+    }
+
+    /**
+     * 接单
+     *
+     * @param registerBillItem
+     * @param operatorUser
+     * @return
+     */
+    private int autoCheckRegisterBill(RegisterBill registerBillItem, OperatorUser operatorUser) {
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBillItem.getVerifyStatus()) || BillVerifyStatusEnum.DELETED.equalsToCode(registerBillItem.getVerifyStatus())) {
+            throw new TraceBizException("当前登记单不能进行接单");
+        }
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBillItem.getDetectStatus())) {
+            RegisterBill updatableBill = new RegisterBill();
+            updatableBill.setId(registerBillItem.getId());
+
+            updatableBill.setOperatorName(operatorUser.getName());
+            updatableBill.setOperatorId(operatorUser.getId());
+//            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
+            updatableBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+
+            BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);
+            updatableBill.setSampleCode(this.codeGenerateService.nextSampleCode(billTypeEnum));
+//            if (BillTypeEnum.REGISTER_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+//            } else if (BillTypeEnum.COMMISSION_BILL.equalsToCode(registerBillItem.getBillType())) {
+//                updatableBill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
+//            }
+            // 更新检测请求的检测来源为【AUTO_CHECK 主动送检】
+            this.autoCheckDetectRequest(registerBillItem.getDetectRequestId());
+            return this.updateRegisterBillAsWaitCheck(updatableBill);
+
+        } else {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+    }
+
+    /**
+     * 接单
+     *
+     * @param id
+     * @return
+     */
+    private int autoCheckDetectRequest(Long id) {
+        DetectRequest detectRequest = this.detectRequestService.get(id);
+        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+        // 维护采样时间
+        detectRequest.setSampleTime(new Date());
+        return this.detectRequestService.updateSelective(detectRequest);
+    }
+
+    /**
+     * 审核登记单
+     *
+     * @param id
+     * @param operatorUser
+     * @return
+     */
+    public int auditRegisterBill(Long id, BillVerifyStatusEnum verifyStatusEnum, OperatorUser operatorUser) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElseThrow(() -> {
+            return new TraceBizException("数据不存在或已删除");
+        });
+        return auditRegisterBill(verifyStatusEnum, registerBill, operatorUser);
+    }
+
+    /**
+     * 批量审核
+     *
+     * @param batchAuditDto
+     * @param operatorUser
+     * @return
+     */
+    public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto, OperatorUser operatorUser) {
+        BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(batchAuditDto.getVerifyStatus()).orElse(null);
+        if (billVerifyStatusEnum == null) {
+            return BaseOutput.failure("审核状态错误");
+        }
+        BatchResultDto<String> dto = new BatchResultDto<>();
+
+        // id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
+        Map<Boolean, List<RegisterBill>> partitionedMap = CollectionUtils
+                .emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id -> {
+                    RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+                    return registerBill;
+                }).filter(Objects::nonNull).filter(registerBill -> {
+                    if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+                        if (YesOrNoEnum.YES.getCode().equals(registerBill.getHasOriginCertifiy())
+                                && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }).collect(Collectors.partitioningBy((registerBill) -> {
+
+                    if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+                        if (YesOrNoEnum.YES.getCode().equals(registerBill.getHasOriginCertifiy())
+                                && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }));
+
+        // 只有产地证明，且需要进行批量处理
+        CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill -> {
+
+
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
+                registerBill.setOperatorName(operatorUser.getName());
+                registerBill.setOperatorId(operatorUser.getId());
+//                registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+                registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+                registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
+                this.billService.updateSelective(registerBill);
+                dto.getSuccessList().add(registerBill.getCode());
+            } else {
+                dto.getFailureList().add(registerBill.getCode());
+            }
+
+        });
+        // 其他登记单
+        CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill -> {
+            try {
+                this.auditRegisterBill(billVerifyStatusEnum, registerBill, operatorUser);
+                dto.getSuccessList().add(registerBill.getCode());
+            } catch (Exception e) {
+                dto.getFailureList().add(registerBill.getCode());
+            }
+
+        });
+
+        return BaseOutput.success().setData(dto);
+    }
+
+    /**
+     * 接单
+     *
+     * @param verifyStatusEnum
+     * @param registerBill
+     * @param operatorUser
+     * @return
+     */
+    private int auditRegisterBill(BillVerifyStatusEnum verifyStatusEnum, RegisterBill registerBill, OperatorUser operatorUser) {
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
+            registerBill.setOperatorName(operatorUser.getName());
+            registerBill.setOperatorId(operatorUser.getId());
+            if (BillVerifyStatusEnum.PASSED == verifyStatusEnum) {
+                // 理货区
+                if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
+                        && YesOrNoEnum.YES.getCode().equals(registerBill.getHasDetectReport())) {
+                    // 有检测报告，直接已审核
+                    // registerBill.setLatestDetectTime(new Date());
+//                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+                    registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
+                }
+                if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
+                    // registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
+                    registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+//                    registerBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
+                }
+
+            } else {
+                registerBill.setVerifyStatus(verifyStatusEnum.getCode());
+            }
+
+            int v = this.billService.update(registerBill);
+            this.userQrHistoryService.createUserQrHistoryForVerifyBill(registerBill.getBillId());
+            return v;
+        } else {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+    }
+
+    /**
+     * 更新
+     *
+     * @param updatableBill
+     * @return
+     */
+    private int updateRegisterBillAsWaitCheck(RegisterBill updatableBill) {
+
+//        registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+        updatableBill.setModified(new Date());
+        return this.billService.updateSelective(updatableBill);
+//        return this.billService.update(updatableBill);
+    }
 
     /**
      * 对上传图片数量做判断
