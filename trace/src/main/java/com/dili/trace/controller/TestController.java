@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.sql.Connection;
+import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,11 +24,16 @@ public class TestController {
 
     static class DemoData {
         private Date myDate = new Date();
-        @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
 //        @JsonSerialize(using = LocalDateTimeSerializer.class)
-        private LocalDateTime dateTime = LocalDateTime.now();
+        private ZonedDateTime dateTime = ZonedDateTime.now();
 
-        private LocalDateTime dateTime2 = LocalDateTime.now();
+        private ZonedDateTime dateTime2 = ZonedDateTime.now();
+
+        private ZonedDateTime dateTime3 = ZonedDateTime.now();
+
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+        private LocalDateTime dateTime4 = LocalDateTime.now();
 
         public Date getMyDate() {
             return myDate;
@@ -40,20 +43,36 @@ public class TestController {
             this.myDate = myDate;
         }
 
-        public LocalDateTime getDateTime() {
+        public ZonedDateTime getDateTime() {
             return dateTime;
         }
 
-        public LocalDateTime getDateTime2() {
+        public void setDateTime(ZonedDateTime dateTime) {
+            this.dateTime = dateTime;
+        }
+
+        public ZonedDateTime getDateTime2() {
             return dateTime2;
         }
 
-        public void setDateTime2(LocalDateTime dateTime2) {
+        public void setDateTime2(ZonedDateTime dateTime2) {
             this.dateTime2 = dateTime2;
         }
 
-        public void setDateTime(LocalDateTime dateTime) {
-            this.dateTime = dateTime;
+        public ZonedDateTime getDateTime3() {
+            return dateTime3;
+        }
+
+        public void setDateTime3(ZonedDateTime dateTime3) {
+            this.dateTime3 = dateTime3;
+        }
+
+        public LocalDateTime getDateTime4() {
+            return dateTime4;
+        }
+
+        public void setDateTime4(LocalDateTime dateTime4) {
+            this.dateTime4 = dateTime4;
         }
     }
 
@@ -64,8 +83,9 @@ public class TestController {
      */
     @RequestMapping(value = "/test.action", method = {RequestMethod.GET, RequestMethod.POST})
     public BaseOutput test() {
+
         DemoData rb = new DemoData();
-        rb.getDateTime2().atZone(ZoneId.systemDefault());
+//        rb.getDateTime2().atZone(ZoneId.systemDefault());
         return BaseOutput.successData(rb);
     }
 
@@ -81,5 +101,26 @@ public class TestController {
         System.out.println(instant.atOffset(ZoneOffset.of("+8")));//GMT+8
         System.out.println(LocalDateTime.now().atZone(ZoneId.of("Etc/GMT")).toInstant()
                 .atOffset(ZoneOffset.of("+8")));
+
+        System.out.println(date.toInstant().atZone(ZoneId.systemDefault()));
+        System.out.println(date.toInstant().atZone(ZoneId.of("Etc/GMT")));
+
+        LocalDateTime ldt = LocalDateTime.of(2019, 9, 15, 15, 16, 17);
+        ZonedDateTime zbj = ldt.atZone(ZoneId.systemDefault());
+        ZonedDateTime zny = ldt.atZone(ZoneId.of("America/New_York"));
+        System.out.println(zbj);
+        System.out.println(zny);
+
+        System.out.println("===================");
+        System.out.println(zbj.withFixedOffsetZone());
+        System.out.println(zbj.withEarlierOffsetAtOverlap());
+        System.out.println(zbj.withLaterOffsetAtOverlap());
+        System.out.println("===================");
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+        System.out.println(offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()));
+
+        System.out.println(ZoneOffset.systemDefault());
+
     }
 }
+

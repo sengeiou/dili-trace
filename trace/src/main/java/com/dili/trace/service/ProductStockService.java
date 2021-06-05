@@ -12,6 +12,7 @@ import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.ret.TradeDetailRetDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.SaleStatusEnum;
@@ -43,6 +44,8 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
     CustomerRpcService customerRpcService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    TradeService tradeService;
 
     /**
      * 查询 锁定数据行
@@ -165,7 +168,7 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
      * @param billId
      * @return
      */
-    public int updateProductStockAndTradeDetailAfterDetect(Long billId) {
+    public int updateProductStockAndTradeDetailAfterDetect(Long billId, Optional<OperatorUser> operatorUser) {
 
 
         DetectResultEnum detectResultEnum = StreamEx.of(this.detectRequestService.findDetectRequestByBillId(billId)).map(detectRequest -> {
@@ -182,6 +185,7 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
             return new TraceBizException("报备单不存在");
         });
 
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getBillId(), operatorUser);
         TradeDetail tdq = new TradeDetail();
         tdq.setBillId(billId);
         Map<Long, List<TradeDetail>> productIdTradeDetailListMap = StreamEx.of(StreamEx.of(this.tradeDetailService.listByExample(tdq))).groupingBy(TradeDetail::getProductStockId);

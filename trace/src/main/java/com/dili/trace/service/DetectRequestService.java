@@ -754,7 +754,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * @param detectResultEnum
      */
     @Transactional(rollbackFor = Exception.class)
-    public void manualCheck(Long detectRecordId, Long billId, Optional<OperatorUser> operatorUser, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
+    public void manualCheck(Long detectRecordId, Long billId, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime, Optional<OperatorUser> operatorUser) {
 
 
         RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
@@ -775,7 +775,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         manualCheckBill(detectRecordId, registerBill, operatorUser, detectTypeEnum, detectResultEnum);
 
         // 人工检测-检测请求
-        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(), detectTypeEnum, detectResultEnum, detectTime);
+        manualCheckDetectRequest(detectRecordId, registerBill.getDetectRequestId(), detectTypeEnum, detectResultEnum, detectTime, operatorUser);
     }
 
     /**
@@ -818,7 +818,8 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param detectRequestId
      */
-    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId, DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime) {
+    private void manualCheckDetectRequest(Long detectRecordId, Long detectRequestId,
+                                          DetectTypeEnum detectTypeEnum, DetectResultEnum detectResultEnum, Date detectTime, Optional<OperatorUser> operatorUser) {
         DetectRecord detectRecord = detectRecordService.get(detectRecordId);
         if (!Objects.nonNull(detectRecord)) {
             throw new TraceBizException("操作失败，检测记录不存在，请联系管理员！");
@@ -841,7 +842,7 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         updateRequest.setDetectorName(detectRecord.getDetectOperator());
         this.updateSelective(updateRequest);
 
-        this.productStockService.updateProductStockAndTradeDetailAfterDetect(drItem.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(drItem.getBillId(), operatorUser);
     }
 
     /**
@@ -897,10 +898,10 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * 抽检
      *
      * @param record
-     * @param userTicket
+     * @param operatorUser
      */
     @Transactional(rollbackFor = Exception.class)
-    public void spotCheckBill(DetectRecordParam record, UserTicket userTicket) {
+    public void spotCheckBill(DetectRecordParam record, Optional<OperatorUser> operatorUser) {
         if (Objects.isNull(record.getBillId())) {
             throw new TraceBizException("检测单据Id为空");
         }
@@ -917,9 +918,9 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
             throw new TraceBizException("当前登记单状态不能进行抽检");
         }
         if (SpotTypeStatusEnum.NORMAL.equalsToCode(record.getSpotCheckType())) {
-            doAutoSpotCheckBill(registerBillItem, userTicket);
+            doAutoSpotCheckBill(registerBillItem, operatorUser);
         } else {
-            doManualSpotCheckBill(record, registerBillItem, userTicket);
+            doManualSpotCheckBill(record, registerBillItem, operatorUser);
         }
     }
 
@@ -928,11 +929,11 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      *
      * @param record
      * @param registerBillItem
-     * @param userTicket
+     * @param operatorUser
      */
-    private void doManualSpotCheckBill(DetectRecordParam record, RegisterBill registerBillItem, UserTicket userTicket) {
+    private void doManualSpotCheckBill(DetectRecordParam record, RegisterBill registerBillItem, Optional<OperatorUser> operatorUser) {
         //更新报备单检测状态
-        RegisterBill registerBill = updateBillDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode(), registerBillItem, userTicket);
+        RegisterBill registerBill = updateBillDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode(), registerBillItem, operatorUser);
         billService.updateSelective(registerBill);
 
 
@@ -958,18 +959,18 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
         this.detectRecordService.insertSelective(newRecord);
 
 
-        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId(), operatorUser);
     }
 
     /**
      * 抽检检测
      *
      * @param registerBillItem
-     * @param userTicket
+     * @param operatorUser
      */
-    private void doAutoSpotCheckBill(RegisterBill registerBillItem, UserTicket userTicket) {
+    private void doAutoSpotCheckBill(RegisterBill registerBillItem, Optional<OperatorUser> operatorUser) {
         //更新报备单检测状态
-        RegisterBill bill = updateBillDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode(), registerBillItem, userTicket);
+        RegisterBill bill = updateBillDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode(), registerBillItem, operatorUser);
         billService.updateSelective(bill);
         // 更新检测请求
         DetectRequest updateParam = new DetectRequest();
@@ -1011,14 +1012,17 @@ public class DetectRequestService extends TraceBaseService<DetectRequest, Long> 
      * 更新报备单为待检测，并生成采样编号
      *
      * @param registerBillItem
-     * @param userTicket
+     * @param operatorUser
      * @return
      */
-    private RegisterBill updateBillDetectStatus(Integer opt, RegisterBill registerBillItem, UserTicket userTicket) {
+    private RegisterBill updateBillDetectStatus(Integer opt, RegisterBill registerBillItem, Optional<OperatorUser> operatorUser) {
         RegisterBill upBill = new RegisterBill();
         upBill.setId(registerBillItem.getId());
-        upBill.setOperatorName(userTicket.getRealName());
-        upBill.setOperatorId(userTicket.getId());
+        operatorUser.ifPresent(optuser -> {
+            upBill.setOperatorName(optuser.getName());
+            upBill.setOperatorId(optuser.getId());
+        });
+
         upBill.setDetectStatus(opt);
 
         BillTypeEnum billTypeEnum = BillTypeEnum.fromCode(registerBillItem.getBillType()).orElse(null);

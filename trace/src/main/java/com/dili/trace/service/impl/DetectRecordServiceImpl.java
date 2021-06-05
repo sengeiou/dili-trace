@@ -46,7 +46,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
     BillService billService;
 
     public DetectRecordMapper getActualDao() {
-        return (DetectRecordMapper)getDao();
+        return (DetectRecordMapper) getDao();
     }
 
     @Override
@@ -63,19 +63,19 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         detectRecord.setSort("id");
         detectRecord.setOrder("desc");
         List<DetectRecord> list = this.listByExample(detectRecord);
-        if(list!=null && !list.isEmpty()){
+        if (list != null && !list.isEmpty()) {
             return list.get(0);
         }
         return null;
     }
 
-	@Override
-	public List<DetectRecord> findTop2AndLatest(String registerBillCode) {
-		return this.getActualDao().findTop2AndLatest(registerBillCode);
-	}
+    @Override
+    public List<DetectRecord> findTop2AndLatest(String registerBillCode) {
+        return this.getActualDao().findTop2AndLatest(registerBillCode);
+    }
 
     @Override
-    public  Map<String, DetectRecord>  findMapRegisterBillByIds(List<Long> ids) {
+    public Map<String, DetectRecord> findMapRegisterBillByIds(List<Long> ids) {
         if (ids.isEmpty()) {
             return Maps.newHashMap();
         }
@@ -87,62 +87,62 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int saveDetectRecordManually(DetectRecordInputDto input, Optional<OperatorUser> operatorUser) {
-        DetectResultEnum detectResultEnum=DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(()->{
-            return  new TraceBizException("检测结果不正确");
+        DetectResultEnum detectResultEnum = DetectResultEnum.fromCode(input.getDetectResult()).orElseThrow(() -> {
+            return new TraceBizException("检测结果不正确");
         });
 
-        DetectTypeEnum detectTypeEnum=DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(()->{
-            return  new TraceBizException("检测类型不正确");
+        DetectTypeEnum detectTypeEnum = DetectTypeEnum.fromCode(input.getDetectType()).orElseThrow(() -> {
+            return new TraceBizException("检测类型不正确");
         });
-        if(StringUtils.isNotBlank(input.getDetectBatchNo())&& !RegUtils.isValidInput(input.getDetectBatchNo().trim())){
-            throw  new TraceBizException("检测批号不能有特殊字符");
+        if (StringUtils.isNotBlank(input.getDetectBatchNo()) && !RegUtils.isValidInput(input.getDetectBatchNo().trim())) {
+            throw new TraceBizException("检测批号不能有特殊字符");
         }
-        if(StringUtils.isNotBlank(input.getNormalResult())&&!RegUtils.isValidInput(input.getNormalResult().trim())){
-            throw  new TraceBizException("检测标准值不能有特殊字符");
-        }
-
-        if(StringUtils.isBlank(input.getPdResult())){
-            throw  new TraceBizException("检测值不能为空");
-        }
-        if(!RegUtils.isValidInput(input.getPdResult())){
-            throw  new TraceBizException("检测值不能有特殊字符");
+        if (StringUtils.isNotBlank(input.getNormalResult()) && !RegUtils.isValidInput(input.getNormalResult().trim())) {
+            throw new TraceBizException("检测标准值不能有特殊字符");
         }
 
-        if(StringUtils.isBlank(input.getDetectOperator())){
-            throw  new TraceBizException("检测人不能为空");
+        if (StringUtils.isBlank(input.getPdResult())) {
+            throw new TraceBizException("检测值不能为空");
         }
-        if(!RegUtils.isValidInput(input.getDetectOperator())){
-            throw  new TraceBizException("检测人不能有特殊字符");
+        if (!RegUtils.isValidInput(input.getPdResult())) {
+            throw new TraceBizException("检测值不能有特殊字符");
         }
 
-
-        if(input.getDetectTime()==null){
-            throw  new TraceBizException("检测时间不能为空");
+        if (StringUtils.isBlank(input.getDetectOperator())) {
+            throw new TraceBizException("检测人不能为空");
+        }
+        if (!RegUtils.isValidInput(input.getDetectOperator())) {
+            throw new TraceBizException("检测人不能有特殊字符");
         }
 
 
-        if(StringUtils.isNotBlank(input.getDetectCompany())&&!RegUtils.isValidInput(input.getDetectCompany())){
-            throw  new TraceBizException("检测机构不能有特殊字符");
+        if (input.getDetectTime() == null) {
+            throw new TraceBizException("检测时间不能为空");
         }
 
-        DetectRecord detectRecord=new DetectRecord();
+
+        if (StringUtils.isNotBlank(input.getDetectCompany()) && !RegUtils.isValidInput(input.getDetectCompany())) {
+            throw new TraceBizException("检测机构不能有特殊字符");
+        }
+
+        DetectRecord detectRecord = new DetectRecord();
         try {
-            BeanUtils.copyProperties(detectRecord,input);
+            BeanUtils.copyProperties(detectRecord, input);
             detectRecord.setDetectState(input.getDetectResult());
             detectRecord.setDetectType(input.getDetectType());
         } catch (Exception e) {
-           throw new TraceBizException("程序错误");
+            throw new TraceBizException("程序错误");
         }
 
         RegisterBill query = new RegisterBill();
         query.setCode(detectRecord.getRegisterBillCode());
-        RegisterBill registerBill= StreamEx.of(billService.list(query)).findFirst().orElse(null);
-        if (registerBill==null) {
-            throw new TraceBizException("上传检测任务结果失败登记单【"+detectRecord.getRegisterBillCode()+"】查询失败");
+        RegisterBill registerBill = StreamEx.of(billService.list(query)).findFirst().orElse(null);
+        if (registerBill == null) {
+            throw new TraceBizException("上传检测任务结果失败登记单【" + detectRecord.getRegisterBillCode() + "】查询失败");
         }
         detectRecord.setDetectRequestId(registerBill.getDetectRequestId());
         this.saveOrUpdate(detectRecord);
-        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), operatorUser,detectTypeEnum,detectResultEnum,input.getDetectTime());
+        this.detectRequestService.manualCheck(detectRecord.getId(), registerBill.getBillId(), detectTypeEnum, detectResultEnum, input.getDetectTime(), operatorUser);
 
         return 1;
     }

@@ -416,8 +416,7 @@ public class CustomerDetectRequestController {
     public @ResponseBody
     BaseOutput doSpotCheck(@RequestBody  DetectRecordParam record) {
         try {
-            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            this.detectRequestService.spotCheckBill(record, userTicket);
+            this.detectRequestService.spotCheckBill(record, this.uapRpcService.getCurrentOperator());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

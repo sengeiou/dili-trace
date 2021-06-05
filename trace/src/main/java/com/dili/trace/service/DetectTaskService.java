@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 检测任务接口
@@ -227,7 +228,7 @@ public class DetectTaskService {
 
         this.billService.updateSelective(registerBill);
 
-        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId());
+        this.productStockService.updateProductStockAndTradeDetailAfterDetect(registerBill.getBillId(), Optional.empty());
 
     }
 
