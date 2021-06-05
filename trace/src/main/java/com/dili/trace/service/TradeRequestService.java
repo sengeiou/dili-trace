@@ -81,6 +81,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ProductRpcService productRpcService;
     @Autowired
     FirmRpcService firmRpcService;
+    @Autowired
+    ProductStockService productStockService;
 
     /**
      * 返回真实mapper
@@ -147,19 +149,23 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                         return new TraceBizException("操作库存失败");
                     });
 
-            ProductStock updateBuyerStock = new ProductStock();
-            updateBuyerStock.setId(buyerPS.getId());
-            updateBuyerStock.setTradeDetailNum(buyerPS.getTradeDetailNum() - 1);
-            updateBuyerStock.setStockWeight(buyerPS.getStockWeight().subtract(td.getStockWeight()));
-            this.batchStockService.updateSelective(updateBuyerStock);
+//            ProductStock updateBuyerStock = new ProductStock();
+//            updateBuyerStock.setId(buyerPS.getId());
+//            updateBuyerStock.setTradeDetailNum(buyerPS.getTradeDetailNum() - 1);
+//            updateBuyerStock.setStockWeight(buyerPS.getStockWeight().subtract(td.getStockWeight()));
+//            this.batchStockService.updateSelective(updateBuyerStock);
 
             TradeDetail tradeDetail = new TradeDetail();
             tradeDetail.setId(td.getId());
             tradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
             tradeDetail.setSoftWeight(td.getStockWeight());
             tradeDetail.setStockWeight(BigDecimal.ZERO);
-            this.productRpcService.lock(td.getThirdPartyStockId(), buyerPS.getMarketId(), td.getStockWeight());
             this.tradeDetailService.updateSelective(tradeDetail);
+
+            this.productStockService.updateProductStock(buyerPS.getProductStockId());
+
+            this.productRpcService.lock(td.getThirdPartyStockId(), buyerPS.getMarketId(), td.getStockWeight());
+
 
         });
 
@@ -210,11 +216,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                             return new TraceBizException("操作库存失败");
                         });
 
-                ProductStock batchStock = new ProductStock();
-                batchStock.setId(buyerStockItem.getId());
-                batchStock.setTradeDetailNum(buyerStockItem.getTradeDetailNum() + 1);
-                batchStock.setStockWeight(buyerStockItem.getStockWeight().add(softWeight));
-                this.batchStockService.updateSelective(batchStock);
+//                ProductStock batchStock = new ProductStock();
+//                batchStock.setId(buyerStockItem.getId());
+//                batchStock.setTradeDetailNum(buyerStockItem.getTradeDetailNum() + 1);
+//                batchStock.setStockWeight(buyerStockItem.getStockWeight().add(softWeight));
+//                this.batchStockService.updateSelective(batchStock);
 
                 TradeDetail tradeDetail = new TradeDetail();
                 tradeDetail.setId(buyerTd.getId());
@@ -222,6 +228,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 tradeDetail.setStockWeight(softWeight);
                 tradeDetail.setSoftWeight(BigDecimal.ZERO);
                 this.tradeDetailService.updateSelective(tradeDetail);
+
+                this.productStockService.updateProductStock(buyerStockItem.getId());
 
                 this.productRpcService.release(buyerTd.getThirdPartyStockId(), buyerStockItem.getMarketId(), softWeight);
             });
@@ -250,11 +258,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 buyerTradeDetail.setSoftWeight(BigDecimal.ZERO);
                 buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
                 this.tradeDetailService.updateSelective(buyerTradeDetail);
+                this.productStockService.updateProductStock(buyerTd.getProductStockId());
 
-
-                ProductStock sellerBatchStock = new ProductStock();
-                sellerBatchStock.setId(sellerBatchStockItem.getId());
-                sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(softWeight));
+//                ProductStock sellerBatchStock = new ProductStock();
+//                sellerBatchStock.setId(sellerBatchStockItem.getId());
+//                sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(softWeight));
 
                 TradeDetail sellerTradeDetail = new TradeDetail();
                 sellerTradeDetail.setId(sellertd.getId());
@@ -263,12 +271,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 if (SaleStatusEnum.FOR_SALE.equalsToCode(sellertd.getSaleStatus())) {
                     // do nothing
                 } else {
-                    sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
+//                    sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
                     sellerTradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
                     sellerTradeDetail.setIsBatched(YesOrNoEnum.YES.getCode());
                 }
-                this.batchStockService.updateSelective(sellerBatchStock);
+//                this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
+                this.productStockService.updateProductStock(sellertd.getProductStockId());
 
                 this.productRpcService.release(buyerTradeDetail.getThirdPartyStockId(), buyerStockItem.getMarketId(), buyerTradeDetail.getSoftWeight());
                 this.productRpcService.deductRegDetail(buyerTradeDetail.getTradeDetailId(), tradeRequestItem.getBuyerMarketId(), buyerTd.getStockWeight(), Optional.empty());
