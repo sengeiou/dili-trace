@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Map;
 
-public interface UserMapper extends MyMapper<UserInfo> {
+public interface UserInfoMapper extends MyMapper<UserInfo> {
     public List<UserInfo> selectUserInfoByQrHistory(UserQrHistoryQueryDto historyQueryDto);
 
     public List<UserOutput> countGroupByValidateState(UserInfo user);

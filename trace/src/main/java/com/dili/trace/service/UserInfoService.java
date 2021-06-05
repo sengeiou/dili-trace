@@ -2,24 +2,18 @@ package com.dili.trace.service;
 
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserQueryDto;
-import com.dili.trace.dao.UserMapper;
+import com.dili.trace.dao.UserInfoMapper;
 import com.dili.trace.domain.UserInfo;
-import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.dto.query.UserQrHistoryQueryDto;
 import com.dili.trace.glossary.UserQrStatusEnum;
-import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,7 +22,7 @@ import java.util.Optional;
 @Service
 public class UserInfoService extends TraceBaseService<UserInfo, Long> {
     @Autowired
-    UserMapper userMapper;
+    UserInfoMapper userInfoMapper;
     @Autowired
     UserQrHistoryService userQrHistoryService;
 
@@ -40,7 +34,7 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
      */
     public BasePage<UserInfo> selectUserInfoByQrHistory(UserQrHistoryQueryDto historyQueryDto) {
         return super.buildQuery(historyQueryDto).listPageByFun(q -> {
-            return this.userMapper.selectUserInfoByQrHistory(q);
+            return this.userInfoMapper.selectUserInfoByQrHistory(q);
         });
 
     }
@@ -113,7 +107,7 @@ public class UserInfoService extends TraceBaseService<UserInfo, Long> {
             userInfo.setPreQrStatus(UserQrStatusEnum.BLACK.getCode());
             userInfo.setQrStatus(UserQrStatusEnum.BLACK.getCode());
             userInfo.setLastSyncSuccess(YesOrNoEnum.NO.getCode());
-            this.userMapper.insertIgnoreUserInfo(userInfo);
+            this.userInfoMapper.insertIgnoreUserInfo(userInfo);
 
 
             UserQueryDto query = new UserQueryDto();

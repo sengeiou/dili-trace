@@ -13,7 +13,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.dao.UserMapper;
+import com.dili.trace.dao.UserInfoMapper;
 import com.dili.trace.domain.Market;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.dto.OperatorUser;
@@ -51,7 +51,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     UserService userService;
 
     @Autowired
-    UserMapper userMapper;
+    UserInfoMapper userInfoMapper;
 
     @Autowired
     CategoryService categoryService;
@@ -173,7 +173,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     }
 
     public BaseOutput codeCount(Optional<OperatorUser> optUser, Market market) {
-        List<UserOutput> userOutputList = this.userMapper.groupByQrStatus(Lists.newArrayList(
+        List<UserOutput> userOutputList = this.userInfoMapper.groupByQrStatus(Lists.newArrayList(
                 UserQrStatusEnum.GREEN.getCode(), UserQrStatusEnum.YELLOW.getCode(), UserQrStatusEnum.RED.getCode()), market.getId());
         Map<Integer, Integer> qrStatusMap = StreamEx.of(userOutputList).toMap(UserOutput::getQrStatus,
                 UserOutput::getCnt);

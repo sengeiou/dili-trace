@@ -6,14 +6,11 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.TallyingArea;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.customer.sdk.rpc.CustomerRpc;
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.UserQueryDto;
-import com.dili.trace.dao.UserMapper;
+import com.dili.trace.dao.UserInfoMapper;
 import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.UserInfo;
 import com.dili.trace.domain.UserTallyArea;
@@ -41,8 +38,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class UserServiceImpl extends TraceBaseService<UserInfo, Long> implements UserService {
 
-    public UserMapper getActualDao() {
-        return (UserMapper) getDao();
+    public UserInfoMapper getActualDao() {
+        return (UserInfoMapper) getDao();
     }
 
     @Autowired

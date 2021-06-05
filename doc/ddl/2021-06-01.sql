@@ -5,4 +5,5 @@ drop  table dili_trace.`applets_config`;
 drop  table dili_trace.`event_message`;
 drop  table dili_trace.`user_login_history`;
 drop  table dili_trace.`quality_trace_trade_bill_syncpoint`;
+drop  table dili_trace.`sms_message`;
 
