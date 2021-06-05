@@ -51,9 +51,7 @@ public class TradeService {
             return false;
         }
 
-        BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElseThrow(() -> {
-            return new TraceBizException("报备审核状态错误");
-        });
+        BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(billItem.getVerifyStatus());
 
         //(退回+检测合格)/(审核通过)+进门
         if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {

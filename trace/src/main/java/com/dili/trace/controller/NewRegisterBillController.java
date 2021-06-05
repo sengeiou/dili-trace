@@ -539,10 +539,7 @@ public class NewRegisterBillController extends AbstractBaseController {
     public @ResponseBody
     BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "verifyStatus", required = true) Integer verifyStatus) {
         try {
-            BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(verifyStatus).orElse(null);
-            if (billVerifyStatusEnum == null) {
-                return BaseOutput.failure("审核状态错误");
-            }
+            BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(verifyStatus);
             this.registerBillService.auditRegisterBill(id, billVerifyStatusEnum, this.uapRpcService.getCurrentOperatorOrEx());
             if (BillVerifyStatusEnum.PASSED == billVerifyStatusEnum) {
                 Long marketId = this.uapRpcService.getCurrentFirm().get().getId();

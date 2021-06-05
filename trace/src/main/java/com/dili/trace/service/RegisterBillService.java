@@ -1060,8 +1060,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
                         || RegistTypeEnum.SUPPLEMENT.equalsToCode(billItem.getRegistType())) {
             throw new TraceBizException("补单或已进门报备单,只能场内审核");
         }
-        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
-                .orElseThrow(() -> new TraceBizException("参数错误"));
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCodeOrEx(input.getVerifyStatus());
         this.doVerify(billItem, toVerifyState, input.getReason(), operatorUser);
 
         if (BillVerifyStatusEnum.PASSED == toVerifyState) {
@@ -1086,8 +1085,8 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
         if (billId == null || verifyStatus == null) {
             throw new TraceBizException("参数错误");
         }
-        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(verifyStatus)
-                .orElseThrow(() -> new TraceBizException("参数错误"));
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCodeOrEx(verifyStatus);
+
         RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(() -> new TraceBizException("数据不存在"));
 
 //        if (!YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())
@@ -1145,8 +1144,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
      */
     private void doVerify(RegisterBill billItem, BillVerifyStatusEnum toVerifyState, String reason,
                           Optional<OperatorUser> operatorUser) {
-        BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
-                .orElseThrow(() -> new TraceBizException("数据错误"));
+        BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCodeOrEx(billItem.getVerifyStatus());
 
 
         logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
@@ -1909,10 +1907,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
      * @return
      */
     public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto, OperatorUser operatorUser) {
-        BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(batchAuditDto.getVerifyStatus()).orElse(null);
-        if (billVerifyStatusEnum == null) {
-            return BaseOutput.failure("审核状态错误");
-        }
+        BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(batchAuditDto.getVerifyStatus());
         BatchResultDto<String> dto = new BatchResultDto<>();
 
         // id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)

@@ -2,6 +2,7 @@ package com.dili.trace.enums;
 
 import java.util.Optional;
 
+import com.dili.common.exception.TraceBizException;
 import one.util.streamex.StreamEx;
 
 /**
@@ -34,6 +35,12 @@ public enum TradeOrderStatusEnum {
 
 	public static Optional<TradeOrderStatusEnum> fromCode(Integer code) {
 		return StreamEx.of(TradeOrderStatusEnum.values()).filterBy(TradeOrderStatusEnum::getCode, code).findFirst();
+	}
+
+	public static TradeOrderStatusEnum fromCodeOrEx(Integer code) {
+		return StreamEx.of(TradeOrderStatusEnum.values()).filterBy(TradeOrderStatusEnum::getCode, code).findFirst().orElseThrow(() -> {
+			return new TraceBizException("状态值错误");
+		});
 	}
 	public static String toName(Integer code){
 		return TradeOrderStatusEnum.fromCode(code).map(TradeOrderStatusEnum::getName).orElse("");

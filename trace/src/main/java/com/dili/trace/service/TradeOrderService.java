@@ -149,14 +149,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
     public void handleBuyerRequest(TradeRequestHandleDto handleDto) {
         Long tradeRequestId = handleDto.getTradeRequestId();
         TradeRequest tradeRequest = this.tradeRequestService.get(tradeRequestId);
-        TradeOrderStatusEnum tradeOrderStatusEnum = TradeOrderStatusEnum.fromCode(handleDto.getHandleStatus()).orElseThrow(() -> {
-            return new TraceBizException("状态值错误");
-        });
+        TradeOrderStatusEnum tradeOrderStatusEnum = TradeOrderStatusEnum.fromCodeOrEx(handleDto.getHandleStatus());
         TradeOrder tradeOrder = this.get(tradeRequest.getTradeOrderId());
 
-        TradeOrderTypeEnum tradeOrderTypeEnum = TradeOrderTypeEnum.fromCode(tradeOrder.getOrderType()).orElseThrow(() -> {
-            return new TraceBizException("类型错误");
-        });
+        TradeOrderTypeEnum tradeOrderTypeEnum = TradeOrderTypeEnum.fromCodeOrEx(tradeOrder.getOrderType());
 
         TradeRequest updatableTradeRequest = new TradeRequest();
         updatableTradeRequest.setId(tradeRequest.getId());
@@ -361,9 +357,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         if (TradeOrderStatusEnum.NONE == tradeOrderStatusEnum) {
             return;
         }
-        TradeOrderTypeEnum tradeOrderTypeEnum = TradeOrderTypeEnum.fromCode(tradeOrderItem.getOrderType()).orElseThrow(() -> {
-            return new TraceBizException("交易类型错误");
-        });
+        TradeOrderTypeEnum tradeOrderTypeEnum = TradeOrderTypeEnum.fromCodeOrEx(tradeOrderItem.getOrderType());
 
         for (TradeRequest tradeRequest : tradeRequestList) {
             if (tradeOrderStatusEnum.equalsToCode(tradeRequest.getOrderStatus())) {
