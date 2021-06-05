@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.*;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  */
 @Service
 @EnableRetry
-public class TradePushService extends BaseServiceImpl<TradePushLog, Long>   {
+public class TradePushService extends TraceBaseService<TradePushLog, Long>   {
 
     private static final Logger logger = LoggerFactory.getLogger(TradePushService.class);
 
@@ -52,7 +52,7 @@ public class TradePushService extends BaseServiceImpl<TradePushLog, Long>   {
      */
     @Transactional
     public void tradePush(TradePushLog tradePushLog) {
-        logger.info("push, param:{}", JSON.toJSONString(tradePushLog));
+        logger.info("push, param:{}", super.toJSONString(tradePushLog));
         BigDecimal pushAwayWeight = tradePushLog.getOperationWeight();
         TradeDetail tradeDetail = tradeDetailService.get(tradePushLog.getTradeDetailId());
         ProductStock productStock = productStockService.selectByIdForUpdate(tradeDetail.getProductStockId())

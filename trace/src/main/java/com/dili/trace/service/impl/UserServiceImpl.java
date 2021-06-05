@@ -1,6 +1,6 @@
 package com.dili.trace.service.impl;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 @Service
-public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements UserService {
+public class UserServiceImpl extends TraceBaseService<UserInfo, Long> implements UserService {
 
     public UserMapper getActualDao() {
         return (UserMapper) getDao();
@@ -222,7 +222,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
         List<UserInfo> userList = listByExample(user);
         List<Long> sUserList = StreamEx.of(userList).nonNull().map(UserInfo::getId).collect(toList());
         if (CollectionUtils.isNotEmpty(sUserList)) {
-            LOGGER.info("---用户状态去活跃集合 relustList---" + JSON.toJSONString(sUserList));
+            LOGGER.info("---用户状态去活跃集合 relustList---" + super.toJSONString(sUserList));
             getActualDao().updateUserUnActiveFlag(sUserList);
         }
         //无报备单用户
@@ -247,7 +247,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserInfo, Long> implements 
         }
 
         List<Long> resultList = billList.stream().filter(r -> sellList.contains(r)).collect(toList());
-        LOGGER.info("---去活跃集合 relustList---" + JSON.toJSONString(resultList));
+        LOGGER.info("---去活跃集合 relustList---" + super.toJSONString(resultList));
         if (CollectionUtils.isNotEmpty(resultList)) {
             getActualDao().updateUserUnActiveFlag(resultList);
         }

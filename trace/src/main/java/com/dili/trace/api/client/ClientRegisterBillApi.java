@@ -1,6 +1,6 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
@@ -13,6 +13,7 @@ import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
@@ -51,7 +52,7 @@ import java.util.Optional;
 @RequestMapping(value = "/api/client/clientRegisterBill")
 @Api(value = "/api/client/clientRegisterBill", description = "登记单相关接口")
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
-public class ClientRegisterBillApi {
+public class ClientRegisterBillApi  extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientRegisterBillApi.class);
     @Autowired
     private RegisterBillService registerBillService;
@@ -83,7 +84,7 @@ public class ClientRegisterBillApi {
     @ApiOperation("保存多个登记单")
     @RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
     public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
-        logger.info("保存多个登记单:{}", JSON.toJSONString(createListBillParam));
+        logger.info("保存多个登记单:{}", super.toJSONString(createListBillParam));
         if (createListBillParam == null || createListBillParam.getRegisterBills() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -111,7 +112,7 @@ public class ClientRegisterBillApi {
     @ApiOperation("修改报备单")
     @RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
     public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
-        logger.info("修改报备单:{}", JSON.toJSONString(dto));
+        logger.info("修改报备单:{}", super.toJSONString(dto));
         if (dto == null || dto.getBillId() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -123,7 +124,7 @@ public class ClientRegisterBillApi {
 
 
             RegisterBill registerBill = dto.build(customer, sessionData.getMarketId());
-            logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
+            logger.info("保存登记单:{}", super.toJSONString(registerBill));
             this.registerBillService.doEdit(registerBill, dto.getImageCertList(), Optional.empty());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -143,7 +144,7 @@ public class ClientRegisterBillApi {
     @ApiOperation("删除报备单")
     @RequestMapping(value = "/doDeleteRegisterBill.api", method = RequestMethod.POST)
     public BaseOutput doDeleteRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
-        logger.info("删除报备单:{}", JSON.toJSONString(dto));
+        logger.info("删除报备单:{}", super.toJSONString(dto));
         if (dto == null || dto.getBillId() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -172,7 +173,7 @@ public class ClientRegisterBillApi {
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<TradeDetailBillOutput>> listPage(@RequestBody RegisterBillDto input) {
-        logger.info("获取登记单列表:{}", JSON.toJSONString(input));
+        logger.info("获取登记单列表:{}", super.toJSONString(input));
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
@@ -282,8 +283,10 @@ public class ClientRegisterBillApi {
                 registerBill.setRemainWeight(registerHead.getRemainWeight());
             }
 
-            String data = JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
-            return BaseOutput.success().setData(JSON.parse(data));
+//            String data = JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
+//            return BaseOutput.success().setData(JSON.parse(data));
+//            String data = JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.successData(registerBill);
 
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

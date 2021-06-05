@@ -1,6 +1,6 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -10,6 +10,7 @@ import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.input.CommissionBillInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
@@ -48,7 +49,7 @@ import java.util.function.Function;
 @RestController
 @RequestMapping(value = "/api/client/clientCommissionBillApi")
 @AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
-public class ClientCommissionBillApi {
+public class ClientCommissionBillApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientCommissionBillApi.class);
     @Autowired
     CommissionBillService commissionBillService;
@@ -81,7 +82,7 @@ public class ClientCommissionBillApi {
                 return BaseOutput.failure("参数错误");
             }
             List<RegisterBill> inputBillList = StreamEx.of(inputList).map(input -> {
-                logger.info("循环保存登记单:" + JSON.toJSONString(input));
+                logger.info("循环保存登记单:" + super.toJSONString(input));
                 CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(userId, sessionData.getMarketId());
                 RegisterBill registerBill = input.build(customer, sessionData.getMarketId());
                 registerBill.setName(input.getName());
@@ -130,7 +131,7 @@ public class ClientCommissionBillApi {
         try {
 
             RegisterBillDto registerBill = BeanMapUtil.trimBean(input);
-            logger.info("获取登记单列表:{}", JSON.toJSON(registerBill).toString());
+            logger.info("获取登记单列表:{}", super.toJSONString(registerBill));
             SessionData sessionData = this.sessionContext.getSessionData();
 
             Long userId = sessionData.getUserId();

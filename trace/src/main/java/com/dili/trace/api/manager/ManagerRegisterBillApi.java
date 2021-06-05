@@ -1,6 +1,6 @@
 package com.dili.trace.api.manager;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -9,6 +9,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
@@ -46,7 +47,7 @@ import java.util.Optional;
 @RequestMapping(value = "/api/manager/managerRegisterBill")
 @Api(value = "/api/manager/managerRegisterBill", description = "登记单相关接口")
 @AppAccess(role = Role.Manager, url = "dili-trace-app-auth", subRoles = {})
-public class ManagerRegisterBillApi {
+public class ManagerRegisterBillApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
     @Autowired
     private RegisterBillService registerBillService;
@@ -99,7 +100,7 @@ public class ManagerRegisterBillApi {
     @ApiOperation(value = "为经营户创建登记单")
     @RequestMapping(value = "/createRegisterBillForSeller.api", method = RequestMethod.POST)
     public BaseOutput createRegisterBillForSeller(@RequestBody CreateListBillParam input) {
-        logger.info("保存多个登记单:{}", JSON.toJSONString(input));
+        logger.info("保存多个登记单:{}", super.toJSONString(input));
         if (input == null || input.getRegisterBills() == null) {
             return BaseOutput.failure("参数错误");
         }

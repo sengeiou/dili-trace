@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/purchaseIntentionRecord")
-public class PurchaseIntentionRecordController {
+public class PurchaseIntentionRecordController extends AbstractBaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(PurchaseIntentionRecordController.class);
 
@@ -205,7 +205,7 @@ public class PurchaseIntentionRecordController {
         try {
             record.setMarketId(MarketUtil.returnMarket());
             purchaseIntentionRecordService.doAddPurchaseIntentionRecord(record, this.uapRpcService.getCurrentOperator().get());
-            logger.info(JSON.toJSONString(record));
+            logger.info(super.toJSONString(record));
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage());

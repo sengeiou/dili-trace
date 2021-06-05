@@ -180,7 +180,7 @@
                         groupedImageList[item.code.toString()]=[];
                     });
 
-                    console.info(registerHeadCode)
+                    // console.info(registerHeadCode)
                     if(typeof(oldValue)=='undefined'){
                         oldValue=''
                     }
@@ -901,7 +901,7 @@
 
     function loadProvider(data) {
         return new Promise((resolve, reject) => {
-            axios.post('/convert/list.action', data)
+            axios.post('/providerConvert/list.action', data)
                 .then((res) => {
                     resolve(res.data);
                     // console.log(res);

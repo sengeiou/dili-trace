@@ -1,6 +1,6 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -10,6 +10,7 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.output.ProductStockExtendDataDto;
 import com.dili.trace.domain.*;
 import com.dili.trace.enums.BillTypeEnum;
@@ -36,7 +37,7 @@ import java.util.Optional;
 @RestController
 @AppAccess(role = Role.Client)
 @RequestMapping(value = "/api/client/clientTradePush")
-public class ClientTradePushApi {
+public class ClientTradePushApi  extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradePushApi.class);
 
     @Autowired
@@ -142,7 +143,7 @@ public class ClientTradePushApi {
     @RequestMapping(value = "/push.api", method = {RequestMethod.POST})
     public BaseOutput doTradePush(@RequestBody TradePushLog pushLog) {
         try {
-            logger.info("上下架，参数:{}", JSON.toJSON(pushLog));
+            logger.info("上下架，参数:{}", super.toJSONString(pushLog));
             SessionData sessionData = this.sessionContext.getSessionData();
 
             pushLog.setUserId(sessionData.getUserId());

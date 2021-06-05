@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+
 import com.alibaba.fastjson.JSON;
 import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
@@ -34,7 +35,7 @@ public class ClientTradeRequestApiTest extends AutoWiredBaseTest {
         CustomerQueryDto input = new CustomerQueryDto();
         input.setKeyword("成都");
         input.setMarketId(8L);
-        String out = this.tradeRequestApi.listSeller(input);
+        BaseOutput out = this.tradeRequestApi.listSeller(input);
         System.out.println(out);
 
     }

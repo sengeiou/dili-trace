@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;

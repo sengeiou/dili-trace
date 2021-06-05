@@ -1,11 +1,10 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.*;
@@ -56,7 +55,7 @@ import java.util.stream.Stream;
 @Api("/newRegisterBill")
 @Controller
 @RequestMapping("/newRegisterBill")
-public class NewRegisterBillController {
+public class NewRegisterBillController extends AbstractBaseController {
     private static final Logger logger = LoggerFactory.getLogger(NewRegisterBillController.class);
 
     @Autowired
@@ -188,21 +187,21 @@ public class NewRegisterBillController {
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        modelMap.put("filedNameRetMap", JSON.toJSONString(filedNameRetMap));
+        modelMap.put("filedNameRetMap", super.toJSONString(filedNameRetMap));
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumList", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(BeanMapUtil::beanToMap).toList()));
-        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
-        modelMap.put("truckTypeEnumEnumList", JSON.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("imageCertTypeEnumList", super.toJSONString(StreamEx.of(imageCertTypeEnumList).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("measureTypeEnumList", super.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("truckTypeEnumEnumList", super.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
 
         RegisterBillOutputDto item = new RegisterBillOutputDto();
         item.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
         item.setRegistType(RegistTypeEnum.NONE.getCode());
         item.setTruckType(TruckTypeEnum.FULL.getCode());
         item.setWeightUnit(WeightUnitEnum.JIN.getCode());
-        modelMap.put("item", JSON.toJSONString(item));
+        modelMap.put("item", super.toJSONString(item));
 
-        modelMap.put("registerHeadList", JSON.toJSONString(Lists.newArrayList()));
+        modelMap.put("registerHeadList", super.toJSONString(Lists.newArrayList()));
 
         return "new-registerBill/add";
     }
@@ -301,13 +300,13 @@ public class NewRegisterBillController {
 
         Map<String, FieldConfigDetailRetDto> filedNameRetMap = StreamEx.of(this.fieldConfigDetailService.findByMarketIdAndModuleType(currentFirm.getId(), moduleType))
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
-        modelMap.put("filedNameRetMap", JSON.toJSONString(filedNameRetMap));
+        modelMap.put("filedNameRetMap", super.toJSONString(filedNameRetMap));
 
-        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
-        modelMap.put("truckTypeEnumEnumList", JSON.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("measureTypeEnumList", super.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("truckTypeEnumEnumList", super.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
-        modelMap.put("imageCertTypeEnumList", JSON.toJSONString(StreamEx.of(imageCertTypeEnumList).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("imageCertTypeEnumList", super.toJSONString(StreamEx.of(imageCertTypeEnumList).map(BeanMapUtil::beanToMap).toList()));
 
 
         RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill -> {
@@ -323,7 +322,7 @@ public class NewRegisterBillController {
         });
         RegisterHead registerHead = this.registerHeadService.findByCode(registerBill.getRegisterHeadCode()).orElse(new RegisterHead());
         registerBill.setRegisterHead(registerHead);
-        modelMap.put("item", JSON.toJSONString(registerBill));
+        modelMap.put("item", super.toJSONString(registerBill));
         if (registerBill.getBillId() == null) {
             return "new-registerBill/edit";
         }
@@ -351,7 +350,7 @@ public class NewRegisterBillController {
             return rh;
         }).toList();
 
-        modelMap.put("registerHeadList", JSON.toJSONString(registerHeadList));
+        modelMap.put("registerHeadList", super.toJSONString(registerHeadList));
 
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
@@ -371,7 +370,7 @@ public class NewRegisterBillController {
             return uniqueCertTypeName;
         }).toList();
         modelMap.put("uniqueCertTypeNameList", uniqueCertTypeNameList);
-        modelMap.put("item", JSON.toJSONString(item));
+        modelMap.put("item", super.toJSONString(item));
 
 
         modelMap.put("citys", this.queryCitys());
@@ -666,8 +665,8 @@ public class NewRegisterBillController {
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
-        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
-        modelMap.put("truckTypeEnumEnumList", JSON.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("measureTypeEnumList", super.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("truckTypeEnumEnumList", super.toJSONString(StreamEx.of(TruckTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);
         modelMap.put("imageCertTypeEnumList", imageCertTypeEnumList);

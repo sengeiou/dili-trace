@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.common.annotation.AppAccess;
@@ -25,6 +25,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.input.*;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
@@ -67,7 +68,7 @@ import javax.swing.text.html.Option;
 @RestController
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 @RequestMapping(value = "/api/client/clientTradeRequestApi")
-public class ClientTradeRequestApi {
+public class ClientTradeRequestApi  extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradeRequestApi.class);
     @Autowired
     private LoginSessionContext sessionContext;
@@ -431,7 +432,7 @@ public class ClientTradeRequestApi {
      * @return 卖家列表
      */
     @RequestMapping(value = "/listSeller.api", method = {RequestMethod.POST})
-    public String listSeller(@RequestBody CustomerQueryDto query) {
+    public BaseOutput listSeller(@RequestBody CustomerQueryDto query) {
         try {
             Long marketId = this.sessionContext.getSessionData().getMarketId();
             query.setPage(1);
@@ -443,12 +444,12 @@ public class ClientTradeRequestApi {
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             List<CustomerExtendOutPutDto> list = getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER).getData();
 
-            return JSON.toJSONString(BaseOutput.successData(list), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.successData(list);//JSON.toJSONString(BaseOutput.successData(list), SerializerFeature.DisableCircularReferenceDetect);
         } catch (TraceBizException e) {
-            return JSON.toJSONString(BaseOutput.failure(e.getMessage()), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.failure(e.getMessage());//JSON.toJSONString(BaseOutput.failure(e.getMessage()), SerializerFeature.DisableCircularReferenceDetect);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return JSON.toJSONString(BaseOutput.failure("操作失败：服务端出错"), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.failure("操作失败：服务端出错");//JSON.toJSONString(BaseOutput.failure("操作失败：服务端出错"), SerializerFeature.DisableCircularReferenceDetect);
         }
     }
 

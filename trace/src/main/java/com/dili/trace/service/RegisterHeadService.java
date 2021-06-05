@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -48,7 +48,7 @@ import java.util.function.Function;
  */
 @Service
 @Transactional
-public class RegisterHeadService extends BaseServiceImpl<RegisterHead, Long> {
+public class RegisterHeadService extends TraceBaseService<RegisterHead, Long> {
 
 
     private static final Logger logger = LoggerFactory.getLogger(RegisterHeadService.class);
@@ -105,7 +105,7 @@ public class RegisterHeadService extends BaseServiceImpl<RegisterHead, Long> {
         List<Long> customerIdList = StreamEx.of(registerHeads).nonNull().map(CreateRegisterHeadInputDto::getUserId).nonNull().toList();
         Map<Long, AccountGetListResultDto> cardCustomerMap = extCustomerService.findCardInfoByCustomerIdList(marketId, customerIdList);
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
-            logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
+            logger.info("循环保存进门主台账单:" + super.toJSONString(dto));
             CustomerExtendDto customer = this.clientRpcService.findApprovedCustomerByIdOrEx(dto.getUserId(), marketId);
             RegisterHead registerHead = dto.build(customer);
 
@@ -184,7 +184,7 @@ public class RegisterHeadService extends BaseServiceImpl<RegisterHead, Long> {
         // 保存报备单
         int result = super.saveOrUpdate(registerHead);
         if (result == 0) {
-            logger.error("新增进门主台账单数据库执行失败" + JSON.toJSONString(registerHead));
+            logger.error("新增进门主台账单数据库执行失败" + super.toJSONString(registerHead));
             throw new TraceBizException("创建失败");
         }
 

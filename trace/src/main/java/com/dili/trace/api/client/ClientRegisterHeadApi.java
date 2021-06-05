@@ -1,6 +1,6 @@
 package com.dili.trace.api.client;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -12,6 +12,7 @@ import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.AbstractApi;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.*;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -46,7 +46,7 @@ import java.util.*;
 @RequestMapping(value = "/api/client/clientRegisterHead")
 @Api(value = "/api/client/clientRegisterHead", description = "进门主台账单相关接口")
 @AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
-public class ClientRegisterHeadApi {
+public class ClientRegisterHeadApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientRegisterHeadApi.class);
 
     @Autowired
@@ -82,7 +82,7 @@ public class ClientRegisterHeadApi {
     @ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
-        logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
+        logger.info("获取进门主台账单列表:{}", super.toJSONString(input));
         try {
             SessionData sessionData=this.sessionContext.getSessionData();
             Long userId = sessionData.getUserId();
@@ -168,7 +168,7 @@ public class ClientRegisterHeadApi {
     @ApiOperation("保存多个进门主台账单")
     @RequestMapping(value = "/createRegisterHeadList.api", method = RequestMethod.POST)
     public BaseOutput<List<Long>> createRegisterHeadList(@RequestBody CreateListRegisterHeadParam createListRegisterHeadParam) {
-        logger.info("保存多个进门主台账单:{}", JSON.toJSONString(createListRegisterHeadParam));
+        logger.info("保存多个进门主台账单:{}", super.toJSONString(createListRegisterHeadParam));
         if (createListRegisterHeadParam == null || createListRegisterHeadParam.getRegisterBills() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -206,7 +206,7 @@ public class ClientRegisterHeadApi {
     @ApiOperation("修改进门主台账单")
     @RequestMapping(value = "/doEditRegisterHead.api", method = RequestMethod.POST)
     public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterHeadInputDto dto) {
-        logger.info("修改进门主台账单:{}", JSON.toJSONString(dto));
+        logger.info("修改进门主台账单:{}", super.toJSONString(dto));
         if (dto == null || dto.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -218,7 +218,7 @@ public class ClientRegisterHeadApi {
 
 
             RegisterHead registerHead = dto.build(customer);
-            logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
+            logger.info("修改进门主台账单:{}", super.toJSONString(registerHead));
             this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.ofNullable(operatorUser));
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -238,7 +238,7 @@ public class ClientRegisterHeadApi {
     @ApiOperation("作废进门主台账单")
     @RequestMapping(value = "/doDeleteRegisterHead.api", method = RequestMethod.POST)
     public BaseOutput doDeleteRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
-        logger.info("作废进门主台账单:{}", JSON.toJSONString(dto));
+        logger.info("作废进门主台账单:{}", super.toJSONString(dto));
         if (dto == null || dto.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -266,7 +266,7 @@ public class ClientRegisterHeadApi {
     @ApiOperation("启用/关闭进门主台账单")
     @RequestMapping(value = "/doUpdateActiveRegisterHead.api", method = RequestMethod.POST)
     public BaseOutput doUpdateActiveRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
-        logger.info("启用/关闭进门主台账单:{}", JSON.toJSONString(dto));
+        logger.info("启用/关闭进门主台账单:{}", super.toJSONString(dto));
         if (dto == null || dto.getId() == null || dto.getActive() == null) {
             return BaseOutput.failure("参数错误");
         }

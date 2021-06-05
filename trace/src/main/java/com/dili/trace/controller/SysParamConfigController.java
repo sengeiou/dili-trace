@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
@@ -29,7 +29,7 @@ import java.util.List;
 @Api("/sysParamConfig")
 @Controller
 @RequestMapping("/sysParamConfig")
-public class SysParamConfigController {
+public class SysParamConfigController extends AbstractBaseController{
     private static final Logger logger = LoggerFactory.getLogger(SysParamConfigController.class);
 
     @Autowired
@@ -110,7 +110,7 @@ public class SysParamConfigController {
     public @ResponseBody
     BaseOutput update(SysConfig query) {
         try {
-            logger.info("update SysConfig:" + JSON.toJSONString(query));
+            logger.info("update SysConfig:" + super.toJSONString(query));
             if (null == query.getId()) {
                 return BaseOutput.failure("ID IS NULL");
             }
@@ -135,7 +135,7 @@ public class SysParamConfigController {
     public @ResponseBody
     BaseOutput updateTraceReportLimitDay(SysConfig query) {
         try {
-            logger.info("update SysConfig:" + JSON.toJSONString(query));
+            logger.info("update SysConfig:" + super.toJSONString(query));
             if (null == query.getId()) {
                 return BaseOutput.failure("ID IS NULL");
             }

@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.events.DetectRequestMessageEvent;
@@ -46,7 +45,7 @@ import java.util.function.Function;
 @Api("/customerDetectRequest")
 @Controller
 @RequestMapping("/customerDetectRequest")
-public class CustomerDetectRequestController {
+public class CustomerDetectRequestController extends AbstractBaseController{
     private static final Logger logger = LoggerFactory.getLogger(CustomerDetectRequestController.class);
 
     @Autowired
@@ -296,7 +295,7 @@ public class CustomerDetectRequestController {
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
-        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("measureTypeEnumList", super.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
 
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);

@@ -1,13 +1,17 @@
 package com.dili.trace.service;
 
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.util.POJOUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,8 +26,19 @@ import java.util.function.Function;
  */
 
 public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializable> extends BaseServiceImpl<T, K> {
-    public <D extends IBaseDomain>ExampleQuery<D> buildQuery(D domain) {
+    public <D extends IBaseDomain> ExampleQuery<D> buildQuery(D domain) {
         return new ExampleQuery<>(domain);
+    }
+
+    @Autowired
+    MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    public String toJSONString(Object object) {
+        try {
+            return this.mappingJackson2HttpMessageConverter.getObjectMapper().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new TraceBizException("数据转换出错");
+        }
     }
 
     /**
@@ -67,10 +82,10 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
         public <S extends BaseDomain> BasePage<S> listPageByFun(Function<U, List<S>> function) {
 
             PageHelper.startPage(this.domain.getPage(), this.domain.getRows());
-            if(StringUtils.isNotBlank(this.domain.getSort())){
-                if(StringUtils.isNotBlank(this.domain.getOrder())){
+            if (StringUtils.isNotBlank(this.domain.getSort())) {
+                if (StringUtils.isNotBlank(this.domain.getOrder())) {
                     PageHelper.orderBy(this.domain.getSort() + " " + this.domain.getOrder());
-                }else{
+                } else {
                     PageHelper.orderBy(this.domain.getSort());
                 }
 

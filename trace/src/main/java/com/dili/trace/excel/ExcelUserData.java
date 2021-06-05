@@ -193,4 +193,24 @@ public class ExcelUserData {
 		this.preserveType = preserveType;
 	}
 
+	@Override
+	public String toString() {
+		return "ExcelUserData{" +
+				"orderNum='" + orderNum + '\'' +
+				", name='" + name + '\'' +
+				", phone='" + phone + '\'' +
+				", cardNo='" + cardNo + '\'' +
+				", license='" + license + '\'' +
+				", legalPerson='" + legalPerson + '\'' +
+				", vocationTypeName='" + vocationTypeName + '\'' +
+				", marketName='" + marketName + '\'' +
+				", businessLicenseUrl='" + businessLicenseUrl + '\'' +
+				", tallyAreaNo='" + tallyAreaNo + '\'' +
+				", preserveTypeName='" + preserveTypeName + '\'' +
+				", categoryName='" + categoryName + '\'' +
+				", vocationType=" + vocationType +
+				", preserveType=" + preserveType +
+				", categoryId=" + categoryId +
+				'}';
+	}
 }

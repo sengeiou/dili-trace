@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -54,7 +54,7 @@ import java.util.function.Function;
 @Api("/commissionDetectRequest")
 @Controller
 @RequestMapping("/commissionDetectRequest")
-public class CommissionDetectRequestController {
+public class CommissionDetectRequestController extends AbstractBaseController{
     private static final Logger logger = LoggerFactory.getLogger(CommissionDetectRequestController.class);
 
     @Autowired
@@ -155,7 +155,7 @@ public class CommissionDetectRequestController {
                 .toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         modelMap.put("filedNameRetMap", filedNameRetMap);
 
-        modelMap.put("measureTypeEnumList", JSON.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
+        modelMap.put("measureTypeEnumList", super.toJSONString(StreamEx.of(MeasureTypeEnum.values()).map(BeanMapUtil::beanToMap).toList()));
 
 
         List<ImageCertTypeEnum> imageCertTypeEnumList = this.enumService.listImageCertType(currentFirm.getId(), moduleType);

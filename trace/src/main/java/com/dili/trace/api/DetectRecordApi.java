@@ -1,6 +1,6 @@
 package com.dili.trace.api;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.config.DefaultConfiguration;
@@ -30,7 +30,7 @@ import java.util.List;
 @RequestMapping(value = "/api/detect")
 @Api(value = "/api/detect", description = "检测任务相关接口")
 @AppAccess(role = Role.NONE, url = "", subRoles = {})
-public class DetectRecordApi {
+public class DetectRecordApi extends AbstractApi{
     private static final Logger logger = LoggerFactory.getLogger(DetectRecordApi.class);
 
     @Autowired
@@ -48,7 +48,7 @@ public class DetectRecordApi {
     @RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
     public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecordParam) {
 
-        logger.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecordParam));
+        logger.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + super.toJSONString(detectRecordParam));
         if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecordParam.getTag())) {
             logger.error("上传检测任务结果失败:签名出错");
             return BaseOutput.failure("签名出错");
@@ -108,7 +108,7 @@ public class DetectRecordApi {
         taskGetParam.setExeMachineNo(exeMachineNo);
         taskGetParam.setPageSize(taskCount > 95 ? 95 : taskCount);
         taskGetParam.setMarketId(8L);//SG marektId
-        logger.info("获取检查任务:[sys.en.tag={},input-tag={},input-data={}]", defaultConfiguration.getEnTag(), tag, JSON.toJSONString(taskGetParam));
+        logger.info("获取检查任务:[sys.en.tag={},input-tag={},input-data={}]", defaultConfiguration.getEnTag(), tag, super.toJSONString(taskGetParam));
         List<DetectTaskApiOutputDto> deteckTaskOutputList = this.detectTaskService.findByExeMachineNo(taskGetParam);
         return BaseOutput.success().setData(deteckTaskOutputList);
     }

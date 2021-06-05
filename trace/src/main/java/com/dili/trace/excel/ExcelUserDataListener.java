@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.fastjson.JSON;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class ExcelUserDataListener extends AnalysisEventListener<ExcelUserData> 
 		if (data.getOrderNum() != null) {
 			try {
 				Integer.parseInt(data.getOrderNum().trim());
-				LOGGER.info("解析到一条数据:{}", JSON.toJSONString(data));
+				LOGGER.info("解析到一条数据:{}", data);
 				list.add(data);
 			} catch (Exception e) {
 			}

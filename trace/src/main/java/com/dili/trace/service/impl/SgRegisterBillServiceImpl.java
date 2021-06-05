@@ -1,7 +1,7 @@
 package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSON;
+
 import com.dili.customer.sdk.domain.dto.CustomerSimpleExtendDto;
 import com.dili.trace.events.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
@@ -140,7 +140,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         int result = this.billService.saveOrUpdate(inputBill);
         this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCertList(), BillTypeEnum.REGISTER_BILL);
         if (result == 0) {
-            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
+//            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
             throw new TraceBizException("创建失败");
         }
         return inputBill.getId();

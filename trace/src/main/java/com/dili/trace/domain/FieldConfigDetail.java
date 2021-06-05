@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -83,7 +84,7 @@ public class FieldConfigDetail extends BaseDomain {
     @Transient
     public List<Object> getAvailableValueList() {
         try {
-            List<Object>list=JSON.parseArray(StringUtils.trimToNull(this.availableValues));
+            List<Object>list= JSON.parseArray(StringUtils.trimToNull(this.availableValues));
             if(list==null){
                 return new ArrayList<>();
             }

@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.assets.sdk.rpc.CarTypeRpc;

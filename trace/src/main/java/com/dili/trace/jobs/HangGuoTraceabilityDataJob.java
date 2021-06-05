@@ -1,8 +1,8 @@
 package com.dili.trace.jobs;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.ss.dto.DTOUtils;
+import com.alibaba.fastjson.JSON;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;

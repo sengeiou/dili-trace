@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.DefaultFieldDetail;
@@ -70,17 +70,6 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
 
         return fieldConfigDetailList.size();
 
-    }
-
-    /**
-     * 转换为json
-     *
-     * @param object
-     * @return
-     */
-    private String toJsonString(Object object) {
-
-        return JSON.toJSONString(object);
     }
 
     /**

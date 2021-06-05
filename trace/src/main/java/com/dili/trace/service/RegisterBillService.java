@@ -1,7 +1,7 @@
 package com.dili.trace.service;
 
 import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSON;
+
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -58,7 +58,7 @@ import java.util.stream.Stream;
  */
 @Service
 @Transactional
-public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
+public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillService.class);
     @Autowired
     UidRestfulRpcService uidRestfulRpcService;
@@ -180,7 +180,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         Map<String, FieldConfigDetailRetDto> fieldConfigDetailRetDtoMap = StreamEx.of(fieldConfigDetailRetDtoList).nonNull().toMap(item -> item.getDefaultFieldDetail().getFieldName(), Function.identity());
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             dto.setMarketId(marketId);
-            logger.info("循环保存登记单:" + JSON.toJSONString(dto));
+            logger.info("循环保存登记单:{}" + dto.toString());
 
             RegisterBill registerBill = dto.build(user, dto.getMarketId());
             if (StringUtils.isNotBlank(registerBill.getPlate())) {
@@ -285,7 +285,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
 
         Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL);
 
-        String json = JSON.toJSONString(registerBill);
+//        String json = JSON.toJSONString(registerBill);
 //        StreamEx.of(fieldConfigDetailRetDtoList).forEach(fcd -> {
 //            String jsonPath = fcd.getDefaultFieldDetail().getJsonPath();
 //            if (StringUtils.isBlank(jsonPath)) {
@@ -364,7 +364,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
         if (result == 0) {
-            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
+            logger.error("新增登记单数据库执行失败:{}" ,registerBill.toString());
             throw new TraceBizException("创建失败");
         }
         this.registerTallyAreaNoService.insertTallyAreaNoList(registerBill.getArrivalTallynos(), registerBill.getBillId(), BillTypeEnum.REGISTER_BILL);
@@ -732,7 +732,7 @@ public class RegisterBillService extends BaseServiceImpl<RegisterBill, Long> {
                 throw new TraceBizException("凭证不能为空");
             } else {
 
-                String json = JSON.toJSONString(registerBill);
+                String json = super.toJSONString(registerBill);
                 List<Integer> inputCertTypeList = JsonPathUtil.parse(json, retDto.getDefaultFieldDetail().getJsonPath(), Integer.class);
                 List<Integer> availableValueList = StreamEx.ofNullable(retDto.getAvailableValueList()).flatCollection(Function.identity()).nonNull().map(String::valueOf).map(v -> {
                     try {

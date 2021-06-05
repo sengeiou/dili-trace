@@ -1,6 +1,6 @@
 package com.dili.trace.api;
 
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.common.annotation.AppAccess;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api/registerBillApi")
 @Api(value = "/api/registerBillApi", description = "登记单相关接口")
 @AppAccess(role = Role.ANY)
-public class RegisterBillApi {
+public class RegisterBillApi extends AbstractApi{
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 
     @Autowired
@@ -82,8 +82,8 @@ public class RegisterBillApi {
             List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(outputdto.getBillId(), BillTypeEnum.REGISTER_BILL);
             outputdto.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
 
-            String data = JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
-            return BaseOutput.success().setData(JSON.parse(data));
+//            String data = super.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.success().setData(outputdto);//BaseOutput.success().setData(JSON.parse(data));
 
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
