@@ -102,11 +102,6 @@ public class ClientTradePushApi  extends AbstractApi {
             List<TradePushLog> tradePushLogs = tradePushService.listByExample(pushLog);
             registerBill.setTradePushLogs(tradePushLogs);
 
-            DetectResultEnum detectResultEnum = StreamEx.of(this.detectRequestService.findDetectRequestByBillId(tradeDetail.getBillId())).map(detectRequest -> {
-                return detectRequest.getDetectResult();
-            }).map(DetectResultEnum::fromCode).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
-
-
             ProductStock ps=this.productStockService.get(tradeDetail.getProductStockId());
             ProductStockExtendDataDto productStockExtendDataDto = new ProductStockExtendDataDto();
 
