@@ -444,12 +444,12 @@ public class ClientTradeRequestApi extends AbstractApi {
             // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
             List<CustomerExtendOutPutDto> list = getListPageOutput(marketId, pageOutput, ClientTypeEnum.SELLER).getData();
 
-            return BaseOutput.successData(list);//JSON.toJSONString(BaseOutput.successData(list), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.successData(list);
         } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());//JSON.toJSONString(BaseOutput.failure(e.getMessage()), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");//JSON.toJSONString(BaseOutput.failure("操作失败：服务端出错"), SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.failure("操作失败：服务端出错");
         }
     }
 

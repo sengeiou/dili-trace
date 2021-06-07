@@ -241,7 +241,7 @@ public class ClientDetectRequestApi {
             logger.error(e.getMessage(), e);
             output = BaseOutput.failure("服务端出错");
         }
-        return output;//JSONObject.toJSONString(output, SerializerFeature.DisableCircularReferenceDetect);
+        return output;
     }
 
 

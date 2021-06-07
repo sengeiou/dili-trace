@@ -283,9 +283,6 @@ public class ClientRegisterBillApi  extends AbstractApi {
                 registerBill.setRemainWeight(registerHead.getRemainWeight());
             }
 
-//            String data = JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
-//            return BaseOutput.success().setData(JSON.parse(data));
-//            String data = JSON.toJSONString(registerBill, SerializerFeature.DisableCircularReferenceDetect);
             return BaseOutput.successData(registerBill);
 
         } catch (TraceBizException e) {

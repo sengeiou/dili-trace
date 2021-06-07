@@ -82,8 +82,7 @@ public class RegisterBillApi extends AbstractApi{
             List<RegisterTallyAreaNo> arrivalTallynos = this.registerTallyAreaNoService.findTallyAreaNoByBillIdAndType(outputdto.getBillId(), BillTypeEnum.REGISTER_BILL);
             outputdto.setArrivalTallynos(StreamEx.of(arrivalTallynos).map(RegisterTallyAreaNo::getTallyareaNo).toList());
 
-//            String data = super.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
-            return BaseOutput.success().setData(outputdto);//BaseOutput.success().setData(JSON.parse(data));
+            return BaseOutput.success().setData(outputdto);
 
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
