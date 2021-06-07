@@ -13,6 +13,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
+import com.dili.trace.api.manager.ManagerRegisterBillApi;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterTallyAreaNo;
 import com.dili.trace.domain.UserInfo;
@@ -46,19 +47,21 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api/registerBillApi")
 @Api(value = "/api/registerBillApi", description = "登记单相关接口")
 @AppAccess(role = Role.ANY)
-public class RegisterBillApi extends AbstractApi{
+public class RegisterBillApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 
     @Autowired
-    private RegisterBillService registerBillService;
-    @Autowired
-    private LoginSessionContext sessionContext;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RegisterTallyAreaNoService registerTallyAreaNoService;
+    ManagerRegisterBillApi managerRegisterBillApi;
 
-
-
-
+    /**
+     * 通过登记单ID获取登记单详细信息
+     *
+     * @param inputDto
+     * @return
+     */
+    @ApiOperation(value = "通过登记单ID获取登记单详细信息")
+    @RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
+    public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
+        return this.managerRegisterBillApi.viewTradeDetailBill(inputDto);
+    }
 }

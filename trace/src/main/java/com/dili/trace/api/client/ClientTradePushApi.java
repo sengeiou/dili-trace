@@ -63,6 +63,8 @@ public class ClientTradePushApi  extends AbstractApi {
 
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    ProductStockService productStockService;
 
     /**
      * 查询库存详情
@@ -105,14 +107,11 @@ public class ClientTradePushApi  extends AbstractApi {
             }).map(DetectResultEnum::fromCode).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
 
 
+            ProductStock ps=this.productStockService.get(tradeDetail.getProductStockId());
             ProductStockExtendDataDto productStockExtendDataDto = new ProductStockExtendDataDto();
 
-
-            if (DetectResultEnum.FAILED == detectResultEnum) {
-                productStockExtendDataDto.setDetectFailedWeight(tradeDetail.getStockWeight().add(tradeDetail.getPushawayWeight()).add(tradeDetail.getSoftWeight()));
-            } else {
-                productStockExtendDataDto.setDetectFailedWeight(BigDecimal.ZERO);
-            }
+            productStockExtendDataDto.setDetectFailedWeight(ps.getDetectFailedWeight());
+            productStockExtendDataDto.setBuyingWeight(tradeDetail.getSoftWeight());
 
             registerBill.setProductStockExtendDataDto(productStockExtendDataDto);
             if (pushType.equals(PushTypeEnum.DOWN.getCode())) {
@@ -120,9 +119,6 @@ public class ClientTradePushApi  extends AbstractApi {
                         .map(TradePushLog::getOperationWeight).orElse(BigDecimal.ZERO);
                 productStockExtendDataDto.setPushDownWeight(pushDownWeight);
             }
-
-
-            productStockExtendDataDto.setBuyingWeight(tradeDetail.getSoftWeight());
 
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBizException e) {
