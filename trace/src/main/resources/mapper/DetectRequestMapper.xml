@@ -57,8 +57,11 @@
         SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.source_name tallyAreaNo,b.bill_type
         ,b.weight,b.weight_unit weightUnit,d.*
         FROM detect_request d
-        JOIN register_bill b ON d.id=b.detect_request_id
+        INNER JOIN register_bill b ON d.id=b.detect_request_id
         WHERE 1=1
+        <if test="billType != null">
+            AND b.bill_type=#{billType}
+        </if>
         <if test="detectStatus != null">
             AND b.detect_status=#{detectStatus}
         </if>

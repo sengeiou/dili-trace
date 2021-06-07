@@ -91,6 +91,10 @@ public class DetectRequestQueryDto extends DetectRequest {
     private Integer sampleSource;
 
 
+    @Transient
+    private Integer billType;
+
+
     /**
      * 业户名称/商品名称（查询条件 OR Like）
      */
@@ -118,12 +122,13 @@ public class DetectRequestQueryDto extends DetectRequest {
     private String likeBillCode;
 
 
+    public Integer getBillType() {
+        return billType;
+    }
 
-
-
-
-
-
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
 
     public Long getUserId() {
         return userId;
