@@ -37,61 +37,6 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
         return (CodeGenerateMapper) this.getDao();
     }
 
-//    private boolean checkAndInitTradeRequestCode() {
-//        CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
-//                .orElse(new CodeGenerate());
-//        codeGenerate.setPattern("yyyyMMddHH");
-//        codeGenerate.setType(TRADE_REQUEST_CODE_TYPE);
-//        codeGenerate.setPrefix("HZSY");
-//        if (codeGenerate.getId() == null) {
-//            LocalDateTime now = LocalDateTime.now();
-//
-//            String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
-//            codeGenerate.setSegment(nextSegment);
-//            codeGenerate.setSeq(0L);
-//            this.insertSelective(codeGenerate);
-//        }
-//        return true;
-//    }
-
-
-//    @Override
-//    @Transactional(propagation = Propagation.REQUIRED)
-//    public String nextTradeRequestCode() {
-//        return this.nextCode(TRADE_REQUEST_CODE_TYPE, 5);
-//    }
-
-//    private String nextCode(String codeType, int paddingSize) {
-//
-//        CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
-//                .orElse(null);
-//        if (codeGenerate == null) {
-//            throw new TraceBizException("生成编号错误");
-//        }
-//
-//        // 时间比较
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
-//        if (!nextSegment.equals(codeGenerate.getSegment())) {
-//
-//            codeGenerate.setSeq(1L);
-//            codeGenerate.setSegment(nextSegment);
-//            codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-//
-//        } else {
-//
-//            codeGenerate.setSeq(codeGenerate.getSeq() + 1);
-//            codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-//
-//        }
-//
-//        this.updateSelective(codeGenerate);
-//
-//        return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
-//                .concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), paddingSize, "0"));
-//    }
-
     @Override
     public void run(String... args) throws Exception {
 //        this.checkAndInitTradeRequestCode();
@@ -155,47 +100,6 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
         return true;
     }
 
-//    private boolean checkAndInitRegisterBillSCode() {
-//
-//
-//        RegisterBill domain = new RegisterBill();
-//        domain.setOrder("desc");
-//        domain.setSort("code");
-//        domain.setPage(1);
-//        domain.setRows(1);
-//        domain.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-//        RegisterBill registerBill = this.billService.listPageByExample(domain).getDatas().stream().findFirst()
-//                .orElse(new RegisterBill());
-//        String maxCode = registerBill.getCode();
-//        CodeGenerate codeGenerate = this.getMapper()
-//                .selectByTypeForUpdate(CodeGenerateEnum.REGISTER_BILL_CODE.getType()).stream().findFirst()
-//                .orElse(new CodeGenerate());
-//        codeGenerate.setPattern(CodeGenerateEnum.REGISTER_BILL_CODE.getPattern());
-//        codeGenerate.setType(CodeGenerateEnum.REGISTER_BILL_CODE.getType());
-//        codeGenerate.setPrefix(CodeGenerateEnum.REGISTER_BILL_CODE.getPrefix());
-//
-//        if (codeGenerate.getId() == null) {
-//            if (StringUtils.isNotBlank(maxCode)) {
-//                codeGenerate.setSegment(maxCode.substring(1, 9));
-//                codeGenerate.setSeq(Long.valueOf(maxCode.substring(9, 14)));
-//            }
-//            this.insertSelective(codeGenerate);
-//        } else {
-//            if (StringUtils.isNotBlank(maxCode)) {
-//                String segment = maxCode.substring(1, 9);
-//                Long seq = Long.valueOf(maxCode.substring(9, 14));
-//                if (!segment.equals(codeGenerate.getSegment()) || !seq.equals(codeGenerate.getSeq())) {
-//                    codeGenerate.setSegment(segment);
-//                    codeGenerate.setSeq(seq);
-//                    this.updateSelective(codeGenerate);
-//                }
-//
-//            }
-//
-//        }
-//        return true;
-//
-//    }
 
 
     private boolean checkAndInitCodeGenerate(CodeGenerateEnum codeGenerateEnum) {
@@ -222,27 +126,11 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 
 //
-//    @Override
 //    @Transactional(propagation = Propagation.REQUIRED)
-//    public String nextRegisterBillSampleCode() {
-//        String lockKey = "lock_trace_registerbill_samplecode";
-//        try {
-//            redisDistributedLock.tryGetLockSync(lockKey, lockKey, 10);
-//            return this.nextCode(CodeGenerateEnum.REGISTER_BILL_SAMPLECODE);
-//        } catch (Exception e) {
-//            throw new TraceBizException("生成编号错误");
-//        } finally {
-//            redisDistributedLock.releaseLock(lockKey, lockKey);
-//        }
+//    public String nextECOMMERCE_BILL_SEPERATE_REPORT_CODE() {
 //
+//        return this.nextCode(CodeGenerateEnum.ECOMMERCE_BILL_SEPERATE_REPORT_CODE);
 //    }
-
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public String nextECOMMERCE_BILL_SEPERATE_REPORT_CODE() {
-
-        return this.nextCode(CodeGenerateEnum.ECOMMERCE_BILL_SEPERATE_REPORT_CODE);
-    }
 
 
     @Override
@@ -283,11 +171,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
         }
     }
 
-//    @Override
-//    public String nextCommissionBillSampleCode() {
-//
-//        return this.nextCode(CodeGenerateEnum.COMMISSION_BILL_SAMPLECODE);
-//    }
+
 
 
     private String nextCode(CodeGenerateEnum codeGenerateEnum) {

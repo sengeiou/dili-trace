@@ -95,3 +95,13 @@ let n: { name: string, age: number } = {age: 23, name: ''};
 // e2.age=44; error
 
 console.info("abcd")
+
+interface User{
+    id:number;
+    name:string;
+}
+let u:User={} as User;
+//@ts-ignore
+let u2:User={};
+
+

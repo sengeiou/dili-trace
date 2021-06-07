@@ -74,4 +74,6 @@
     let ss = { name: '', age: 34 };
     let n = { age: 23, name: '' };
     console.info("abcd");
+    let u = {};
+    let u2 = {};
 });

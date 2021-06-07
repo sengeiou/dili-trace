@@ -1,16 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2021-04-25 15:53:23.
-
-interface Market {
-    id: number;
-    code: string;
-    name: string;
-    appId: number;
-    appSecret: string;
-    contextUrl: string;
-    platformMarketId: number;
-}
+// Generated using typescript-generator version 2.27.744 on 2021-06-07 14:30:27.
 
 declare const enum RegisterSourceEnum {
     OTHERS = 0,
