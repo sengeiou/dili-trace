@@ -6,6 +6,7 @@ import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.util.POJOUtils;
+import com.dili.trace.util.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -30,15 +31,9 @@ public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializ
         return new ExampleQuery<>(domain);
     }
 
-    @Autowired
-    MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     public String toJSONString(Object object) {
-        try {
-            return this.mappingJackson2HttpMessageConverter.getObjectMapper().writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new TraceBizException("数据转换出错");
-        }
+        return JSON.toJSONString(object);
     }
 
     /**

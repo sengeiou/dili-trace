@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Transient;
 import java.sql.Connection;
 import java.time.*;
 import java.util.Calendar;
@@ -34,6 +35,49 @@ public class TestController {
 
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
         private LocalDateTime dateTime4 = LocalDateTime.now();
+
+
+        @Transient
+        private ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        @Transient
+        private LocalDateTime localDateTime = LocalDateTime.now();
+        @Transient
+        private OffsetDateTime offsetDateTime = OffsetDateTime.now();
+        @Transient
+        @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
+        private ZonedDateTime jsonFormatDateTime = ZonedDateTime.now();
+
+        public ZonedDateTime getZonedDateTime() {
+            return zonedDateTime;
+        }
+
+        public void setZonedDateTime(ZonedDateTime zonedDateTime) {
+            this.zonedDateTime = zonedDateTime;
+        }
+
+        public LocalDateTime getLocalDateTime() {
+            return localDateTime;
+        }
+
+        public void setLocalDateTime(LocalDateTime localDateTime) {
+            this.localDateTime = localDateTime;
+        }
+
+        public OffsetDateTime getOffsetDateTime() {
+            return offsetDateTime;
+        }
+
+        public void setOffsetDateTime(OffsetDateTime offsetDateTime) {
+            this.offsetDateTime = offsetDateTime;
+        }
+
+        public ZonedDateTime getJsonFormatDateTime() {
+            return jsonFormatDateTime;
+        }
+
+        public void setJsonFormatDateTime(ZonedDateTime jsonFormatDateTime) {
+            this.jsonFormatDateTime = jsonFormatDateTime;
+        }
 
         public Date getMyDate() {
             return myDate;
