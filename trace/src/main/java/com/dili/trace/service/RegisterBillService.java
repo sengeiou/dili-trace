@@ -1599,8 +1599,8 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
         Page<RegisterBillDto> page = (Page) list;
 
         EasyuiPageOutput out = new EasyuiPageOutput();
-        List results = ValueProviderUtils.buildDataByProvider(query, list);
-        out.setRows(results);
+//        List results = ValueProviderUtils.buildDataByProvider(query, list);
+        out.setRows(list);
         out.setTotal(page.getTotal());
 
         return out;
