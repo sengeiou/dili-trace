@@ -95,12 +95,26 @@ let n: { name: string, age: number } = {age: 23, name: ''};
 // e2.age=44; error
 
 console.info("abcd")
-
-interface User{
+interface IAge{
+    age:number;
+}
+interface IInfo{
     id:number;
     name:string;
 }
-let u:User={} as User;
+
+
+function testFun<T extends IInfo&IAge>(data:T){
+    console.info(data.id);
+    console.info(data.age);
+    console.info(data.name);
+}
+type Add = (x: number, y?: number) => number ;//类似接口
+let funcAdd:Add=(a:number,b:number)=>{return a+b;} ;//类似实现类
+let ret=funcAdd(1,3)
+console.info(ret);
+
+let u:IInfo={} as IInfo;
 //@ts-ignore
 let u2:User={};
 

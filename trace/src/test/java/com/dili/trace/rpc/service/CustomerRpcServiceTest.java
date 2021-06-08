@@ -22,7 +22,7 @@ public class CustomerRpcServiceTest extends BaseTestWithouMVC {
         CustomerQueryDto query = new CustomerQueryDto();
         query.setPage(1);
         query.setRows(2);
-        query.setKeyword("啊");
+        query.setKeyword("一号");
         Long marketId = 8L;
         query.setMarketId(marketId);
 
@@ -35,7 +35,7 @@ public class CustomerRpcServiceTest extends BaseTestWithouMVC {
         CustomerQueryDto query = new CustomerQueryDto();
         query.setPage(1);
         query.setRows(20);
-        query.setKeyword("啊");
+        query.setKeyword("一号");
         Long marketId = 8L;
 
         query.setMarketId(marketId);

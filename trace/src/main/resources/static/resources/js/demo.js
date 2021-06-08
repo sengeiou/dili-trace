@@ -74,6 +74,14 @@
     let ss = { name: '', age: 34 };
     let n = { age: 23, name: '' };
     console.info("abcd");
+    function testFun(data) {
+        console.info(data.id);
+        console.info(data.age);
+        console.info(data.name);
+    }
+    let funcAdd = (a, b) => { return a + b; };
+    let ret = funcAdd(1, 3);
+    console.info(ret);
     let u = {};
     let u2 = {};
 });
