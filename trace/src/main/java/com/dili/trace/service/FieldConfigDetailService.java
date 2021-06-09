@@ -11,6 +11,7 @@ import com.dili.trace.dto.ret.FieldConfigDetailRetDto;
 import com.dili.trace.enums.FieldConfigModuleTypeEnum;
 import com.dili.trace.enums.MeasureTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
+import com.dili.trace.util.JSON;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import one.util.streamex.StreamEx;
@@ -60,6 +61,12 @@ public class FieldConfigDetailService extends TraceBaseService<FieldConfigDetail
             fcdInput.setCreated(LocalDateTime.now());
             if(fcdInput.getDisplayed()==null){
                 fcdInput.setDisplayed(YesOrNoEnum.NO.getCode());
+            }
+            if(fcdInput.getAvailableValueList()!=null){
+                List<String>strList=StreamEx.of(fcdInput.getAvailableValueList()).nonNull().map(String::valueOf).map(String::trim).filter(StringUtils::isNotBlank).toList();
+                if(!strList.isEmpty()){
+                    fcdInput.setAvailableValues(JSON.toJSONString(strList));
+                }
             }
             this.insertSelective(fcdInput);
             return fcdInput;

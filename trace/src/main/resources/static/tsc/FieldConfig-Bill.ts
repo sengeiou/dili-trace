@@ -24,10 +24,11 @@
         private async initImageCertList() {
             let imageCertListDiv: JQuery = this.saveForm.find('#imageCertListDiv');
             let imageCertListDisplayed = imageCertListDiv.find('[name*="displayed"]')
-            let imageCertListAvailableValues = imageCertListDiv.find('select[name*="availableValues"]')
-
+            let imageCertListAvailableValues = imageCertListDiv.find('select[name*="availableValueList"]')
+            debugger
             imageCertListDisplayed.on('click', function () {
                 let isDisplayed = $(this).is(":checked");
+                debugger
                 if (isDisplayed == true) {
                     imageCertListAvailableValues.attr('required', 'required')
                 } else {
@@ -82,7 +83,12 @@
                 return;
             }
             //@ts-ignore
-            let data = $('#saveForm').serializeJSON({useIntKeysAsArrayIndex: true});
+            let data = $('#saveForm').serializeJSON({useIntKeysAsArrayIndex: true, customTypes: {
+                    arrayToString: (arrVal) => {debugger; return arrVal; }
+                }
+            });
+
+
             let url = this.toUrl("/fieldConfig/doUpdate.action");
             try {
                 let resp = await jq.postJsonWithProcessing(url, data);

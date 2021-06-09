@@ -73,6 +73,8 @@ public class FieldConfigDetail extends BaseDomain {
     @JsonIgnore
     private String availableValues;
 
+    @Transient
+    private List<?> availableValueList = new ArrayList<>();
 
     public String getAvailableValues() {
         return availableValues;
@@ -80,18 +82,21 @@ public class FieldConfigDetail extends BaseDomain {
 
     public void setAvailableValues(String availableValues) {
         this.availableValues = availableValues;
+        try {
+            this.availableValueList = JSON.parseArray(StringUtils.trimToNull(this.availableValues));
+
+        } catch (Exception e) {
+
+        }
     }
+
+    public void setAvailableValueList(List<?> availableValueList) {
+        this.availableValueList = availableValueList;
+    }
+
     @Transient
     public List<?> getAvailableValueList() {
-        try {
-            List<?>list= JSON.parseArray(StringUtils.trimToNull(this.availableValues));
-            if(list==null){
-                return new ArrayList<>();
-            }
-            return list;
-        }catch (Exception e){
-            return new ArrayList<>();
-        }
+        return this.availableValueList;
     }
 
     @Override

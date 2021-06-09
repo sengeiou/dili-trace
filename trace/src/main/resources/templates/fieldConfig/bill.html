@@ -34,29 +34,6 @@
                 </div>
             <%}%>
 
-            <%if (@defaultFieldNameIdMap.containsKey('truckType')){%>
-                <div class="row row-cols-12" id="truckTypeDiv">
-                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][fieldName]" value="truckType">
-                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][jsonPath]" value="$.truckType">
-                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][defaultId]" value="${defaultFieldNameIdMap['truckType']}">
-                    <div class="form-group col-2">
-                        <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][displayed]" value="0">
-                        <input type="checkbox" name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][displayed]" value="1" <%if(filedNameRetMap['truckType'].displayed!1==1){%>checked<%}%> >
-                        <label>是否拼车/车牌号</label>
-                    </div>
-                     <input type="hidden"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][required]" value="1"  >
-
-                    <div class="form-group col-6">
-                        <select class="form-control" <%if(filedNameRetMap['truckType'].displayed!1==1){%>required<%}%> multiple="multiple"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['truckType']}][availableValues][]">
-                        <%for(truckType in truckTypeEnumList){%>
-                        <option value="${truckType.code}" <%if(@filedNameRetMap.get('truckType').getAvailableValueList().contains(truckType.code+'')){%>selected<%}%>>${truckType.nameExt}</option>
-                        <%}%>
-                        </select>
-                    </div>
-                </div>
-            <%}%>
-
-
 
 
             <%if (@defaultFieldNameIdMap.containsKey('unitPrice')){%>
@@ -159,7 +136,7 @@
                     <label for="">非必填</label>
                 </div>
                 <div class="form-group col-6">
-                    <select class="form-control" <%if(filedNameRetMap['imageCertList'].displayed!1==1){%>required<%}%> multiple="multiple"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValues][]">
+                    <select class="form-control" <%if(filedNameRetMap['imageCertList'].displayed!1==1){%>required<%}%> multiple="multiple"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['imageCertList']}][availableValueList][]">
                         <%for(certType in imageCertTypeList){%>
                             <option value="${certType.code}" <%if(@filedNameRetMap.get('imageCertList').getAvailableValueList().contains(certType.code+'')){%>selected<%}%>>${certType.name}</option>
                         <%}%>
@@ -167,31 +144,6 @@
                 </div>
             </div>
             <%}%>
-
-
-
-
-            <%if (@defaultFieldNameIdMap.containsKey('measureType')){%>
-            <div class="row row-cols-12" id="measureTypeDiv">
-                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][fieldName]" value="measureType">
-                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][jsonPath]" value="$.measureType">
-                <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][defaultId]" value="${defaultFieldNameIdMap['measureType']}">
-                <div class="form-group col-2">
-                    <input type="hidden" name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][displayed]" value="1">
-                    <input type="checkbox"   checked="checked" readonly="readonly" disabled="disabled">
-                    <label>计重方式</label>
-                </div>
-                <input type="hidden"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][required]" value="1" >
-                <div class="form-group col-6">
-                    <select class="form-control" <%if(filedNameRetMap['measureType'].displayed!1==1){%>required<%}%> multiple="multiple"  name="fieldConfigDetailList[${defaultFiledNameIndexMap['measureType']}][availableValues][]">
-                    <%for(measureType in measureTypeEnumList){%>
-                    <option value="${measureType.code}" <%if(@filedNameRetMap.get('measureType').getAvailableValueList().contains(measureType.code+'')){%>selected<%}%>>${measureType.nameExt}</option>
-                    <%}%>
-                    </select>
-                </div>
-            </div>
-            <%}%>
-
 
 
             <%if (@defaultFieldNameIdMap.containsKey('arrivalDatetime')){%>
@@ -279,6 +231,7 @@
 
 
         </div>
+
     </form>
 </div>
 <div class="text-center">
