@@ -31,7 +31,7 @@ class FieldConfigBill extends WebConfig {
     async initTruckType() {
         let truckTypeDiv = this.saveForm.find('#truckTypeDiv');
         let truckTypeDisplayed = truckTypeDiv.find('[name*="displayed"]');
-        let truckTypeAvailableValues = truckTypeDiv.find('select[name*="availableValues"]');
+        let truckTypeAvailableValues = truckTypeDiv.find('select[name*="availableValueList"]');
         truckTypeDisplayed.on('click', function () {
             let isDisplayed = $(this).is(":checked");
             if (isDisplayed == true) {
@@ -48,7 +48,7 @@ class FieldConfigBill extends WebConfig {
     async initMeasureType() {
         let measureTypeDiv = this.saveForm.find('#measureTypeDiv');
         let measureTypeDisplayed = measureTypeDiv.find('[name*="displayed"]');
-        let measureTypeAvailableValues = measureTypeDiv.find('select[name*="availableValues"]');
+        let measureTypeAvailableValues = measureTypeDiv.find('select[name*="availableValueList"]');
         measureTypeDisplayed.on('click', function () {
             let isDisplayed = $(this).is(":checked");
             if (isDisplayed == true) {

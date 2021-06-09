@@ -40,7 +40,7 @@
         private async initTruckType() {
             let truckTypeDiv: JQuery = this.saveForm.find('#truckTypeDiv');
             let truckTypeDisplayed = truckTypeDiv.find('[name*="displayed"]')
-            let truckTypeAvailableValues = truckTypeDiv.find('select[name*="availableValues"]')
+            let truckTypeAvailableValues = truckTypeDiv.find('select[name*="availableValueList"]')
 
             truckTypeDisplayed.on('click', function () {
                 let isDisplayed = $(this).is(":checked");
@@ -61,7 +61,7 @@
         private async initMeasureType() {
             let measureTypeDiv: JQuery = this.saveForm.find('#measureTypeDiv');
             let measureTypeDisplayed = measureTypeDiv.find('[name*="displayed"]')
-            let measureTypeAvailableValues = measureTypeDiv.find('select[name*="availableValues"]')
+            let measureTypeAvailableValues = measureTypeDiv.find('select[name*="availableValueList"]')
 
 
             measureTypeDisplayed.on('click', function () {
