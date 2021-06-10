@@ -82,7 +82,7 @@ public class ExtCustomerService {
             return Lists.newArrayList();
         }
         List<Long> customerIdList = this.findCustomerIdListByCardNoList(Lists.newArrayList(cardNo.trim()), firm);
-        return this.findByCustomerIdList(customerIdList, firm);
+        return this.findCustomerWithCardNoByCustomerIdList(customerIdList, firm);
     }
 
     /**
@@ -96,7 +96,7 @@ public class ExtCustomerService {
             return Lists.newArrayList();
         }
         List<Long> customerIdList = this.findCustomerIdListByCustomerCode(Lists.newArrayList(customerCode.trim()), firm);
-        return this.findByCustomerIdList(customerIdList, firm);
+        return this.findCustomerWithCardNoByCustomerIdList(customerIdList, firm);
     }
 
     /**
@@ -110,7 +110,7 @@ public class ExtCustomerService {
             return Lists.newArrayList();
         }
         List<Long> customerIdList = Lists.newArrayList(id);
-        return this.findByCustomerIdList(Lists.newArrayList(id), firm);
+        return this.findCustomerWithCardNoByCustomerIdList(Lists.newArrayList(id), firm);
     }
 
     /**
@@ -124,7 +124,7 @@ public class ExtCustomerService {
             return Lists.newArrayList();
         }
         List<Long> customerIdList = this.findSellerIdListByKeyword(keyword, firm);
-        return this.findByCustomerIdList(customerIdList, firm);
+        return this.findCustomerWithCardNoByCustomerIdList(customerIdList, firm);
     }
 
 
@@ -210,7 +210,7 @@ public class ExtCustomerService {
      * @param firm
      * @return
      */
-    private List<TraceCustomer> findByCustomerIdList(List<Long> customerIdList, Firm firm) {
+    private List<TraceCustomer> findCustomerWithCardNoByCustomerIdList(List<Long> customerIdList, Firm firm) {
         if (customerIdList.isEmpty() || firm == null) {
             return Lists.newArrayList();
         }

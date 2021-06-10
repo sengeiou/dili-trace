@@ -4,7 +4,9 @@ import com.dili.customer.sdk.domain.Attachment;
 import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
+import com.dili.trace.dto.UserInfoDto;
 import com.dili.trace.dto.VehicleInfoDto;
+import com.dili.trace.util.MaskUserInfo;
 import io.swagger.annotations.ApiModelProperty;
 import one.util.streamex.StreamEx;
 
@@ -165,4 +167,15 @@ public class TraceCustomer {
     public void setActive(Integer active) {
         this.active = active;
     }
+
+
+    public TraceCustomer mask(boolean mask) {
+        if (mask) {
+
+            this.setIdNo(MaskUserInfo.maskIdNo(this.getIdNo()));
+            this.setAddress(MaskUserInfo.maskAddr(this.getAddress()));
+        }
+        return this;
+    }
+
 }

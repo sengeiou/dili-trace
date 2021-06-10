@@ -18,6 +18,7 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.rpc.dto.AccountGetListResultDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.BeanMapUtil;
 import com.dili.trace.util.MaskUserInfo;
@@ -91,7 +92,8 @@ public class NewRegisterBillController extends AbstractBaseController {
     DetectRequestService detectRequestService;
     @Autowired
     ProcessService processService;
-
+    @Autowired
+    FirmRpcService firmRpcService;
     @Autowired
     FieldConfigDetailService fieldConfigDetailService;
     @Autowired
@@ -269,8 +271,6 @@ public class NewRegisterBillController extends AbstractBaseController {
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
 //        registerBill.setSourceName(firstTallyAreaNo);
         // registerBill.setImageCertList(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
-        UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
-        modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
         modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
@@ -353,8 +353,6 @@ public class NewRegisterBillController extends AbstractBaseController {
 
         modelMap.put("registerHeadList", super.toJSONString(registerHeadList));
 
-        UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
-        modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
         RegisterBillOutputDto registerBillOutputDto = RegisterBillOutputDto.build(this.maskRegisterBillOutputDto(registerBill), Lists.newLinkedList());
 
@@ -1142,46 +1140,7 @@ public class NewRegisterBillController extends AbstractBaseController {
         return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
     }
 
-    /**
-     * 查找用户信息
-     *
-     * @param registerBill
-     * @param firstTallyAreaNo
-     * @return
-     */
-    private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
-        UserInfoDto userInfoDto = new UserInfoDto();
 
-
-        TraceCustomer condition = new TraceCustomer();
-        condition.setCode(registerBill.getTradeAccount());
-        condition.setCardNo(StringUtils.trimToNull(registerBill.getCardNo()));
-        TraceCustomer traceCustomer = this.customerService.findCustomer(condition, this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
-        if (traceCustomer != null) {
-            userInfoDto.setUserId(String.valueOf(traceCustomer.getId()));
-            userInfoDto.setName(traceCustomer.getName());
-            userInfoDto.setIdCardNo(traceCustomer.getIdNo());
-            userInfoDto.setPhone(traceCustomer.getPhone());
-            userInfoDto.setAddr(traceCustomer.getAddress());
-            userInfoDto.setCardNo(traceCustomer.getCardNo());
-        }
-
-        return userInfoDto;
-    }
-
-    /**
-     * 保护敏感信息
-     *
-     * @param dto
-     * @return
-     */
-    private UserInfoDto maskUserInfoDto(UserInfoDto dto) {
-
-        if (dto == null) {
-            return dto;
-        }
-        return dto.mask(!this.uapRpcService.hasAccess("registerBill/create.html#user"));
-    }
 
     /**
      * 权限判断并保护敏感信息
