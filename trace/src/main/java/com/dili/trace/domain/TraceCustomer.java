@@ -4,7 +4,6 @@ import com.dili.customer.sdk.domain.Attachment;
 import com.dili.customer.sdk.domain.dto.AttachmentGroupInfo;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
-import com.dili.trace.dto.UserInfoDto;
 import com.dili.trace.dto.VehicleInfoDto;
 import com.dili.trace.util.MaskUserInfo;
 import io.swagger.annotations.ApiModelProperty;
