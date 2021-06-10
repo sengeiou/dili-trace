@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
@@ -137,22 +138,25 @@ public class ExtCustomerService {
         if (StringUtils.isBlank(keyword) || firm == null) {
             return Lists.newArrayList();
         }
-        List<Future<List<Long>>> futures = Lists.newArrayList(this.asyncService.executeAsync(() -> {
-                    return this.customerRpcService.findSellerIdListByKeywordFromCustomer(keyword, firm);
-                }),
-                this.asyncService.executeAsync(() -> {
-                    return this.customerRpcService.findSellerIdListByKeywordFromAccount(keyword, firm);
-                })
+        List<Long> customerIdList = Lists.newArrayList();
+        CompletableFuture<?> idListFromCusterFuture = this.asyncService.execAsync(() -> {
+            List<Long> ret = this.customerRpcService.findSellerIdListByKeywordFromCustomer(keyword, firm);
+            customerIdList.addAll(ret);
+            return null;
+        });
+        CompletableFuture<List<Long>> idListFromCardFuture =
+                this.asyncService.execAsync(() -> {
+                    List<Long> ret = this.customerRpcService.findSellerIdListByKeywordFromAccount(keyword, firm);
+                    customerIdList.addAll(ret);
+                    return null;
+                });
 
-        );
-        List<Long> customerIdList = StreamEx.of(futures).flatCollection(future -> {
-            try {
-                return future.get();
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-            return Lists.newArrayList();
-        }).toList();
+
+        try {
+            CompletableFuture.allOf(idListFromCusterFuture, idListFromCardFuture).join();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
         return customerIdList;
     }
 
@@ -210,11 +214,15 @@ public class ExtCustomerService {
         if (customerIdList.isEmpty() || firm == null) {
             return Lists.newArrayList();
         }
-        Future<Map<Long, TraceCustomer>> idCustMapFuture = this.asyncService.executeAsync(() -> {
+        Map<Long, TraceCustomer> idCustMap = Maps.newHashMap();
+        Map<Long, TraceCustomer> customerListWithCardNo = Maps.newHashMap();
+
+
+        CompletableFuture<?> idCustMapFuture = this.asyncService.execAsync(() -> {
             CustomerQueryDto query = new CustomerQueryDto();
             query.setMarketId(firm.getId());
             query.setIdSet(Sets.newHashSet(customerIdList));
-            return StreamEx.of(this.customerRpcService.listSeller(query).getData()).toMap(c -> {
+            Map<Long, TraceCustomer> retMap = StreamEx.of(this.customerRpcService.listSeller(query).getData()).toMap(c -> {
                 return c.getId();
             }, c -> {
                 TraceCustomer customer = new TraceCustomer();
@@ -224,14 +232,16 @@ public class ExtCustomerService {
                 customer.setName(c.getName());
                 return customer;
             });
+            idCustMap.putAll(retMap);
+            return null;
         });
-        Future<Map<Long, TraceCustomer>> custListFuture =
-                this.asyncService.executeAsync(() -> {
+        CompletableFuture<Map<Long, TraceCustomer>> custListFuture =
+                this.asyncService.execAsync(() -> {
 
                     AccountGetListQueryDto accountGetListQueryDto = new AccountGetListQueryDto();
                     accountGetListQueryDto.setCustomerIds(customerIdList);
                     accountGetListQueryDto.setFirmId(firm.getId());
-                    return StreamEx.of(this.accountRpcService.getList(accountGetListQueryDto)).toMap(accountGetListResultDto -> accountGetListResultDto.getCustomerId(),
+                    Map<Long, TraceCustomer> retMap = StreamEx.of(this.accountRpcService.getList(accountGetListQueryDto)).toMap(accountGetListResultDto -> accountGetListResultDto.getCustomerId(),
                             accountGetListResultDto -> {
                                 TraceCustomer customer = new TraceCustomer();
                                 customer.setId(accountGetListResultDto.getCustomerId());
@@ -241,21 +251,16 @@ public class ExtCustomerService {
                                 return customer;
 
                             });
+                    customerListWithCardNo.putAll(retMap);
+                    return null;
                 });
 
-        Map<Long, TraceCustomer> idCustMap = Maps.newHashMap();
-        Map<Long, TraceCustomer> customerListWithCardNo = Maps.newHashMap();
+        try {
+            CompletableFuture.allOf(idCustMapFuture, custListFuture).join();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
-        try {
-            idCustMap.putAll(idCustMapFuture.get());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        try {
-            customerListWithCardNo.putAll(custListFuture.get());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
         return StreamEx.of(customerIdList).filter(custId -> {
             return idCustMap.containsKey(custId);
         }).map(custId -> {

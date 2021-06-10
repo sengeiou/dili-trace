@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
@@ -217,21 +218,28 @@ public class ManagerUserApi {
 
 
             List<Long> customerIdList = StreamEx.of(pageOutput.getData()).nonNull().map(CustomerSimpleExtendDto::getId).toList();
-            Future<Map<Long, List<VehicleInfoDto>>> vehicleInfoDtoMapFuture = this.asyncService.executeAsync(() -> {
-                return this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
-            });
 
             Map<Long, List<VehicleInfoDto>> vehicleInfoMap = Maps.newHashMap();
+            CompletableFuture<?> vehicleInfoDtoMapFuture = this.asyncService.execAsync(() -> {
+                Map<Long, List<VehicleInfoDto>> retMap =  this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+                vehicleInfoMap.putAll(retMap);
+                return null;
+            });
+
+            PageOutput<List<CustomerExtendOutPutDto>> pgData=new PageOutput<>();
+            CompletableFuture<?> pgDataFuture = this.asyncService.execAsync(() -> {
+                // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
+                PageOutput<List<CustomerExtendOutPutDto>>data= getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
+                BeanUtils.copyProperties(data,pgData);
+                return null;
+            });
+
             try {
-                vehicleInfoMap.putAll(vehicleInfoDtoMapFuture.get());
+                CompletableFuture.allOf(vehicleInfoDtoMapFuture,pgDataFuture).join();
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
-            Future<PageOutput<List<CustomerExtendOutPutDto>>> pgDataFuture = this.asyncService.executeAsync(() -> {
-                // UAP 内置对象缺少市场名称、园区卡号，只能重新构建返回对象
-                return getListPageOutput(marketId, pageOutput, ClientTypeEnum.DRIVER);
-            });
-            PageOutput<List<CustomerExtendOutPutDto>> pgData = pgDataFuture.get();
+
             List<CustomerExtendOutPutDto> dataList = StreamEx.of(pgData.getData()).map(o -> {
                 List<VehicleInfoDto> vehicleInfoList = vehicleInfoMap.getOrDefault(o.getId(), Lists.newArrayList());
                 o.setVehicleInfoList(vehicleInfoList);

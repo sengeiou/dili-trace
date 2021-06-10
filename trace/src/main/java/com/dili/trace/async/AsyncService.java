@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,15 +30,14 @@ public class AsyncService {
     AssetsRpcService assetsRpcService;
     @Autowired
     CustomerRpcService customerRpcService;
-
     /**
-     * 查询
+     * 执行异步任务
      *
      * @param supplier
      */
     @Async
-    public <T>Future<T> executeAsync(Supplier<T> supplier) {
-        return new AsyncResult<>(supplier.get());
+    public <T> CompletableFuture<T> execAsync(Supplier<T> supplier) {
+        return CompletableFuture.completedFuture(supplier.get());
     }
 
     /**

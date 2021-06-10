@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
@@ -467,34 +468,33 @@ public class ClientTradeRequestApi extends AbstractApi {
             List<CustomerSimpleExtendDto> customerList = pageOutput.getData();
             List<Long> customerIdList = StreamEx.ofNullable(customerList).flatCollection(Function.identity()).nonNull().map(CustomerSimpleExtendDto::getId).toList();
 
-            Future<Map<Long, List<VehicleInfoDto>>> vehicleInfoMapFuture = this.asyncService.executeAsync(() -> {
-                return this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
-            });
-            Future<Map<Long, Attachment>> attachmentMapFuture = this.asyncService.executeAsync(() -> {
-                return this.attachmentRpcService.findAttachmentByAttachmentTypeAndCustomerIdList(marketId, customerIdList, CustomerEnum.AttachmentType.营业执照);
-            });
-            Future<Map<Long, AccountGetListResultDto>> cardNoTraceCustomerMapFuture = this.asyncService.executeAsync(() -> {
-                return this.extCustomerService.findCardInfoByCustomerIdList(marketId, customerIdList);
-            });
 
             Map<Long, List<VehicleInfoDto>> vehicleInfoMap = Maps.newHashMap();
             Map<Long, Attachment> attachmentMap = Maps.newHashMap();
             Map<Long, AccountGetListResultDto> cardNoTraceCustomerMap = Maps.newHashMap();
+
+            CompletableFuture<?> vehicleInfoMapFuture = this.asyncService.execAsync(() -> {
+                Map<Long, List<VehicleInfoDto>>retMap= this.vehicleRpcService.findVehicleInfoByMarketIdAndCustomerIdList(marketId, customerIdList);
+                vehicleInfoMap.putAll(retMap);
+                return null;
+            });
+            CompletableFuture<?> attachmentMapFuture = this.asyncService.execAsync(() -> {
+                Map<Long, Attachment>retMap=  this.attachmentRpcService.findAttachmentByAttachmentTypeAndCustomerIdList(marketId, customerIdList, CustomerEnum.AttachmentType.营业执照);
+                attachmentMap.putAll(retMap);
+                return null;
+            });
+            CompletableFuture<?> cardNoTraceCustomerMapFuture = this.asyncService.execAsync(() -> {
+                Map<Long, AccountGetListResultDto>retMap=  this.extCustomerService.findCardInfoByCustomerIdList(marketId, customerIdList);
+                cardNoTraceCustomerMap.putAll(retMap);
+                return null;
+            });
             try {
-                vehicleInfoMap.putAll(vehicleInfoMapFuture.get());
+                CompletableFuture.allOf(vehicleInfoMapFuture,attachmentMapFuture,cardNoTraceCustomerMapFuture).join();
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
-            try {
-                attachmentMap.putAll(attachmentMapFuture.get());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-            try {
-                cardNoTraceCustomerMap.putAll(cardNoTraceCustomerMapFuture.get());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
+
+
             List<CustomerExtendOutPutDto> customerOutputList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(customerList)) {
                 customerList.forEach(c -> {
