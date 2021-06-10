@@ -741,7 +741,7 @@ public class RegisterBillService extends TraceBaseService<RegisterBill, Long> {
                         return null;
                     }
                 }).nonNull().toList();
-                if (!inputCertTypeList.containsAll(availableValueList)) {
+                if (!availableValueList.containsAll(inputCertTypeList)) {
                     throw new TraceBizException("凭证类型错误");
                 }
             }
