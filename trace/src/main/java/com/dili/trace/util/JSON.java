@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class JSON {

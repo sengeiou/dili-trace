@@ -6,11 +6,6 @@ import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 import com.dili.ss.metadata.ValueProviderUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Provider转换
+ */
 @RestController
 @RequestMapping({"/providerConvert"})
 public class ProviderConvertController extends AbstractBaseController {
@@ -27,6 +29,11 @@ public class ProviderConvertController extends AbstractBaseController {
     public ProviderConvertController() {
     }
 
+    /**
+     * 转换
+     * @param queryMap
+     * @return
+     */
     @PostMapping({"/list.action"})
     public List<ValuePair<?>> getLookupList(@RequestBody Map<String, Object> queryMap) {
         String provider = queryMap.get("provider").toString();
