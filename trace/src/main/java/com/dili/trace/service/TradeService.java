@@ -32,6 +32,8 @@ public class TradeService {
     CheckinOutRecordService checkinOutRecordService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    ProductStockService productStockService;
 
 
     /**
@@ -52,19 +54,19 @@ public class TradeService {
         }
 
         BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(billItem.getVerifyStatus());
-
+        return (BillVerifyStatusEnum.RETURNED == verifyStatusEnum||BillVerifyStatusEnum.PASSED==verifyStatusEnum);
         //(退回+检测合格)/(审核通过)+进门
-        if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {
-            boolean detectPassed = StreamEx.ofNullable(billItem.getDetectRequestId()).map(this.detectRequestService::get)
-                    .nonNull().map(DetectRequest::getDetectResult)
-                    .nonNull().allMatch(DetectResultEnum.PASSED::equalsToCode);
-            if (!detectPassed) {
-                return false;
-            }
-        } else if (BillVerifyStatusEnum.PASSED != verifyStatusEnum) {
-            return false;
-        }
-        return true;
+//        if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {
+//            boolean detectPassed = StreamEx.ofNullable(billItem.getDetectRequestId()).map(this.detectRequestService::get)
+//                    .nonNull().map(DetectRequest::getDetectResult)
+//                    .nonNull().allMatch(DetectResultEnum.PASSED::equalsToCode);
+//            if (!detectPassed) {
+//                return false;
+//            }
+//        } else if (BillVerifyStatusEnum.PASSED != verifyStatusEnum) {
+//            return false;
+//        }
+//        return true;
 
     }
 
@@ -84,6 +86,9 @@ public class TradeService {
             return billId;
         }
 
+        DetectResultEnum detectResultEnum = StreamEx.ofNullable(billItem.getDetectRequestId()).map(this.detectRequestService::get)
+                .nonNull().map(DetectRequest::getDetectResult)
+                .nonNull().map(DetectResultEnum::fromCode).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(DetectResultEnum.PASSED);
         logger.info("billid:{},billI.verifyStatus:{},weight:{}", billId, billItem.getVerifyStatusName(), billItem.getWeight());
 
         // 通过审核状态及进门状态判断是否可以进行销售
@@ -112,8 +117,12 @@ public class TradeService {
         updatableTD.setId(tradeDetailItem.getId());
         updatableTD.setCheckinRecordId(checkinOutRecord.getId());
         updatableTD.setCheckinStatus(checkinOutRecord.getStatus());
-        updatableTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 
+        if(DetectResultEnum.PASSED==detectResultEnum){
+            updatableTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+        }else{
+            updatableTD.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+        }
         this.tradeDetailService.updateSelective(updatableTD);
 
         CheckinOutRecord updatableCheckRecord = new CheckinOutRecord();
@@ -121,22 +130,7 @@ public class TradeService {
         updatableCheckRecord.setTradeDetailId(tradeDetailItem.getId());
         this.checkinOutRecordService.updateSelective(updatableCheckRecord);
 
-//            ProductStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
-//            batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
-//            batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
-//            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
-//            this.batchStockService.updateSelective(batchStock);
-//
-//            TradeDetail updatableRecord = new TradeDetail();
-//            updatableRecord.setId(tradeDetailItem.getId());
-//            updatableRecord.setModified(new Date());
-//            updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-//            updatableRecord.setIsBatched(YesOrNoEnum.YES.getCode());
-//            updatableRecord.setProductStockId(batchStock.getId());
-//            updatableRecord.setStockWeight(weight);
-//            updatableRecord.setTotalWeight(weight);
-//            this.tradeDetailService.updateSelective(updatableRecord);
-
+        this.productStockService.updateProductStock(tradeDetailItem.getProductStockId());
 
         return billId;
 

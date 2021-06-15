@@ -11,7 +11,6 @@ import com.dili.trace.api.input.TradeRequestHandleDto;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.TradeDto;
 import com.dili.trace.enums.*;
-import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.rpc.service.ProductRpcService;
 import com.dili.trace.rpc.service.UidRestfulRpcService;
@@ -63,13 +62,13 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
      */
     private void checkInput(TradeDto tradeDto, List<ProductStockInput> batchStockInputList) {
 
-        CustomerExtendDto seller = customerRpcService.findCustomerById(tradeDto.getSeller().getSellerId(), tradeDto.getMarketId()).orElseThrow(() -> {
+        CustomerExtendDto seller = this.customerRpcService.findCustomerById(tradeDto.getSeller().getSellerId(), tradeDto.getMarketId()).orElseThrow(() -> {
             return new TraceBizException("卖家不存在");
         });
         tradeDto.getSeller().setSellerName(seller.getName());
 
         if (TradeOrderTypeEnum.SEPREATE != tradeDto.getTradeOrderType()) {
-            CustomerExtendDto buyer = customerRpcService.findCustomerById(tradeDto.getBuyer().getBuyerId(), tradeDto.getMarketId()).orElseThrow(() -> {
+            CustomerExtendDto buyer = this.customerRpcService.findCustomerById(tradeDto.getBuyer().getBuyerId(), tradeDto.getMarketId()).orElseThrow(() -> {
                 return new TraceBizException("买家不存在");
             });
             tradeDto.getBuyer().setBuyerName(buyer.getName());
@@ -227,7 +226,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 //        updatablePS.setStockWeight(productStock.getStockWeight().add(registerBill.getWeight()));
 //        updatablePS.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
 //        this.productStockService.updateSelective(updatablePS);
-        this.productStockService.updateProductStock(productStock.getProductStockId());
+//        this.productStockService.updateProductStock(productStock.getProductStockId());
 
 //        ProductStockInput psInput = new ProductStockInput();
 //        psInput.setTradeWeight(registerBill.getWeight());
@@ -331,7 +330,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
             throw new TraceBizException("所要购买的商品不属于同一个卖家");
         }
         Long productStockId = productStockIdList.get(0);
-        ProductStock productStock = productStockService.get(productStockId);
+        ProductStock productStock = this.productStockService.get(productStockId);
 
         tradeDto.getSeller().setSellerId(productStock.getUserId());
         tradeDto.getSeller().setSellerName(productStock.getUserName());
@@ -453,7 +452,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
         for (TradeRequestDetail trd : tradeRequestDetailList) {
             if (TradeOrderStatusEnum.FINISHED == tradeOrderStatusEnum) {
-                dealTradeRequestDetail(tradeRequest, trd, tradeOrderTypeEnum);
+                this.dealTradeRequestDetail(tradeRequest, trd, tradeOrderTypeEnum);
             } else if (TradeOrderStatusEnum.CANCELLED == tradeOrderStatusEnum) {
                 TradeDetail sellerTDItem = this.tradeDetailService.get(trd.getTradeDetailId());
                 ProductStock productStock = this.productStockService.get(sellerTDItem.getProductStockId());
