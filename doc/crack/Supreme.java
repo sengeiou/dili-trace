@@ -20,7 +20,7 @@ public class Supreme {
     private final static String charset = "UTF-8";
     private final static String algorithm = "DES";
     //过期时间
-    private final static String ST_DT = "2020-5-1";
+    private final static String ST_DT = "2022-5-1";
     //默认五分钟来一次
     private final static long DEFAULT_PERIOD = 300000;
 
