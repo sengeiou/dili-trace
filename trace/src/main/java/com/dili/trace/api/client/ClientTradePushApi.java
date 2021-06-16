@@ -115,11 +115,15 @@ public class ClientTradePushApi extends AbstractApi {
             productStockExtendDataDto.setBuyingWeight(tradeDetail.getSoftWeight());
 
             registerBill.setProductStockExtendDataDto(productStockExtendDataDto);
-            if (pushType.equals(PushTypeEnum.DOWN.getCode())) {
-                BigDecimal pushDownWeight = this.tradePushService.findTradePushByTradeDetailId(tradeDetailId, PushTypeEnum.DOWN)
-                        .map(TradePushLog::getOperationWeight).orElse(BigDecimal.ZERO);
-                productStockExtendDataDto.setPushDownWeight(pushDownWeight);
-            }
+            //if (pushType.equals(PushTypeEnum.DOWN.getCode())) {
+                BigDecimal pushDownWeight = StreamEx.of(this.tradePushService.findTradePushByTradeDetailId(tradeDetailId, PushTypeEnum.DOWN))
+                        .map(TradePushLog::getOperationWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal pushUpWeight = StreamEx.of(this.tradePushService.findTradePushByTradeDetailId(tradeDetailId, PushTypeEnum.UP))
+                        .map(TradePushLog::getOperationWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+                productStockExtendDataDto.setPushDownWeight(pushDownWeight.subtract(pushUpWeight));
+            //}else{
+             //   productStockExtendDataDto.setPushDownWeight(BigDecimal.ZERO);
+            //}
 
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBizException e) {

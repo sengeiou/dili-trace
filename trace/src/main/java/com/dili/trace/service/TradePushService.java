@@ -2,13 +2,11 @@ package com.dili.trace.service;
 
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.*;
 import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.rpc.service.ProductRpcService;
-import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * 上下架操作
@@ -54,8 +52,8 @@ public class TradePushService extends TraceBaseService<TradePushLog, Long>   {
     public void tradePush(TradePushLog tradePushLog) {
         logger.info("push, param:{}", super.toJSONString(tradePushLog));
         BigDecimal pushAwayWeight = tradePushLog.getOperationWeight();
-        TradeDetail tradeDetail = tradeDetailService.get(tradePushLog.getTradeDetailId());
-        ProductStock productStock = productStockService.selectByIdForUpdate(tradeDetail.getProductStockId())
+        TradeDetail tradeDetail = this.tradeDetailService.get(tradePushLog.getTradeDetailId());
+        ProductStock productStock = this.productStockService.selectByIdForUpdate(tradeDetail.getProductStockId())
                 .orElseThrow(() -> {
                     return new TraceBizException("操作库存失败");
                 });;
@@ -112,25 +110,25 @@ public class TradePushService extends TraceBaseService<TradePushLog, Long>   {
             }
         }
 
-        tradeDetailService.updateExact(tradeDetailForUpdate);
-        productStockService.update(productStock);
+        this.tradeDetailService.updateExact(tradeDetailForUpdate);
+        this.productStockService.update(productStock);
         tradePushLog.setProductName(tradeDetail.getProductName());
         tradePushLog.setProductStockId(tradeDetail.getProductStockId());
         tradePushLog.setOrderType(tradeDetail.getTradeType());
         if(tradeDetail.getTradeType().equals(TradeTypeEnum.NONE.getCode())){
             tradePushLog.setOrderId(tradeDetail.getBillId());
-            RegisterBill bill = registerBillService.get(tradeDetail.getBillId());
+            RegisterBill bill = this.registerBillService.get(tradeDetail.getBillId());
             tradePushLog.setOrderCode(bill.getCode());
         }
         else
         {
-            TradeRequest tradeRequest = tradeRequestService.get(tradeDetail.getTradeRequestId());
+            TradeRequest tradeRequest = this.tradeRequestService.get(tradeDetail.getTradeRequestId());
             tradePushLog.setOrderId(tradeRequest.getId());
             tradePushLog.setOrderCode(tradeRequest.getCode());
         }
         tradePushLog.setCreated(new Date());
         tradePushLog.setModified(new Date());
-        getDao().insert(tradePushLog);
+        this.getDao().insert(tradePushLog);
 
 
         RegisterBill rb=this.registerBillService.get(tradeDetail.getBillId());
@@ -151,15 +149,14 @@ public class TradePushService extends TraceBaseService<TradePushLog, Long>   {
      * @param pushTypeEnum
      * @return
      */
-    public Optional<TradePushLog>findTradePushByTradeDetailId(Long tradeDetailId,PushTypeEnum pushTypeEnum){
+    public List<TradePushLog> findTradePushByTradeDetailId(Long tradeDetailId, PushTypeEnum pushTypeEnum){
         TradePushLog q=new TradePushLog();
         q.setTradeDetailId(tradeDetailId);
         q.setLogType(pushTypeEnum.getCode());
         q.setSort("id");
         q.setOrder("desc");
-        q.setPage(1);
-        q.setRows(1);
-        return StreamEx.of(this.listPageByExample(q).getDatas()).findFirst();
+
+        return StreamEx.of(this.listByExample(q));
 
     }
 }
