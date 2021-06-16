@@ -1,34 +1,35 @@
 package com.dili.trace.service;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Function;
-
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.TradeDetailQueryDto;
 import com.dili.trace.dao.ProductStockMapper;
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.ret.TradeDetailRetDto;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.google.common.collect.Lists;
-
-import com.google.common.collect.Maps;
 import one.util.streamex.EntryStream;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.entity.Example;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 库存service
@@ -119,48 +120,6 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         return batchStockItem;
     }
 
-    /**
-     * 返还重量(上架,退货,交易取消)
-     *
-     * @param tradeDetailId
-     * @param returnedWeight
-     * @return
-     */
-    @Transactional
-    public int returnWeight(Long tradeDetailId, BigDecimal returnedWeight) {
-        if (Objects.isNull(tradeDetailId)) {
-            throw new TraceBizException("参数错误");
-        }
-        TradeDetail tradeDetailItem = this.tradeDetailService.get(tradeDetailId);
-        if (Objects.isNull(tradeDetailItem)) {
-            throw new TraceBizException("批次库存数据不存在");
-        }
-
-        Long productStockId = tradeDetailItem.getProductStockId();
-
-        ProductStock productStockItem = this.selectByIdForUpdate(productStockId).orElseThrow(() -> {
-            throw new TraceBizException("库存数据不存在");
-        });
-
-
-        DetectResultEnum detectResultEnum = StreamEx.of(this.detectRequestService.findDetectRequestByBillId(tradeDetailItem.getBillId())).map(detectRequest -> {
-            return detectRequest.getDetectResult();
-        }).map(DetectResultEnum::fromCode).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
-
-        ProductStock psUpdatable = new ProductStock();
-        psUpdatable.setId(productStockItem.getId());
-
-        if (DetectResultEnum.PASSED == detectResultEnum) {
-            psUpdatable.setStockWeight(productStockItem.getStockWeight().add(returnedWeight));
-        } else if (DetectResultEnum.FAILED == detectResultEnum) {
-            psUpdatable.setDetectFailedWeight(productStockItem.getDetectFailedWeight().add(returnedWeight));
-        } else if (DetectResultEnum.NONE == detectResultEnum) {
-            psUpdatable.setStockWeight(productStockItem.getStockWeight().add(returnedWeight));
-        } else {
-            throw new TraceBizException("检测结果错误");
-        }
-        return this.updateSelective(psUpdatable);
-    }
 
     /**
      * 更新检测结果
@@ -222,41 +181,52 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
         ProductStock ps = this.selectByIdForUpdate(productStockId).orElseThrow(() -> {
             return new TraceBizException("库存信息不存在");
         });
-
-
-        Map<Boolean, TradeDetailRetDto> mappedSumData = StreamEx.of(this.tradeDetailService.groupSumWeightByProductStockId(productStockId)).mapToEntry(item -> {
-            return !DetectResultEnum.FAILED.equalsToCode(item.getDetectResult());
-        }, Function.identity()).mapValues(list -> {
-            TradeDetailRetDto identity = new TradeDetailRetDto();
-            identity.setStockWeight(BigDecimal.ZERO);
-            identity.setTotalWeight(BigDecimal.ZERO);
-            identity.setSoftWeight(BigDecimal.ZERO);
-            return StreamEx.of(list).reduce(identity, (t, v) -> {
-                t.setStockWeight(t.getStockWeight().add(v.getStockWeight()));
-                t.setSoftWeight(t.getSoftWeight().add(v.getSoftWeight()));
-                t.setTotalWeight(t.getTotalWeight().add(v.getTotalWeight()));
-                return t;
-            });
-        }).toMap();
-
-        TradeDetailRetDto succeed = mappedSumData.get(true);
-        TradeDetailRetDto failed = mappedSumData.get(false);
-
-
-        BigDecimal softWeight = StreamEx.of(succeed, failed).nonNull().map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
         TradeDetailQueryDto tdq = new TradeDetailQueryDto();
         tdq.setProductStockId(ps.getProductStockId());
         tdq.setMinStockWeight(BigDecimal.ZERO);
-        tdq.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-        int tradenum = this.tradeDetailService.listByExample(tdq).size();
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tdq);
+
+        List<TradeDetail> notForSaleList = StreamEx.of(tradeDetailList)
+                .filter(tradeDetail -> SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus()))
+                .toList();
+        List<TradeDetail> forSaleList = StreamEx.of(tradeDetailList)
+                .filter(tradeDetail -> SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus()))
+                .toList();
+
+
+        List<Long> billIdList = StreamEx.of(notForSaleList)
+                .filter(tradeDetail -> SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus()))
+                .map(TradeDetail::getBillId).nonNull().toList();
+        RegisterBillDto q = new RegisterBillDto();
+        q.setIdList(billIdList);
+        Map<Long, RegisterBill> idBillMap = StreamEx.of(q).filter(v -> v.getIdList().size() > 0).flatCollection(v -> this.registerBillService.listByExample(v)).toMap(r -> r.getBillId(), Function.identity());
+
+        BigDecimal detectFailedWeight = StreamEx.of(notForSaleList).map(tradeDetail -> {
+            RegisterBill rb = idBillMap.get(tradeDetail.getBillId());
+            BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(rb.getVerifyStatus());
+            DetectResultEnum detectResultEnum = StreamEx.ofNullable(rb).map(RegisterBill::getDetectRequestId).nonNull().map(this.detectRequestService::get)
+                    .nonNull().map(DetectRequest::getDetectResult)
+                    .map(DetectResultEnum::fromCodeOrEx).findFirst().orElse(DetectResultEnum.NONE);
+            if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {
+                if (DetectResultEnum.FAILED == detectResultEnum) {
+                    return tradeDetail.getTotalWeight();
+                }
+            }
+            return BigDecimal.ZERO;
+
+        }).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+        BigDecimal softWeight = StreamEx.of(tradeDetailList).map(TradeDetail::getSoftWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int tradenum = forSaleList.size();
+        BigDecimal stockWeight = StreamEx.of(forSaleList).map(TradeDetail::getStockWeight).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         ProductStock up = new ProductStock();
         up.setId(ps.getId());
         up.setTradeDetailNum(tradenum);
-        up.setStockWeight(succeed == null ? BigDecimal.ZERO : succeed.getStockWeight());
-        up.setDetectFailedWeight(failed == null ? BigDecimal.ZERO : failed.getTotalWeight());
+        up.setStockWeight(stockWeight);
+        up.setDetectFailedWeight(detectFailedWeight);
         up.setSoftWeight(softWeight);
         return this.updateSelective(up);
     }

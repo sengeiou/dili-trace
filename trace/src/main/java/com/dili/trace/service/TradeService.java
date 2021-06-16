@@ -54,7 +54,7 @@ public class TradeService {
         }
 
         BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(billItem.getVerifyStatus());
-        return (BillVerifyStatusEnum.RETURNED == verifyStatusEnum||BillVerifyStatusEnum.PASSED==verifyStatusEnum);
+        return (BillVerifyStatusEnum.RETURNED == verifyStatusEnum || BillVerifyStatusEnum.PASSED == verifyStatusEnum);
         //(退回+检测合格)/(审核通过)+进门
 //        if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {
 //            boolean detectPassed = StreamEx.ofNullable(billItem.getDetectRequestId()).map(this.detectRequestService::get)
@@ -86,9 +86,13 @@ public class TradeService {
             return billId;
         }
 
+        RegistTypeEnum registTypeEnum = RegistTypeEnum.fromCodeOrEx(billItem.getRegistType());
+        BillVerifyStatusEnum verifyStatusEnum = BillVerifyStatusEnum.fromCodeOrEx(billItem.getVerifyStatus());
+
+
         DetectResultEnum detectResultEnum = StreamEx.ofNullable(billItem.getDetectRequestId()).map(this.detectRequestService::get)
                 .nonNull().map(DetectRequest::getDetectResult)
-                .nonNull().map(DetectResultEnum::fromCode).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(DetectResultEnum.PASSED);
+                .nonNull().map(DetectResultEnum::fromCode).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(DetectResultEnum.NONE);
         logger.info("billid:{},billI.verifyStatus:{},weight:{}", billId, billItem.getVerifyStatusName(), billItem.getWeight());
 
         // 通过审核状态及进门状态判断是否可以进行销售
@@ -118,11 +122,17 @@ public class TradeService {
         updatableTD.setCheckinRecordId(checkinOutRecord.getId());
         updatableTD.setCheckinStatus(checkinOutRecord.getStatus());
 
-        if(DetectResultEnum.PASSED==detectResultEnum){
+        //审核通过+进门  或者 退回+进门(检测合格:可售,检测不合格:不可售)
+        if (BillVerifyStatusEnum.PASSED == verifyStatusEnum) {
             updatableTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-        }else{
-            updatableTD.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+        } else if (BillVerifyStatusEnum.RETURNED == verifyStatusEnum) {
+            if (DetectResultEnum.PASSED == detectResultEnum) {
+                updatableTD.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+            } else {
+                updatableTD.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+            }
         }
+
         this.tradeDetailService.updateSelective(updatableTD);
 
         CheckinOutRecord updatableCheckRecord = new CheckinOutRecord();

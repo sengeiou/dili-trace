@@ -1,6 +1,8 @@
 package com.dili.trace.enums;
 
+import com.dili.common.exception.TraceBizException;
 import com.fasterxml.jackson.annotation.JsonValue;
+import one.util.streamex.StreamEx;
 
 import java.util.Optional;
 
@@ -36,6 +38,11 @@ public enum DetectResultEnum {
         }
         return Optional.empty();
     }
+    public static DetectResultEnum fromCodeOrEx(Integer code) {
+        return StreamEx.of(DetectResultEnum.values()).filterBy(DetectResultEnum::getCode, code).findFirst().orElseThrow(() -> {
+            return new TraceBizException("检测结果错误");
+        });
+    }
     public static String name(Integer code) {
         return DetectResultEnum.fromCode(code).map(DetectResultEnum::getName).orElse("");
     }
@@ -45,10 +52,10 @@ public enum DetectResultEnum {
     }
     @JsonValue
     public Integer getCode() {
-        return code;
+        return this.code;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

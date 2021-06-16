@@ -1,5 +1,6 @@
 package com.dili.trace.enums;
 
+import com.dili.common.exception.TraceBizException;
 import com.fasterxml.jackson.annotation.JsonValue;
 import one.util.streamex.StreamEx;
 
@@ -37,7 +38,11 @@ public enum RegistTypeEnum {
 	public static Optional<RegistTypeEnum> fromCode(Integer code) {
 		return StreamEx.of(RegistTypeEnum.values()).filterBy(RegistTypeEnum::getCode, code).findFirst();
 	}
-
+	public static RegistTypeEnum fromCodeOrEx(Integer code) {
+		return StreamEx.of(RegistTypeEnum.values()).filterBy(RegistTypeEnum::getCode, code).findFirst().orElseThrow(() -> {
+			return new TraceBizException("报备类型错误");
+		});
+	}
 	public static String name(Integer code){
 		return RegistTypeEnum.fromCode(code).map(RegistTypeEnum::getName).orElse("");
 	}
@@ -51,10 +56,10 @@ public enum RegistTypeEnum {
 
 	@JsonValue
 	public Integer getCode() {
-		return code;
+		return this.code;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 }
