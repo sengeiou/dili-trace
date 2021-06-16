@@ -6,7 +6,6 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
-import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -37,7 +36,7 @@ import java.util.Optional;
 @RestController
 @AppAccess(role = Role.Client)
 @RequestMapping(value = "/api/client/clientTradePush")
-public class ClientTradePushApi  extends AbstractApi {
+public class ClientTradePushApi extends AbstractApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradePushApi.class);
 
     @Autowired
@@ -78,14 +77,17 @@ public class ClientTradePushApi  extends AbstractApi {
     public BaseOutput<RegisterBill> viewTradeDetail(@RequestParam Long tradeDetailId,
                                                     @RequestParam Integer pushType) {
         try {
-            TradeDetail tradeDetail = tradeDetailService.get(tradeDetailId);
-            RegisterBill registerBill = registerBillService.get(tradeDetail.getBillId());
+            TradeDetail tradeDetail = this.tradeDetailService.get(tradeDetailId);
+            RegisterBill registerBill = this.registerBillService.get(tradeDetail.getBillId());
             if (tradeDetail.getTradeRequestId() != null) {
-                TradeRequest tradeRequest = tradeRequestService.get(tradeDetail.getTradeRequestId());
+                TradeRequest tradeRequest = this.tradeRequestService.get(tradeDetail.getTradeRequestId());
                 registerBill.setTradeRequestCode(tradeRequest.getCode());
             }
+            DetectResultEnum detectResultEnum = StreamEx.ofNullable(registerBill.getDetectRequestId()).map(this.detectRequestService::get)
+                    .nonNull().map(DetectRequest::getDetectResult).map(DetectResultEnum::fromCode).filter(Optional::isPresent)
+                    .map(Optional::get).findFirst().orElse(DetectResultEnum.NONE);
             Long upStreamId = registerBill.getUpStreamId();
-            String upStreamName = StreamEx.ofNullable(upStreamService.get(upStreamId)).map(UpStream::getName).findFirst().orElse("");
+            String upStreamName = StreamEx.ofNullable(this.upStreamService.get(upStreamId)).map(UpStream::getName).findFirst().orElse("");
             registerBill.setUpStreamName(upStreamName);
             if (pushType.equals(PushTypeEnum.DOWN.getCode())) {
                 registerBill.setWeight(tradeDetail.getStockWeight());
@@ -93,19 +95,23 @@ public class ClientTradePushApi  extends AbstractApi {
                 registerBill.setWeight(tradeDetail.getPushawayWeight());
             }
 
-            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId(), BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null));
+            List<ImageCert> imageCerts = this.imageCertService.findImageCertListByBillId(tradeDetail.getBillId(), BillTypeEnum.fromCode(registerBill.getBillType()).orElse(null));
             registerBill.setImageCertList(imageCerts);
             TradePushLog pushLog = new TradePushLog();
             pushLog.setTradeDetailId(tradeDetailId);
             pushLog.setSort("created");
             pushLog.setOrder("asc");
-            List<TradePushLog> tradePushLogs = tradePushService.listByExample(pushLog);
+            List<TradePushLog> tradePushLogs = this.tradePushService.listByExample(pushLog);
             registerBill.setTradePushLogs(tradePushLogs);
 
-            ProductStock ps=this.productStockService.get(tradeDetail.getProductStockId());
             ProductStockExtendDataDto productStockExtendDataDto = new ProductStockExtendDataDto();
 
-            productStockExtendDataDto.setDetectFailedWeight(ps.getDetectFailedWeight());
+            if (DetectResultEnum.FAILED == detectResultEnum) {
+                productStockExtendDataDto.setDetectFailedWeight(tradeDetail.getTotalWeight());
+            } else {
+                productStockExtendDataDto.setDetectFailedWeight(BigDecimal.ZERO);
+            }
+
             productStockExtendDataDto.setBuyingWeight(tradeDetail.getSoftWeight());
 
             registerBill.setProductStockExtendDataDto(productStockExtendDataDto);
@@ -138,7 +144,7 @@ public class ClientTradePushApi  extends AbstractApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             pushLog.setUserId(sessionData.getUserId());
-            tradePushService.tradePush(pushLog);
+            this.tradePushService.tradePush(pushLog);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             logger.error(e.getMessage());
@@ -167,7 +173,7 @@ public class ClientTradePushApi  extends AbstractApi {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
             tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0");
-            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
+            return BaseOutput.success().setData(this.tradeDetailService.listPageByExample(tradeDetail));
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -194,7 +200,7 @@ public class ClientTradePushApi  extends AbstractApi {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
             tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0");
-            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
+            return BaseOutput.success().setData(this.tradeDetailService.listPageByExample(tradeDetail));
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
