@@ -7,7 +7,6 @@ import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.rpc.service.ProductRpcService;
-import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +155,7 @@ public class TradePushService extends TraceBaseService<TradePushLog, Long>   {
         q.setSort("id");
         q.setOrder("desc");
 
-        return StreamEx.of(this.listByExample(q));
+        return this.listByExample(q);
 
     }
 }
